@@ -150,7 +150,10 @@ export default function TenantDashboard() {
         </nav>
 
         <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-white/10">
-          <button className="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white/10 transition">
+          <button 
+            onClick={handleLogout}
+            className="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white/10 transition"
+          >
             <LogOut className="w-5 h-5" />
             Sign Out
           </button>
@@ -163,7 +166,9 @@ export default function TenantDashboard() {
         <header className="mb-8">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-3xl font-bold text-slate-900">Welcome back!</h1>
+              <h1 className="text-3xl font-bold text-slate-900">
+                Welcome{user?.name ? `, ${user.name}` : ' back'}!
+              </h1>
               <p className="text-slate-600 mt-1">Here's what's happening with {branding.appName} today.</p>
             </div>
             <div className="flex items-center gap-4">
@@ -173,11 +178,14 @@ export default function TenantDashboard() {
               </button>
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold" style={{ backgroundColor: branding.primaryColor }}>
-                  A
+                  {user?.email?.charAt(0).toUpperCase() || 'U'}
                 </div>
                 <div className="text-sm">
-                  <p className="font-medium text-slate-900">Admin User</p>
-                  <p className="text-slate-500">Tenant Admin</p>
+                  <p className="font-medium text-slate-900">{user?.name || user?.email || 'User'}</p>
+                  <p className="text-slate-500">
+                    {user?.globalRole === 'SUPER_ADMIN' ? 'Super Admin' : 
+                     user?.memberships?.find(m => m.tenantSlug === tenant?.slug)?.role === 'TENANT_ADMIN' ? 'Tenant Admin' : 'Member'}
+                  </p>
                 </div>
               </div>
             </div>
