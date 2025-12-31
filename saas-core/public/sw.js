@@ -1,5 +1,3 @@
-/// <reference lib="webworker" />
-
 /**
  * Service Worker for Multi-Tenant SaaS Core
  * 
@@ -16,8 +14,6 @@
  * - Tenant mismatch: Actions validated before replay
  * - Stale cache: ETags and Cache-Control respected
  */
-
-declare const self: ServiceWorkerGlobalScope
 
 const SW_VERSION = '1.0.0'
 const CACHE_PREFIX = 'saas-core'
@@ -123,7 +119,7 @@ self.addEventListener('fetch', (event) => {
  * Handle GET API requests
  * Strategy: Network first, fall back to cache
  */
-async function handleApiRequest(request: Request): Promise<Response> {
+async function handleApiRequest(request) {
   const url = new URL(request.url)
   const tenantSlug = url.searchParams.get('tenant') || 'default'
   const cacheName = `${DYNAMIC_CACHE_PREFIX}${tenantSlug}`
@@ -167,7 +163,7 @@ async function handleApiRequest(request: Request): Promise<Response> {
  * Handle static requests (pages, assets)
  * Strategy: Cache first, fall back to network
  */
-async function handleStaticRequest(request: Request): Promise<Response> {
+async function handleStaticRequest(request) {
   // Try cache first
   const cachedResponse = await caches.match(request)
   if (cachedResponse) {
@@ -200,7 +196,7 @@ async function handleStaticRequest(request: Request): Promise<Response> {
  * Handle mutation requests (POST, PUT, PATCH, DELETE)
  * Strategy: Try network, queue if offline
  */
-async function handleMutationRequest(request: Request): Promise<Response> {
+async function handleMutationRequest(request) {
   try {
     // Try network first
     const response = await fetch(request.clone())
@@ -256,7 +252,7 @@ self.addEventListener('sync', (event) => {
 /**
  * Sync all queued actions
  */
-async function syncQueuedActions(): Promise<void> {
+async function syncQueuedActions() {
   console.log('[SW] Starting background sync')
   
   const db = await openDB()
@@ -340,13 +336,13 @@ async function syncQueuedActions(): Promise<void> {
 // IndexedDB HELPERS (SW-compatible)
 // ============================================================================
 
-function openDB(): Promise<IDBDatabase> {
+function openDB() {
   return new Promise((resolve, reject) => {
     const request = indexedDB.open(DB_NAME, 1)
     request.onerror = () => reject(request.error)
     request.onsuccess = () => resolve(request.result)
     request.onupgradeneeded = (event) => {
-      const db = (event.target as IDBOpenDBRequest).result
+      const db = event.target.result
       if (!db.objectStoreNames.contains(ACTIONS_STORE)) {
         const store = db.createObjectStore(ACTIONS_STORE, { keyPath: 'id' })
         store.createIndex('byTenant', 'tenantId', { unique: false })
@@ -356,7 +352,7 @@ function openDB(): Promise<IDBDatabase> {
   })
 }
 
-function getAllPendingActions(db: IDBDatabase): Promise<any[]> {
+function getAllPendingActions(db) {
   return new Promise((resolve, reject) => {
     const tx = db.transaction(ACTIONS_STORE, 'readonly')
     const store = tx.objectStore(ACTIONS_STORE)
@@ -366,14 +362,14 @@ function getAllPendingActions(db: IDBDatabase): Promise<any[]> {
     request.onsuccess = () => {
       const actions = request.result || []
       // Sort by timestamp to maintain order
-      actions.sort((a: any, b: any) => a.clientTimestamp - b.clientTimestamp)
+      actions.sort((a, b) => a.clientTimestamp - b.clientTimestamp)
       resolve(actions)
     }
     request.onerror = () => reject(request.error)
   })
 }
 
-async function queueRequestForSync(request: Request): Promise<void> {
+async function queueRequestForSync(request) {
   const url = new URL(request.url)
   const tenantId = url.searchParams.get('tenant') || 
                    request.headers.get('X-Tenant-ID') || 
@@ -409,7 +405,7 @@ async function queueRequestForSync(request: Request): Promise<void> {
   })
 }
 
-function deleteAction(db: IDBDatabase, actionId: string): Promise<void> {
+function deleteAction(db, actionId) {
   return new Promise((resolve, reject) => {
     const tx = db.transaction(ACTIONS_STORE, 'readwrite')
     const store = tx.objectStore(ACTIONS_STORE)
@@ -419,15 +415,15 @@ function deleteAction(db: IDBDatabase, actionId: string): Promise<void> {
   })
 }
 
-function markActionFailed(db: IDBDatabase, actionId: string, error: string): Promise<void> {
+function markActionFailed(db, actionId, error) {
   return updateAction(db, actionId, { syncStatus: 'failed', errorMessage: error })
 }
 
-function markActionConflict(db: IDBDatabase, actionId: string, conflictData: any): Promise<void> {
+function markActionConflict(db, actionId, conflictData) {
   return updateAction(db, actionId, { syncStatus: 'conflict', conflictData })
 }
 
-function incrementRetryCount(db: IDBDatabase, actionId: string): Promise<void> {
+function incrementRetryCount(db, actionId) {
   return new Promise((resolve, reject) => {
     const tx = db.transaction(ACTIONS_STORE, 'readwrite')
     const store = tx.objectStore(ACTIONS_STORE)
@@ -456,7 +452,7 @@ function incrementRetryCount(db: IDBDatabase, actionId: string): Promise<void> {
   })
 }
 
-function updateAction(db: IDBDatabase, actionId: string, updates: any): Promise<void> {
+function updateAction(db, actionId, updates) {
   return new Promise((resolve, reject) => {
     const tx = db.transaction(ACTIONS_STORE, 'readwrite')
     const store = tx.objectStore(ACTIONS_STORE)
@@ -481,7 +477,7 @@ function updateAction(db: IDBDatabase, actionId: string, updates: any): Promise<
 // CLIENT COMMUNICATION
 // ============================================================================
 
-function notifyClients(message: any): void {
+function notifyClients(message) {
   self.clients.matchAll({ type: 'window' }).then(clients => {
     clients.forEach(client => {
       client.postMessage(message)
@@ -521,10 +517,8 @@ self.addEventListener('message', (event) => {
 // PERIODIC SYNC (if available)
 // ============================================================================
 
-self.addEventListener('periodicsync', (event: any) => {
+self.addEventListener('periodicsync', (event) => {
   if (event.tag === 'sync-actions') {
     event.waitUntil(syncQueuedActions())
   }
 })
-
-export {}
