@@ -27,14 +27,29 @@ export async function GET(request: NextRequest) {
       })
     }
 
+    // Transform to include branding for backwards compatibility
     return NextResponse.json({
       success: true,
       tenant: {
         id: tenant.id,
         name: tenant.name,
         slug: tenant.slug,
-        customDomain: tenant.customDomain,
-        branding: tenant.branding
+        status: tenant.status,
+        domains: tenant.domains,
+        // Legacy branding object
+        branding: {
+          id: tenant.id,
+          tenantId: tenant.id,
+          appName: tenant.appName,
+          logoUrl: tenant.logoUrl,
+          faviconUrl: tenant.faviconUrl,
+          primaryColor: tenant.primaryColor,
+          secondaryColor: tenant.secondaryColor
+        },
+        // Also include flat for convenience
+        appName: tenant.appName,
+        primaryColor: tenant.primaryColor,
+        secondaryColor: tenant.secondaryColor
       }
     })
   } catch (error) {
