@@ -329,10 +329,11 @@ export function useOfflineApi(tenantId: string) {
     
     // For mutations, try online first, queue if offline
     if (['POST', 'PUT', 'PATCH', 'DELETE'].includes(method)) {
+      const mutationMethod = method as 'POST' | 'PUT' | 'PATCH' | 'DELETE'
       if (isOnline) {
         try {
           const response = await fetch(endpoint, {
-            method,
+            method: mutationMethod,
             headers: { 'Content-Type': 'application/json' },
             body: body ? JSON.stringify(body) : undefined
           })
@@ -347,7 +348,7 @@ export function useOfflineApi(tenantId: string) {
               userId: offlineAction.userId,
               type: offlineAction.type,
               endpoint,
-              method,
+              method: mutationMethod,
               payload: body || {},
               resourceId: offlineAction.resourceId,
               resourceVersion: offlineAction.resourceVersion
@@ -363,7 +364,7 @@ export function useOfflineApi(tenantId: string) {
           userId: offlineAction.userId,
           type: offlineAction.type,
           endpoint,
-          method,
+          method: mutationMethod,
           payload: body || {},
           resourceId: offlineAction.resourceId,
           resourceVersion: offlineAction.resourceVersion
