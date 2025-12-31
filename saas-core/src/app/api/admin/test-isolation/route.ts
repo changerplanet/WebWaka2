@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { prisma, withTenantContext, TenantIsolationError, getViolationLogs, clearViolationLogs } from '@/lib/prisma'
+import { prisma, withTenantContextAsync, TenantIsolationError, getViolationLogs, clearViolationLogs } from '@/lib/prisma'
 import { requireSuperAdmin } from '@/lib/authorization'
 
 /**
