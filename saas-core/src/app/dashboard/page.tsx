@@ -284,6 +284,9 @@ export default function TenantDashboard() {
           </div>
         </div>
       </main>
+      
+      {/* Offline Status Bar */}
+      {tenant && <OfflineStatusBar tenantId={tenant.id} />}
     </div>
   )
 }
