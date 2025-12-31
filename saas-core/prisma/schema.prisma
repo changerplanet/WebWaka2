@@ -205,3 +205,56 @@ model Session {
   @@index([userId])
   @@index([expiresAt])
 }
+
+// ============================================================================
+// AUDIT LOG
+// Track all significant actions for compliance and debugging
+// ============================================================================
+enum AuditAction {
+  // Tenant actions
+  TENANT_CREATED
+  TENANT_UPDATED
+  TENANT_SUSPENDED
+  TENANT_ACTIVATED
+  TENANT_DEACTIVATED
+  
+  // Domain actions
+  DOMAIN_ADDED
+  DOMAIN_REMOVED
+  DOMAIN_VERIFIED
+  
+  // User actions
+  USER_INVITED
+  USER_REMOVED
+  USER_ROLE_CHANGED
+  
+  // Auth actions
+  USER_LOGIN
+  USER_LOGOUT
+  
+  // Super Admin actions
+  SUPER_ADMIN_IMPERSONATION_START
+  SUPER_ADMIN_IMPERSONATION_END
+}
+
+model AuditLog {
+  id          String      @id @default(uuid())
+  action      AuditAction
+  actorId     String      // User who performed the action
+  actorEmail  String      // Denormalized for easy querying
+  tenantId    String?     // Null for super admin global actions
+  targetType  String?     // e.g., "User", "Tenant", "TenantDomain"
+  targetId    String?     // ID of the affected entity
+  metadata    Json?       // Additional context
+  ipAddress   String?
+  userAgent   String?
+  
+  // Audit fields
+  createdAt   DateTime    @default(now())
+
+  @@index([actorId])
+  @@index([tenantId])
+  @@index([action])
+  @@index([createdAt])
+  @@index([targetType, targetId])
+}
