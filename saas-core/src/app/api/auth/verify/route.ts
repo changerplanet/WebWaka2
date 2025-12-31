@@ -10,7 +10,7 @@ export async function GET(request: NextRequest) {
     const token = searchParams.get('token')
     
     // Get the base URL from environment
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://984563f9-f838-4c1b-8d6f-14f4bc5ff050.preview.emergentagent.com'
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://tenanthub-3.preview.emergentagent.com'
     
     if (!token) {
       return NextResponse.redirect(new URL('/login?error=missing_token', baseUrl))
@@ -61,7 +61,7 @@ export async function GET(request: NextRequest) {
     
   } catch (error) {
     console.error('Verify error:', error)
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://984563f9-f838-4c1b-8d6f-14f4bc5ff050.preview.emergentagent.com'
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://tenanthub-3.preview.emergentagent.com'
     return NextResponse.redirect(new URL('/login?error=verification_failed', baseUrl))
   }
 }
