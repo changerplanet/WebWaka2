@@ -7,9 +7,9 @@ export async function GET(request: NextRequest) {
   try {
     const tenants = await prisma.tenant.findMany({
       include: {
-        branding: true,
+        domains: true,
         _count: {
-          select: { users: true }
+          select: { memberships: true }
         }
       },
       orderBy: { createdAt: 'desc' }
@@ -17,7 +17,11 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      tenants
+      tenants: tenants.map(t => ({
+        ...t,
+        // Map _count to users for backwards compatibility
+        _count: { users: t._count.memberships }
+      }))
     })
   } catch (error) {
     console.error('Failed to fetch tenants:', error)
@@ -51,8 +55,10 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    const normalizedSlug = slug.toLowerCase()
+
     // Validate slug format (alphanumeric and hyphens only)
-    if (!/^[a-z0-9-]+$/.test(slug)) {
+    if (!/^[a-z0-9-]+$/.test(normalizedSlug)) {
       return NextResponse.json(
         { success: false, error: 'Slug must contain only lowercase letters, numbers, and hyphens' },
         { status: 400 }
@@ -60,22 +66,33 @@ export async function POST(request: NextRequest) {
     }
 
     // Check for existing slug
-    const existingSlug = await prisma.tenant.findUnique({
-      where: { slug }
+    const existingTenant = await prisma.tenant.findUnique({
+      where: { slug: normalizedSlug }
     })
-    if (existingSlug) {
+    if (existingTenant) {
       return NextResponse.json(
         { success: false, error: 'This subdomain is already taken' },
         { status: 409 }
       )
     }
 
+    // Check for existing domain
+    const existingDomain = await prisma.tenantDomain.findUnique({
+      where: { domain: normalizedSlug }
+    })
+    if (existingDomain) {
+      return NextResponse.json(
+        { success: false, error: 'This subdomain is already in use' },
+        { status: 409 }
+      )
+    }
+
     // Check for existing custom domain if provided
     if (customDomain) {
-      const existingDomain = await prisma.tenant.findUnique({
-        where: { customDomain }
+      const existingCustomDomain = await prisma.tenantDomain.findUnique({
+        where: { domain: customDomain.toLowerCase() }
       })
-      if (existingDomain) {
+      if (existingCustomDomain) {
         return NextResponse.json(
           { success: false, error: 'This custom domain is already in use' },
           { status: 409 }
@@ -83,35 +100,62 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Create tenant with branding in a transaction
-    const tenantId = uuidv4()
-    const brandingId = uuidv4()
-
+    // Create tenant with domains in a transaction
     const tenant = await prisma.tenant.create({
       data: {
-        id: tenantId,
+        id: uuidv4(),
         name,
-        slug,
-        customDomain: customDomain || null,
-        branding: {
-          create: {
-            id: brandingId,
-            appName: appName || name,
-            logoUrl: logoUrl || null,
-            faviconUrl: faviconUrl || null,
-            primaryColor: primaryColor || '#6366f1',
-            secondaryColor: secondaryColor || '#8b5cf6'
-          }
+        slug: normalizedSlug,
+        appName: appName || name,
+        logoUrl: logoUrl || null,
+        faviconUrl: faviconUrl || null,
+        primaryColor: primaryColor || '#6366f1',
+        secondaryColor: secondaryColor || '#8b5cf6',
+        domains: {
+          create: [
+            // Always create subdomain
+            {
+              id: uuidv4(),
+              domain: normalizedSlug,
+              type: 'SUBDOMAIN',
+              status: 'VERIFIED', // Subdomains are auto-verified
+              isPrimary: !customDomain, // Primary if no custom domain
+              verifiedAt: new Date()
+            },
+            // Optionally create custom domain
+            ...(customDomain ? [{
+              id: uuidv4(),
+              domain: customDomain.toLowerCase(),
+              type: 'CUSTOM' as const,
+              status: 'PENDING' as const, // Custom domains need verification
+              isPrimary: true,
+              verificationToken: uuidv4()
+            }] : [])
+          ]
         }
       },
       include: {
-        branding: true
+        domains: true
       }
     })
 
+    // Transform for backwards compatibility
+    const response = {
+      ...tenant,
+      branding: {
+        id: tenant.id,
+        tenantId: tenant.id,
+        appName: tenant.appName,
+        logoUrl: tenant.logoUrl,
+        faviconUrl: tenant.faviconUrl,
+        primaryColor: tenant.primaryColor,
+        secondaryColor: tenant.secondaryColor
+      }
+    }
+
     return NextResponse.json({
       success: true,
-      tenant
+      tenant: response
     }, { status: 201 })
 
   } catch (error: any) {
