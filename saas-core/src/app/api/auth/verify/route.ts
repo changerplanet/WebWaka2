@@ -6,19 +6,18 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url)
     const token = searchParams.get('token')
     
+    // Get the base URL from environment or request
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || `${request.nextUrl.protocol}//${request.nextUrl.host}`
+    
     if (!token) {
-      return NextResponse.redirect(
-        new URL('/login?error=missing_token', request.url)
-      )
+      return NextResponse.redirect(new URL('/login?error=missing_token', baseUrl))
     }
     
     // Verify the magic link
     const result = await verifyMagicLink(token)
     
     if (!result) {
-      return NextResponse.redirect(
-        new URL('/login?error=invalid_or_expired', request.url)
-      )
+      return NextResponse.redirect(new URL('/login?error=invalid_or_expired', baseUrl))
     }
     
     const { user, session, tenantId } = result
@@ -27,28 +26,27 @@ export async function GET(request: NextRequest) {
     await setSessionCookie(session.token)
     
     // Determine redirect destination
-    let redirectUrl = '/'
+    let redirectPath = '/'
     
     if (tenantId) {
       // Redirect to tenant dashboard
-      redirectUrl = `/dashboard?tenant=${tenantId}`
+      redirectPath = `/dashboard?tenant=${tenantId}`
     } else if (user.memberships.length === 1) {
       // User has exactly one tenant, go to their dashboard
-      redirectUrl = `/dashboard?tenant=${user.memberships[0].tenant.slug}`
+      redirectPath = `/dashboard?tenant=${user.memberships[0].tenant.slug}`
     } else if (user.globalRole === 'SUPER_ADMIN') {
       // Super admin goes to main dashboard
-      redirectUrl = '/'
+      redirectPath = '/'
     } else if (user.memberships.length > 1) {
       // Multiple tenants, let them choose
-      redirectUrl = '/select-tenant'
+      redirectPath = '/select-tenant'
     }
     
-    return NextResponse.redirect(new URL(redirectUrl, request.url))
+    return NextResponse.redirect(new URL(redirectPath, baseUrl))
     
   } catch (error) {
     console.error('Verify error:', error)
-    return NextResponse.redirect(
-      new URL('/login?error=verification_failed', request.url)
-    )
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://984563f9-f838-4c1b-8d6f-14f4bc5ff050.preview.emergentagent.com'
+    return NextResponse.redirect(new URL('/login?error=verification_failed', baseUrl))
   }
 }
