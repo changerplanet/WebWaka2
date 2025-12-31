@@ -251,3 +251,22 @@ export async function getTenantBySlug(slug: string): Promise<TenantWithDomains |
     include: { domains: true }
   })
 }
+
+/**
+ * Alias for getTenantBySlug (for backwards compatibility)
+ */
+export const resolveTenantBySlug = getTenantBySlug
+
+// Re-export types
+export type ResolvedTenant = TenantWithDomains
+export { TenantContext as TenantResolverContext }
+
+// Export helper functions for core module
+export async function getTenantFromSlug(slug: string): Promise<TenantWithDomains | null> {
+  return getTenantBySlug(slug)
+}
+
+export async function getTenantFromDomain(domain: string): Promise<TenantWithDomains | null> {
+  const context = await resolveTenantFromHost(domain)
+  return context?.tenant || null
+}
