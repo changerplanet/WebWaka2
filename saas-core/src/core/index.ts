@@ -56,9 +56,15 @@ export {
 // Tenant Resolution
 export {
   resolveTenant,
+  getTenantBySlug,
   getTenantFromSlug,
   getTenantFromDomain,
-  type ResolvedTenant
+  resolveTenantBySlug,
+  resolveTenantFromHost,
+  resolveTenantFromQuery,
+  isPublicRoute,
+  isSuperAdminRoute,
+  type TenantWithDomains as ResolvedTenant
 } from '@/lib/tenant-resolver'
 
 // Branding
