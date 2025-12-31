@@ -71,7 +71,7 @@ export {
 export {
   getTenantBranding,
   generateBrandingCSS,
-  getBrandingManifest,
+  generateManifest as getBrandingManifest,
   type TenantBranding
 } from '@/lib/branding'
 
