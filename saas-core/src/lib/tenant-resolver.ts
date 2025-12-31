@@ -259,7 +259,7 @@ export const resolveTenantBySlug = getTenantBySlug
 
 // Re-export types
 export type ResolvedTenant = TenantWithDomains
-export { TenantContext as TenantResolverContext }
+export type { TenantContext as TenantResolverContext }
 
 // Export helper functions for core module
 export async function getTenantFromSlug(slug: string): Promise<TenantWithDomains | null> {
