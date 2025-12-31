@@ -62,6 +62,13 @@ export function withTenantContext<T>(context: TenantContext, fn: () => T): T {
 }
 
 /**
+ * Run an async function within a tenant context
+ */
+export async function withTenantContextAsync<T>(context: TenantContext, fn: () => Promise<T>): Promise<T> {
+  return tenantContextStorage.run(context, fn)
+}
+
+/**
  * Violation logger - logs attempted isolation breaches
  */
 interface ViolationLog {
