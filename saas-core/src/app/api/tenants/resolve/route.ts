@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { resolveTenantFromHost, resolveTenantBySlug } from '@/lib/tenant-resolver'
+import { resolveTenantFromHost, resolveTenantFromQuery, TenantContext } from '@/lib/tenant-resolver'
 
 // GET /api/tenants/resolve - Resolve tenant from host or slug
 export async function GET(request: NextRequest) {
@@ -8,24 +8,26 @@ export async function GET(request: NextRequest) {
     const slug = searchParams.get('slug')
     const host = searchParams.get('host') || request.headers.get('host')
 
-    let tenant = null
+    let context: TenantContext | null = null
 
-    // Try slug first
+    // Try slug first (uses resolveTenantFromQuery)
     if (slug) {
-      tenant = await resolveTenantBySlug(slug)
+      context = await resolveTenantFromQuery(slug)
     }
     // Then try host resolution
     else if (host) {
-      tenant = await resolveTenantFromHost(host)
+      context = await resolveTenantFromHost(host)
     }
 
-    if (!tenant) {
+    if (!context) {
       return NextResponse.json({
         success: true,
         tenant: null,
         message: 'No tenant resolved - showing default/super admin view'
       })
     }
+
+    const tenant = context.tenant
 
     // Transform to include branding for backwards compatibility
     return NextResponse.json({
@@ -36,6 +38,7 @@ export async function GET(request: NextRequest) {
         slug: tenant.slug,
         status: tenant.status,
         domains: tenant.domains,
+        resolvedVia: context.resolvedVia,
         // Legacy branding object
         branding: {
           id: tenant.id,
