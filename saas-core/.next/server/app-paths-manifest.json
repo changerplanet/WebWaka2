@@ -1,5 +1,5 @@
 {
   "/page": "app/page.js",
-  "/api/tenants/route": "app/api/tenants/route.js",
-  "/api/tenants/resolve/route": "app/api/tenants/resolve/route.js"
+  "/api/tenants/resolve/route": "app/api/tenants/resolve/route.js",
+  "/dashboard/page": "app/dashboard/page.js"
 }
