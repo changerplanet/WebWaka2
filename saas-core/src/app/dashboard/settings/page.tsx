@@ -189,7 +189,11 @@ export default function SettingsPage() {
               <DomainManagement tenantSlug={tenantSlug!} />
             )}
             {activeTab === 'branding' && (
-              <BrandingSettings settings={settings} tenantSlug={tenantSlug!} onUpdate={setSettings} />
+              <BrandingSettings 
+                settings={settings} 
+                tenantSlug={tenantSlug!} 
+                onUpdate={(branding) => setSettings(prev => prev ? { ...prev, branding } : null)} 
+              />
             )}
           </main>
         </div>
