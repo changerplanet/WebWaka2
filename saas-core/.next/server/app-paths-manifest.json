@@ -7,5 +7,6 @@
   "/offline/page": "app/offline/page.js",
   "/manifest.json/route": "app/manifest.json/route.js",
   "/api/tenants/[slug]/settings/route": "app/api/tenants/[slug]/settings/route.js",
-  "/api/tenants/[slug]/domains/route": "app/api/tenants/[slug]/domains/route.js"
+  "/api/tenants/[slug]/domains/route": "app/api/tenants/[slug]/domains/route.js",
+  "/api/tenants/[slug]/members/route": "app/api/tenants/[slug]/members/route.js"
 }
