@@ -49,15 +49,17 @@ export async function getAuditLogs(options: {
   tenantId?: string
   actorId?: string
   action?: AuditAction
+  targetType?: string
   limit?: number
   offset?: number
 }) {
-  const { tenantId, actorId, action, limit = 50, offset = 0 } = options
+  const { tenantId, actorId, action, targetType, limit = 50, offset = 0 } = options
   
   const where: any = {}
   if (tenantId) where.tenantId = tenantId
   if (actorId) where.actorId = actorId
   if (action) where.action = action
+  if (targetType) where.targetType = targetType
   
   const [logs, total] = await Promise.all([
     prisma.auditLog.findMany({
