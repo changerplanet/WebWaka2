@@ -36,8 +36,14 @@ export {
   getCurrentSession,
   createMagicLink,
   verifyMagicLink,
-  createSession,
+  getSessionByToken,
+  setSessionCookie,
   logout,
+  switchTenant,
+  isSuperAdmin,
+  isTenantAdmin,
+  generateToken,
+  type SessionUser,
   type AuthSession
 } from '@/lib/auth'
 
