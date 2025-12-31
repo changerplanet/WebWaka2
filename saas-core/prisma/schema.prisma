@@ -8,100 +8,200 @@ datasource db {
   directUrl = env("DIRECT_URL")
 }
 
-// ================================
-// TENANT (Organization)
-// ================================
-model Tenant {
-  id          String   @id @default(uuid())
-  name        String
-  slug        String   @unique // subdomain identifier (e.g., "acme" for acme.app.com)
-  customDomain String? @unique // custom domain (e.g., "app.acme.com")
-  isActive    Boolean  @default(true)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+// ============================================================================
+// ENUMS
+// ============================================================================
+
+// Global role - only SUPER_ADMIN has meaning here
+// Regular users get their roles via TenantMembership
+enum GlobalRole {
+  SUPER_ADMIN  // Can access all tenants, manage platform
+  USER         // Regular user, gets access via TenantMembership
+}
+
+// Tenant-specific role - assigned via TenantMembership
+enum TenantRole {
+  TENANT_ADMIN  // Full control of tenant (users, settings, billing)
+  TENANT_USER   // Regular member with limited permissions
+}
+
+// Tenant lifecycle status
+enum TenantStatus {
+  ACTIVE       // Normal operation
+  SUSPENDED    // Temporarily disabled (e.g., payment issue)
+  DEACTIVATED  // Soft-deleted, data retained
+}
+
+// Domain verification status
+enum DomainStatus {
+  PENDING      // Awaiting DNS verification
+  VERIFIED     // DNS verified, domain active
+  FAILED       // Verification failed
+}
+
+// Domain type for clarity
+enum DomainType {
+  SUBDOMAIN    // e.g., acme.saascore.com (platform-provided)
+  CUSTOM       // e.g., app.acme.com (customer-owned)
+}
+
+// ============================================================================
+// USER
+// Global identity - authentication happens here
+// ============================================================================
+model User {
+  id          String     @id @default(uuid())
+  email       String     @unique
+  name        String?
+  avatarUrl   String?
+  globalRole  GlobalRole @default(USER)
+  isActive    Boolean    @default(true)
+  
+  // Audit fields
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  lastLoginAt DateTime?
 
   // Relations
-  branding    TenantBranding?
-  users       User[]
+  memberships TenantMembership[]
+  magicLinks  MagicLink[]
+  sessions    Session[]
+
+  @@index([email])
+  @@index([globalRole])
+}
+
+// ============================================================================
+// TENANT
+// Organization/workspace - the isolation boundary
+// ============================================================================
+model Tenant {
+  id          String       @id @default(uuid())
+  name        String       // Display name: "Acme Corporation"
+  slug        String       @unique // URL-safe identifier: "acme"
+  status      TenantStatus @default(ACTIVE)
+  
+  // Branding (embedded for simplicity, could be separate model)
+  appName        String   @default("SaaS App")
+  logoUrl        String?
+  faviconUrl     String?
+  primaryColor   String   @default("#6366f1")
+  secondaryColor String   @default("#8b5cf6")
+
+  // Audit fields
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  // Relations
+  domains     TenantDomain[]
+  memberships TenantMembership[]
   magicLinks  MagicLink[]
 
   @@index([slug])
-  @@index([customDomain])
+  @@index([status])
 }
 
-// ================================
-// TENANT BRANDING (White-Label)
-// ================================
-model TenantBranding {
-  id             String  @id @default(uuid())
-  tenantId       String  @unique
-  appName        String  @default("SaaS App")
-  logoUrl        String?
-  faviconUrl     String?
-  primaryColor   String  @default("#6366f1") // Indigo
-  secondaryColor String  @default("#8b5cf6") // Purple
-
-  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-}
-
-// ================================
-// USER
-// ================================
-enum UserRole {
-  SUPER_ADMIN    // Global admin, not tied to any tenant
-  TENANT_ADMIN   // Admin of a specific tenant
-  TENANT_USER    // Regular user within a tenant
-}
-
-model User {
-  id        String   @id @default(uuid())
-  email     String   @unique
-  name      String?
-  role      UserRole @default(TENANT_USER)
-  tenantId  String?  // NULL for SUPER_ADMIN
-  isActive  Boolean  @default(true)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  tenant     Tenant?     @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  magicLinks MagicLink[]
-  sessions   Session[]
-
-  @@index([tenantId])
-  @@index([email])
-}
-
-// ================================
-// MAGIC LINK (Passwordless Auth)
-// ================================
-model MagicLink {
-  id        String   @id @default(uuid())
-  token     String   @unique
+// ============================================================================
+// TENANT MEMBERSHIP
+// Join table: User <-> Tenant with role
+// This is where tenant-specific permissions live
+// ============================================================================
+model TenantMembership {
+  id        String     @id @default(uuid())
   userId    String
-  tenantId  String?  // For tenant-specific magic links
+  tenantId  String
+  role      TenantRole @default(TENANT_USER)
+  isActive  Boolean    @default(true)
+  
+  // Audit fields
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  joinedAt  DateTime   @default(now())
+
+  // Relations
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tenant    Tenant     @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  // A user can only have one membership per tenant
+  @@unique([userId, tenantId])
+  @@index([userId])
+  @@index([tenantId])
+  @@index([role])
+}
+
+// ============================================================================
+// TENANT DOMAIN
+// Manages both subdomains and custom domains for tenant resolution
+// ============================================================================
+model TenantDomain {
+  id         String       @id @default(uuid())
+  tenantId   String
+  domain     String       @unique // e.g., "acme" (subdomain) or "app.acme.com" (custom)
+  type       DomainType
+  status     DomainStatus @default(PENDING)
+  isPrimary  Boolean      @default(false) // Primary domain shown in UI
+  
+  // For custom domain verification
+  verificationToken String?
+  verifiedAt        DateTime?
+
+  // Audit fields
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+
+  // Relations
+  tenant     Tenant       @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([domain])
+  @@index([tenantId])
+  @@index([type, status])
+}
+
+// ============================================================================
+// MAGIC LINK
+// Passwordless authentication tokens
+// ============================================================================
+model MagicLink {
+  id        String    @id @default(uuid())
+  token     String    @unique
+  userId    String
+  tenantId  String?   // Optional: login directly to a specific tenant
   expiresAt DateTime
   usedAt    DateTime?
-  createdAt DateTime @default(now())
+  
+  // Audit fields
+  createdAt DateTime  @default(now())
 
-  user   User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-  tenant Tenant? @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  // Relations
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tenant    Tenant?   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
 
   @@index([token])
   @@index([userId])
+  @@index([expiresAt])
 }
 
-// ================================
+// ============================================================================
 // SESSION
-// ================================
+// Active user sessions for authentication
+// ============================================================================
 model Session {
-  id        String   @id @default(uuid())
-  userId    String
-  token     String   @unique
-  expiresAt DateTime
-  createdAt DateTime @default(now())
+  id           String   @id @default(uuid())
+  userId       String
+  token        String   @unique
+  activeTenant String?  // Currently selected tenant (for multi-tenant users)
+  userAgent    String?
+  ipAddress    String?
+  expiresAt    DateTime
+  
+  // Audit fields
+  createdAt    DateTime @default(now())
+  lastActiveAt DateTime @default(now())
 
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  // Relations
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([token])
   @@index([userId])
+  @@index([expiresAt])
 }
