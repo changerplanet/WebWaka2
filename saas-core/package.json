@@ -28,5 +28,8 @@
     "tailwindcss": "^4.1.18",
     "typescript": "^5.9.3",
     "uuid": "^13.0.0"
+  },
+  "devDependencies": {
+    "@types/uuid": "^11.0.0"
   }
 }
