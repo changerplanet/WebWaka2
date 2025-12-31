@@ -22,9 +22,12 @@ if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma
 
 // Re-export tenant isolation utilities
 export {
-  withTenantContext,
-  withTenantContextAsync,
-  getCurrentTenantContext,
+  withIsolatedContext,
+  setRequestContext,
+  getRequestContext,
+  clearRequestContext,
+  setCurrentRequestId,
+  getCurrentRequestId,
   TenantIsolationError,
   isTenantScopedModel,
   getViolationLogs,
