@@ -21,9 +21,13 @@ async def proxy_to_nextjs(request: Request, path: str):
             if request.method in ["POST", "PUT", "PATCH"]:
                 body = await request.body()
             
-            # Forward headers (except host)
-            headers = dict(request.headers)
-            headers.pop("host", None)
+            # Forward headers including cookies
+            headers = {}
+            for key, value in request.headers.items():
+                # Forward most headers, skip some
+                lower_key = key.lower()
+                if lower_key not in ['host', 'content-length']:
+                    headers[key] = value
             
             # Make the proxied request
             response = await client.request(
