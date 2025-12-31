@@ -4,5 +4,6 @@
   "/api/tenants/resolve/route": "app/api/tenants/resolve/route.js",
   "/page": "app/page.js",
   "/login/page": "app/login/page.js",
-  "/offline/page": "app/offline/page.js"
+  "/offline/page": "app/offline/page.js",
+  "/manifest.json/route": "app/manifest.json/route.js"
 }
