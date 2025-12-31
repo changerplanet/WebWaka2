@@ -207,3 +207,123 @@ test_plan:
 agent_communication:
   - agent: "main"
     message: "Completed PWA infrastructure: Fixed service worker TypeScript->JS conversion, added PWAProvider to layout, added offline status to dashboard. Manifest and icons verified working for different tenants via curl. Documentation created at /app/saas-core/docs/OFFLINE_INFRASTRUCTURE.md"
+  - task: "Tenant Settings API"
+    implemented: true
+    working: true
+    file: "/app/saas-core/src/app/api/tenants/[slug]/settings/route.ts"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "main"
+        comment: "GET and PATCH endpoints working. Tested with curl using authenticated session."
+
+  - task: "Domain Management API"
+    implemented: true
+    working: true
+    file: "/app/saas-core/src/app/api/tenants/[slug]/domains/route.ts"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "main"
+        comment: "GET, POST, DELETE working. Add domain generates verification token and instructions. Tested via curl."
+
+  - task: "Domain Verification API"
+    implemented: true
+    working: "NA"
+    file: "/app/saas-core/src/app/api/tenants/[slug]/domains/[domainId]/route.ts"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "POST /verify endpoint implemented. Performs DNS TXT record lookup. Cannot test without real DNS records."
+
+  - task: "Member Role Management API"
+    implemented: true
+    working: "NA"
+    file: "/app/saas-core/src/app/api/tenants/[slug]/members/[memberId]/route.ts"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "PATCH and DELETE endpoints implemented. Includes self-demotion protection."
+
+  - task: "Role-Based Authorization Library"
+    implemented: true
+    working: true
+    file: "/app/saas-core/src/lib/authorization.ts"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "main"
+        comment: "requireAuth, requireSuperAdmin, requireTenantAdmin, requireTenantMember functions all working."
+
+  - task: "Tenant Settings UI"
+    implemented: true
+    working: "NA"
+    file: "/app/saas-core/src/app/dashboard/settings/page.tsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Settings page with 4 tabs (General, Members, Domains, Branding) implemented. Requires login to test."
+
+  - task: "Member Management UI"
+    implemented: true
+    working: "NA"
+    file: "/app/saas-core/src/components/MemberManagement.tsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Full member list, role change, invite, and remove functionality implemented."
+
+  - task: "Domain Management UI"
+    implemented: true
+    working: "NA"
+    file: "/app/saas-core/src/components/DomainManagement.tsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Add custom domain, verification instructions, delete, set primary implemented."
+
+  - task: "Branding Settings UI"
+    implemented: true
+    working: "NA"
+    file: "/app/saas-core/src/components/BrandingSettings.tsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Color pickers, logo URL inputs, live preview implemented. Requires login to test."
+
+  - task: "Dashboard Admin Settings Link"
+    implemented: true
+    working: "NA"
+    file: "/app/saas-core/src/app/dashboard/page.tsx"
+    stuck_count: 0
+    priority: "medium"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Settings link in sidebar now only shows for TENANT_ADMIN role users."
+
