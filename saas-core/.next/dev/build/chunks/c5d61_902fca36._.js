@@ -856,9 +856,6 @@ function sourceOffset(inputCSS, position) {
     return offset;
 }
 class Node {
-    get proxyOf() {
-        return this;
-    }
     constructor(defaults = {}){
         this.raws = {};
         this[isClean] = false;
@@ -973,13 +970,12 @@ class Node {
         let index = this.parent.index(this);
         return this.parent.nodes[index + 1];
     }
-    positionBy(opts = {}) {
+    positionBy(opts) {
         let pos = this.source.start;
         if (opts.index) {
             pos = this.positionInside(opts.index);
         } else if (opts.word) {
-            let inputString = 'document' in this.source.input ? this.source.input.document : this.source.input.css;
-            let stringRepresentation = inputString.slice(sourceOffset(inputString, this.source.start), sourceOffset(inputString, this.source.end));
+            let stringRepresentation = this.source.input.css.slice(sourceOffset(this.source.input.css, this.source.start), sourceOffset(this.source.input.css, this.source.end));
             let index = stringRepresentation.indexOf(opts.word);
             if (index !== -1) pos = this.positionInside(index);
         }
@@ -988,11 +984,10 @@ class Node {
     positionInside(index) {
         let column = this.source.start.column;
         let line = this.source.start.line;
-        let inputString = 'document' in this.source.input ? this.source.input.document : this.source.input.css;
-        let offset = sourceOffset(inputString, this.source.start);
+        let offset = sourceOffset(this.source.input.css, this.source.start);
         let end = offset + index;
         for(let i = offset; i < end; i++){
-            if (inputString[i] === '\n') {
+            if (this.source.input.css[i] === '\n') {
                 column = 1;
                 line += 1;
             } else {
@@ -1001,8 +996,7 @@ class Node {
         }
         return {
             column,
-            line,
-            offset: end
+            line
         };
     }
     prev() {
@@ -1010,26 +1004,20 @@ class Node {
         let index = this.parent.index(this);
         return this.parent.nodes[index - 1];
     }
-    rangeBy(opts = {}) {
-        let inputString = 'document' in this.source.input ? this.source.input.document : this.source.input.css;
+    rangeBy(opts) {
         let start = {
             column: this.source.start.column,
-            line: this.source.start.line,
-            offset: sourceOffset(inputString, this.source.start)
+            line: this.source.start.line
         };
         let end = this.source.end ? {
             column: this.source.end.column + 1,
-            line: this.source.end.line,
-            offset: typeof this.source.end.offset === 'number' ? this.source.end.offset : // the `sourceOffset(... , this.source.end)` returns an inclusive offset.
-            // So, we add 1 to convert it to exclusive.
-            sourceOffset(inputString, this.source.end) + 1
+            line: this.source.end.line
         } : {
             column: start.column + 1,
-            line: start.line,
-            offset: start.offset + 1
+            line: start.line
         };
         if (opts.word) {
-            let stringRepresentation = inputString.slice(sourceOffset(inputString, this.source.start), sourceOffset(inputString, this.source.end));
+            let stringRepresentation = this.source.input.css.slice(sourceOffset(this.source.input.css, this.source.start), sourceOffset(this.source.input.css, this.source.end));
             let index = stringRepresentation.indexOf(opts.word);
             if (index !== -1) {
                 start = this.positionInside(index);
@@ -1039,8 +1027,7 @@ class Node {
             if (opts.start) {
                 start = {
                     column: opts.start.column,
-                    line: opts.start.line,
-                    offset: sourceOffset(inputString, opts.start)
+                    line: opts.start.line
                 };
             } else if (opts.index) {
                 start = this.positionInside(opts.index);
@@ -1048,8 +1035,7 @@ class Node {
             if (opts.end) {
                 end = {
                     column: opts.end.column,
-                    line: opts.end.line,
-                    offset: sourceOffset(inputString, opts.end)
+                    line: opts.end.line
                 };
             } else if (typeof opts.endIndex === 'number') {
                 end = this.positionInside(opts.endIndex);
@@ -1060,8 +1046,7 @@ class Node {
         if (end.line < start.line || end.line === start.line && end.column <= start.column) {
             end = {
                 column: start.column + 1,
-                line: start.line,
-                offset: start.offset + 1
+                line: start.line
             };
         }
         return {
@@ -1129,7 +1114,6 @@ class Node {
             } else if (typeof value === 'object' && value.toJSON) {
                 fixed[name] = value.toJSON(null, inputs);
             } else if (name === 'source') {
-                if (value == null) continue;
                 let inputId = inputs.get(value.input);
                 if (inputId == null) {
                     inputId = inputsNextIndex;
@@ -1166,12 +1150,15 @@ class Node {
         });
         return result;
     }
-    warn(result, text, opts = {}) {
+    warn(result, text, opts) {
         let data = {
             node: this
         };
         for(let i in opts)data[i] = opts[i];
         return result.warn(text, data);
+    }
+    get proxyOf() {
+        return this;
     }
 }
 module.exports = Node;
@@ -1195,9 +1182,6 @@ Comment.default = Comment;
 
 let Node = __turbopack_context__.r("[project]/saas-core/node_modules/postcss/lib/node.js [postcss] (ecmascript)");
 class Declaration extends Node {
-    get variable() {
-        return this.prop.startsWith('--') || this.prop[0] === '$';
-    }
     constructor(defaults){
         if (defaults && typeof defaults.value !== 'undefined' && typeof defaults.value !== 'string') {
             defaults = {
@@ -1207,6 +1191,9 @@ class Declaration extends Node {
         }
         super(defaults);
         this.type = 'decl';
+    }
+    get variable() {
+        return this.prop.startsWith('--') || this.prop[0] === '$';
     }
 }
 module.exports = Declaration;
@@ -1236,14 +1223,6 @@ function markTreeDirty(node) {
     }
 }
 class Container extends Node {
-    get first() {
-        if (!this.proxyOf.nodes) return undefined;
-        return this.proxyOf.nodes[0];
-    }
-    get last() {
-        if (!this.proxyOf.nodes) return undefined;
-        return this.proxyOf.nodes[this.proxyOf.nodes.length - 1];
-    }
     append(...children) {
         for (let child of children){
             let nodes = this.normalize(child, this.last);
@@ -1557,6 +1536,14 @@ class Container extends Node {
                 return callback(child, i);
             }
         });
+    }
+    get first() {
+        if (!this.proxyOf.nodes) return undefined;
+        return this.proxyOf.nodes[0];
+    }
+    get last() {
+        if (!this.proxyOf.nodes) return undefined;
+        return this.proxyOf.nodes[this.proxyOf.nodes.length - 1];
     }
 }
 Container.registerParse = (dependant)=>{
@@ -4553,25 +4540,10 @@ let { fileURLToPath, pathToFileURL } = __turbopack_context__.r("[externals]/url 
 let CssSyntaxError = __turbopack_context__.r("[project]/saas-core/node_modules/postcss/lib/css-syntax-error.js [postcss] (ecmascript)");
 let PreviousMap = __turbopack_context__.r("[project]/saas-core/node_modules/postcss/lib/previous-map.js [postcss] (ecmascript)");
 let terminalHighlight = __turbopack_context__.r("[project]/saas-core/node_modules/postcss/lib/terminal-highlight.js [postcss] (ecmascript)");
-let lineToIndexCache = Symbol('lineToIndexCache');
+let fromOffsetCache = Symbol('fromOffsetCache');
 let sourceMapAvailable = Boolean(SourceMapConsumer && SourceMapGenerator);
 let pathAvailable = Boolean(resolve && isAbsolute);
-function getLineToIndex(input) {
-    if (input[lineToIndexCache]) return input[lineToIndexCache];
-    let lines = input.css.split('\n');
-    let lineToIndex = new Array(lines.length);
-    let prevIndex = 0;
-    for(let i = 0, l = lines.length; i < l; i++){
-        lineToIndex[i] = prevIndex;
-        prevIndex += lines[i].length + 1;
-    }
-    input[lineToIndexCache] = lineToIndex;
-    return lineToIndex;
-}
 class Input {
-    get from() {
-        return this.file || this.id;
-    }
     constructor(css, opts = {}){
         if (css === null || typeof css === 'undefined' || typeof css === 'object' && !css.toString) {
             throw new Error(`PostCSS received ${css} instead of CSS string`);
@@ -4583,8 +4555,6 @@ class Input {
         } else {
             this.hasBOM = false;
         }
-        this.document = this.css;
-        if (opts.document) this.document = opts.document.toString();
         if (opts.from) {
             if (!pathAvailable || /^\w+:\/\//.test(opts.from) || isAbsolute(opts.from)) {
                 this.file = opts.from;
@@ -4606,37 +4576,30 @@ class Input {
         if (this.map) this.map.file = this.from;
     }
     error(message, line, column, opts = {}) {
-        let endColumn, endLine, endOffset, offset, result;
+        let endColumn, endLine, result;
         if (line && typeof line === 'object') {
             let start = line;
             let end = column;
             if (typeof start.offset === 'number') {
-                offset = start.offset;
-                let pos = this.fromOffset(offset);
+                let pos = this.fromOffset(start.offset);
                 line = pos.line;
                 column = pos.col;
             } else {
                 line = start.line;
                 column = start.column;
-                offset = this.fromLineAndColumn(line, column);
             }
             if (typeof end.offset === 'number') {
-                endOffset = end.offset;
-                let pos = this.fromOffset(endOffset);
+                let pos = this.fromOffset(end.offset);
                 endLine = pos.line;
                 endColumn = pos.col;
             } else {
                 endLine = end.line;
                 endColumn = end.column;
-                endOffset = this.fromLineAndColumn(end.line, end.column);
             }
         } else if (!column) {
-            offset = line;
-            let pos = this.fromOffset(offset);
+            let pos = this.fromOffset(line);
             line = pos.line;
             column = pos.col;
-        } else {
-            offset = this.fromLineAndColumn(line, column);
         }
         let origin = this.origin(line, column, endLine, endColumn);
         if (origin) {
@@ -4660,9 +4623,7 @@ class Input {
             column,
             endColumn,
             endLine,
-            endOffset,
             line,
-            offset,
             source: this.css
         };
         if (this.file) {
@@ -4673,14 +4634,21 @@ class Input {
         }
         return result;
     }
-    fromLineAndColumn(line, column) {
-        let lineToIndex = getLineToIndex(this);
-        let index = lineToIndex[line - 1];
-        return index + column - 1;
-    }
     fromOffset(offset) {
-        let lineToIndex = getLineToIndex(this);
-        let lastLine = lineToIndex[lineToIndex.length - 1];
+        let lastLine, lineToIndex;
+        if (!this[fromOffsetCache]) {
+            let lines = this.css.split('\n');
+            lineToIndex = new Array(lines.length);
+            let prevIndex = 0;
+            for(let i = 0, l = lines.length; i < l; i++){
+                lineToIndex[i] = prevIndex;
+                prevIndex += lines[i].length + 1;
+            }
+            this[fromOffsetCache] = lineToIndex;
+        } else {
+            lineToIndex = this[fromOffsetCache];
+        }
+        lastLine = lineToIndex[lineToIndex.length - 1];
         let min = 0;
         if (offset >= lastLine) {
             min = lineToIndex.length - 1;
@@ -4770,6 +4738,9 @@ class Input {
             }
         }
         return json;
+    }
+    get from() {
+        return this.file || this.id;
     }
 }
 module.exports = Input;
@@ -4893,6 +4864,11 @@ list.default = list;
 let Container = __turbopack_context__.r("[project]/saas-core/node_modules/postcss/lib/container.js [postcss] (ecmascript)");
 let list = __turbopack_context__.r("[project]/saas-core/node_modules/postcss/lib/list.js [postcss] (ecmascript)");
 class Rule extends Container {
+    constructor(defaults){
+        super(defaults);
+        this.type = 'rule';
+        if (!this.nodes) this.nodes = [];
+    }
     get selectors() {
         return list.comma(this.selector);
     }
@@ -4900,11 +4876,6 @@ class Rule extends Container {
         let match = this.selector ? this.selector.match(/,\s*/) : null;
         let sep = match ? match[0] : ',' + this.raw('between', 'beforeOpen');
         this.selector = values.join(sep);
-    }
-    constructor(defaults){
-        super(defaults);
-        this.type = 'rule';
-        if (!this.nodes) this.nodes = [];
     }
 }
 module.exports = Rule;
@@ -5608,8 +5579,6 @@ class Parser {
             if (prev && prev.type === 'rule' && !prev.raws.ownSemicolon) {
                 prev.raws.ownSemicolon = this.spaces;
                 this.spaces = '';
-                prev.source.end = this.getPosition(token[2]);
-                prev.source.end.offset += prev.raws.ownSemicolon.length;
             }
         }
     }
@@ -5824,7 +5793,7 @@ class Parser {
         });
     }
     unknownWord(tokens) {
-        throw this.input.error('Unknown word ' + tokens[0][1], {
+        throw this.input.error('Unknown word', {
             offset: tokens[0][2]
         }, {
             offset: tokens[0][2] + tokens[0][1].length
@@ -5909,15 +5878,12 @@ Warning.default = Warning;
 
 let Warning = __turbopack_context__.r("[project]/saas-core/node_modules/postcss/lib/warning.js [postcss] (ecmascript)");
 class Result {
-    get content() {
-        return this.css;
-    }
     constructor(processor, root, opts){
         this.processor = processor;
         this.messages = [];
         this.root = root;
         this.opts = opts;
-        this.css = '';
+        this.css = undefined;
         this.map = undefined;
     }
     toString() {
@@ -5935,6 +5901,9 @@ class Result {
     }
     warnings() {
         return this.messages.filter((i)=>i.type === 'warning');
+    }
+    get content() {
+        return this.css;
     }
 }
 module.exports = Result;
@@ -6068,30 +6037,6 @@ function cleanMarks(node) {
 }
 let postcss = {};
 class LazyResult {
-    get content() {
-        return this.stringify().content;
-    }
-    get css() {
-        return this.stringify().css;
-    }
-    get map() {
-        return this.stringify().map;
-    }
-    get messages() {
-        return this.sync().messages;
-    }
-    get opts() {
-        return this.result.opts;
-    }
-    get processor() {
-        return this.result.processor;
-    }
-    get root() {
-        return this.sync().root;
-    }
-    get [Symbol.toStringTag]() {
-        return 'LazyResult';
-    }
     constructor(processor, css, opts){
         this.stringified = false;
         this.processed = false;
@@ -6434,6 +6379,30 @@ class LazyResult {
     warnings() {
         return this.sync().warnings();
     }
+    get content() {
+        return this.stringify().content;
+    }
+    get css() {
+        return this.stringify().css;
+    }
+    get map() {
+        return this.stringify().map;
+    }
+    get messages() {
+        return this.sync().messages;
+    }
+    get opts() {
+        return this.result.opts;
+    }
+    get processor() {
+        return this.result.processor;
+    }
+    get root() {
+        return this.sync().root;
+    }
+    get [Symbol.toStringTag]() {
+        return 'LazyResult';
+    }
 }
 LazyResult.registerPostcss = (dependant)=>{
     postcss = dependant;
@@ -6452,45 +6421,6 @@ const Result = __turbopack_context__.r("[project]/saas-core/node_modules/postcss
 let stringify = __turbopack_context__.r("[project]/saas-core/node_modules/postcss/lib/stringify.js [postcss] (ecmascript)");
 let warnOnce = __turbopack_context__.r("[project]/saas-core/node_modules/postcss/lib/warn-once.js [postcss] (ecmascript)");
 class NoWorkResult {
-    get content() {
-        return this.result.css;
-    }
-    get css() {
-        return this.result.css;
-    }
-    get map() {
-        return this.result.map;
-    }
-    get messages() {
-        return [];
-    }
-    get opts() {
-        return this.result.opts;
-    }
-    get processor() {
-        return this.result.processor;
-    }
-    get root() {
-        if (this._root) {
-            return this._root;
-        }
-        let root;
-        let parser = parse;
-        try {
-            root = parser(this._css, this._opts);
-        } catch (error) {
-            this.error = error;
-        }
-        if (this.error) {
-            throw this.error;
-        } else {
-            this._root = root;
-            return root;
-        }
-    }
-    get [Symbol.toStringTag]() {
-        return 'NoWorkResult';
-    }
     constructor(processor, css, opts){
         css = css.toString();
         this.stringified = false;
@@ -6550,6 +6480,45 @@ class NoWorkResult {
     warnings() {
         return [];
     }
+    get content() {
+        return this.result.css;
+    }
+    get css() {
+        return this.result.css;
+    }
+    get map() {
+        return this.result.map;
+    }
+    get messages() {
+        return [];
+    }
+    get opts() {
+        return this.result.opts;
+    }
+    get processor() {
+        return this.result.processor;
+    }
+    get root() {
+        if (this._root) {
+            return this._root;
+        }
+        let root;
+        let parser = parse;
+        try {
+            root = parser(this._css, this._opts);
+        } catch (error) {
+            this.error = error;
+        }
+        if (this.error) {
+            throw this.error;
+        } else {
+            this._root = root;
+            return root;
+        }
+    }
+    get [Symbol.toStringTag]() {
+        return 'NoWorkResult';
+    }
 }
 module.exports = NoWorkResult;
 NoWorkResult.default = NoWorkResult;
@@ -6563,7 +6532,7 @@ let NoWorkResult = __turbopack_context__.r("[project]/saas-core/node_modules/pos
 let Root = __turbopack_context__.r("[project]/saas-core/node_modules/postcss/lib/root.js [postcss] (ecmascript)");
 class Processor {
     constructor(plugins = []){
-        this.version = '8.5.6';
+        this.version = '8.4.49';
         this.plugins = this.normalize(plugins);
     }
     normalize(plugins) {
