@@ -1,4 +1,5 @@
 {
   "/login/page": "app/login/page.js",
-  "/api/auth/magic-link/route": "app/api/auth/magic-link/route.js"
+  "/api/auth/magic-link/route": "app/api/auth/magic-link/route.js",
+  "/api/auth/verify/route": "app/api/auth/verify/route.js"
 }
