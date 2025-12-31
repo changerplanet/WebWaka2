@@ -1,10 +1,1 @@
-{
-  "/login/page": "app/login/page.js",
-  "/api/auth/magic-link/route": "app/api/auth/magic-link/route.js",
-  "/api/auth/verify/route": "app/api/auth/verify/route.js",
-  "/page": "app/page.js",
-  "/api/tenants/route": "app/api/tenants/route.js",
-  "/admin/page": "app/admin/page.js",
-  "/api/admin/tenants/route": "app/api/admin/tenants/route.js",
-  "/api/auth/session/route": "app/api/auth/session/route.js"
-}
+{}
