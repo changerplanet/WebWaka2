@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import { Building2, Users, Settings, LayoutDashboard, LogOut, ChevronRight, Activity, TrendingUp, Bell, UserCircle } from 'lucide-react'
+import { OfflineStatusBar } from '@/components/OfflineStatus'
 
 interface TenantBranding {
   appName: string
