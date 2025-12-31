@@ -75,7 +75,7 @@ export async function POST(request: NextRequest) {
     
     // Test 1: Query without tenant context (should fail)
     try {
-      await withTenantContext(
+      await withTenantContextAsync(
         { tenantId: null, userId: null, isSuperAdmin: false },
         async () => {
           await prisma.tenantMembership.findMany()
@@ -92,7 +92,7 @@ export async function POST(request: NextRequest) {
     
     // Test 2: Query with wrong tenantId filter (should fail)
     try {
-      await withTenantContext(
+      await withTenantContextAsync(
         { tenantId: tenant1.id, userId: 'test', isSuperAdmin: false },
         async () => {
           // Trying to query tenant2's data while context is tenant1
@@ -112,7 +112,7 @@ export async function POST(request: NextRequest) {
     
     // Test 3: Query with correct tenantId (should succeed)
     try {
-      await withTenantContext(
+      await withTenantContextAsync(
         { tenantId: tenant1.id, userId: 'test', isSuperAdmin: false },
         async () => {
           await prisma.tenantMembership.findMany({
@@ -127,7 +127,7 @@ export async function POST(request: NextRequest) {
     
     // Test 4: Super admin can query across tenants
     try {
-      await withTenantContext(
+      await withTenantContextAsync(
         { tenantId: null, userId: authResult.user.id, isSuperAdmin: true },
         async () => {
           await prisma.tenantMembership.findMany()
@@ -140,7 +140,7 @@ export async function POST(request: NextRequest) {
     
     // Test 5: Bypass without super admin (should fail)
     try {
-      await withTenantContext(
+      await withTenantContextAsync(
         { tenantId: tenant1.id, userId: 'test', isSuperAdmin: false, bypassIsolation: true },
         async () => {
           await prisma.tenantMembership.findMany()
@@ -157,7 +157,7 @@ export async function POST(request: NextRequest) {
     
     // Test 6: Super admin explicit bypass (should succeed)
     try {
-      await withTenantContext(
+      await withTenantContextAsync(
         { tenantId: null, userId: authResult.user.id, isSuperAdmin: true, bypassIsolation: true },
         async () => {
           await prisma.tenantMembership.findMany()
@@ -170,7 +170,7 @@ export async function POST(request: NextRequest) {
     
     // Test 7: Global model (User) should work without tenant context
     try {
-      await withTenantContext(
+      await withTenantContextAsync(
         { tenantId: null, userId: null, isSuperAdmin: false },
         async () => {
           await prisma.user.findMany({ take: 1 })
