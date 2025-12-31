@@ -3,23 +3,25 @@
 import { useState } from 'react'
 import { Palette, Save, Loader2, Upload, Eye, RotateCcw } from 'lucide-react'
 
-interface TenantSettings {
+interface BrandingConfig {
+  appName: string
+  logoUrl: string | null
+  faviconUrl: string | null
+  primaryColor: string
+  secondaryColor: string
+}
+
+interface TenantSettingsPartial {
   id: string
   name: string
   slug: string
-  branding: {
-    appName: string
-    logoUrl: string | null
-    faviconUrl: string | null
-    primaryColor: string
-    secondaryColor: string
-  }
+  branding: BrandingConfig
 }
 
 interface BrandingSettingsProps {
-  settings: TenantSettings
+  settings: TenantSettingsPartial
   tenantSlug: string
-  onUpdate: (settings: TenantSettings) => void
+  onUpdate: (branding: BrandingConfig) => void
 }
 
 export function BrandingSettings({ settings, tenantSlug, onUpdate }: BrandingSettingsProps) {
