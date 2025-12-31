@@ -1,5 +1,5 @@
 from fastapi import FastAPI, Request
-from fastapi.responses import JSONResponse, RedirectResponse, Response
+from fastapi.responses import JSONResponse, Response
 import httpx
 
 app = FastAPI()
@@ -34,10 +34,36 @@ async def proxy_to_nextjs(request: Request, path: str):
                 timeout=30.0
             )
             
-            # Handle redirects - return them to the client
+            # Build response headers
+            resp_headers = {
+                "Access-Control-Allow-Origin": "*",
+                "Access-Control-Allow-Methods": "*",
+                "Access-Control-Allow-Headers": "*"
+            }
+            
+            # Forward Set-Cookie headers
+            if "set-cookie" in response.headers:
+                resp_headers["set-cookie"] = response.headers["set-cookie"]
+            
+            # Handle redirects - return them to the client with cookies
             if response.status_code in [301, 302, 303, 307, 308]:
                 location = response.headers.get("location", "/")
-                return RedirectResponse(url=location, status_code=response.status_code)
+                
+                # Create redirect response
+                redirect_resp = Response(
+                    content=None,
+                    status_code=response.status_code,
+                    headers={
+                        "location": location,
+                        **resp_headers
+                    }
+                )
+                
+                # Copy all Set-Cookie headers
+                for cookie in response.headers.get_list("set-cookie"):
+                    redirect_resp.headers.append("set-cookie", cookie)
+                
+                return redirect_resp
             
             # Handle JSON responses
             content_type = response.headers.get("content-type", "")
@@ -45,11 +71,7 @@ async def proxy_to_nextjs(request: Request, path: str):
                 return JSONResponse(
                     content=response.json(),
                     status_code=response.status_code,
-                    headers={
-                        "Access-Control-Allow-Origin": "*",
-                        "Access-Control-Allow-Methods": "*",
-                        "Access-Control-Allow-Headers": "*"
-                    }
+                    headers=resp_headers
                 )
             
             # Handle other responses (HTML, etc.)
@@ -57,11 +79,7 @@ async def proxy_to_nextjs(request: Request, path: str):
                 content=response.content,
                 status_code=response.status_code,
                 media_type=content_type,
-                headers={
-                    "Access-Control-Allow-Origin": "*",
-                    "Access-Control-Allow-Methods": "*",
-                    "Access-Control-Allow-Headers": "*"
-                }
+                headers=resp_headers
             )
             
     except httpx.HTTPError as e:
