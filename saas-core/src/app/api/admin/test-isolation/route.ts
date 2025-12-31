@@ -1,5 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { prisma, withIsolatedContext, TenantIsolationError, getViolationLogs, clearViolationLogs } from '@/lib/prisma'
+import { 
+  prisma, 
+  validateTenantAccess, 
+  createTenantContext,
+  TenantIsolationError, 
+  getViolationLogs, 
+  clearViolationLogs,
+  withTenantFilter
+} from '@/lib/prisma'
 import { requireSuperAdmin } from '@/lib/authorization'
 
 /**
@@ -72,12 +80,9 @@ export async function POST(request: NextRequest) {
     
     // Test 1: Query without tenant context (should fail)
     try {
-      await withIsolatedContext(
-        { tenantId: null, userId: null, isSuperAdmin: false },
-        async () => {
-          await prisma.tenantMembership.findMany()
-        }
-      )
+      const noContext = null
+      validateTenantAccess('TenantMembership', 'findMany', noContext)
+      await prisma.tenantMembership.findMany()
       results.push({ test: 'Query without tenant context', passed: false, error: 'Should have thrown' })
     } catch (e) {
       if (e instanceof TenantIsolationError) {
@@ -87,17 +92,11 @@ export async function POST(request: NextRequest) {
       }
     }
     
-    // Test 2: Query with wrong tenantId filter (should fail)
+    // Test 2: Query with wrong tenantId filter (should fail) - Cross-tenant access
     try {
-      await withIsolatedContext(
-        { tenantId: tenant1.id, userId: 'test', isSuperAdmin: false },
-        async () => {
-          // Trying to query tenant2's data while context is tenant1
-          await prisma.tenantMembership.findMany({
-            where: { tenantId: tenant2.id }
-          })
-        }
-      )
+      const context1 = createTenantContext(tenant1.id, 'test-user', false)
+      // Trying to query tenant2's data while context is tenant1
+      validateTenantAccess('TenantMembership', 'findMany', context1, tenant2.id)
       results.push({ test: 'Cross-tenant query attempt', passed: false, error: 'Should have thrown' })
     } catch (e) {
       if (e instanceof TenantIsolationError) {
@@ -109,14 +108,11 @@ export async function POST(request: NextRequest) {
     
     // Test 3: Query with correct tenantId (should succeed)
     try {
-      await withIsolatedContext(
-        { tenantId: tenant1.id, userId: 'test', isSuperAdmin: false },
-        async () => {
-          await prisma.tenantMembership.findMany({
-            where: { tenantId: tenant1.id }
-          })
-        }
-      )
+      const context1 = createTenantContext(tenant1.id, 'test-user', false)
+      validateTenantAccess('TenantMembership', 'findMany', context1, tenant1.id)
+      await prisma.tenantMembership.findMany({
+        where: withTenantFilter({}, tenant1.id)
+      })
       results.push({ test: 'Valid tenant-scoped query', passed: true })
     } catch (e) {
       results.push({ test: 'Valid tenant-scoped query', passed: false, error: String(e) })
@@ -124,12 +120,9 @@ export async function POST(request: NextRequest) {
     
     // Test 4: Super admin can query across tenants
     try {
-      await withIsolatedContext(
-        { tenantId: null, userId: authResult.user.id, isSuperAdmin: true },
-        async () => {
-          await prisma.tenantMembership.findMany()
-        }
-      )
+      const superAdminContext = createTenantContext(null, authResult.user.id, true)
+      validateTenantAccess('TenantMembership', 'findMany', superAdminContext)
+      await prisma.tenantMembership.findMany()
       results.push({ test: 'Super admin cross-tenant query', passed: true })
     } catch (e) {
       results.push({ test: 'Super admin cross-tenant query', passed: false, error: String(e) })
@@ -137,12 +130,8 @@ export async function POST(request: NextRequest) {
     
     // Test 5: Bypass without super admin (should fail)
     try {
-      await withIsolatedContext(
-        { tenantId: tenant1.id, userId: 'test', isSuperAdmin: false, bypassIsolation: true },
-        async () => {
-          await prisma.tenantMembership.findMany()
-        }
-      )
+      const bypassAttempt = createTenantContext(tenant1.id, 'test-user', false, true) // bypassIsolation=true
+      validateTenantAccess('TenantMembership', 'findMany', bypassAttempt)
       results.push({ test: 'Non-admin bypass attempt', passed: false, error: 'Should have thrown' })
     } catch (e) {
       if (e instanceof TenantIsolationError) {
@@ -154,12 +143,9 @@ export async function POST(request: NextRequest) {
     
     // Test 6: Super admin explicit bypass (should succeed)
     try {
-      await withIsolatedContext(
-        { tenantId: null, userId: authResult.user.id, isSuperAdmin: true, bypassIsolation: true },
-        async () => {
-          await prisma.tenantMembership.findMany()
-        }
-      )
+      const superAdminBypass = createTenantContext(null, authResult.user.id, true, true)
+      validateTenantAccess('TenantMembership', 'findMany', superAdminBypass)
+      await prisma.tenantMembership.findMany()
       results.push({ test: 'Super admin explicit bypass', passed: true })
     } catch (e) {
       results.push({ test: 'Super admin explicit bypass', passed: false, error: String(e) })
@@ -167,15 +153,24 @@ export async function POST(request: NextRequest) {
     
     // Test 7: Global model (User) should work without tenant context
     try {
-      await withIsolatedContext(
-        { tenantId: null, userId: null, isSuperAdmin: false },
-        async () => {
-          await prisma.user.findMany({ take: 1 })
-        }
-      )
+      validateTenantAccess('User', 'findMany', null)
+      await prisma.user.findMany({ take: 1 })
       results.push({ test: 'Global model query without context', passed: true })
     } catch (e) {
       results.push({ test: 'Global model query without context', passed: false, error: String(e) })
+    }
+    
+    // Test 8: Context with no tenantId (should fail for regular user)
+    try {
+      const noTenantContext = createTenantContext(null, 'test-user', false)
+      validateTenantAccess('TenantMembership', 'findMany', noTenantContext)
+      results.push({ test: 'Regular user without tenantId', passed: false, error: 'Should have thrown' })
+    } catch (e) {
+      if (e instanceof TenantIsolationError) {
+        results.push({ test: 'Regular user without tenantId', passed: true })
+      } else {
+        results.push({ test: 'Regular user without tenantId', passed: false, error: String(e) })
+      }
     }
     
     const violations = getViolationLogs()
