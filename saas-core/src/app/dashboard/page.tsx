@@ -1,8 +1,8 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useSearchParams } from 'next/navigation'
-import { Building2, Users, Settings, LayoutDashboard, LogOut, ChevronRight, Activity, TrendingUp, Bell } from 'lucide-react'
+import { useSearchParams, useRouter } from 'next/navigation'
+import { Building2, Users, Settings, LayoutDashboard, LogOut, ChevronRight, Activity, TrendingUp, Bell, UserCircle } from 'lucide-react'
 
 interface TenantBranding {
   appName: string
@@ -20,13 +20,27 @@ interface Tenant {
   branding: TenantBranding | null
 }
 
+interface SessionUser {
+  id: string
+  email: string
+  name: string | null
+  globalRole: string
+  memberships: { tenantId: string; tenantSlug: string; role: string }[]
+}
+
 export default function TenantDashboard() {
   const searchParams = useSearchParams()
+  const router = useRouter()
   const [tenant, setTenant] = useState<Tenant | null>(null)
+  const [user, setUser] = useState<SessionUser | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
   const tenantSlug = searchParams.get('tenant')
+
+  useEffect(() => {
+    fetchSession()
+  }, [])
 
   useEffect(() => {
     if (tenantSlug) {
@@ -36,6 +50,23 @@ export default function TenantDashboard() {
       setError('No tenant specified. Use ?tenant=slug to view a tenant dashboard.')
     }
   }, [tenantSlug])
+
+  async function fetchSession() {
+    try {
+      const res = await fetch('/api/auth/session')
+      const data = await res.json()
+      if (data.authenticated && data.user) {
+        setUser(data.user)
+      }
+    } catch (err) {
+      console.error('Failed to fetch session:', err)
+    }
+  }
+
+  async function handleLogout() {
+    await fetch('/api/auth/logout', { method: 'POST' })
+    router.push('/login')
+  }
 
   async function fetchTenant(slug: string) {
     try {
