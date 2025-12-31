@@ -90,14 +90,43 @@ export default function LoginPage() {
               <div className="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-4">
                 <Check className="w-8 h-8 text-green-600" />
               </div>
-              <h2 className="text-xl font-semibold text-slate-900 mb-2">Check your email</h2>
+              <h2 className="text-xl font-semibold text-slate-900 mb-2">
+                {magicLink ? 'Magic Link Ready' : 'Check your email'}
+              </h2>
               <p className="text-slate-600 mb-6">
-                We sent a magic link to <strong>{email}</strong>. Click the link to sign in.
+                {magicLink 
+                  ? 'Click the button below to sign in, or check your email.'
+                  : <>We sent a magic link to <strong>{email}</strong>. Click the link to sign in.</>
+                }
               </p>
+              
+              {/* Show magic link button for testing */}
+              {magicLink && (
+                <div className="space-y-3 mb-6">
+                  <a
+                    href={magicLink}
+                    className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-indigo-600 text-white font-medium rounded-xl hover:bg-indigo-700 transition"
+                  >
+                    <ExternalLink className="w-5 h-5" />
+                    Sign In Now
+                  </a>
+                  <button
+                    onClick={copyMagicLink}
+                    className="w-full flex items-center justify-center gap-2 px-4 py-3 border border-slate-200 text-slate-700 font-medium rounded-xl hover:bg-slate-50 transition"
+                  >
+                    <Copy className="w-4 h-4" />
+                    {copied ? 'Copied!' : 'Copy Link'}
+                  </button>
+                  <p className="text-xs text-amber-600 bg-amber-50 p-2 rounded-lg">
+                    ⚠️ Dev Mode: Email sending requires a verified domain in Resend
+                  </p>
+                </div>
+              )}
+              
               <p className="text-sm text-slate-500">
                 Didn't receive it?{' '}
                 <button
-                  onClick={() => { setSent(false); setError(null) }}
+                  onClick={() => { setSent(false); setError(null); setMagicLink(null) }}
                   className="text-indigo-600 hover:text-indigo-700 font-medium"
                 >
                   Try again
