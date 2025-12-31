@@ -1,8 +1,9 @@
 import { prisma } from './prisma'
-import { v4 as uuidv4 } from 'uuid'
 import { AuditAction } from '@prisma/client'
+import { v4 as uuidv4 } from 'uuid'
+import { headers } from 'next/headers'
 
-interface AuditLogParams {
+interface AuditLogInput {
   action: AuditAction
   actorId: string
   actorEmail: string
@@ -10,69 +11,60 @@ interface AuditLogParams {
   targetType?: string
   targetId?: string
   metadata?: Record<string, any>
-  ipAddress?: string
-  userAgent?: string
 }
 
 /**
  * Create an audit log entry
  */
-export async function createAuditLog(params: AuditLogParams): Promise<void> {
+export async function createAuditLog(input: AuditLogInput): Promise<void> {
   try {
+    const headersList = await headers()
+    const ipAddress = headersList.get('x-forwarded-for') || headersList.get('x-real-ip') || 'unknown'
+    const userAgent = headersList.get('user-agent') || 'unknown'
+    
     await prisma.auditLog.create({
       data: {
         id: uuidv4(),
-        action: params.action,
-        actorId: params.actorId,
-        actorEmail: params.actorEmail,
-        tenantId: params.tenantId || null,
-        targetType: params.targetType || null,
-        targetId: params.targetId || null,
-        metadata: params.metadata || null,
-        ipAddress: params.ipAddress || null,
-        userAgent: params.userAgent || null
+        action: input.action,
+        actorId: input.actorId,
+        actorEmail: input.actorEmail,
+        tenantId: input.tenantId || null,
+        targetType: input.targetType || null,
+        targetId: input.targetId || null,
+        metadata: input.metadata || null,
+        ipAddress,
+        userAgent
       }
     })
   } catch (error) {
-    // Don't fail the request if audit logging fails
     console.error('Failed to create audit log:', error)
+    // Don't throw - audit logging should not break operations
   }
 }
 
 /**
- * Get audit logs with filtering
+ * Get audit logs for a tenant
  */
 export async function getAuditLogs(options: {
   tenantId?: string
   actorId?: string
   action?: AuditAction
-  targetType?: string
-  targetId?: string
-  startDate?: Date
-  endDate?: Date
   limit?: number
   offset?: number
 }) {
+  const { tenantId, actorId, action, limit = 50, offset = 0 } = options
+  
   const where: any = {}
-  
-  if (options.tenantId) where.tenantId = options.tenantId
-  if (options.actorId) where.actorId = options.actorId
-  if (options.action) where.action = options.action
-  if (options.targetType) where.targetType = options.targetType
-  if (options.targetId) where.targetId = options.targetId
-  
-  if (options.startDate || options.endDate) {
-    where.createdAt = {}
-    if (options.startDate) where.createdAt.gte = options.startDate
-    if (options.endDate) where.createdAt.lte = options.endDate
-  }
+  if (tenantId) where.tenantId = tenantId
+  if (actorId) where.actorId = actorId
+  if (action) where.action = action
   
   const [logs, total] = await Promise.all([
     prisma.auditLog.findMany({
       where,
       orderBy: { createdAt: 'desc' },
-      take: options.limit || 50,
-      skip: options.offset || 0
+      take: limit,
+      skip: offset
     }),
     prisma.auditLog.count({ where })
   ])

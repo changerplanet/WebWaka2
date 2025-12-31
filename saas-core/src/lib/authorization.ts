@@ -1,62 +1,17 @@
-import { User, GlobalRole, TenantRole, TenantMembership, Tenant } from '@prisma/client'
-import { prisma } from './prisma'
 import { getCurrentSession, AuthSession } from './auth'
+import { prisma } from './prisma'
+import { User, TenantRole } from '@prisma/client'
 
-export type UserWithMemberships = User & {
-  memberships: (TenantMembership & {
-    tenant: Tenant
-  })[]
-}
-
-/**
- * Check if user is a Super Admin
- */
-export function isSuperAdmin(user: User | UserWithMemberships): boolean {
-  return user.globalRole === 'SUPER_ADMIN'
-}
-
-/**
- * Check if user is a Tenant Admin for a specific tenant
- */
-export function isTenantAdmin(
-  user: UserWithMemberships,
-  tenantId: string
-): boolean {
-  const membership = user.memberships.find(m => m.tenantId === tenantId)
-  return membership?.role === 'TENANT_ADMIN' && membership.isActive
-}
-
-/**
- * Check if user is a member of a specific tenant
- */
-export function isTenantMember(
-  user: UserWithMemberships,
-  tenantId: string
-): boolean {
-  const membership = user.memberships.find(m => m.tenantId === tenantId)
-  return !!membership && membership.isActive
-}
-
-/**
- * Get user's role in a specific tenant
- */
-export function getTenantRole(
-  user: UserWithMemberships,
-  tenantId: string
-): TenantRole | null {
-  const membership = user.memberships.find(m => m.tenantId === tenantId && m.isActive)
-  return membership?.role || null
-}
-
-/**
- * Authorization result type
- */
 export type AuthorizationResult = 
-  | { authorized: true; user: UserWithMemberships; session: AuthSession }
+  | { authorized: true; user: User; session: AuthSession }
+  | { authorized: false; error: string; status: number }
+
+export type TenantAuthorizationResult = 
+  | { authorized: true; user: User; session: AuthSession; role: TenantRole; tenantId: string }
   | { authorized: false; error: string; status: number }
 
 /**
- * Require authentication (any logged-in user)
+ * Require any authenticated user
  */
 export async function requireAuth(): Promise<AuthorizationResult> {
   const session = await getCurrentSession()
@@ -72,21 +27,20 @@ export async function requireAuth(): Promise<AuthorizationResult> {
   if (!session.user.isActive) {
     return {
       authorized: false,
-      error: 'Account is deactivated',
+      error: 'Account is disabled',
       status: 403
     }
   }
   
   return {
     authorized: true,
-    user: session.user as UserWithMemberships,
+    user: session.user,
     session
   }
 }
 
 /**
  * Require Super Admin role
- * Used for /admin routes
  */
 export async function requireSuperAdmin(): Promise<AuthorizationResult> {
   const authResult = await requireAuth()
@@ -95,7 +49,7 @@ export async function requireSuperAdmin(): Promise<AuthorizationResult> {
     return authResult
   }
   
-  if (!isSuperAdmin(authResult.user)) {
+  if (authResult.user.globalRole !== 'SUPER_ADMIN') {
     return {
       authorized: false,
       error: 'Super Admin access required',
@@ -109,20 +63,36 @@ export async function requireSuperAdmin(): Promise<AuthorizationResult> {
 /**
  * Require Tenant Admin role for a specific tenant
  */
-export async function requireTenantAdmin(tenantId: string): Promise<AuthorizationResult> {
+export async function requireTenantAdmin(tenantId: string): Promise<TenantAuthorizationResult> {
   const authResult = await requireAuth()
   
   if (!authResult.authorized) {
     return authResult
   }
   
-  // Super Admin can access any tenant
-  if (isSuperAdmin(authResult.user)) {
-    return authResult
+  // Super admins can access any tenant as admin
+  if (authResult.user.globalRole === 'SUPER_ADMIN') {
+    return {
+      ...authResult,
+      role: 'TENANT_ADMIN',
+      tenantId
+    }
   }
   
-  // Check tenant admin role
-  if (!isTenantAdmin(authResult.user, tenantId)) {
+  // Check tenant membership
+  const membership = authResult.session.user.memberships.find(
+    m => m.tenantId === tenantId && m.isActive
+  )
+  
+  if (!membership) {
+    return {
+      authorized: false,
+      error: 'Not a member of this tenant',
+      status: 403
+    }
+  }
+  
+  if (membership.role !== 'TENANT_ADMIN') {
     return {
       authorized: false,
       error: 'Tenant Admin access required',
@@ -130,57 +100,106 @@ export async function requireTenantAdmin(tenantId: string): Promise<Authorizatio
     }
   }
   
-  return authResult
+  return {
+    ...authResult,
+    role: membership.role,
+    tenantId
+  }
 }
 
 /**
- * Require membership in a specific tenant
+ * Require membership in a tenant (any role)
  */
-export async function requireTenantMember(tenantId: string): Promise<AuthorizationResult> {
+export async function requireTenantMember(tenantId: string): Promise<TenantAuthorizationResult> {
   const authResult = await requireAuth()
   
   if (!authResult.authorized) {
     return authResult
   }
   
-  // Super Admin can access any tenant
-  if (isSuperAdmin(authResult.user)) {
-    return authResult
+  // Super admins can access any tenant
+  if (authResult.user.globalRole === 'SUPER_ADMIN') {
+    return {
+      ...authResult,
+      role: 'TENANT_ADMIN',
+      tenantId
+    }
   }
   
   // Check tenant membership
-  if (!isTenantMember(authResult.user, tenantId)) {
+  const membership = authResult.session.user.memberships.find(
+    m => m.tenantId === tenantId && m.isActive
+  )
+  
+  if (!membership) {
     return {
       authorized: false,
-      error: 'Tenant membership required',
+      error: 'Not a member of this tenant',
       status: 403
     }
   }
   
-  return authResult
+  return {
+    ...authResult,
+    role: membership.role,
+    tenantId
+  }
 }
 
 /**
- * Check if current user can access a tenant
- * Super Admins can access any tenant
- * Regular users need membership
+ * Get tenant from slug and authorize
  */
-export async function canAccessTenant(
-  userId: string,
-  tenantId: string
-): Promise<boolean> {
-  const user = await prisma.user.findUnique({
-    where: { id: userId },
-    include: { memberships: true }
+export async function requireTenantAdminBySlug(slug: string): Promise<TenantAuthorizationResult & { tenant?: any }> {
+  const tenant = await prisma.tenant.findUnique({
+    where: { slug },
+    include: { domains: true }
   })
   
-  if (!user) return false
+  if (!tenant) {
+    return {
+      authorized: false,
+      error: 'Tenant not found',
+      status: 404
+    }
+  }
   
-  // Super Admin can access any tenant
-  if (user.globalRole === 'SUPER_ADMIN') return true
+  const authResult = await requireTenantAdmin(tenant.id)
   
-  // Check membership
-  return user.memberships.some(
-    m => m.tenantId === tenantId && m.isActive
-  )
+  if (!authResult.authorized) {
+    return authResult
+  }
+  
+  return {
+    ...authResult,
+    tenant
+  }
+}
+
+/**
+ * Get tenant from slug and authorize as member
+ */
+export async function requireTenantMemberBySlug(slug: string): Promise<TenantAuthorizationResult & { tenant?: any }> {
+  const tenant = await prisma.tenant.findUnique({
+    where: { slug },
+    include: { domains: true }
+  })
+  
+  if (!tenant) {
+    return {
+      authorized: false,
+      error: 'Tenant not found',
+      status: 404
+    }
+  }
+  
+  const authResult = await requireTenantMember(tenant.id)
+  
+  if (!authResult.authorized) {
+    return authResult
+  }
+  
+  return {
+    ...authResult,
+    tenant
+  }
 }
