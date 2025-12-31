@@ -1,22 +1,23 @@
 /**
- * Tenant Isolation Enforcement
+ * Tenant Isolation Enforcement v2
  * 
  * This module provides strict tenant data isolation at the database level.
- * All queries to tenant-scoped models MUST include a tenantId filter.
+ * Uses request-scoped context via headers for Next.js compatibility.
  * 
  * Features:
  * - Prisma middleware to intercept and validate queries
- * - Automatic tenantId injection for scoped queries
+ * - Automatic tenantId validation for scoped queries
  * - SUPER_ADMIN bypass with explicit flag
  * - Violation logging and hard failure
  */
 
 import { Prisma, PrismaClient } from '@prisma/client'
+import { headers } from 'next/headers'
 
 // Models that require tenant isolation
 const TENANT_SCOPED_MODELS = [
   'TenantMembership',
-  'TenantDomain',
+  'TenantDomain', 
   'AuditLog',
   // Add future tenant-scoped models here:
   // 'Project', 'Task', 'Document', 'Invoice', etc.
@@ -33,48 +34,64 @@ const GLOBAL_MODELS = [
 // Actions that read data
 const READ_ACTIONS = ['findUnique', 'findFirst', 'findMany', 'count', 'aggregate', 'groupBy']
 
-// Actions that write data
+// Actions that write data  
 const WRITE_ACTIONS = ['create', 'createMany', 'update', 'updateMany', 'upsert', 'delete', 'deleteMany']
 
 export interface TenantContext {
   tenantId: string | null
   userId: string | null
   isSuperAdmin: boolean
-  bypassIsolation?: boolean // Explicit flag to bypass isolation (dangerous!)
+  bypassIsolation?: boolean
 }
 
-// AsyncLocalStorage for tenant context propagation
-import { AsyncLocalStorage } from 'async_hooks'
-export const tenantContextStorage = new AsyncLocalStorage<TenantContext>()
-
 /**
- * Get current tenant context from AsyncLocalStorage
+ * Request-scoped context storage
+ * Uses a Map keyed by request ID from headers
  */
-export function getCurrentTenantContext(): TenantContext | undefined {
-  return tenantContextStorage.getStore()
-}
+const requestContextMap = new Map<string, TenantContext>()
 
 /**
- * Run a function within a tenant context
+ * Set context for a request
  */
-export function withTenantContext<T>(context: TenantContext, fn: () => T): T {
-  return tenantContextStorage.run(context, fn)
+export function setRequestContext(requestId: string, context: TenantContext): void {
+  requestContextMap.set(requestId, context)
+  // Auto-cleanup after 30 seconds
+  setTimeout(() => requestContextMap.delete(requestId), 30000)
 }
 
 /**
- * Run an async function within a tenant context
+ * Get context for current request
  */
-export async function withTenantContextAsync<T>(context: TenantContext, fn: () => Promise<T>): Promise<T> {
-  return tenantContextStorage.run(context, fn)
+export function getRequestContext(requestId: string): TenantContext | undefined {
+  return requestContextMap.get(requestId)
 }
 
 /**
- * Violation logger - logs attempted isolation breaches
+ * Clear context for a request  
+ */
+export function clearRequestContext(requestId: string): void {
+  requestContextMap.delete(requestId)
+}
+
+// Current request ID for middleware (set per-request)
+let currentRequestId: string | null = null
+
+export function setCurrentRequestId(id: string | null): void {
+  currentRequestId = id
+}
+
+export function getCurrentRequestId(): string | null {
+  return currentRequestId
+}
+
+/**
+ * Violation logger
  */
 interface ViolationLog {
   timestamp: Date
   model: string
   action: string
+  requestId: string | null
   context: TenantContext | undefined
   query: any
   reason: string
@@ -91,12 +108,10 @@ export function logViolation(violation: Omit<ViolationLog, 'timestamp'>) {
   
   violations.push(log)
   
-  // Keep only last N violations
   if (violations.length > MAX_VIOLATION_LOGS) {
     violations.shift()
   }
   
-  // Also log to console/error tracking
   console.error('[TENANT ISOLATION VIOLATION]', JSON.stringify(log, null, 2))
 }
 
@@ -131,13 +146,31 @@ export function isTenantScopedModel(model: string): boolean {
 }
 
 /**
+ * Check if WHERE clause has tenantId filter matching expected value
+ */
+function hasTenantIdFilter(where: any, expectedTenantId: string): boolean {
+  if (!where) return false
+  
+  if (where.tenantId === expectedTenantId) return true
+  
+  if (Array.isArray(where.AND)) {
+    return where.AND.some((clause: any) => hasTenantIdFilter(clause, expectedTenantId))
+  }
+  
+  if (where.tenantId?.equals === expectedTenantId) return true
+  
+  return false
+}
+
+/**
  * Validate that a query has proper tenant isolation
  */
 function validateTenantIsolation(
   model: string,
   action: string,
   args: any,
-  context: TenantContext | undefined
+  context: TenantContext | undefined,
+  requestId: string | null
 ): void {
   // Skip validation for global models
   if (!isTenantScopedModel(model)) {
@@ -148,31 +181,29 @@ function validateTenantIsolation(
   if (context?.bypassIsolation === true) {
     if (!context.isSuperAdmin) {
       const reason = 'Bypass isolation attempted without SUPER_ADMIN role'
-      logViolation({ model, action, context, query: args, reason })
+      logViolation({ model, action, requestId, context, query: args, reason })
       throw new TenantIsolationError(reason, model, action, context)
     }
     console.warn(`[TENANT ISOLATION] Bypass allowed for SUPER_ADMIN on ${model}.${action}`)
     return
   }
   
-  // SUPER_ADMIN can access all data (without bypass flag, they still need tenantId in WHERE)
-  // But they can query across tenants
+  // SUPER_ADMIN can access all data
   if (context?.isSuperAdmin) {
-    // Super admins can query without tenantId for listing/management
     return
   }
   
   // No context = violation
   if (!context) {
     const reason = 'No tenant context provided for tenant-scoped query'
-    logViolation({ model, action, context, query: args, reason })
+    logViolation({ model, action, requestId, context, query: args, reason })
     throw new TenantIsolationError(reason, model, action, context)
   }
   
   // No tenantId in context = violation
   if (!context.tenantId) {
     const reason = 'No tenantId in context for tenant-scoped query'
-    logViolation({ model, action, context, query: args, reason })
+    logViolation({ model, action, requestId, context, query: args, reason })
     throw new TenantIsolationError(reason, model, action, context)
   }
   
@@ -181,7 +212,7 @@ function validateTenantIsolation(
     const where = args?.where
     if (!where || !hasTenantIdFilter(where, context.tenantId)) {
       const reason = `Read query on ${model} missing tenantId filter`
-      logViolation({ model, action, context, query: args, reason })
+      logViolation({ model, action, requestId, context, query: args, reason })
       throw new TenantIsolationError(reason, model, action, context)
     }
   }
@@ -193,17 +224,17 @@ function validateTenantIsolation(
       for (const item of data || []) {
         if (item && item.tenantId !== context.tenantId) {
           const reason = `Create on ${model} has mismatched tenantId`
-          logViolation({ model, action, context, query: args, reason })
+          logViolation({ model, action, requestId, context, query: args, reason })
           throw new TenantIsolationError(reason, model, action, context)
         }
       }
     }
     
-    if (action === 'update' || action === 'updateMany' || action === 'delete' || action === 'deleteMany') {
+    if (['update', 'updateMany', 'delete', 'deleteMany'].includes(action)) {
       const where = args?.where
       if (!where || !hasTenantIdFilter(where, context.tenantId)) {
         const reason = `${action} on ${model} missing tenantId filter`
-        logViolation({ model, action, context, query: args, reason })
+        logViolation({ model, action, requestId, context, query: args, reason })
         throw new TenantIsolationError(reason, model, action, context)
       }
     }
@@ -211,41 +242,20 @@ function validateTenantIsolation(
     if (action === 'upsert') {
       const where = args?.where
       const create = args?.create
-      const update = args?.update
       
       if (!where || !hasTenantIdFilter(where, context.tenantId)) {
         const reason = `Upsert on ${model} missing tenantId filter in WHERE`
-        logViolation({ model, action, context, query: args, reason })
+        logViolation({ model, action, requestId, context, query: args, reason })
         throw new TenantIsolationError(reason, model, action, context)
       }
       
       if (create && create.tenantId !== context.tenantId) {
         const reason = `Upsert on ${model} has mismatched tenantId in CREATE`
-        logViolation({ model, action, context, query: args, reason })
+        logViolation({ model, action, requestId, context, query: args, reason })
         throw new TenantIsolationError(reason, model, action, context)
       }
     }
   }
-}
-
-/**
- * Check if WHERE clause has tenantId filter matching expected value
- */
-function hasTenantIdFilter(where: any, expectedTenantId: string): boolean {
-  if (!where) return false
-  
-  // Direct tenantId match
-  if (where.tenantId === expectedTenantId) return true
-  
-  // Nested in AND
-  if (Array.isArray(where.AND)) {
-    return where.AND.some((clause: any) => hasTenantIdFilter(clause, expectedTenantId))
-  }
-  
-  // Object-style tenantId with equals
-  if (where.tenantId?.equals === expectedTenantId) return true
-  
-  return false
 }
 
 /**
@@ -259,12 +269,32 @@ export function createTenantIsolationMiddleware(): Prisma.Middleware {
       return next(params)
     }
     
-    const context = getCurrentTenantContext()
+    const requestId = getCurrentRequestId()
+    const context = requestId ? getRequestContext(requestId) : undefined
     
     // Validate tenant isolation
-    validateTenantIsolation(model, action, args, context)
+    validateTenantIsolation(model, action, args, context, requestId)
     
     return next(params)
+  }
+}
+
+/**
+ * Execute a function with tenant context
+ */
+export async function withIsolatedContext<T>(
+  context: TenantContext,
+  fn: () => Promise<T>
+): Promise<T> {
+  const requestId = `isolated-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
+  
+  try {
+    setRequestContext(requestId, context)
+    setCurrentRequestId(requestId)
+    return await fn()
+  } finally {
+    clearRequestContext(requestId)
+    setCurrentRequestId(null)
   }
 }
 
@@ -279,7 +309,6 @@ export function createTenantScopedClient(
     query: {
       $allOperations({ model, operation, args, query }) {
         if (model && isTenantScopedModel(model)) {
-          // Auto-inject tenantId for tenant-scoped models
           if (READ_ACTIONS.includes(operation)) {
             args.where = {
               ...args.where,
