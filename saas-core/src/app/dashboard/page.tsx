@@ -132,19 +132,39 @@ export default function TenantDashboard() {
         <nav className="p-4">
           <ul className="space-y-2">
             {[
-              { icon: LayoutDashboard, label: 'Dashboard', active: true },
-              { icon: Users, label: 'Users' },
-              { icon: Activity, label: 'Analytics' },
-              { icon: Bell, label: 'Notifications' },
-              { icon: Settings, label: 'Settings' },
-            ].map((item, i) => (
+              { icon: LayoutDashboard, label: 'Dashboard', active: true, href: null },
+              { icon: Users, label: 'Users', active: false, href: null },
+              { icon: Activity, label: 'Analytics', active: false, href: null },
+              { icon: Bell, label: 'Notifications', active: false, href: null },
+              { icon: Settings, label: 'Settings', active: false, href: `/dashboard/settings?tenant=${tenant?.slug}`, adminOnly: true },
+            ].filter(item => {
+              // Filter admin-only items based on role
+              if (item.adminOnly) {
+                const isAdmin = user?.globalRole === 'SUPER_ADMIN' || 
+                  user?.memberships?.some(m => m.tenantSlug === tenant?.slug && m.role === 'TENANT_ADMIN')
+                return isAdmin
+              }
+              return true
+            }).map((item, i) => (
               <li key={i}>
-                <button className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition ${
-                  item.active ? 'bg-white/20' : 'hover:bg-white/10'
-                }`}>
-                  <item.icon className="w-5 h-5" />
-                  {item.label}
-                </button>
+                {item.href ? (
+                  <a 
+                    href={item.href}
+                    className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition ${
+                      item.active ? 'bg-white/20' : 'hover:bg-white/10'
+                    }`}
+                  >
+                    <item.icon className="w-5 h-5" />
+                    {item.label}
+                  </a>
+                ) : (
+                  <button className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition ${
+                    item.active ? 'bg-white/20' : 'hover:bg-white/10'
+                  }`}>
+                    <item.icon className="w-5 h-5" />
+                    {item.label}
+                  </button>
+                )}
               </li>
             ))}
           </ul>
