@@ -4,13 +4,23 @@ import { cookies } from 'next/headers'
 
 const SESSION_EXPIRY_DAYS = 7
 
+function getBaseUrl(request: NextRequest): string {
+  // Try environment variable first
+  if (process.env.NEXT_PUBLIC_APP_URL) {
+    return process.env.NEXT_PUBLIC_APP_URL
+  }
+  // Fall back to request origin
+  const url = new URL(request.url)
+  return `${url.protocol}//${url.host}`
+}
+
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)
     const token = searchParams.get('token')
     
-    // Get the base URL from environment
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://tenanthub-3.preview.emergentagent.com'
+    // Get the base URL dynamically
+    const baseUrl = getBaseUrl(request)
     
     if (!token) {
       return NextResponse.redirect(new URL('/login?error=missing_token', baseUrl))
