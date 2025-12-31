@@ -1,5 +1,5 @@
 from fastapi import FastAPI, Request
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, RedirectResponse, Response
 import httpx
 
 app = FastAPI()
@@ -10,7 +10,7 @@ NEXTJS_URL = "http://localhost:3000"
 async def proxy_to_nextjs(request: Request, path: str):
     """Proxy all requests to Next.js"""
     try:
-        async with httpx.AsyncClient() as client:
+        async with httpx.AsyncClient(follow_redirects=False) as client:
             # Build the target URL
             url = f"{NEXTJS_URL}/{path}"
             if request.query_params:
@@ -34,16 +34,36 @@ async def proxy_to_nextjs(request: Request, path: str):
                 timeout=30.0
             )
             
-            # Return the response
-            return JSONResponse(
-                content=response.json() if response.headers.get("content-type", "").startswith("application/json") else {"message": response.text},
+            # Handle redirects - return them to the client
+            if response.status_code in [301, 302, 303, 307, 308]:
+                location = response.headers.get("location", "/")
+                return RedirectResponse(url=location, status_code=response.status_code)
+            
+            # Handle JSON responses
+            content_type = response.headers.get("content-type", "")
+            if "application/json" in content_type:
+                return JSONResponse(
+                    content=response.json(),
+                    status_code=response.status_code,
+                    headers={
+                        "Access-Control-Allow-Origin": "*",
+                        "Access-Control-Allow-Methods": "*",
+                        "Access-Control-Allow-Headers": "*"
+                    }
+                )
+            
+            # Handle other responses (HTML, etc.)
+            return Response(
+                content=response.content,
                 status_code=response.status_code,
+                media_type=content_type,
                 headers={
                     "Access-Control-Allow-Origin": "*",
                     "Access-Control-Allow-Methods": "*",
                     "Access-Control-Allow-Headers": "*"
                 }
             )
+            
     except httpx.HTTPError as e:
         return JSONResponse(
             content={"error": f"Proxy error: {str(e)}"},
