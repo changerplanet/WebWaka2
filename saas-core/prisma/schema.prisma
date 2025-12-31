@@ -1,0 +1,107 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// ================================
+// TENANT (Organization)
+// ================================
+model Tenant {
+  id          String   @id @default(uuid())
+  name        String
+  slug        String   @unique // subdomain identifier (e.g., "acme" for acme.app.com)
+  customDomain String? @unique // custom domain (e.g., "app.acme.com")
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  branding    TenantBranding?
+  users       User[]
+  magicLinks  MagicLink[]
+
+  @@index([slug])
+  @@index([customDomain])
+}
+
+// ================================
+// TENANT BRANDING (White-Label)
+// ================================
+model TenantBranding {
+  id             String  @id @default(uuid())
+  tenantId       String  @unique
+  appName        String  @default("SaaS App")
+  logoUrl        String?
+  faviconUrl     String?
+  primaryColor   String  @default("#6366f1") // Indigo
+  secondaryColor String  @default("#8b5cf6") // Purple
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+}
+
+// ================================
+// USER
+// ================================
+enum UserRole {
+  SUPER_ADMIN    // Global admin, not tied to any tenant
+  TENANT_ADMIN   // Admin of a specific tenant
+  TENANT_USER    // Regular user within a tenant
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  name      String?
+  role      UserRole @default(TENANT_USER)
+  tenantId  String?  // NULL for SUPER_ADMIN
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  tenant     Tenant?     @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  magicLinks MagicLink[]
+  sessions   Session[]
+
+  @@index([tenantId])
+  @@index([email])
+}
+
+// ================================
+// MAGIC LINK (Passwordless Auth)
+// ================================
+model MagicLink {
+  id        String   @id @default(uuid())
+  token     String   @unique
+  userId    String
+  tenantId  String?  // For tenant-specific magic links
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime @default(now())
+
+  user   User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tenant Tenant? @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([token])
+  @@index([userId])
+}
+
+// ================================
+// SESSION
+// ================================
+model Session {
+  id        String   @id @default(uuid())
+  userId    String
+  token     String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([token])
+  @@index([userId])
+}
