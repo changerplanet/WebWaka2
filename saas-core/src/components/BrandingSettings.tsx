@@ -56,10 +56,7 @@ export function BrandingSettings({ settings, tenantSlug, onUpdate }: BrandingSet
       const data = await res.json()
       
       if (data.success) {
-        onUpdate({
-          ...settings,
-          branding: { appName, primaryColor, secondaryColor, logoUrl: logoUrl || null, faviconUrl: faviconUrl || null }
-        })
+        onUpdate({ appName, primaryColor, secondaryColor, logoUrl: logoUrl || null, faviconUrl: faviconUrl || null })
         setMessage({ type: 'success', text: 'Branding saved! Changes will appear on next page load.' })
       } else {
         setMessage({ type: 'error', text: data.error || 'Failed to save' })
