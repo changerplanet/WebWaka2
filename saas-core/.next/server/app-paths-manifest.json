@@ -1,13 +1,11 @@
 {
   "/dashboard/page": "app/dashboard/page.js",
-  "/api/auth/session/route": "app/api/auth/session/route.js",
   "/page": "app/page.js",
   "/login/page": "app/login/page.js",
   "/offline/page": "app/offline/page.js",
   "/manifest.json/route": "app/manifest.json/route.js",
-  "/api/tenants/[slug]/settings/route": "app/api/tenants/[slug]/settings/route.js",
-  "/api/tenants/[slug]/domains/route": "app/api/tenants/[slug]/domains/route.js",
-  "/api/tenants/[slug]/members/route": "app/api/tenants/[slug]/members/route.js",
-  "/dashboard/settings/page": "app/dashboard/settings/page.js",
-  "/api/auth/magic-link/route": "app/api/auth/magic-link/route.js"
+  "/api/auth/magic-link/route": "app/api/auth/magic-link/route.js",
+  "/api/auth/verify/route": "app/api/auth/verify/route.js",
+  "/api/auth/session/route": "app/api/auth/session/route.js",
+  "/api/tenants/resolve/route": "app/api/tenants/resolve/route.js"
 }
