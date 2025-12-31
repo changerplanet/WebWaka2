@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
-import { Mail, ArrowRight, Check, AlertCircle, Loader2, Building2 } from 'lucide-react'
+import { Mail, ArrowRight, Check, AlertCircle, Loader2, Building2, ExternalLink, Copy } from 'lucide-react'
 
 export default function LoginPage() {
   const searchParams = useSearchParams()
@@ -12,6 +12,8 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false)
   const [sent, setSent] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [magicLink, setMagicLink] = useState<string | null>(null)
+  const [copied, setCopied] = useState(false)
   
   const tenantSlug = searchParams.get('tenant')
   const errorParam = searchParams.get('error')
@@ -31,6 +33,7 @@ export default function LoginPage() {
     e.preventDefault()
     setLoading(true)
     setError(null)
+    setMagicLink(null)
     
     try {
       const res = await fetch('/api/auth/magic-link', {
@@ -43,6 +46,10 @@ export default function LoginPage() {
       
       if (data.success) {
         setSent(true)
+        // If magic link is provided in response (dev mode or email failed)
+        if (data.magicLink) {
+          setMagicLink(data.magicLink)
+        }
       } else {
         setError(data.error || 'Failed to send magic link')
       }
@@ -50,6 +57,14 @@ export default function LoginPage() {
       setError('Network error. Please try again.')
     } finally {
       setLoading(false)
+    }
+  }
+
+  async function copyMagicLink() {
+    if (magicLink) {
+      await navigator.clipboard.writeText(magicLink)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
     }
   }
   
