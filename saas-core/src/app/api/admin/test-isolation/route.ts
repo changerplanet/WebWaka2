@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { prisma, withTenantContextAsync, TenantIsolationError, getViolationLogs, clearViolationLogs } from '@/lib/prisma'
+import { prisma, withIsolatedContext, TenantIsolationError, getViolationLogs, clearViolationLogs } from '@/lib/prisma'
 import { requireSuperAdmin } from '@/lib/authorization'
 
 /**
@@ -28,7 +28,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({
       success: true,
       violationCount: logs.length,
-      violations: logs.slice(-50) // Return last 50
+      violations: logs.slice(-50)
     })
     
   } catch (error) {
@@ -52,9 +52,6 @@ export async function POST(request: NextRequest) {
       )
     }
     
-    const body = await request.json()
-    const { testType } = body
-    
     const results: { test: string; passed: boolean; error?: string }[] = []
     
     // Clear previous logs
@@ -75,7 +72,7 @@ export async function POST(request: NextRequest) {
     
     // Test 1: Query without tenant context (should fail)
     try {
-      await withTenantContextAsync(
+      await withIsolatedContext(
         { tenantId: null, userId: null, isSuperAdmin: false },
         async () => {
           await prisma.tenantMembership.findMany()
@@ -92,7 +89,7 @@ export async function POST(request: NextRequest) {
     
     // Test 2: Query with wrong tenantId filter (should fail)
     try {
-      await withTenantContextAsync(
+      await withIsolatedContext(
         { tenantId: tenant1.id, userId: 'test', isSuperAdmin: false },
         async () => {
           // Trying to query tenant2's data while context is tenant1
@@ -112,7 +109,7 @@ export async function POST(request: NextRequest) {
     
     // Test 3: Query with correct tenantId (should succeed)
     try {
-      await withTenantContextAsync(
+      await withIsolatedContext(
         { tenantId: tenant1.id, userId: 'test', isSuperAdmin: false },
         async () => {
           await prisma.tenantMembership.findMany({
@@ -127,7 +124,7 @@ export async function POST(request: NextRequest) {
     
     // Test 4: Super admin can query across tenants
     try {
-      await withTenantContextAsync(
+      await withIsolatedContext(
         { tenantId: null, userId: authResult.user.id, isSuperAdmin: true },
         async () => {
           await prisma.tenantMembership.findMany()
@@ -140,7 +137,7 @@ export async function POST(request: NextRequest) {
     
     // Test 5: Bypass without super admin (should fail)
     try {
-      await withTenantContextAsync(
+      await withIsolatedContext(
         { tenantId: tenant1.id, userId: 'test', isSuperAdmin: false, bypassIsolation: true },
         async () => {
           await prisma.tenantMembership.findMany()
@@ -157,7 +154,7 @@ export async function POST(request: NextRequest) {
     
     // Test 6: Super admin explicit bypass (should succeed)
     try {
-      await withTenantContextAsync(
+      await withIsolatedContext(
         { tenantId: null, userId: authResult.user.id, isSuperAdmin: true, bypassIsolation: true },
         async () => {
           await prisma.tenantMembership.findMany()
@@ -170,7 +167,7 @@ export async function POST(request: NextRequest) {
     
     // Test 7: Global model (User) should work without tenant context
     try {
-      await withTenantContextAsync(
+      await withIsolatedContext(
         { tenantId: null, userId: null, isSuperAdmin: false },
         async () => {
           await prisma.user.findMany({ take: 1 })
@@ -195,7 +192,7 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('Failed to run isolation tests:', error)
     return NextResponse.json(
-      { success: false, error: 'Failed to run isolation tests' },
+      { success: false, error: 'Failed to run isolation tests: ' + String(error) },
       { status: 500 }
     )
   }
