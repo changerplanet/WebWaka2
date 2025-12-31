@@ -1,34 +1,27 @@
 import { PrismaClient } from '@prisma/client'
-import { createTenantIsolationMiddleware } from './tenant-isolation'
 
 const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined
 }
 
-function createPrismaClient(): PrismaClient {
-  const client = new PrismaClient({
-    log: process.env.NODE_ENV === 'development' ? ['error', 'warn'] : ['error'],
-  })
-  
-  // Add tenant isolation middleware
-  client.$use(createTenantIsolationMiddleware())
-  
-  return client
-}
-
-export const prisma = globalForPrisma.prisma ?? createPrismaClient()
+export const prisma = globalForPrisma.prisma ?? new PrismaClient({
+  log: process.env.NODE_ENV === 'development' ? ['error', 'warn'] : ['error'],
+})
 
 if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma
 
 // Re-export tenant isolation utilities
 export {
-  withIsolatedContext,
-  withIsolatedContextSync,
-  contextHolder,
+  validateTenantAccess,
+  createTenantContext,
+  withTenantFilter,
+  withTenantData,
   TenantIsolationError,
   isTenantScopedModel,
   getViolationLogs,
   clearViolationLogs,
+  logViolation,
   TENANT_SCOPED_MODELS,
-  type TenantContext
+  type TenantContext,
+  type TenantScopedModel
 } from './tenant-isolation'
