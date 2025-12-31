@@ -3,14 +3,25 @@
 import { useState, useEffect } from 'react'
 import { Building2, Users, Palette, Globe, Shield, Zap, Plus, ChevronRight, Check, X, Loader2 } from 'lucide-react'
 
+interface TenantDomain {
+  id: string
+  domain: string
+  type: 'SUBDOMAIN' | 'CUSTOM'
+  status: 'PENDING' | 'VERIFIED' | 'FAILED'
+  isPrimary: boolean
+}
+
 interface Tenant {
   id: string
   name: string
   slug: string
-  customDomain: string | null
-  isActive: boolean
+  status: string
+  appName: string
+  primaryColor: string
+  secondaryColor: string
+  domains: TenantDomain[]
   createdAt: string
-  branding: {
+  branding?: {
     appName: string
     logoUrl: string | null
     faviconUrl: string | null
