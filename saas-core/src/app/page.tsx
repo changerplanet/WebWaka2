@@ -251,38 +251,43 @@ export default function HomePage() {
                 <div className="flex items-start justify-between mb-4">
                   <div
                     className="w-12 h-12 rounded-xl flex items-center justify-center text-white font-bold text-lg"
-                    style={{ backgroundColor: tenant.branding?.primaryColor || '#6366f1' }}
+                    style={{ backgroundColor: tenant.primaryColor || '#6366f1' }}
                   >
                     {tenant.name.charAt(0).toUpperCase()}
                   </div>
                   <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-                    tenant.isActive 
+                    tenant.status === 'ACTIVE' 
                       ? 'bg-green-100 text-green-700' 
                       : 'bg-slate-100 text-slate-600'
                   }`}>
-                    {tenant.isActive ? 'Active' : 'Inactive'}
+                    {tenant.status === 'ACTIVE' ? 'Active' : tenant.status}
                   </span>
                 </div>
                 
                 <h3 className="text-xl font-semibold text-slate-900 mb-1">
-                  {tenant.branding?.appName || tenant.name}
+                  {tenant.appName || tenant.name}
                 </h3>
                 <p className="text-slate-500 text-sm mb-4">{tenant.name}</p>
                 
                 <div className="space-y-2 mb-4">
-                  <div className="flex items-center gap-2 text-sm">
-                    <Globe className="w-4 h-4 text-slate-400" />
-                    <span className="text-slate-600">{tenant.slug}.saascore.com</span>
-                  </div>
-                  {tenant.customDomain && (
-                    <div className="flex items-center gap-2 text-sm">
-                      <Globe className="w-4 h-4 text-indigo-400" />
-                      <span className="text-indigo-600">{tenant.customDomain}</span>
+                  {tenant.domains?.filter(d => d.type === 'SUBDOMAIN').map(d => (
+                    <div key={d.id} className="flex items-center gap-2 text-sm">
+                      <Globe className="w-4 h-4 text-slate-400" />
+                      <span className="text-slate-600">{d.domain}.saascore.com</span>
                     </div>
-                  )}
+                  ))}
+                  {tenant.domains?.filter(d => d.type === 'CUSTOM').map(d => (
+                    <div key={d.id} className="flex items-center gap-2 text-sm">
+                      <Globe className="w-4 h-4 text-indigo-400" />
+                      <span className="text-indigo-600">{d.domain}</span>
+                      {d.status !== 'VERIFIED' && (
+                        <span className="text-xs text-amber-600 bg-amber-50 px-2 py-0.5 rounded">{d.status}</span>
+                      )}
+                    </div>
+                  ))}
                   <div className="flex items-center gap-2 text-sm">
                     <Users className="w-4 h-4 text-slate-400" />
-                    <span className="text-slate-600">{tenant._count?.users || 0} users</span>
+                    <span className="text-slate-600">{tenant._count?.users || 0} members</span>
                   </div>
                 </div>
 
@@ -290,12 +295,12 @@ export default function HomePage() {
                   <div className="flex items-center gap-1">
                     <div 
                       className="w-6 h-6 rounded-full border-2 border-white shadow-sm" 
-                      style={{ backgroundColor: tenant.branding?.primaryColor || '#6366f1' }}
+                      style={{ backgroundColor: tenant.primaryColor || '#6366f1' }}
                       title="Primary Color"
                     />
                     <div 
                       className="w-6 h-6 rounded-full border-2 border-white shadow-sm -ml-2" 
-                      style={{ backgroundColor: tenant.branding?.secondaryColor || '#8b5cf6' }}
+                      style={{ backgroundColor: tenant.secondaryColor || '#8b5cf6' }}
                       title="Secondary Color"
                     />
                   </div>
