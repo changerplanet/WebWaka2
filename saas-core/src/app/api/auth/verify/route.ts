@@ -71,7 +71,9 @@ export async function GET(request: NextRequest) {
     
   } catch (error) {
     console.error('Verify error:', error)
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://tenanthub-3.preview.emergentagent.com'
+    // Fall back to request origin for error redirect
+    const url = new URL(request.url)
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || `${url.protocol}//${url.host}`
     return NextResponse.redirect(new URL('/login?error=verification_failed', baseUrl))
   }
 }
