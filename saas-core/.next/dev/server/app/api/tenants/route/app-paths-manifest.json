@@ -1,4 +1,3 @@
 {
-  "/api/health/route": "app/api/health/route.js",
   "/api/tenants/route": "app/api/tenants/route.js"
 }
