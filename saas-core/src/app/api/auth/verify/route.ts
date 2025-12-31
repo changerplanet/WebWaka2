@@ -1,13 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { verifyMagicLink, setSessionCookie } from '@/lib/auth'
+import { verifyMagicLink } from '@/lib/auth'
+import { cookies } from 'next/headers'
+
+const SESSION_EXPIRY_DAYS = 7
 
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)
     const token = searchParams.get('token')
     
-    // Get the base URL from environment or request
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || `${request.nextUrl.protocol}//${request.nextUrl.host}`
+    // Get the base URL from environment
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://984563f9-f838-4c1b-8d6f-14f4bc5ff050.preview.emergentagent.com'
     
     if (!token) {
       return NextResponse.redirect(new URL('/login?error=missing_token', baseUrl))
@@ -22,9 +25,6 @@ export async function GET(request: NextRequest) {
     
     const { user, session, tenantId } = result
     
-    // Set session cookie
-    await setSessionCookie(session.token)
-    
     // Determine redirect destination
     let redirectPath = '/'
     
@@ -35,14 +35,29 @@ export async function GET(request: NextRequest) {
       // User has exactly one tenant, go to their dashboard
       redirectPath = `/dashboard?tenant=${user.memberships[0].tenant.slug}`
     } else if (user.globalRole === 'SUPER_ADMIN') {
-      // Super admin goes to main dashboard
-      redirectPath = '/'
+      // Super admin goes to admin dashboard
+      redirectPath = '/admin'
     } else if (user.memberships.length > 1) {
       // Multiple tenants, let them choose
       redirectPath = '/select-tenant'
+    } else if (user.memberships.length === 0) {
+      // No memberships, go to homepage
+      redirectPath = '/'
     }
     
-    return NextResponse.redirect(new URL(redirectPath, baseUrl))
+    // Create response with redirect
+    const response = NextResponse.redirect(new URL(redirectPath, baseUrl))
+    
+    // Set session cookie directly on the response
+    response.cookies.set('session_token', session.token, {
+      httpOnly: true,
+      secure: true,
+      sameSite: 'lax',
+      maxAge: SESSION_EXPIRY_DAYS * 24 * 60 * 60,
+      path: '/'
+    })
+    
+    return response
     
   } catch (error) {
     console.error('Verify error:', error)
