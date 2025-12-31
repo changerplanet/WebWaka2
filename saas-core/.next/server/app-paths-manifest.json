@@ -1,9 +1,9 @@
 {
   "/_not-found/page": "app/_not-found/page.js",
-  "/admin/page": "app/admin/page.js",
   "/api/admin/audit-logs/route": "app/api/admin/audit-logs/route.js",
-  "/api/admin/tenants/[id]/members/route": "app/api/admin/tenants/[id]/members/route.js",
+  "/admin/page": "app/admin/page.js",
   "/api/admin/tenants/[id]/domains/route": "app/api/admin/tenants/[id]/domains/route.js",
+  "/api/admin/tenants/[id]/members/route": "app/api/admin/tenants/[id]/members/route.js",
   "/api/admin/tenants/[id]/route": "app/api/admin/tenants/[id]/route.js",
   "/api/admin/tenants/route": "app/api/admin/tenants/route.js",
   "/api/admin/test-isolation/route": "app/api/admin/test-isolation/route.js",
