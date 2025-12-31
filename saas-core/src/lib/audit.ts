@@ -31,7 +31,7 @@ export async function createAuditLog(input: AuditLogInput): Promise<void> {
         tenantId: input.tenantId || null,
         targetType: input.targetType || null,
         targetId: input.targetId || null,
-        metadata: input.metadata || null,
+        metadata: input.metadata || undefined,
         ipAddress,
         userAgent
       }
