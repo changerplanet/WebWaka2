@@ -7,7 +7,7 @@ const globalForPrisma = globalThis as unknown as {
 
 function createPrismaClient(): PrismaClient {
   const client = new PrismaClient({
-    log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
+    log: process.env.NODE_ENV === 'development' ? ['error', 'warn'] : ['error'],
   })
   
   // Add tenant isolation middleware
@@ -23,15 +23,12 @@ if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma
 // Re-export tenant isolation utilities
 export {
   withIsolatedContext,
-  setRequestContext,
-  getRequestContext,
-  clearRequestContext,
-  setCurrentRequestId,
-  getCurrentRequestId,
+  withIsolatedContextSync,
+  contextHolder,
   TenantIsolationError,
   isTenantScopedModel,
   getViolationLogs,
   clearViolationLogs,
-  createTenantScopedClient,
+  TENANT_SCOPED_MODELS,
   type TenantContext
 } from './tenant-isolation'
