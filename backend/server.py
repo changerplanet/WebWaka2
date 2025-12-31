@@ -1,10 +1,11 @@
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse, Response
 import httpx
+import os
 
 app = FastAPI()
 
-NEXTJS_URL = "http://localhost:3000"
+NEXTJS_URL = os.environ.get("NEXTJS_URL", "http://localhost:3000")
 
 @app.api_route("/{path:path}", methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"])
 async def proxy_to_nextjs(request: Request, path: str):
