@@ -207,6 +207,302 @@ model Session {
 }
 
 // ============================================================================
+// PARTNER DOMAIN - Platform-level reseller/affiliate system
+// Partners are INDEPENDENT of Tenants - they exist at platform level
+// ============================================================================
+
+// Partner lifecycle status
+enum PartnerStatus {
+  PENDING      // Application submitted, awaiting approval
+  ACTIVE       // Approved and operational
+  SUSPENDED    // Temporarily disabled
+  TERMINATED   // Permanently ended
+}
+
+// Partner tier for commission structures
+enum PartnerTier {
+  BRONZE       // Entry level
+  SILVER       // Mid tier
+  GOLD         // High performer
+  PLATINUM     // Top tier / enterprise
+}
+
+// Partner user roles within a partner organization
+enum PartnerRole {
+  PARTNER_OWNER    // Full control, can manage agreement
+  PARTNER_ADMIN    // Can manage users, view all data
+  PARTNER_MEMBER   // Limited access, view own referrals
+}
+
+// Agreement status
+enum AgreementStatus {
+  DRAFT        // Being prepared
+  ACTIVE       // Currently in effect
+  SUPERSEDED   // Replaced by newer version
+  TERMINATED   // Ended
+}
+
+// Commission calculation type
+enum CommissionType {
+  PERCENTAGE   // % of transaction
+  FIXED        // Fixed amount per transaction
+  TIERED       // Based on volume tiers
+}
+
+// Earning status
+enum EarningStatus {
+  PENDING      // Calculated, awaiting approval
+  APPROVED     // Approved for payment
+  PAID         // Payment processed
+  DISPUTED     // Under review
+  CANCELLED    // Cancelled/reversed
+}
+
+// ============================================================================
+// PARTNER
+// Independent platform actor - NOT a tenant, NOT a vendor
+// Represents a reseller/affiliate organization
+// ============================================================================
+model Partner {
+  id          String        @id @default(uuid())
+  name        String        // Company name: "Digital Solutions Inc"
+  slug        String        @unique // URL-safe identifier: "digital-solutions"
+  email       String        // Primary contact email
+  phone       String?       // Contact phone
+  website     String?       // Partner's website
+  
+  status      PartnerStatus @default(PENDING)
+  tier        PartnerTier   @default(BRONZE)
+  
+  // Business details
+  companyNumber  String?    // Business registration number
+  taxId          String?    // Tax identification
+  address        Json?      // Structured address
+  
+  // Metadata for flexibility
+  metadata    Json?
+  
+  // Audit fields
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  approvedAt  DateTime?     // When partner was approved
+  
+  // Relations
+  users       PartnerUser[]
+  agreements  PartnerAgreement[]
+  referralCodes PartnerReferralCode[]
+  referrals   PartnerReferral[]
+  earnings    PartnerEarning[]
+
+  @@index([slug])
+  @@index([email])
+  @@index([status])
+  @@index([tier])
+}
+
+// ============================================================================
+// PARTNER USER
+// Users belonging to a Partner organization
+// Links existing User model to Partner with role
+// ============================================================================
+model PartnerUser {
+  id        String      @id @default(uuid())
+  partnerId String
+  userId    String
+  role      PartnerRole @default(PARTNER_MEMBER)
+  isActive  Boolean     @default(true)
+  
+  // Audit fields
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+  joinedAt  DateTime    @default(now())
+
+  // Relations
+  partner   Partner     @relation(fields: [partnerId], references: [id], onDelete: Cascade)
+  user      User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // A user can only belong to one partner (prevents conflicts)
+  @@unique([userId])
+  // Index for partner lookups
+  @@unique([partnerId, userId])
+  @@index([partnerId])
+  @@index([role])
+}
+
+// ============================================================================
+// PARTNER AGREEMENT
+// Versioned agreement terms between platform and partner
+// Supports multiple versions over time - only one ACTIVE at a time
+// ============================================================================
+model PartnerAgreement {
+  id              String          @id @default(uuid())
+  partnerId       String
+  
+  // Versioning
+  version         Int             // Auto-increment per partner: 1, 2, 3...
+  
+  // Effective period
+  effectiveFrom   DateTime        // When this agreement takes effect
+  effectiveTo     DateTime?       // Null = current/indefinite
+  
+  // Commission terms
+  commissionType  CommissionType  @default(PERCENTAGE)
+  commissionRate  Decimal         @db.Decimal(5, 4) // e.g., 0.1500 = 15%
+  
+  // Tiered commission structure (if commissionType = TIERED)
+  // Format: [{ "minVolume": 0, "maxVolume": 1000, "rate": 0.10 }, ...]
+  commissionTiers Json?
+  
+  // Full agreement terms (flexible structure)
+  terms           Json?           // Payment terms, conditions, etc.
+  
+  // Signature tracking
+  status          AgreementStatus @default(DRAFT)
+  signedAt        DateTime?
+  signedByUserId  String?         // PartnerUser who signed
+  
+  // Platform approval
+  approvedAt      DateTime?
+  approvedByUserId String?        // Super Admin who approved
+  
+  // Audit fields
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+  
+  // Relations
+  partner         Partner         @relation(fields: [partnerId], references: [id], onDelete: Cascade)
+  earnings        PartnerEarning[]
+
+  // Only one agreement version number per partner
+  @@unique([partnerId, version])
+  @@index([partnerId])
+  @@index([status])
+  @@index([effectiveFrom, effectiveTo])
+}
+
+// ============================================================================
+// PARTNER REFERRAL CODE
+// Trackable codes for attribution
+// Partners can have multiple codes for different campaigns
+// ============================================================================
+model PartnerReferralCode {
+  id          String    @id @default(uuid())
+  partnerId   String
+  code        String    @unique // e.g., "PARTNER2024", "SUMMER-SALE"
+  
+  // Usage controls
+  isActive    Boolean   @default(true)
+  usageLimit  Int?      // Null = unlimited
+  usageCount  Int       @default(0)
+  expiresAt   DateTime? // Null = never expires
+  
+  // Campaign tracking
+  campaignName String?  // e.g., "Q4 2024 Promotion"
+  metadata    Json?     // Additional tracking data
+  
+  // Audit fields
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  // Relations
+  partner     Partner   @relation(fields: [partnerId], references: [id], onDelete: Cascade)
+  referrals   PartnerReferral[]
+
+  @@index([code])
+  @@index([partnerId])
+  @@index([isActive])
+}
+
+// ============================================================================
+// PARTNER REFERRAL
+// IMMUTABLE attribution link between Partner and Tenant
+// Once created, the partner-tenant relationship cannot be changed
+// This is the source of truth for "who referred this tenant"
+// ============================================================================
+model PartnerReferral {
+  id              String    @id @default(uuid())
+  partnerId       String
+  tenantId        String    @unique // Each tenant can only have ONE referral (immutable)
+  referralCodeId  String?   // The code used (if any)
+  
+  // Attribution timestamp - IMMUTABLE
+  referredAt      DateTime  @default(now())
+  
+  // Lock flag - set to true after first successful billing
+  // Once locked, this record can NEVER be modified or deleted
+  attributionLocked Boolean @default(false)
+  lockedAt        DateTime?
+  
+  // Context at time of referral
+  referralSource  String?   // e.g., "website", "email", "direct"
+  landingPage     String?   // URL where signup occurred
+  metadata        Json?     // Additional attribution data
+  
+  // Audit fields
+  createdAt       DateTime  @default(now())
+  // NO updatedAt - this is intentionally immutable
+
+  // Relations
+  partner         Partner   @relation(fields: [partnerId], references: [id], onDelete: Restrict)
+  tenant          Tenant    @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  referralCode    PartnerReferralCode? @relation(fields: [referralCodeId], references: [id], onDelete: SetNull)
+  earnings        PartnerEarning[]
+
+  @@index([partnerId])
+  @@index([tenantId])
+  @@index([referredAt])
+  @@index([attributionLocked])
+}
+
+// ============================================================================
+// PARTNER EARNING
+// Tracks commission earned by partner for each billing period
+// Linked to specific agreement version that was active at time of earning
+// ============================================================================
+model PartnerEarning {
+  id              String        @id @default(uuid())
+  partnerId       String
+  referralId      String        // Which tenant referral generated this
+  agreementId     String        // Which agreement terms applied
+  
+  // Billing period
+  periodStart     DateTime      // Start of billing period
+  periodEnd       DateTime      // End of billing period
+  
+  // Financial details
+  grossAmount     Decimal       @db.Decimal(12, 2) // Total billed to tenant
+  commissionRate  Decimal       @db.Decimal(5, 4)  // Rate at time of earning
+  commissionAmount Decimal      @db.Decimal(12, 2) // Calculated earning
+  currency        String        @default("USD")
+  
+  // Status tracking
+  status          EarningStatus @default(PENDING)
+  
+  // Payment tracking
+  paidAt          DateTime?
+  paymentReference String?      // External payment ID
+  paymentMethod   String?       // e.g., "bank_transfer", "paypal"
+  
+  // Audit fields
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  approvedAt      DateTime?
+  approvedByUserId String?      // Super Admin who approved
+
+  // Relations
+  partner         Partner       @relation(fields: [partnerId], references: [id], onDelete: Restrict)
+  referral        PartnerReferral @relation(fields: [referralId], references: [id], onDelete: Restrict)
+  agreement       PartnerAgreement @relation(fields: [agreementId], references: [id], onDelete: Restrict)
+
+  @@index([partnerId])
+  @@index([referralId])
+  @@index([agreementId])
+  @@index([status])
+  @@index([periodStart, periodEnd])
+  @@index([createdAt])
+}
+
+// ============================================================================
 // AUDIT LOG
 // Track all significant actions for compliance and debugging
 // ============================================================================
@@ -235,6 +531,23 @@ enum AuditAction {
   // Super Admin actions
   SUPER_ADMIN_IMPERSONATION_START
   SUPER_ADMIN_IMPERSONATION_END
+  
+  // Partner actions
+  PARTNER_CREATED
+  PARTNER_UPDATED
+  PARTNER_APPROVED
+  PARTNER_SUSPENDED
+  PARTNER_TERMINATED
+  PARTNER_USER_ADDED
+  PARTNER_USER_REMOVED
+  PARTNER_AGREEMENT_CREATED
+  PARTNER_AGREEMENT_SIGNED
+  PARTNER_AGREEMENT_APPROVED
+  PARTNER_REFERRAL_CREATED
+  PARTNER_REFERRAL_LOCKED
+  PARTNER_EARNING_CREATED
+  PARTNER_EARNING_APPROVED
+  PARTNER_EARNING_PAID
 }
 
 model AuditLog {
