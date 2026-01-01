@@ -125,12 +125,18 @@ export async function GET(request: NextRequest) {
       )
     }
     
+    // Type assertion for included relations
+    const attrWithRelations = attribution as typeof attribution & {
+      partner?: { id: string; name: string; slug: string; status: string }
+      referralCode?: { id: string; code: string; campaignName: string | null }
+    }
+    
     return NextResponse.json({
       hasAttribution: true,
       attribution: {
         id: attribution.id,
         partnerId: attribution.partnerId,
-        partner: attribution.partner,
+        partner: attrWithRelations.partner || null,
         tenantId: attribution.tenantId,
         method: attribution.attributionMethod,
         referredAt: attribution.referredAt,
@@ -139,7 +145,7 @@ export async function GET(request: NextRequest) {
         isLifetime: !attribution.attributionWindowDays,
         isLocked: attribution.attributionLocked,
         lockedAt: attribution.lockedAt,
-        referralCode: attribution.referralCode,
+        referralCode: attrWithRelations.referralCode || null,
         referralSource: attribution.referralSource
       }
     })
