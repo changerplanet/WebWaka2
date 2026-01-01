@@ -2,6 +2,43 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.7.0-partners] - 2026-01-01 (STABLE RELEASE)
+
+### Added
+
+#### Partner System Freeze & Versioning (Phase 8 & 9)
+Final validation and stable release of the Partner Program.
+
+**Architectural Validation:**
+- ✅ All Partner logic contained in SaaS Core
+- ✅ No module-specific code in Partner files
+- ✅ Clean abstraction via `entitlements.ts`
+- ✅ Module removal does not affect Partner logic
+
+**Documentation:**
+- `/docs/PARTNER_ARCHITECTURE_VALIDATION.md` - Modularity validation
+- `/docs/PARTNER_API_REFERENCE.md` - Stable API documentation
+- `/RELEASE_NOTES_v1.7.0-partners.md` - Release notes
+
+**API Stability:**
+- All Partner APIs marked as STABLE
+- Schema models versioned at v1.0
+- Breaking change policy documented
+
+#### Global User Management
+Super Admin "All Users" feature.
+
+**APIs:**
+- `GET /api/admin/users` - List all users with filtering/pagination
+- `GET /api/admin/users/[userId]` - User details with sessions/memberships
+- `PATCH /api/admin/users/[userId]` - Change user role (promote/demote)
+
+**Frontend:**
+- `/admin/users` - Users table with stats, search, filtering
+- User detail modal with memberships and role management
+
+---
+
 ## [1.6.0] - 2026-01-01
 
 ### Added
