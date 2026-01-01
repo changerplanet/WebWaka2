@@ -115,3 +115,23 @@ export {
   type InventorySnapshotRequestEvent,
   generateEventId
 } from './inventory-consumer'
+
+// Entitlements
+export {
+  hasEntitlement,
+  canAddRegister,
+  canAddStaff,
+  canUseOffline,
+  canCreateOfflineTransaction,
+  canUseLayaway,
+  canUseAdvancedDiscounts,
+  loadEntitlementContext,
+  createEntitlementError,
+  getFailureMessage,
+  isLimitFailure,
+  type POSEntitlement,
+  type POSLimits,
+  type POSEntitlementContext,
+  type EntitlementCheckResult,
+  type CoreEntitlementService
+} from './entitlements'
