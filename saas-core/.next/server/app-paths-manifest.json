@@ -11,7 +11,8 @@
   "/api/partners/me/route": "app/api/partners/me/route.js",
   "/partner/referrals/page": "app/partner/referrals/page.js",
   "/partner/earnings/page": "app/partner/earnings/page.js",
-  "/api/partners/[partnerId]/dashboard/route": "app/api/partners/[partnerId]/dashboard/route.js",
   "/partner/audit/page": "app/partner/audit/page.js",
-  "/api/partners/[partnerId]/audit/route": "app/api/partners/[partnerId]/audit/route.js"
+  "/api/partners/[partnerId]/audit/route": "app/api/partners/[partnerId]/audit/route.js",
+  "/partner/page": "app/partner/page.js",
+  "/api/partners/[partnerId]/dashboard/route": "app/api/partners/[partnerId]/dashboard/route.js"
 }
