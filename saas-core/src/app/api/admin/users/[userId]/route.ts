@@ -192,7 +192,7 @@ export async function PATCH(
     // Log the action
     await prisma.auditLog.create({
       data: {
-        action: globalRole ? 'USER_ROLE_CHANGED' : 'USER_UPDATED',
+        action: 'USER_ROLE_CHANGED',
         actorId: session.user.id,
         actorEmail: session.user.email,
         targetType: 'User',
