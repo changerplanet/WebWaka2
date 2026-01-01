@@ -7,21 +7,23 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server'
+import {
+  getZone,
+  updateZone,
+  deleteZone,
+  addRate,
+  updateRate,
+  deleteRate,
+  generateId,
+  type ShippingRate
+} from '@/lib/shipping-storage'
 
 interface RouteParams {
   params: Promise<{ zoneId: string }>
 }
 
-// In-memory storage (shared with parent route in production)
-const zonesStorage = new Map<string, any[]>()
-
-function generateId(prefix: string): string {
-  return `${prefix}_${Date.now().toString(36)}${Math.random().toString(36).substring(2, 9)}`
-}
-
 /**
  * GET /api/svm/shipping/zones/:zoneId
- * Get zone details with all rates
  */
 export async function GET(request: NextRequest, context: RouteParams) {
   try {
@@ -43,8 +45,7 @@ export async function GET(request: NextRequest, context: RouteParams) {
       )
     }
     
-    const zones = zonesStorage.get(tenantId) || []
-    const zone = zones.find(z => z.id === zoneId)
+    const zone = getZone(tenantId, zoneId)
     
     if (!zone) {
       return NextResponse.json(
@@ -69,7 +70,6 @@ export async function GET(request: NextRequest, context: RouteParams) {
 
 /**
  * PUT /api/svm/shipping/zones/:zoneId
- * Update zone or add/update rates
  */
 export async function PUT(request: NextRequest, context: RouteParams) {
   try {
@@ -84,38 +84,40 @@ export async function PUT(request: NextRequest, context: RouteParams) {
       )
     }
     
-    const zones = zonesStorage.get(tenantId) || []
-    const zoneIndex = zones.findIndex(z => z.id === zoneId)
+    const zone = getZone(tenantId, zoneId)
     
-    if (zoneIndex < 0) {
+    if (!zone) {
       return NextResponse.json(
         { success: false, error: `Shipping zone ${zoneId} not found` },
         { status: 404 }
       )
     }
     
-    const zone = zones[zoneIndex]
-    
     switch (action) {
       case 'UPDATE_ZONE': {
-        // Update zone properties
         const { name, description, countries, states, postalCodes, cities, isDefault, isActive, priority } = body
         
-        if (name !== undefined) zone.name = name
-        if (description !== undefined) zone.description = description
-        if (countries !== undefined) zone.countries = countries
-        if (states !== undefined) zone.states = states
-        if (postalCodes !== undefined) zone.postalCodes = postalCodes
-        if (cities !== undefined) zone.cities = cities
-        if (isDefault !== undefined) zone.isDefault = isDefault
-        if (isActive !== undefined) zone.isActive = isActive
-        if (priority !== undefined) zone.priority = priority
+        const updates: Record<string, unknown> = {}
+        if (name !== undefined) updates.name = name
+        if (description !== undefined) updates.description = description
+        if (countries !== undefined) updates.countries = countries
+        if (states !== undefined) updates.states = states
+        if (postalCodes !== undefined) updates.postalCodes = postalCodes
+        if (cities !== undefined) updates.cities = cities
+        if (isDefault !== undefined) updates.isDefault = isDefault
+        if (isActive !== undefined) updates.isActive = isActive
+        if (priority !== undefined) updates.priority = priority
         
-        break
+        const updated = updateZone(tenantId, zoneId, updates)
+        
+        return NextResponse.json({
+          success: true,
+          message: 'Zone updated',
+          zone: updated
+        })
       }
       
       case 'ADD_RATE': {
-        // Add a new rate to the zone
         const { rate } = body
         if (!rate || !rate.name || !rate.rateType) {
           return NextResponse.json(
@@ -124,7 +126,7 @@ export async function PUT(request: NextRequest, context: RouteParams) {
           )
         }
         
-        const newRate = {
+        const newRate: ShippingRate = {
           id: generateId('rate'),
           zoneId,
           name: rate.name,
@@ -151,18 +153,17 @@ export async function PUT(request: NextRequest, context: RouteParams) {
           priority: zone.rates.length
         }
         
-        zone.rates.push(newRate)
+        addRate(tenantId, zoneId, newRate)
         
         return NextResponse.json({
           success: true,
           message: 'Rate added',
           rate: newRate,
-          zone
+          zone: getZone(tenantId, zoneId)
         })
       }
       
       case 'UPDATE_RATE': {
-        // Update an existing rate
         const { rateId, rate } = body
         if (!rateId) {
           return NextResponse.json(
@@ -171,40 +172,23 @@ export async function PUT(request: NextRequest, context: RouteParams) {
           )
         }
         
-        const rateIndex = zone.rates.findIndex((r: any) => r.id === rateId)
-        if (rateIndex < 0) {
+        const updated = updateRate(tenantId, zoneId, rateId, rate)
+        if (!updated) {
           return NextResponse.json(
             { success: false, error: `Rate ${rateId} not found` },
             { status: 404 }
           )
         }
         
-        // Update rate properties
-        const existingRate = zone.rates[rateIndex]
-        if (rate.name !== undefined) existingRate.name = rate.name
-        if (rate.description !== undefined) existingRate.description = rate.description
-        if (rate.carrier !== undefined) existingRate.carrier = rate.carrier
-        if (rate.rateType !== undefined) existingRate.rateType = rate.rateType
-        if (rate.flatRate !== undefined) existingRate.flatRate = rate.flatRate
-        if (rate.weightRate !== undefined) existingRate.weightRate = rate.weightRate
-        if (rate.baseWeightFee !== undefined) existingRate.baseWeightFee = rate.baseWeightFee
-        if (rate.percentageRate !== undefined) existingRate.percentageRate = rate.percentageRate
-        if (rate.perItemRate !== undefined) existingRate.perItemRate = rate.perItemRate
-        if (rate.freeAbove !== undefined) existingRate.freeAbove = rate.freeAbove
-        if (rate.minDays !== undefined) existingRate.minDays = rate.minDays
-        if (rate.maxDays !== undefined) existingRate.maxDays = rate.maxDays
-        if (rate.isActive !== undefined) existingRate.isActive = rate.isActive
-        
         return NextResponse.json({
           success: true,
           message: 'Rate updated',
-          rate: existingRate,
-          zone
+          rate: updated,
+          zone: getZone(tenantId, zoneId)
         })
       }
       
       case 'DELETE_RATE': {
-        // Delete a rate
         const { rateId } = body
         if (!rateId) {
           return NextResponse.json(
@@ -213,43 +197,45 @@ export async function PUT(request: NextRequest, context: RouteParams) {
           )
         }
         
-        const rateIndex = zone.rates.findIndex((r: any) => r.id === rateId)
-        if (rateIndex < 0) {
+        const deleted = deleteRate(tenantId, zoneId, rateId)
+        if (!deleted) {
           return NextResponse.json(
             { success: false, error: `Rate ${rateId} not found` },
             { status: 404 }
           )
         }
         
-        zone.rates.splice(rateIndex, 1)
-        
         return NextResponse.json({
           success: true,
           message: 'Rate deleted',
-          zone
+          zone: getZone(tenantId, zoneId)
         })
       }
       
-      default:
+      default: {
         // Default: update zone properties
         const { name, description, countries, states, postalCodes, cities, isDefault, isActive, priority } = body
         
-        if (name !== undefined) zone.name = name
-        if (description !== undefined) zone.description = description
-        if (countries !== undefined) zone.countries = countries
-        if (states !== undefined) zone.states = states
-        if (postalCodes !== undefined) zone.postalCodes = postalCodes
-        if (cities !== undefined) zone.cities = cities
-        if (isDefault !== undefined) zone.isDefault = isDefault
-        if (isActive !== undefined) zone.isActive = isActive
-        if (priority !== undefined) zone.priority = priority
+        const updates: Record<string, unknown> = {}
+        if (name !== undefined) updates.name = name
+        if (description !== undefined) updates.description = description
+        if (countries !== undefined) updates.countries = countries
+        if (states !== undefined) updates.states = states
+        if (postalCodes !== undefined) updates.postalCodes = postalCodes
+        if (cities !== undefined) updates.cities = cities
+        if (isDefault !== undefined) updates.isDefault = isDefault
+        if (isActive !== undefined) updates.isActive = isActive
+        if (priority !== undefined) updates.priority = priority
+        
+        const updated = updateZone(tenantId, zoneId, updates)
+        
+        return NextResponse.json({
+          success: true,
+          message: `Shipping zone ${zoneId} updated`,
+          zone: updated
+        })
+      }
     }
-    
-    return NextResponse.json({
-      success: true,
-      message: `Shipping zone ${zoneId} updated`,
-      zone
-    })
     
   } catch (error) {
     console.error('[SVM] Error updating shipping zone:', error)
@@ -262,7 +248,6 @@ export async function PUT(request: NextRequest, context: RouteParams) {
 
 /**
  * DELETE /api/svm/shipping/zones/:zoneId
- * Delete a shipping zone
  */
 export async function DELETE(request: NextRequest, context: RouteParams) {
   try {
@@ -277,22 +262,18 @@ export async function DELETE(request: NextRequest, context: RouteParams) {
       )
     }
     
-    const zones = zonesStorage.get(tenantId) || []
-    const zoneIndex = zones.findIndex(z => z.id === zoneId)
+    const deleted = deleteZone(tenantId, zoneId)
     
-    if (zoneIndex < 0) {
+    if (!deleted) {
       return NextResponse.json(
         { success: false, error: `Shipping zone ${zoneId} not found` },
         { status: 404 }
       )
     }
     
-    const deletedZone = zones[zoneIndex]
-    zones.splice(zoneIndex, 1)
-    
     return NextResponse.json({
       success: true,
-      message: `Shipping zone ${deletedZone.name} deleted`,
+      message: `Shipping zone ${deleted.name} deleted`,
       deletedZoneId: zoneId
     })
     

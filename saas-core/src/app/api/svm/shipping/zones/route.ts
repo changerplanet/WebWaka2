@@ -5,13 +5,12 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server'
-
-// In-memory storage
-const zonesStorage = new Map<string, any[]>()
-
-function generateId(prefix: string): string {
-  return `${prefix}_${Date.now().toString(36)}${Math.random().toString(36).substring(2, 9)}`
-}
+import {
+  addZone,
+  generateId,
+  type ShippingZone,
+  type ShippingRate
+} from '@/lib/shipping-storage'
 
 /**
  * POST /api/svm/shipping/zones
@@ -29,9 +28,8 @@ export async function POST(request: NextRequest) {
       )
     }
     
-    // Create zone
     const zoneId = generateId('zone')
-    const newZone = {
+    const newZone: ShippingZone = {
       id: zoneId,
       tenantId,
       name,
@@ -43,10 +41,10 @@ export async function POST(request: NextRequest) {
       isDefault: isDefault || false,
       isActive: isActive !== false,
       priority: priority || 0,
-      rates: (rates || []).map((rate: any, index: number) => ({
+      rates: (rates || []).map((rate: Partial<ShippingRate>, index: number) => ({
         id: generateId('rate'),
         zoneId,
-        name: rate.name,
+        name: rate.name || 'Unnamed Rate',
         description: rate.description,
         carrier: rate.carrier,
         rateType: rate.rateType || 'FLAT',
@@ -73,10 +71,7 @@ export async function POST(request: NextRequest) {
       updatedAt: new Date().toISOString()
     }
     
-    // Store zone
-    const zones = zonesStorage.get(tenantId) || []
-    zones.push(newZone)
-    zonesStorage.set(tenantId, zones)
+    addZone(newZone)
     
     return NextResponse.json({
       success: true,
