@@ -110,7 +110,7 @@ export async function POST(request: NextRequest, context: RouteParams) {
         expectedCash,
         actualCash: closingCash,
         difference: cashDifference,
-        status: cashDifference === 0 ? 'BALANCED' : (cashDifference > 0 ? 'OVER' : 'SHORT')
+        status: cashDifference === null ? 'UNKNOWN' : (cashDifference === 0 ? 'BALANCED' : (cashDifference > 0 ? 'OVER' : 'SHORT'))
       }
     })
 
