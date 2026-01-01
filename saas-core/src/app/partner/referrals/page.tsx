@@ -379,3 +379,15 @@ function ReferralsContent() {
     </div>
   )
 }
+
+export default function ReferralsPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center bg-slate-900">
+        <Loader2 className="w-10 h-10 animate-spin text-indigo-500" />
+      </div>
+    }>
+      <ReferralsContent />
+    </Suspense>
+  )
+}
