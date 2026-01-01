@@ -181,7 +181,7 @@ function shouldTriggerCommission(
       return eventType === 'SUBSCRIPTION_RENEWED'
     case 'ON_SIGNUP':
       return eventType === 'SUBSCRIPTION_CREATED' || 
-             (eventType === 'SUBSCRIPTION_ACTIVATED' && isFirstPayment)
+             (eventType === 'SUBSCRIPTION_ACTIVATED' && isFirstPayment === true)
     default:
       return false
   }
