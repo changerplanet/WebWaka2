@@ -929,6 +929,48 @@ model PartnerEarning {
   @@index([status])
   @@index([periodStart, periodEnd])
   @@index([createdAt])
+  @@index([payoutBatchId])
+  @@index([entryType])
+}
+
+// ============================================================================
+// PAYOUT BATCH
+// Groups earnings for payment processing (Phase 5)
+// ============================================================================
+model PayoutBatch {
+  id              String   @id @default(uuid())
+  partnerId       String
+  
+  // Batch details
+  batchNumber     String   @unique // e.g., "PO-2025-001234"
+  status          String   @default("PENDING") // PENDING, APPROVED, PROCESSING, COMPLETED, FAILED
+  
+  // Financial summary
+  totalAmount     Decimal  @db.Decimal(12, 2)
+  currency        String   @default("USD")
+  earningsCount   Int      // Number of earnings in batch
+  
+  // Period covered
+  periodStart     DateTime
+  periodEnd       DateTime
+  
+  // Payment details (populated when processed)
+  paymentMethod   String?
+  paymentReference String?
+  processedAt     DateTime?
+  
+  // Approval
+  approvedAt      DateTime?
+  approvedByUserId String?
+  
+  // Audit
+  createdAt       DateTime @default(now())
+  
+  // Relations
+  partner         Partner  @relation(fields: [partnerId], references: [id], onDelete: Restrict)
+
+  @@index([partnerId])
+  @@index([status])
   @@index([createdAt])
 }
 
