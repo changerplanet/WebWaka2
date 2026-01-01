@@ -1,6 +1,7 @@
 {
   "/page": "app/page.js",
-  "/api/health/route": "app/api/health/route.js",
-  "/api/pos/entitlements/route": "app/api/pos/entitlements/route.js",
-  "/api/pos/events/route": "app/api/pos/events/route.js"
+  "/api/tenants/route": "app/api/tenants/route.js",
+  "/login/page": "app/login/page.js",
+  "/offline/page": "app/offline/page.js",
+  "/manifest.json/route": "app/manifest.json/route.js"
 }
