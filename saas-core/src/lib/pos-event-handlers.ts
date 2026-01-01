@@ -103,7 +103,7 @@ async function isEventProcessed(idempotencyKey: string): Promise<boolean> {
   const existing = await prisma.auditLog.findFirst({
     where: {
       targetId: idempotencyKey,
-      action: 'SETTINGS_UPDATED' // Using existing action for POS events
+      action: 'TENANT_UPDATED' // Using existing action for POS events
     }
   })
   return !!existing
