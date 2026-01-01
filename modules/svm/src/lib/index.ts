@@ -108,3 +108,22 @@ export {
   type ShippingOption,
   type ShippingCalculationResult
 } from './shipping-engine'
+
+// Promotions Engine
+export {
+  PromotionsEngine,
+  PromotionBuilder,
+  SVMPromotionsService,
+  getPromotionsService,
+  formatDiscount,
+  type Promotion,
+  type PromotionType,
+  type DiscountType,
+  type PromotionUsage,
+  type PromotionCartItem,
+  type PromotionContext,
+  type AppliedPromotion,
+  type PromotionValidation,
+  type PromotionErrorCode,
+  type DiscountCalculation
+} from './promotions-engine'
