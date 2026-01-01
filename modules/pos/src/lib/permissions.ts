@@ -108,112 +108,112 @@ export type POSPermission =
 // PERMISSION MATRIX
 // ============================================================================
 
+// Base permissions for each role (without inheritance)
+const CASHIER_PERMISSIONS: POSPermission[] = [
+  // Basic sale operations
+  'pos.sale.create',
+  'pos.sale.add_item',
+  'pos.sale.remove_item',
+  'pos.sale.update_quantity',
+  'pos.sale.suspend',
+  'pos.sale.resume',
+  'pos.sale.complete',
+  
+  // Basic discounts
+  'pos.discount.apply_preset',
+  
+  // Basic payments
+  'pos.payment.cash',
+  'pos.payment.card',
+  'pos.payment.other',
+  
+  // Basic layaway
+  'pos.layaway.create',
+  'pos.layaway.payment',
+  
+  // Register
+  'pos.register.open',
+  'pos.register.close',
+  'pos.register.view_cash',
+  
+  // Shift
+  'pos.shift.start',
+  'pos.shift.end',
+  
+  // Reporting
+  'pos.report.own_sales'
+]
+
+const SUPERVISOR_ADDITIONAL_PERMISSIONS: POSPermission[] = [
+  // Enhanced sale operations
+  'pos.sale.resume_others',
+  'pos.sale.void',
+  
+  // Enhanced discounts
+  'pos.discount.apply_custom',
+  'pos.discount.approve',
+  
+  // Split payments
+  'pos.payment.split',
+  'pos.payment.no_sale',
+  
+  // Refunds
+  'pos.refund.create',
+  
+  // Enhanced layaway
+  'pos.layaway.cancel',
+  
+  // Enhanced register
+  'pos.register.adjust_cash',
+  
+  // Enhanced shift
+  'pos.shift.view_others',
+  
+  // Enhanced reporting
+  'pos.report.all_sales',
+  'pos.report.register'
+]
+
+const MANAGER_ADDITIONAL_PERMISSIONS: POSPermission[] = [
+  // Full sale control
+  'pos.sale.void_others',
+  
+  // Full discount control
+  'pos.discount.override_max',
+  
+  // Full refund control
+  'pos.refund.without_receipt',
+  'pos.refund.approve',
+  
+  // Full layaway control
+  'pos.layaway.cancel_with_forfeit',
+  
+  // Full register control
+  'pos.register.close_others',
+  'pos.register.blind_close',
+  
+  // Full shift control
+  'pos.shift.end_others',
+  
+  // Full reporting
+  'pos.report.staff',
+  'pos.report.export',
+  
+  // Settings
+  'pos.settings.view',
+  'pos.settings.edit',
+  'pos.settings.discounts',
+  'pos.settings.registers',
+  'pos.settings.receipts'
+]
+
 /**
- * Permissions by role
+ * Permissions by role (with inheritance)
  */
 export const POS_ROLE_PERMISSIONS: Record<POSRole, POSPermission[]> = {
-  'POS_CASHIER': [
-    // Basic sale operations
-    'pos.sale.create',
-    'pos.sale.add_item',
-    'pos.sale.remove_item',
-    'pos.sale.update_quantity',
-    'pos.sale.suspend',
-    'pos.sale.resume',
-    'pos.sale.complete',
-    
-    // Basic discounts
-    'pos.discount.apply_preset',
-    
-    // Basic payments
-    'pos.payment.cash',
-    'pos.payment.card',
-    'pos.payment.other',
-    
-    // Basic layaway
-    'pos.layaway.create',
-    'pos.layaway.payment',
-    
-    // Register
-    'pos.register.open',
-    'pos.register.close',
-    'pos.register.view_cash',
-    
-    // Shift
-    'pos.shift.start',
-    'pos.shift.end',
-    
-    // Reporting
-    'pos.report.own_sales'
-  ],
-  
-  'POS_SUPERVISOR': [
-    // All cashier permissions
-    ...POS_ROLE_PERMISSIONS['POS_CASHIER'] || [],
-    
-    // Enhanced sale operations
-    'pos.sale.resume_others',
-    'pos.sale.void',
-    
-    // Enhanced discounts
-    'pos.discount.apply_custom',
-    'pos.discount.approve',
-    
-    // Split payments
-    'pos.payment.split',
-    'pos.payment.no_sale',
-    
-    // Refunds
-    'pos.refund.create',
-    
-    // Enhanced layaway
-    'pos.layaway.cancel',
-    
-    // Enhanced register
-    'pos.register.adjust_cash',
-    
-    // Enhanced shift
-    'pos.shift.view_others',
-    
-    // Enhanced reporting
-    'pos.report.all_sales',
-    'pos.report.register'
-  ],
-  
-  'POS_MANAGER': [
-    // All supervisor permissions (handled by hierarchy)
-    
-    // Full sale control
-    'pos.sale.void_others',
-    
-    // Full discount control
-    'pos.discount.override_max',
-    
-    // Full refund control
-    'pos.refund.without_receipt',
-    'pos.refund.approve',
-    
-    // Full layaway control
-    'pos.layaway.cancel_with_forfeit',
-    
-    // Full register control
-    'pos.register.close_others',
-    'pos.register.blind_close',
-    
-    // Full shift control
-    'pos.shift.end_others',
-    
-    // Full reporting
-    'pos.report.staff',
-    'pos.report.export',
-    
-    // Settings
-    'pos.settings.view',
-    'pos.settings.edit',
-    'pos.settings.discounts',
-    'pos.settings.registers',
-    'pos.settings.receipts'
-  ]
+  'POS_CASHIER': CASHIER_PERMISSIONS,
+  'POS_SUPERVISOR': [...CASHIER_PERMISSIONS, ...SUPERVISOR_ADDITIONAL_PERMISSIONS],
+  'POS_MANAGER': [...CASHIER_PERMISSIONS, ...SUPERVISOR_ADDITIONAL_PERMISSIONS, ...MANAGER_ADDITIONAL_PERMISSIONS]
 }
 
 // Initialize hierarchy-based permissions
