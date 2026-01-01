@@ -949,10 +949,10 @@ export async function approvePayoutBatch(
         status: 'APPROVED',
         approvedAt: new Date(),
         approvedByUserId: approvedBy,
-        readinessChecks: {
+        readinessChecks: JSON.parse(JSON.stringify({
           checks: readiness.checks,
-          checkedAt: new Date()
-        },
+          checkedAt: new Date().toISOString()
+        })),
         readinessStatus: 'READY'
       }
     })
