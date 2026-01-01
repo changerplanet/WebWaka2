@@ -115,6 +115,11 @@ model Tenant {
   
   // Partner referral (immutable - who referred this tenant)
   partnerReferral PartnerReferral?
+  
+  // Subscription & Entitlements
+  subscription  Subscription?
+  entitlements  Entitlement[]
+  invoices      Invoice[]
 
   @@index([slug])
   @@index([status])
