@@ -99,6 +99,9 @@ model Tenant {
   domains     TenantDomain[]
   memberships TenantMembership[]
   magicLinks  MagicLink[]
+  
+  // Partner referral (immutable - who referred this tenant)
+  partnerReferral PartnerReferral?
 
   @@index([slug])
   @@index([status])
