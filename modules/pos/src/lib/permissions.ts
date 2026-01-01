@@ -216,24 +216,12 @@ export const POS_ROLE_PERMISSIONS: Record<POSRole, POSPermission[]> = {
   'POS_MANAGER': [...CASHIER_PERMISSIONS, ...SUPERVISOR_ADDITIONAL_PERMISSIONS, ...MANAGER_ADDITIONAL_PERMISSIONS]
 }
 
-// Initialize hierarchy-based permissions
-function buildPermissionsByRole(): Record<POSRole, Set<POSPermission>> {
-  const result: Record<POSRole, Set<POSPermission>> = {
-    'POS_CASHIER': new Set(POS_ROLE_PERMISSIONS['POS_CASHIER']),
-    'POS_SUPERVISOR': new Set([
-      ...POS_ROLE_PERMISSIONS['POS_CASHIER'],
-      ...POS_ROLE_PERMISSIONS['POS_SUPERVISOR']
-    ]),
-    'POS_MANAGER': new Set([
-      ...POS_ROLE_PERMISSIONS['POS_CASHIER'],
-      ...POS_ROLE_PERMISSIONS['POS_SUPERVISOR'],
-      ...POS_ROLE_PERMISSIONS['POS_MANAGER']
-    ])
-  }
-  return result
+// Pre-computed Set version for O(1) lookups
+export const POS_PERMISSIONS_BY_ROLE: Record<POSRole, Set<POSPermission>> = {
+  'POS_CASHIER': new Set(POS_ROLE_PERMISSIONS['POS_CASHIER']),
+  'POS_SUPERVISOR': new Set(POS_ROLE_PERMISSIONS['POS_SUPERVISOR']),
+  'POS_MANAGER': new Set(POS_ROLE_PERMISSIONS['POS_MANAGER'])
 }
-
-export const POS_PERMISSIONS_BY_ROLE = buildPermissionsByRole()
 
 // ============================================================================
 // PERMISSION CHECKER
