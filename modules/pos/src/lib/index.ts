@@ -77,3 +77,22 @@ export {
   type SyncResult,
   type SyncHandler
 } from './offline-queue'
+
+// Inventory Consumer (READ-ONLY)
+export {
+  POSInventoryService,
+  type ProductInventory,
+  type InventoryCheckResult,
+  type InventoryStatus,
+  type BatchInventoryCheck,
+  type BatchInventoryResult,
+  type InventoryReader,
+  // Inventory events
+  type POSInventoryEvent,
+  type InventoryDeductEvent,
+  type InventoryRestoreEvent,
+  type InventoryReserveEvent,
+  type InventoryReleaseReservationEvent,
+  type InventorySnapshotRequestEvent,
+  generateEventId
+} from './inventory-consumer'
