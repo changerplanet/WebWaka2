@@ -772,6 +772,7 @@ model PartnerReferral {
   tenant          Tenant    @relation(fields: [tenantId], references: [id], onDelete: Restrict)
   referralCode    PartnerReferralCode? @relation(fields: [referralCodeId], references: [id], onDelete: SetNull)
   earnings        PartnerEarning[]
+  subscriptions   Subscription[]  // Subscriptions attributed to this referral
 
   @@index([partnerId])
   @@index([tenantId])
