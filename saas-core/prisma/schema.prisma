@@ -66,6 +66,9 @@ model User {
   memberships TenantMembership[]
   magicLinks  MagicLink[]
   sessions    Session[]
+  
+  // Partner relation (a user can belong to ONE partner organization)
+  partnerMembership PartnerUser?
 
   @@index([email])
   @@index([globalRole])
