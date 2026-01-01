@@ -256,7 +256,7 @@ export default function PartnerDashboardPage() {
         </nav>
 
         {/* Partner Info Card */}
-        <div className="absolute bottom-20 left-4 right-4">
+        <div className="absolute bottom-28 left-4 right-4">
           <div className="bg-slate-700/50 rounded-xl p-4">
             <div className="flex items-center justify-between mb-2">
               <span className="text-xs text-slate-400">Partner Tier</span>
