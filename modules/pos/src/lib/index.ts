@@ -5,6 +5,25 @@
  * Only exports that should be used by other modules/Core are exposed here.
  */
 
+// Permissions
+export {
+  hasPermission,
+  hasAllPermissions,
+  hasAnyPermission,
+  canApproveFor,
+  canAssignRole,
+  checkPermission,
+  POS_ROLE_HIERARCHY,
+  POS_ROLE_PERMISSIONS,
+  POS_PERMISSIONS_BY_ROLE,
+  ENFORCEMENT_POINTS,
+  type POSRole,
+  type POSPermission,
+  type POSStaffContext,
+  type PermissionCheckResult,
+  type PermissionMiddleware
+} from './permissions'
+
 // Sale Engine
 export {
   SaleEngine,
