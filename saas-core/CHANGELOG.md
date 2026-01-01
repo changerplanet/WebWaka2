@@ -2,6 +2,67 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.2.0] - 2025-01-01
+
+### Added
+
+#### Partner Attribution System (Phase 2.1)
+Complete Partner-to-Tenant attribution with immutability guarantees.
+
+**New Features:**
+- Attribution methods: `PARTNER_CREATED`, `REFERRAL_LINK`, `MANUAL_ASSIGNMENT`
+- Attribution window support (lifetime or time-bound)
+- Immutability enforcement at application layer
+- Lock mechanism after first successful billing
+
+**New Schema Fields:**
+- `PartnerReferral.attributionMethod` - How attribution was created
+- `PartnerReferral.attributionWindowDays` - null = lifetime
+- `PartnerReferral.attributionExpiresAt` - Calculated expiry date
+- `PartnerReferral.createdByUserId` - Who created the attribution
+- `Tenant.status: PENDING_ACTIVATION` - New status for partner-created tenants
+- `Tenant.requestedModules` - Modules requested at creation
+- `Tenant.activatedModules` - Modules actually provisioned
+- `Tenant.activatedAt` - When tenant was activated
+
+**New APIs:**
+- `POST /api/attribution` - Create attribution via referral code
+- `GET /api/attribution?tenantId=xxx` - Get attribution for tenant
+- `POST /api/attribution/lock` - Lock attribution (internal)
+
+**New Libraries:**
+- `/src/lib/partner-attribution.ts` - Attribution service with validation
+
+#### Partner-Assisted Tenant Creation (Phase 2.2)
+Partner portal for creating tenants in pending state.
+
+**New Features:**
+- Partners can create tenants in `PENDING_ACTIVATION` state
+- Module selection at creation time (POS, SVM, MVM)
+- Automatic attribution with `PARTNER_CREATED` method
+- Invitation URL generation for tenant signup
+- Tenant activation after payment
+
+**New APIs:**
+- `POST /api/partners/{id}/tenants` - Create tenant in PENDING state
+- `GET /api/partners/{id}/tenants` - List partner's tenants
+
+**New Libraries:**
+- `/src/lib/partner-tenant-creation.ts` - Tenant creation service
+
+**New Audit Actions:**
+- `ATTRIBUTION_CREATED` - New attribution link created
+- `ATTRIBUTION_LOCKED` - Attribution locked after billing
+- `ATTRIBUTION_LOCK_ATTEMPTED` - Failed modification attempt
+- `ATTRIBUTION_REASSIGN_BLOCKED` - Reassignment blocked
+- `PARTNER_TENANT_CREATED` - Partner created tenant
+- `PARTNER_TENANT_ACTIVATED` - Tenant activated after payment
+
+### Documentation
+- Added `/docs/PARTNER_ATTRIBUTION.md` with complete flow documentation
+
+---
+
 ## [1.1.1] - 2025-01-01
 
 ### Added
