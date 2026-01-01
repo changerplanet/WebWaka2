@@ -81,6 +81,7 @@ export function generateId(prefix: string): string {
  * Get or create default zones for a tenant
  */
 export function getOrCreateDefaultZones(tenantId: string): ShippingZone[] {
+  const zonesStorage = getZonesStorage()
   if (zonesStorage.has(tenantId)) {
     return zonesStorage.get(tenantId)!
   }
