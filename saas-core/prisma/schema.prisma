@@ -327,7 +327,7 @@ model PartnerUser {
   id        String      @id @default(uuid())
   partnerId String
   userId    String
-  role      PartnerRole @default(PARTNER_MEMBER)
+  role      PartnerRole @default(PARTNER_STAFF)
   isActive  Boolean     @default(true)
   
   // Audit fields
