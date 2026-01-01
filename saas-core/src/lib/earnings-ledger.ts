@@ -655,16 +655,32 @@ export async function getLedgerSummary(
   
   for (const earning of earnings) {
     const amount = Number(earning.commissionAmount)
-    const status = earning.status.toLowerCase() as keyof typeof summary.totals
+    const statusLower = earning.status.toLowerCase()
     
-    if (status in summary.totals) {
-      summary.totals[status] += amount
-      summary.count[status]++
+    // Update totals and counts based on status
+    if (statusLower === 'pending') {
+      summary.totals.pending += amount
+      summary.count.pending++
+    } else if (statusLower === 'cleared') {
+      summary.totals.cleared += amount
+      summary.count.cleared++
+    } else if (statusLower === 'approved') {
+      summary.totals.approved += amount
+      summary.count.approved++
+    } else if (statusLower === 'paid') {
+      summary.totals.paid += amount
+      summary.count.paid++
+    } else if (statusLower === 'disputed') {
+      summary.totals.disputed += amount
+      summary.count.disputed++
+    } else if (statusLower === 'reversed') {
+      summary.totals.reversed += amount
+      summary.count.reversed++
     }
     
     // Net is sum of all non-voided, non-reversed amounts
     if (!['VOIDED', 'REVERSED'].includes(earning.status)) {
-      summary.net += amount
+      summary.totals.net += amount
     }
     
     if (earning.currency) {
