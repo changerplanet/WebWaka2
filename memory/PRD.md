@@ -199,6 +199,45 @@ All Partner APIs are marked **STABLE** and follow semantic versioning.
 
 ---
 
+## SVM Module (MODULE 2) — IN PROGRESS
+
+### Version: `svm-v1.0.0`
+
+### Implementation Status
+
+| Phase | Feature | Status |
+|-------|---------|--------|
+| 0 | Module Constitution | ✅ COMPLETE |
+| 1 | Domain Model | ✅ COMPLETE |
+| 2 | Ordering Engine | 🔜 NEXT |
+| 3 | Shipping Logic | ⏳ Pending |
+| 4 | Promotions Engine | ⏳ Pending |
+| 5 | Reviews System | ⏳ Pending |
+| 6 | Storefront UI | ⏳ Pending |
+| 7 | SEO & CMS | ⏳ Pending |
+| 8 | Events & Analytics | ⏳ Pending |
+| 9 | Module Freeze | ⏳ Pending |
+
+### SVM Module Architecture
+
+Location: `/app/modules/svm/`
+
+**SVM OWNS:**
+- OnlineOrder / OnlineOrderItem
+- ShippingZone / ShippingRate
+- Promotion / PromotionUsage
+- Review
+- StorefrontPage / StorefrontBanner / StorefrontSettings
+- Cart / CartItem / Wishlist / WishlistItem
+
+**SVM DOES NOT OWN (Core references only):**
+- Products, Inventory, Customers, Payments, Wallets
+
+### Database Tables (15 total)
+`svm_online_orders`, `svm_online_order_items`, `svm_order_status_history`, `svm_shipping_zones`, `svm_shipping_rates`, `svm_promotions`, `svm_promotion_usages`, `svm_reviews`, `svm_storefront_pages`, `svm_storefront_banners`, `svm_storefront_settings`, `svm_carts`, `svm_cart_items`, `svm_wishlists`, `svm_wishlist_items`
+
+---
+
 ## Known Limitations
 
 | Feature | Status | Notes |
