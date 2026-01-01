@@ -1,3 +1,6 @@
 {
-  "/page": "app/page.js"
+  "/page": "app/page.js",
+  "/api/svm/shipping/zones/route": "app/api/svm/shipping/zones/route.js",
+  "/api/svm/shipping/zones/[zoneId]/route": "app/api/svm/shipping/zones/[zoneId]/route.js",
+  "/api/svm/shipping/route": "app/api/svm/shipping/route.js"
 }
