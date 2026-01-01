@@ -321,7 +321,7 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    const cartKey = getCartKey(tenantId, customerId, sessionId)
+    const cartKey = getCartKey(tenantId, customerId || undefined, sessionId || undefined)
     const cart = cartStorage.get(cartKey)
 
     if (!cart) {
