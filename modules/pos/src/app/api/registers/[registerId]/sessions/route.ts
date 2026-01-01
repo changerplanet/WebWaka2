@@ -9,7 +9,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { 
   hasPermission, 
   type POSStaffContext 
-} from '../../../../lib/permissions'
+} from '@pos/lib/permissions'
 
 interface RouteParams {
   params: Promise<{ registerId: string }>
