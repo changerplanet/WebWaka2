@@ -1052,6 +1052,22 @@ enum AuditAction {
   INVOICE_CREATED
   INVOICE_PAID
   INVOICE_VOIDED
+  
+  // Commission & Earnings actions
+  COMMISSION_CALCULATED         // Commission calculated for event
+  EARNING_CREATED               // Earning ledger entry created
+  EARNING_CLEARED               // Earning cleared (after clearance period)
+  EARNING_APPROVED              // Earning approved for payout
+  EARNING_PAID                  // Earning paid
+  EARNING_DISPUTED              // Earning disputed
+  EARNING_REVERSED              // Earning reversed
+  EARNING_VOIDED                // Earning voided
+  
+  // Payout actions
+  PAYOUT_BATCH_CREATED          // Payout batch created
+  PAYOUT_BATCH_APPROVED         // Payout batch approved
+  PAYOUT_BATCH_PROCESSED        // Payout batch processed
+  PAYOUT_BATCH_FAILED           // Payout batch failed
 }
 
 model AuditLog {
