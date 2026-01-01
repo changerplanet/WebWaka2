@@ -791,10 +791,10 @@ export async function createPayoutBatch(
         earningsCount: earnings.length,
         periodStart: input.periodStart,
         periodEnd: input.periodEnd,
-        readinessChecks: {
+        readinessChecks: JSON.parse(JSON.stringify({
           checks: readiness.checks,
-          checkedAt: new Date()
-        },
+          checkedAt: new Date().toISOString()
+        })),
         readinessStatus: 'READY',
         internalNotes: input.notes
       }
