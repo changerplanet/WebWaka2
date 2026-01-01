@@ -68,7 +68,7 @@ export async function GET(request: NextRequest) {
               }
             }
           },
-          partnerUser: {
+          partnerMembership: {
             include: {
               partner: {
                 select: { id: true, name: true, slug: true, status: true }
@@ -106,12 +106,12 @@ export async function GET(request: NextRequest) {
         role: m.role,
         createdAt: m.createdAt.toISOString()
       })),
-      partnerMembership: user.partnerUser ? {
-        partnerId: user.partnerUser.partnerId,
-        partnerName: user.partnerUser.partner.name,
-        partnerSlug: user.partnerUser.partner.slug,
-        role: user.partnerUser.role,
-        isActive: user.partnerUser.isActive
+      partnerMembership: user.partnerMembership ? {
+        partnerId: user.partnerMembership.partnerId,
+        partnerName: user.partnerMembership.partner.name,
+        partnerSlug: user.partnerMembership.partner.slug,
+        role: user.partnerMembership.role,
+        isActive: user.partnerMembership.isActive
       } : null
     }))
 
@@ -120,7 +120,7 @@ export async function GET(request: NextRequest) {
       prisma.user.count(),
       prisma.user.count({ where: { globalRole: 'SUPER_ADMIN' } }),
       prisma.user.count({ where: { memberships: { some: {} } } }),
-      prisma.user.count({ where: { partnerUser: { isNot: null } } })
+      prisma.user.count({ where: { partnerMembership: { isNot: null } } })
     ])
 
     return NextResponse.json({
