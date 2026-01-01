@@ -625,6 +625,7 @@ model Partner {
   referralCodes PartnerReferralCode[]
   referrals   PartnerReferral[]
   earnings    PartnerEarning[]
+  payoutBatches PayoutBatch[]
 
   @@index([slug])
   @@index([email])
