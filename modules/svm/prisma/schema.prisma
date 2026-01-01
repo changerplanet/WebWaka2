@@ -1,0 +1,689 @@
+// =============================================================================
+// SINGLE VENDOR MARKETPLACE (SVM) MODULE - PRISMA SCHEMA
+// =============================================================================
+//
+// Version: svm-v1.0.0
+//
+// OWNERSHIP RULES:
+// ✅ SVM OWNS: Orders, OrderItems, Shipping, Promotions, Reviews, CMS
+// ❌ SVM DOES NOT OWN: Products, Inventory, Customers, Payments, Wallets
+//
+// FOREIGN KEY RULES:
+// - Core entities referenced by ID only (String fields, no @relation)
+// - No Prisma relations to Core models (separate databases/schemas)
+//
+// =============================================================================
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../node_modules/.prisma/svm-client"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// =============================================================================
+// ONLINE ORDERS
+// =============================================================================
+
+/// OnlineOrder - Owned by SVM
+/// Represents a customer's online purchase
+model OnlineOrder {
+  id              String   @id @default(cuid())
+  orderNumber     String   @unique
+  
+  // Core references (ID only)
+  tenantId        String
+  customerId      String?  // Nullable for guest checkout
+  
+  // Guest checkout info (when no customerId)
+  guestEmail      String?
+  guestPhone      String?
+  
+  // Order status
+  status          OrderStatus @default(PENDING)
+  
+  // Financials
+  subtotal        Decimal  @db.Decimal(10, 2)
+  shippingTotal   Decimal  @db.Decimal(10, 2) @default(0)
+  taxTotal        Decimal  @db.Decimal(10, 2) @default(0)
+  discountTotal   Decimal  @db.Decimal(10, 2) @default(0)
+  grandTotal      Decimal  @db.Decimal(10, 2)
+  currency        String   @default("USD")
+  
+  // Shipping address
+  shippingName        String?
+  shippingAddress1    String?
+  shippingAddress2    String?
+  shippingCity        String?
+  shippingState       String?
+  shippingPostalCode  String?
+  shippingCountry     String?
+  shippingPhone       String?
+  
+  // Billing address (if different)
+  billingSameAsShipping Boolean @default(true)
+  billingName           String?
+  billingAddress1       String?
+  billingAddress2       String?
+  billingCity           String?
+  billingState          String?
+  billingPostalCode     String?
+  billingCountry        String?
+  
+  // Shipping details
+  shippingMethod      String?
+  shippingCarrier     String?
+  trackingNumber      String?
+  estimatedDelivery   DateTime?
+  
+  // Payment reference (Core handles actual payment)
+  corePaymentId       String?
+  paymentStatus       PaymentStatus @default(PENDING)
+  paidAt              DateTime?
+  
+  // Promotion applied
+  promotionId         String?
+  promotionCode       String?
+  
+  // Notes
+  customerNotes       String?
+  internalNotes       String?
+  
+  // Fulfillment
+  fulfilledAt         DateTime?
+  shippedAt           DateTime?
+  deliveredAt         DateTime?
+  
+  // Cancellation
+  cancelledAt         DateTime?
+  cancellationReason  String?
+  
+  // Timestamps
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+  
+  // Relations (SVM-internal only)
+  items               OnlineOrderItem[]
+  statusHistory       OrderStatusHistory[]
+  
+  @@index([tenantId])
+  @@index([customerId])
+  @@index([status])
+  @@index([orderNumber])
+  @@index([createdAt])
+  @@map("svm_online_orders")
+}
+
+enum OrderStatus {
+  PENDING           // Order created, awaiting payment
+  CONFIRMED         // Payment confirmed
+  PROCESSING        // Being prepared
+  READY_TO_SHIP     // Packed, ready for carrier
+  SHIPPED           // Handed to carrier
+  IN_TRANSIT        // Carrier has it
+  OUT_FOR_DELIVERY  // Last mile
+  DELIVERED         // Customer received
+  COMPLETED         // Finalized (after return window)
+  CANCELLED         // Order cancelled
+  REFUNDED          // Fully refunded
+  PARTIALLY_REFUNDED // Partially refunded
+}
+
+enum PaymentStatus {
+  PENDING
+  AUTHORIZED
+  CAPTURED
+  FAILED
+  REFUNDED
+  PARTIALLY_REFUNDED
+}
+
+/// OnlineOrderItem - Owned by SVM
+/// Line items in an online order
+model OnlineOrderItem {
+  id              String   @id @default(cuid())
+  orderId         String
+  order           OnlineOrder @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  
+  // Core references (ID only)
+  productId       String
+  variantId       String?
+  
+  // Snapshot at time of order (prices can change)
+  productName     String
+  productSku      String?
+  variantName     String?
+  productImage    String?
+  
+  // Pricing
+  unitPrice       Decimal  @db.Decimal(10, 2)
+  quantity        Int
+  lineSubtotal    Decimal  @db.Decimal(10, 2)
+  discountAmount  Decimal  @db.Decimal(10, 2) @default(0)
+  taxAmount       Decimal  @db.Decimal(10, 2) @default(0)
+  lineTotal       Decimal  @db.Decimal(10, 2)
+  
+  // Tax info
+  taxRate         Decimal? @db.Decimal(5, 4)
+  taxExempt       Boolean  @default(false)
+  
+  // Fulfillment
+  fulfilledQty    Int      @default(0)
+  status          OrderItemStatus @default(PENDING)
+  
+  // Timestamps
+  createdAt       DateTime @default(now())
+  
+  @@index([orderId])
+  @@index([productId])
+  @@map("svm_online_order_items")
+}
+
+enum OrderItemStatus {
+  PENDING
+  ALLOCATED
+  PACKED
+  SHIPPED
+  DELIVERED
+  CANCELLED
+  RETURNED
+}
+
+/// OrderStatusHistory - Owned by SVM
+/// Tracks order status changes
+model OrderStatusHistory {
+  id          String      @id @default(cuid())
+  orderId     String
+  order       OnlineOrder @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  
+  fromStatus  OrderStatus?
+  toStatus    OrderStatus
+  changedBy   String?     // staffId or 'system'
+  reason      String?
+  metadata    Json?
+  
+  createdAt   DateTime    @default(now())
+  
+  @@index([orderId])
+  @@map("svm_order_status_history")
+}
+
+// =============================================================================
+// SHIPPING
+// =============================================================================
+
+/// ShippingZone - Owned by SVM
+/// Geographic zones for shipping
+model ShippingZone {
+  id          String   @id @default(cuid())
+  tenantId    String
+  
+  name        String
+  description String?
+  
+  // Zone definition
+  countries   String[] // ISO country codes
+  states      String[] // State/province codes (optional)
+  postalCodes String[] // Specific postal codes (optional)
+  
+  isDefault   Boolean  @default(false)
+  isActive    Boolean  @default(true)
+  priority    Int      @default(0) // Higher = checked first
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  rates       ShippingRate[]
+  
+  @@index([tenantId])
+  @@map("svm_shipping_zones")
+}
+
+/// ShippingRate - Owned by SVM
+/// Shipping rates within a zone
+model ShippingRate {
+  id          String       @id @default(cuid())
+  zoneId      String
+  zone        ShippingZone @relation(fields: [zoneId], references: [id], onDelete: Cascade)
+  
+  name        String       // "Standard", "Express", "Overnight"
+  description String?
+  carrier     String?      // "USPS", "FedEx", "UPS"
+  
+  // Rate calculation
+  rateType    ShippingRateType @default(FLAT)
+  flatRate    Decimal?     @db.Decimal(10, 2)
+  
+  // Weight-based
+  minWeight   Decimal?     @db.Decimal(10, 2)
+  maxWeight   Decimal?     @db.Decimal(10, 2)
+  weightRate  Decimal?     @db.Decimal(10, 4) // per unit
+  
+  // Price-based
+  minOrderTotal   Decimal? @db.Decimal(10, 2)
+  maxOrderTotal   Decimal? @db.Decimal(10, 2)
+  percentageRate  Decimal? @db.Decimal(5, 4)
+  
+  // Free shipping threshold
+  freeAbove       Decimal? @db.Decimal(10, 2)
+  
+  // Delivery estimate
+  minDays         Int?
+  maxDays         Int?
+  
+  isActive        Boolean  @default(true)
+  priority        Int      @default(0)
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  @@index([zoneId])
+  @@map("svm_shipping_rates")
+}
+
+enum ShippingRateType {
+  FLAT            // Fixed rate
+  WEIGHT_BASED    // Based on total weight
+  PRICE_BASED     // Based on order total
+  CALCULATED      // Real-time carrier rates (future)
+}
+
+// =============================================================================
+// PROMOTIONS
+// =============================================================================
+
+/// Promotion - Owned by SVM
+/// Discount codes and automatic promotions
+model Promotion {
+  id              String   @id @default(cuid())
+  tenantId        String
+  
+  name            String
+  description     String?
+  code            String?  // Nullable for automatic promotions
+  
+  // Type
+  type            PromotionType
+  discountType    DiscountType
+  
+  // Value
+  discountValue   Decimal  @db.Decimal(10, 2)
+  maxDiscount     Decimal? @db.Decimal(10, 2) // Cap for percentage
+  
+  // Conditions
+  minOrderTotal   Decimal? @db.Decimal(10, 2)
+  minQuantity     Int?
+  
+  // Product restrictions (empty = all products)
+  productIds      String[] // Specific products
+  categoryIds     String[] // Product categories
+  excludeProductIds String[] // Excluded products
+  
+  // Customer restrictions
+  customerIds     String[] // Specific customers only
+  firstOrderOnly  Boolean  @default(false)
+  
+  // Usage limits
+  usageLimit      Int?     // Total uses allowed
+  usageCount      Int      @default(0)
+  perCustomerLimit Int?    // Uses per customer
+  
+  // Validity
+  startsAt        DateTime @default(now())
+  endsAt          DateTime?
+  isActive        Boolean  @default(true)
+  
+  // Stacking
+  stackable       Boolean  @default(false)
+  priority        Int      @default(0)
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  usages          PromotionUsage[]
+  
+  @@unique([tenantId, code])
+  @@index([tenantId])
+  @@index([code])
+  @@index([isActive, startsAt, endsAt])
+  @@map("svm_promotions")
+}
+
+enum PromotionType {
+  COUPON          // Requires code entry
+  AUTOMATIC       // Applied automatically
+  FLASH_SALE      // Time-limited
+}
+
+enum DiscountType {
+  PERCENTAGE      // % off
+  FIXED_AMOUNT    // $ off order
+  FIXED_PER_ITEM  // $ off each item
+  FREE_SHIPPING   // Free shipping
+  BUY_X_GET_Y     // BOGO style
+}
+
+/// PromotionUsage - Owned by SVM
+/// Tracks promotion usage
+model PromotionUsage {
+  id          String    @id @default(cuid())
+  promotionId String
+  promotion   Promotion @relation(fields: [promotionId], references: [id], onDelete: Cascade)
+  
+  orderId     String
+  customerId  String?   // Core reference
+  
+  discountApplied Decimal @db.Decimal(10, 2)
+  
+  createdAt   DateTime  @default(now())
+  
+  @@index([promotionId])
+  @@index([customerId])
+  @@map("svm_promotion_usages")
+}
+
+// =============================================================================
+// REVIEWS
+// =============================================================================
+
+/// Review - Owned by SVM
+/// Product reviews from customers
+model Review {
+  id          String   @id @default(cuid())
+  tenantId    String
+  
+  // Core references
+  productId   String
+  customerId  String
+  orderId     String?  // Optional link to order
+  
+  // Review content
+  rating      Int      // 1-5
+  title       String?
+  body        String?
+  
+  // Verification
+  verifiedPurchase Boolean @default(false)
+  
+  // Moderation
+  status      ReviewStatus @default(PENDING)
+  moderatedBy String?
+  moderatedAt DateTime?
+  moderationNotes String?
+  
+  // Helpfulness
+  helpfulCount    Int @default(0)
+  notHelpfulCount Int @default(0)
+  
+  // Reply from store
+  storeReply      String?
+  storeReplyAt    DateTime?
+  storeReplyBy    String?
+  
+  // Media
+  images      String[] // URLs
+  
+  // Flags
+  isFeatured  Boolean @default(false)
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@index([tenantId])
+  @@index([productId])
+  @@index([customerId])
+  @@index([status])
+  @@index([rating])
+  @@map("svm_reviews")
+}
+
+enum ReviewStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  FLAGGED
+}
+
+// =============================================================================
+// CMS / STOREFRONT PAGES
+// =============================================================================
+
+/// StorefrontPage - Owned by SVM
+/// Custom pages for the storefront
+model StorefrontPage {
+  id          String   @id @default(cuid())
+  tenantId    String
+  
+  title       String
+  slug        String
+  
+  // Content
+  content     Json?    // Block-based content
+  htmlContent String?  // Raw HTML (alternative)
+  
+  // SEO
+  metaTitle       String?
+  metaDescription String?
+  metaKeywords    String?
+  ogImage         String?
+  
+  // Settings
+  template    String   @default("default")
+  isPublished Boolean  @default(false)
+  publishedAt DateTime?
+  
+  // Navigation
+  showInNav   Boolean  @default(false)
+  navOrder    Int      @default(0)
+  parentId    String?  // For nested pages
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  createdBy   String?
+  
+  @@unique([tenantId, slug])
+  @@index([tenantId])
+  @@index([isPublished])
+  @@map("svm_storefront_pages")
+}
+
+/// StorefrontBanner - Owned by SVM
+/// Homepage banners and promotional blocks
+model StorefrontBanner {
+  id          String   @id @default(cuid())
+  tenantId    String
+  
+  title       String
+  subtitle    String?
+  
+  // Image
+  imageUrl    String
+  imageMobile String?  // Mobile-specific image
+  altText     String?
+  
+  // Link
+  linkUrl     String?
+  linkText    String?
+  openInNewTab Boolean @default(false)
+  
+  // Placement
+  placement   BannerPlacement @default(HOMEPAGE_HERO)
+  position    Int      @default(0)
+  
+  // Scheduling
+  startsAt    DateTime @default(now())
+  endsAt      DateTime?
+  isActive    Boolean  @default(true)
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@index([tenantId])
+  @@index([placement, isActive])
+  @@map("svm_storefront_banners")
+}
+
+enum BannerPlacement {
+  HOMEPAGE_HERO
+  HOMEPAGE_SECONDARY
+  CATEGORY_TOP
+  PRODUCT_SIDEBAR
+  CART_PROMO
+  CHECKOUT_BANNER
+}
+
+/// StorefrontSettings - Owned by SVM
+/// Global storefront configuration
+model StorefrontSettings {
+  id          String   @id @default(cuid())
+  tenantId    String   @unique
+  
+  // Store info
+  storeName           String?
+  storeTagline        String?
+  storeLogo           String?
+  storeFavicon        String?
+  
+  // Contact
+  contactEmail        String?
+  contactPhone        String?
+  contactAddress      String?
+  
+  // Social
+  socialFacebook      String?
+  socialInstagram     String?
+  socialTwitter       String?
+  socialYoutube       String?
+  socialTiktok        String?
+  
+  // SEO defaults
+  defaultMetaTitle    String?
+  defaultMetaDesc     String?
+  googleAnalyticsId   String?
+  facebookPixelId     String?
+  
+  // Checkout
+  guestCheckoutEnabled Boolean @default(true)
+  requirePhone         Boolean @default(false)
+  
+  // Display
+  productsPerPage      Int     @default(24)
+  showOutOfStock       Boolean @default(true)
+  showReviews          Boolean @default(true)
+  reviewsRequireApproval Boolean @default(true)
+  
+  // Currency & Tax
+  defaultCurrency      String  @default("USD")
+  taxInclusive         Boolean @default(false)
+  
+  // Policies (page slugs)
+  privacyPolicySlug    String?
+  termsOfServiceSlug   String?
+  returnPolicySlug     String?
+  shippingPolicySlug   String?
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@map("svm_storefront_settings")
+}
+
+// =============================================================================
+// CART (EPHEMERAL - Optional persistence)
+// =============================================================================
+
+/// Cart - Owned by SVM
+/// Shopping cart (can be stored or in-memory)
+model Cart {
+  id          String   @id @default(cuid())
+  tenantId    String
+  
+  // Owner
+  customerId  String?  // Logged in customer
+  sessionId   String?  // Anonymous session
+  
+  // Totals (calculated)
+  subtotal    Decimal  @db.Decimal(10, 2) @default(0)
+  
+  // Applied promotion
+  promotionCode String?
+  discountTotal Decimal @db.Decimal(10, 2) @default(0)
+  
+  // Timestamps
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  expiresAt   DateTime? // For cleanup
+  
+  items       CartItem[]
+  
+  @@unique([tenantId, customerId])
+  @@unique([tenantId, sessionId])
+  @@index([tenantId])
+  @@index([expiresAt])
+  @@map("svm_carts")
+}
+
+/// CartItem - Owned by SVM
+model CartItem {
+  id          String   @id @default(cuid())
+  cartId      String
+  cart        Cart     @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  
+  // Core references
+  productId   String
+  variantId   String?
+  
+  quantity    Int
+  
+  // Snapshot (optional, for display)
+  productName String?
+  unitPrice   Decimal? @db.Decimal(10, 2)
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@unique([cartId, productId, variantId])
+  @@map("svm_cart_items")
+}
+
+// =============================================================================
+// WISHLIST
+// =============================================================================
+
+/// Wishlist - Owned by SVM
+model Wishlist {
+  id          String   @id @default(cuid())
+  tenantId    String
+  customerId  String
+  
+  name        String   @default("My Wishlist")
+  isPublic    Boolean  @default(false)
+  shareToken  String?  @unique
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  items       WishlistItem[]
+  
+  @@unique([tenantId, customerId, name])
+  @@index([tenantId])
+  @@index([customerId])
+  @@map("svm_wishlists")
+}
+
+/// WishlistItem - Owned by SVM
+model WishlistItem {
+  id          String   @id @default(cuid())
+  wishlistId  String
+  wishlist    Wishlist @relation(fields: [wishlistId], references: [id], onDelete: Cascade)
+  
+  productId   String
+  variantId   String?
+  addedAt     DateTime @default(now())
+  
+  @@unique([wishlistId, productId, variantId])
+  @@map("svm_wishlist_items")
+}
