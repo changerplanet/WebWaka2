@@ -2,6 +2,55 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.1.0] - 2025-01-01
+
+### Added
+
+#### Partner Domain Models
+Platform-level reseller/affiliate system - Partners are INDEPENDENT of Tenants.
+
+**New Entities:**
+- `Partner` - Reseller organization at platform level
+- `PartnerUser` - Links User to Partner with role (OWNER, ADMIN, MEMBER)
+- `PartnerAgreement` - Versioned contract terms with commission structure
+- `PartnerReferralCode` - Trackable codes for attribution campaigns
+- `PartnerReferral` - **IMMUTABLE** attribution link between Partner and Tenant
+- `PartnerEarning` - Commission tracking per billing period
+
+**New Enums:**
+- `PartnerStatus` - PENDING, ACTIVE, SUSPENDED, TERMINATED
+- `PartnerTier` - BRONZE, SILVER, GOLD, PLATINUM
+- `PartnerRole` - PARTNER_OWNER, PARTNER_ADMIN, PARTNER_MEMBER
+- `AgreementStatus` - DRAFT, ACTIVE, SUPERSEDED, TERMINATED
+- `CommissionType` - PERCENTAGE, FIXED, TIERED
+- `EarningStatus` - PENDING, APPROVED, PAID, DISPUTED, CANCELLED
+
+**Key Design Decisions:**
+- Partners exist at platform level (NOT tenants)
+- PartnerReferral is immutable after creation
+- Each tenant can have only ONE referral (database enforced)
+- User can belong to only ONE partner organization
+- Agreement versioning supports historical commission rates
+
+**New Audit Actions:**
+- PARTNER_CREATED, PARTNER_UPDATED, PARTNER_APPROVED
+- PARTNER_SUSPENDED, PARTNER_TERMINATED
+- PARTNER_USER_ADDED, PARTNER_USER_REMOVED
+- PARTNER_AGREEMENT_CREATED, PARTNER_AGREEMENT_SIGNED, PARTNER_AGREEMENT_APPROVED
+- PARTNER_REFERRAL_CREATED, PARTNER_REFERRAL_LOCKED
+- PARTNER_EARNING_CREATED, PARTNER_EARNING_APPROVED, PARTNER_EARNING_PAID
+
+#### Partner Isolation
+- `validatePartnerAccess()` - Pre-query validation for partner-scoped models
+- `createPartnerContext()` - Context builder with partner role info
+- `withPartnerFilter()` / `withPartnerData()` - Safe query builders
+- `PARTNER_SCOPED_MODELS` constant for isolation enforcement
+
+### Documentation
+- Added `/docs/PARTNER_DOMAIN_MODELS.md` with relationship diagrams
+
+---
+
 ## [1.0.0] - 2025-12-31
 
 ### Added
