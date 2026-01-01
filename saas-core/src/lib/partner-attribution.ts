@@ -199,7 +199,7 @@ export async function createAttribution(input: AttributionInput): Promise<Attrib
         attributionExpiresAt,
         referralSource: input.referralSource,
         landingPage: input.landingPage,
-        metadata: input.metadata,
+        metadata: input.metadata ?? undefined,
         createdByUserId: session?.user?.id,
         attributionLocked: false // Will be locked after first billing
       }
