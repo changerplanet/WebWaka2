@@ -132,12 +132,31 @@ export async function PUT(request: NextRequest, context: RouteParams) {
 /**
  * DELETE /api/svm/orders/:orderId
  * Cancel an order
+ * Supports both query params and JSON body
  */
 export async function DELETE(request: NextRequest, context: RouteParams) {
   try {
     const { orderId } = await context.params
-    const body = await request.json()
-    const { tenantId, reason, cancelledBy, cancelledByUserId } = body
+    const { searchParams } = new URL(request.url)
+    
+    // Try query params first
+    let tenantId = searchParams.get('tenantId')
+    let reason = searchParams.get('reason')
+    let cancelledBy = searchParams.get('cancelledBy')
+    let cancelledByUserId = searchParams.get('cancelledByUserId')
+
+    // If not in query params, try body
+    if (!tenantId) {
+      try {
+        const body = await request.json()
+        tenantId = body.tenantId
+        reason = body.reason
+        cancelledBy = body.cancelledBy
+        cancelledByUserId = body.cancelledByUserId
+      } catch {
+        // Body parse failed, use query params only
+      }
+    }
 
     if (!orderId || !tenantId || !reason || !cancelledBy) {
       return NextResponse.json(
