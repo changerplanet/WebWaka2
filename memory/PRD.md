@@ -128,8 +128,12 @@ Production-grade, reusable SaaS Core with Next.js App Router, PostgreSQL (Prisma
 - `/app/saas-core/src/lib/partner-authorization.ts` - Partner access control
 - `/app/saas-core/src/lib/partner-attribution.ts` - Attribution service
 - `/app/saas-core/src/lib/partner-tenant-creation.ts` - Partner tenant creation
+- `/app/saas-core/src/lib/entitlements.ts` - Module access checks (for modules)
+- `/app/saas-core/src/lib/subscription.ts` - Subscription management
+- `/app/saas-core/src/lib/subscription-events.ts` - Lifecycle events
 - `/app/saas-core/docs/PARTNER_ACCESS_CONTROL.md` - Partner ACL docs
 - `/app/saas-core/docs/PARTNER_ATTRIBUTION.md` - Attribution & linking docs
+- `/app/saas-core/docs/SUBSCRIPTION_ENTITLEMENT.md` - Subscription & entitlement docs
 
 ### API Endpoints (Phase 2)
 - `POST /api/attribution` - Create attribution via referral code
