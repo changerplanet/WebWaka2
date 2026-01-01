@@ -29,7 +29,7 @@ interface User {
   name: string | null
 }
 
-export default function ReferralsPage() {
+function ReferralsContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const [user, setUser] = useState<User | null>(null)
