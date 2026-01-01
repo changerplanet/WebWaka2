@@ -123,51 +123,116 @@ Partner users and tenant users are **completely separate** identity spaces:
 
 ## Role Definitions
 
-### PARTNER_OWNER
+### 1. SUPER_ADMIN (Platform Level)
+
+**Scope**: Full platform access across ALL partners
+
+| Area | Permissions |
+|------|-------------|
+| Partner Management | View all, Edit all, Create, Approve, Suspend, Terminate |
+| Partner Users | View all, Add, Remove, Change roles |
+| Agreements | View all, Create drafts, Approve (NOT sign) |
+| Referrals | View all across platform |
+| Earnings | View all, Approve, Process payments |
+| Reports | Full platform analytics |
+
+**Notes**:
+- Super Admins APPROVE agreements; they do not SIGN them
+- Super Admins can access any partner organization
+- All Super Admin actions are audit logged
+
+---
+
+### 2. PARTNER_OWNER
 **Full control within their partner organization**
 
-| Permission | Allowed |
-|------------|---------|
-| View partner profile | ✅ |
-| Edit partner profile | ✅ |
-| Manage partner users | ✅ |
-| Sign agreements | ✅ |
-| View all referrals | ✅ |
-| Create referral codes | ✅ |
-| View all earnings (detail) | ✅ |
-| Export earnings | ✅ |
-| View agreement history | ✅ |
-| **Access tenant internals** | ❌ NEVER |
+| Area | Permission | Description |
+|------|------------|-------------|
+| **Partner Profile** | | |
+| View Partner | ✅ | View partner organization details |
+| Edit Partner | ✅ | Update name, contact info, branding |
+| **User Management** | | |
+| View Users | ✅ | See all partner organization members |
+| Add Users | ✅ | Invite new users to partner org |
+| Remove Users | ✅ | Remove members from partner org |
+| Change Roles | ✅ | Promote/demote between OWNER and STAFF |
+| **Agreements** | | |
+| View Agreement | ✅ | View current and historical agreements |
+| View History | ✅ | See all agreement versions |
+| Sign Agreement | ✅ | Digitally sign new agreements |
+| **Referrals** | | |
+| View Referrals | ✅ | See all tenant referrals |
+| View All Referrals | ✅ | See referrals from all codes |
+| Create Codes | ✅ | Generate new referral codes |
+| Manage Codes | ✅ | Activate/deactivate codes |
+| **Earnings** | | |
+| View Earnings | ✅ | See commission data |
+| View All Earnings | ✅ | See line-item earnings detail |
+| Export Earnings | ✅ | Download earnings reports |
 
-### PARTNER_STAFF
-**Limited access within their partner organization**
+**Boundary Restrictions**:
+- ❌ CANNOT access tenant internal data
+- ❌ CANNOT access other partners' data
+- ❌ CANNOT approve their own agreements (requires Super Admin)
 
-| Permission | Allowed |
-|------------|---------|
-| View partner profile | ✅ |
-| Edit partner profile | ❌ |
-| Manage partner users | ❌ |
-| Sign agreements | ❌ |
-| View referrals | ✅ (own only) |
-| Create referral codes | ✅ |
-| View earnings (summary) | ✅ |
-| Export earnings | ❌ |
-| View agreement history | ❌ |
-| **Access tenant internals** | ❌ NEVER |
+---
 
-### SUPER_ADMIN (Platform)
-**Platform-wide access for administration**
+### 3. PARTNER_STAFF
+**Limited operational access within their partner organization**
 
-| Permission | Allowed |
-|------------|---------|
-| View any partner | ✅ |
-| Edit any partner | ✅ |
-| Approve partners | ✅ |
-| Suspend/terminate partners | ✅ |
-| View all referrals | ✅ |
-| View all earnings | ✅ |
-| Approve earnings for payment | ✅ |
-| **Sign partner agreements** | ❌ (Partners sign, Admins approve) |
+| Area | Permission | Description |
+|------|------------|-------------|
+| **Partner Profile** | | |
+| View Partner | ✅ | View partner organization details |
+| Edit Partner | ❌ | Cannot modify partner profile |
+| **User Management** | | |
+| View Users | ❌ | Cannot see member list |
+| Add Users | ❌ | Cannot invite members |
+| Remove Users | ❌ | Cannot remove members |
+| **Agreements** | | |
+| View Agreement | ✅ | View current agreement only |
+| View History | ❌ | Cannot see historical versions |
+| Sign Agreement | ❌ | Cannot sign agreements |
+| **Referrals** | | |
+| View Referrals | ✅ | See referrals (limited scope) |
+| View All Referrals | ❌ | Only sees referrals from own codes |
+| Create Codes | ✅ | Generate new referral codes |
+| Manage Codes | ❌ | Cannot deactivate codes |
+| **Earnings** | | |
+| View Earnings | ✅ | See summary earnings only |
+| View All Earnings | ❌ | Cannot see line-item detail |
+| Export Earnings | ❌ | Cannot export reports |
+
+**Boundary Restrictions**:
+- ❌ CANNOT access tenant internal data
+- ❌ CANNOT access other partners' data
+- ❌ CANNOT modify partner settings
+- ❌ CANNOT manage team members
+
+---
+
+## Permission Matrix
+
+| Permission | SUPER_ADMIN | PARTNER_OWNER | PARTNER_STAFF |
+|------------|:-----------:|:-------------:|:-------------:|
+| **Partner Management** | | | |
+| canViewPartner | ✅ | ✅ | ✅ |
+| canEditPartner | ✅ | ✅ | ❌ |
+| canManagePartnerUsers | ✅ | ✅ | ❌ |
+| canSignAgreement | ❌* | ✅ | ❌ |
+| **Referral Management** | | | |
+| canViewReferrals | ✅ | ✅ | ✅ |
+| canCreateReferralCodes | ✅ | ✅ | ✅ |
+| canViewAllReferrals | ✅ | ✅ | ❌ |
+| **Earnings** | | | |
+| canViewEarnings | ✅ | ✅ | ✅ |
+| canViewAllEarnings | ✅ | ✅ | ❌ |
+| canExportEarnings | ✅ | ✅ | ❌ |
+| **Agreement** | | | |
+| canViewAgreement | ✅ | ✅ | ✅ |
+| canViewAgreementHistory | ✅ | ✅ | ❌ |
+
+*\* Super Admin approves agreements but does not sign them*
 
 ---
 
