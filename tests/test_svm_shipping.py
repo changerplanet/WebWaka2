@@ -78,7 +78,7 @@ class TestShippingZonesListing:
         assert response.status_code == 400
         data = response.json()
         assert data["success"] is False
-        assert "tenantId" in data["error"].lower()
+        assert "tenantid" in data["error"].lower()  # Case-insensitive check
         
     def test_list_zones_verify_us_rates(self, api_client, test_tenant_id):
         """Test US zone has correct shipping rates"""
@@ -403,7 +403,7 @@ class TestShippingCalculation:
         assert response.status_code == 400
         data = response.json()
         assert data["success"] is False
-        assert "tenantId" in data["error"].lower()
+        assert "tenantid" in data["error"].lower()  # Case-insensitive check
         
     def test_calculate_shipping_missing_destination(self, api_client, test_tenant_id):
         """Test calculation without destination returns 400"""
