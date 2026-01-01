@@ -311,6 +311,14 @@ CANCELLED  CANCELLED CANCELLED/REFUNDED  REFUNDED   REFUNDED
 - **Limits**: Usage limit, per-customer limit, date range
 - **Stacking**: Priority-based, stackable flag
 
+### Offline & PWA Capabilities (Phase 6)
+- **Offline-safe actions**: Browse products, manage cart, view wishlist, search cached
+- **Online-required actions**: Place order, checkout, payment, validate coupon
+- **Local storage**: Cart, wishlist, cached products persisted offline
+- **Service worker**: Caching strategies for different resources
+- **UI components**: OfflineBanner, ConnectionIndicator, OfflineBlocker, SyncStatus
+- **Queue system**: Queueable actions (reviews, profile updates) for later sync
+
 ### Shipping Capabilities (Phase 4)
 - **Zone-based shipping**: Country, state, city, postal code matching
 - **Rate types**: Flat, weight-based, price-based, item-based
