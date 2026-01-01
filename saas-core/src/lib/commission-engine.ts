@@ -454,7 +454,7 @@ function calculateHybridCommission(
     }
   }
   
-  const rules = (agreement.commissionRules as { rules: HybridRule[] }).rules
+  const rules = (agreement.commissionRules as unknown as { rules: HybridRule[] }).rules
   const breakdown: CommissionBreakdown[] = []
   let totalCommission = 0
   
