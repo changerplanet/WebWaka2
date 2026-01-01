@@ -355,7 +355,9 @@ export async function generateAuditReport(
   
   for (const entry of entries) {
     byAction[entry.action] = (byAction[entry.action] || 0) + 1
-    byTargetType[entry.targetType] = (byTargetType[entry.targetType] || 0) + 1
+    if (entry.targetType) {
+      byTargetType[entry.targetType] = (byTargetType[entry.targetType] || 0) + 1
+    }
   }
   
   return {
