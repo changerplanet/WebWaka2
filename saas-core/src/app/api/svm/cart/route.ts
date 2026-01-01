@@ -262,11 +262,27 @@ export async function GET(request: NextRequest) {
 
 /**
  * DELETE /api/svm/cart
+ * Supports both query params and JSON body for flexibility
  */
 export async function DELETE(request: NextRequest) {
   try {
-    const body = await request.json()
-    const { tenantId, customerId, sessionId } = body
+    // Try to get params from query string first, then body
+    const { searchParams } = new URL(request.url)
+    let tenantId = searchParams.get('tenantId')
+    let customerId = searchParams.get('customerId')
+    let sessionId = searchParams.get('sessionId')
+
+    // If not in query params, try body
+    if (!tenantId) {
+      try {
+        const body = await request.json()
+        tenantId = body.tenantId
+        customerId = body.customerId
+        sessionId = body.sessionId
+      } catch {
+        // Body parse failed, use query params only
+      }
+    }
 
     if (!tenantId || (!customerId && !sessionId)) {
       return NextResponse.json(
@@ -275,7 +291,7 @@ export async function DELETE(request: NextRequest) {
       )
     }
 
-    const cartKey = getCartKey(tenantId, customerId, sessionId)
+    const cartKey = getCartKey(tenantId, customerId || undefined, sessionId || undefined)
     cartStorage.delete(cartKey)
 
     return NextResponse.json({
@@ -286,7 +302,7 @@ export async function DELETE(request: NextRequest) {
   } catch (error) {
     console.error('[SVM] Error clearing cart:', error)
     return NextResponse.json(
-      { success: false, error: 'Internal server error' },
+      { success: false, error: error instanceof Error ? error.message : 'Internal server error' },
       { status: 500 }
     )
   }
