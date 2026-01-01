@@ -189,6 +189,27 @@ export function createTenantContext(
 }
 
 /**
+ * Create a partner context from user session
+ */
+export function createPartnerContext(
+  partnerId: string | null,
+  userId: string | null,
+  isSuperAdmin: boolean,
+  isPartnerOwner: boolean = false,
+  isPartnerAdmin: boolean = false,
+  bypassIsolation: boolean = false
+): PartnerContext {
+  return {
+    partnerId,
+    userId,
+    isSuperAdmin,
+    isPartnerOwner,
+    isPartnerAdmin,
+    bypassIsolation
+  }
+}
+
+/**
  * Ensure a WHERE clause includes the correct tenantId
  */
 export function withTenantFilter<T extends Record<string, any>>(
@@ -211,5 +232,90 @@ export function withTenantData<T extends Record<string, any>>(
   return {
     ...data,
     tenantId
+  }
+}
+
+/**
+ * Check if a model is partner-scoped
+ */
+export function isPartnerScopedModel(model: string): model is PartnerScopedModel {
+  return PARTNER_SCOPED_MODELS.includes(model as any)
+}
+
+/**
+ * Validate partner context before executing a query
+ * This should be called before any partner-scoped database operation
+ */
+export function validatePartnerAccess(
+  model: string,
+  action: string,
+  context: PartnerContext | null,
+  queryPartnerId?: string | null
+): void {
+  // Skip validation for non-partner models
+  if (!isPartnerScopedModel(model)) {
+    return
+  }
+  
+  // Allow explicit bypass (for migrations, admin tools, etc.)
+  if (context?.bypassIsolation === true) {
+    if (!context.isSuperAdmin) {
+      const reason = 'Partner bypass isolation attempted without SUPER_ADMIN role'
+      logViolation({ model, action, context: context as any, query: { queryPartnerId }, reason })
+      throw new TenantIsolationError(reason, model, action, context as any)
+    }
+    return
+  }
+  
+  // SUPER_ADMIN can access all partner data
+  if (context?.isSuperAdmin) {
+    return
+  }
+  
+  // No context = violation
+  if (!context) {
+    const reason = 'No partner context provided for partner-scoped query'
+    logViolation({ model, action, context: null, query: { queryPartnerId }, reason })
+    throw new TenantIsolationError(reason, model, action, null)
+  }
+  
+  // No partnerId in context = violation
+  if (!context.partnerId) {
+    const reason = 'No partnerId in context for partner-scoped query'
+    logViolation({ model, action, context: context as any, query: { queryPartnerId }, reason })
+    throw new TenantIsolationError(reason, model, action, context as any)
+  }
+  
+  // If query specifies a partnerId, it must match context
+  if (queryPartnerId && queryPartnerId !== context.partnerId) {
+    const reason = `Cross-partner access attempt: query partnerId (${queryPartnerId}) != context partnerId (${context.partnerId})`
+    logViolation({ model, action, context: context as any, query: { queryPartnerId }, reason })
+    throw new TenantIsolationError(reason, model, action, context as any)
+  }
+}
+
+/**
+ * Ensure a WHERE clause includes the correct partnerId
+ */
+export function withPartnerFilter<T extends Record<string, any>>(
+  where: T,
+  partnerId: string
+): T & { partnerId: string } {
+  return {
+    ...where,
+    partnerId
+  }
+}
+
+/**
+ * Ensure data being created includes the correct partnerId
+ */
+export function withPartnerData<T extends Record<string, any>>(
+  data: T,
+  partnerId: string
+): T & { partnerId: string } {
+  return {
+    ...data,
+    partnerId
   }
 }
