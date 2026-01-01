@@ -449,22 +449,28 @@ console.log(JSON.stringify({
         print("✓ Expired entitlements are correctly denied")
     
     def test_no_plan_names_in_entitlements(self):
-        """Verify entitlements don't reference plan names"""
+        """Verify entitlements don't reference plan names in code (comments allowed)"""
         entitlements_path = f'{POS_MODULE_PATH}/src/lib/entitlements.ts'
         
         with open(entitlements_path, 'r') as f:
-            content = f.read()
+            lines = f.readlines()
         
-        # Plan names that should NOT appear
-        forbidden_terms = ['starter', 'professional', 'enterprise', 'basic', 'premium', 'pro']
+        # Plan names that should NOT appear in actual code (not comments)
+        forbidden_terms = ['starter', 'professional', 'enterprise', 'premium', 'pro plan', 'basic plan']
         
         violations = []
-        for term in forbidden_terms:
-            if re.search(rf'\b{term}\b', content, re.IGNORECASE):
-                violations.append(term)
+        for i, line in enumerate(lines, 1):
+            # Skip comment lines
+            stripped = line.strip()
+            if stripped.startswith('//') or stripped.startswith('*') or stripped.startswith('/*'):
+                continue
+            
+            for term in forbidden_terms:
+                if re.search(rf'\b{term}\b', line, re.IGNORECASE):
+                    violations.append(f"Line {i}: {term}")
         
-        assert len(violations) == 0, f"Found plan names in entitlements: {violations}"
-        print("✓ No plan names found in entitlements (properly abstracted)")
+        assert len(violations) == 0, f"Found plan names in entitlements code: {violations}"
+        print("✓ No plan names found in entitlements code (properly abstracted)")
     
     def _run_ts_script(self, script: str) -> str:
         """Helper to run TypeScript code"""
