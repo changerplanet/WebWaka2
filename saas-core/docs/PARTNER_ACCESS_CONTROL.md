@@ -309,6 +309,49 @@ interface PartnerVisibleTenantData {
 
 ---
 
+## Authorization Flow
+
+### API Request Flow
+
+```
+1. Request arrives at Partner API
+         │
+         ▼
+2. Authenticate user (session token)
+         │
+         ▼
+3. Check if user is active
+         │
+         ▼
+4. Check if user is a Partner user
+         │
+         ▼
+5. Check if Partner is ACTIVE status
+         │
+         ▼
+6. Check if user belongs to requested Partner
+         │
+         ▼
+7. Check role-specific permission
+         │
+         ▼
+8. Execute request & return data
+```
+
+### Authorization Functions
+
+| Function | Use Case |
+|----------|----------|
+| `requirePartnerUser()` | Any endpoint requiring partner membership |
+| `requirePartnerOwner()` | Endpoints requiring OWNER role |
+| `requirePartnerAccess(partnerId)` | Access to specific partner by ID |
+| `requirePartnerOwnerAccess(partnerId)` | OWNER access to specific partner |
+| `requirePartnerAccessBySlug(slug)` | Access to partner by URL slug |
+| `getPartnerPermissions(role)` | Get permission set for role |
+| `hasPartnerPermission(role, permission)` | Check specific permission |
+
+---
+
 ## Access Boundary Explanation
 
 ### What Partners CAN See About Referred Tenants
