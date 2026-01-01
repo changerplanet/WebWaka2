@@ -226,6 +226,297 @@ model Session {
 }
 
 // ============================================================================
+// SUBSCRIPTION & ENTITLEMENT DOMAIN
+// Manages tenant subscriptions and module access
+// Partner logic is ISOLATED - modules only check entitlements
+// ============================================================================
+
+// Subscription status
+enum SubscriptionStatus {
+  PENDING        // Created but not yet active
+  TRIALING       // In trial period
+  ACTIVE         // Paid and active
+  PAST_DUE       // Payment failed, grace period
+  CANCELLED      // Cancelled, access until period end
+  EXPIRED        // Period ended, no access
+  PAUSED         // Temporarily paused
+}
+
+// Billing interval
+enum BillingInterval {
+  MONTHLY
+  QUARTERLY
+  YEARLY
+}
+
+// Entitlement status
+enum EntitlementStatus {
+  ACTIVE         // Module is accessible
+  SUSPENDED      // Temporarily suspended
+  EXPIRED        // No longer valid
+}
+
+// Subscription event types
+enum SubscriptionEventType {
+  SUBSCRIPTION_CREATED
+  SUBSCRIPTION_ACTIVATED
+  SUBSCRIPTION_RENEWED
+  SUBSCRIPTION_CANCELLED
+  SUBSCRIPTION_PAUSED
+  SUBSCRIPTION_RESUMED
+  SUBSCRIPTION_UPGRADED
+  SUBSCRIPTION_DOWNGRADED
+  SUBSCRIPTION_EXPIRED
+  PAYMENT_SUCCEEDED
+  PAYMENT_FAILED
+  TRIAL_STARTED
+  TRIAL_ENDED
+}
+
+// ============================================================================
+// SUBSCRIPTION PLAN
+// Defines available plans and their module bundles
+// ============================================================================
+model SubscriptionPlan {
+  id            String   @id @default(uuid())
+  name          String   // "Starter", "Professional", "Enterprise"
+  slug          String   @unique
+  description   String?
+  
+  // Pricing
+  priceMonthly  Decimal  @db.Decimal(12, 2)
+  priceYearly   Decimal  @db.Decimal(12, 2)
+  currency      String   @default("USD")
+  
+  // Module entitlements included in this plan
+  includedModules String[]  // ["POS", "SVM", "MVM"]
+  
+  // Limits and quotas
+  maxUsers      Int?     // null = unlimited
+  maxStorage    Int?     // GB, null = unlimited
+  features      Json?    // Additional feature flags
+  
+  // Plan metadata
+  isActive      Boolean  @default(true)
+  isPublic      Boolean  @default(true)  // Visible in pricing page
+  sortOrder     Int      @default(0)
+  
+  // Trial configuration
+  trialDays     Int      @default(14)
+  
+  // Audit fields
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Relations
+  subscriptions Subscription[]
+
+  @@index([slug])
+  @@index([isActive, isPublic])
+}
+
+// ============================================================================
+// SUBSCRIPTION
+// Tenant's active subscription with optional Partner attribution
+// Partner ID is OPTIONAL - not all subscriptions have partner attribution
+// ============================================================================
+model Subscription {
+  id              String             @id @default(uuid())
+  tenantId        String             @unique  // One subscription per tenant
+  planId          String
+  
+  // Status
+  status          SubscriptionStatus @default(PENDING)
+  
+  // Billing
+  billingInterval BillingInterval    @default(MONTHLY)
+  currentPeriodStart DateTime
+  currentPeriodEnd   DateTime
+  
+  // Pricing at time of subscription (may differ from plan if discounted)
+  amount          Decimal            @db.Decimal(12, 2)
+  currency        String             @default("USD")
+  
+  // Trial
+  trialStart      DateTime?
+  trialEnd        DateTime?
+  
+  // Cancellation
+  cancelledAt     DateTime?
+  cancelReason    String?
+  cancelAtPeriodEnd Boolean          @default(false)
+  
+  // External payment provider reference
+  externalId      String?            // Stripe subscription ID, etc.
+  paymentProvider String?            // "stripe", "paypal", etc.
+  
+  // Partner attribution (OPTIONAL - may be null)
+  // This links to the PartnerReferral, NOT directly to Partner
+  // Ensures commission logic stays with attribution
+  partnerReferralId String?
+  
+  // Metadata
+  metadata        Json?
+  
+  // Audit fields
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @updatedAt
+
+  // Relations
+  tenant          Tenant             @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  plan            SubscriptionPlan   @relation(fields: [planId], references: [id])
+  partnerReferral PartnerReferral?   @relation(fields: [partnerReferralId], references: [id], onDelete: SetNull)
+  entitlements    Entitlement[]
+  events          SubscriptionEvent[]
+  invoices        Invoice[]
+
+  @@index([tenantId])
+  @@index([status])
+  @@index([currentPeriodEnd])
+  @@index([partnerReferralId])
+}
+
+// ============================================================================
+// ENTITLEMENT
+// Module access grants for a tenant
+// MODULES ONLY CHECK THIS - no subscription/partner logic in modules
+// ============================================================================
+model Entitlement {
+  id              String            @id @default(uuid())
+  tenantId        String
+  subscriptionId  String?           // null = manually granted
+  
+  // Module this entitlement grants access to
+  module          String            // "POS", "SVM", "MVM"
+  
+  // Status
+  status          EntitlementStatus @default(ACTIVE)
+  
+  // Validity period
+  validFrom       DateTime          @default(now())
+  validUntil      DateTime?         // null = until subscription ends
+  
+  // Limits specific to this entitlement
+  limits          Json?             // { "maxTransactions": 1000 }
+  
+  // Source of entitlement (for auditing)
+  source          String            @default("subscription") // "subscription", "addon", "promo", "manual"
+  
+  // Audit fields
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+
+  // Relations
+  tenant          Tenant            @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  subscription    Subscription?     @relation(fields: [subscriptionId], references: [id], onDelete: SetNull)
+
+  // Tenant can have multiple entitlements for different modules
+  @@unique([tenantId, module])
+  @@index([tenantId])
+  @@index([module])
+  @@index([status])
+}
+
+// ============================================================================
+// SUBSCRIPTION EVENT
+// Immutable log of subscription lifecycle events
+// Used for commission calculation and auditing
+// ============================================================================
+model SubscriptionEvent {
+  id              String                @id @default(uuid())
+  subscriptionId  String
+  
+  // Event type
+  eventType       SubscriptionEventType
+  
+  // Snapshot at time of event (immutable)
+  tenantId        String
+  partnerId       String?               // From attribution, NULL if no partner
+  
+  // Module and billing info at time of event
+  modules         String[]              // Modules at time of event
+  billingAmount   Decimal?              @db.Decimal(12, 2)
+  billingCurrency String?
+  billingInterval BillingInterval?
+  
+  // Period info
+  periodStart     DateTime?
+  periodEnd       DateTime?
+  
+  // Additional context
+  metadata        Json?                 // Event-specific data
+  
+  // External reference
+  externalEventId String?               // Payment provider event ID
+  
+  // Timestamp - immutable
+  occurredAt      DateTime              @default(now())
+  
+  // NO updatedAt - events are immutable
+
+  // Relations
+  subscription    Subscription          @relation(fields: [subscriptionId], references: [id], onDelete: Cascade)
+
+  @@index([subscriptionId])
+  @@index([tenantId])
+  @@index([partnerId])
+  @@index([eventType])
+  @@index([occurredAt])
+}
+
+// ============================================================================
+// INVOICE
+// Billing records for subscriptions
+// ============================================================================
+model Invoice {
+  id              String   @id @default(uuid())
+  subscriptionId  String
+  tenantId        String
+  
+  // Invoice details
+  invoiceNumber   String   @unique
+  status          String   // "draft", "open", "paid", "void", "uncollectible"
+  
+  // Amounts
+  subtotal        Decimal  @db.Decimal(12, 2)
+  tax             Decimal  @db.Decimal(12, 2) @default(0)
+  total           Decimal  @db.Decimal(12, 2)
+  amountPaid      Decimal  @db.Decimal(12, 2) @default(0)
+  amountDue       Decimal  @db.Decimal(12, 2)
+  currency        String   @default("USD")
+  
+  // Period
+  periodStart     DateTime
+  periodEnd       DateTime
+  
+  // Dates
+  issuedAt        DateTime @default(now())
+  dueAt           DateTime
+  paidAt          DateTime?
+  
+  // External reference
+  externalId      String?  // Stripe invoice ID
+  hostedUrl       String?  // URL to hosted invoice
+  pdfUrl          String?  // URL to PDF
+  
+  // Partner attribution snapshot (for commission calculation)
+  partnerId       String?
+  
+  // Audit fields
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  // Relations
+  subscription    Subscription @relation(fields: [subscriptionId], references: [id], onDelete: Cascade)
+  tenant          Tenant       @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([subscriptionId])
+  @@index([tenantId])
+  @@index([status])
+  @@index([partnerId])
+}
+
+// ============================================================================
 // PARTNER DOMAIN - Platform-level reseller/affiliate system
 // Partners are INDEPENDENT of Tenants - they exist at platform level
 // ============================================================================
