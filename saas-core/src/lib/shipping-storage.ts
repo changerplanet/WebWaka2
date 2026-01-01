@@ -56,14 +56,22 @@ export interface ShippingRate {
 }
 
 // ============================================================================
-// SHARED STORAGE (Singleton)
+// SHARED STORAGE (Singleton using globalThis)
 // ============================================================================
 
 /**
  * Shared in-memory storage for shipping zones
+ * Using globalThis to ensure single instance across all Next.js API routes
  * Key: tenantId, Value: array of zones
  */
-const zonesStorage = new Map<string, ShippingZone[]>()
+const STORAGE_KEY = '__svm_shipping_zones_storage__'
+
+function getZonesStorage(): Map<string, ShippingZone[]> {
+  if (!(globalThis as any)[STORAGE_KEY]) {
+    (globalThis as any)[STORAGE_KEY] = new Map<string, ShippingZone[]>()
+  }
+  return (globalThis as any)[STORAGE_KEY]
+}
 
 export function generateId(prefix: string): string {
   return `${prefix}_${Date.now().toString(36)}${Math.random().toString(36).substring(2, 9)}`
