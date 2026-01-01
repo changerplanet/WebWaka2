@@ -10,5 +10,7 @@
   "/dashboard/page": "app/dashboard/page.js",
   "/api/tenants/resolve/route": "app/api/tenants/resolve/route.js",
   "/api/partners/me/route": "app/api/partners/me/route.js",
-  "/api/partners/[partnerId]/dashboard/route": "app/api/partners/[partnerId]/dashboard/route.js"
+  "/api/partners/[partnerId]/dashboard/route": "app/api/partners/[partnerId]/dashboard/route.js",
+  "/partner/referrals/page": "app/partner/referrals/page.js",
+  "/api/partners/[partnerId]/dashboard/referrals/route": "app/api/partners/[partnerId]/dashboard/referrals/route.js"
 }
