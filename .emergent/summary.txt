@@ -1,63 +1,53 @@
-<analysis>**original_problem_statement**: The user wants to build a production-grade, reusable SaaS Core with a Next.js App Router, PostgreSQL (with Prisma ORM), and a Node.js backend.
+<analysis>**original_problem_statement**: The user wants to build a production-grade, reusable SaaS Core with a Next.js App Router, PostgreSQL (with Prisma ORM), and a Node.js backend. The core application is now being extended with independently subscribable modules.
 
-Key requirements include:
-- **Architecture**: True multi-tenancy with strict data isolation, resolved via middleware based on subdomains or custom domains.
-- **Roles**: Super Admin (global), Tenant Admin, and Tenant User.
-- **Branding**: Full white-label branding per tenant (app name, logo, colors).
-- **Offline & PWA**: The application must be a Progressive Web App (PWA) with offline-first behavior.
-- **Partner Program**: A new requirement to build a platform-level Partner/reseller program, which must be completely isolated from the tenant and module structure. The implementation is being done in phases as directed by the user.
+The current project is to build the first module: **POS (Point of Sale & Business Management)**.
+
+This module must be architecturally isolated from the SaaS Core. It should rely on the Core for shared entities like , , , , , and , interacting with them via read-only references and an event-driven pattern. The POS module will own its specific domains, such as sales transactions, cart management, and register shifts.
 
 **User's preferred language**: English
 
 **what currently exists?**
-A full-stack multi-tenant SaaS core application has been built using Next.js, Prisma, and PostgreSQL. The application is located in .
-
-Key implemented features include:
-- **Core Architecture**: A Next.js App Router application with middleware-based tenant resolution.
-- **Database & Schema**: A comprehensive Prisma schema defines models for , , , , and related entities.
-- **Authentication**: A Magic Link authentication flow using Resend.
-- **Admin Portals**: Functional dashboards for Super Admins and Tenant Admins.
-- **Security**: A critical, application-layer data isolation system is implemented in .
-- **Partner Program Engine**: The backend logic for the partner program is substantially complete, including services for attribution, subscriptions, commissions, earnings, and payout readiness.
+- A feature-complete, production-grade **SaaS Core** application located in . This includes multi-tenancy, a complete Partner Program, Super Admin dashboards, and a robust data model.
+- A new, separate **POS module** located in . This module has its own isolated directory structure, including its own , , and .
+- Foundational files and documentation for the POS module's backend logic have been created, but the implementation within these files is not yet complete. This includes the domain model, transaction engine, offline queue, inventory consumer, and permissions system.
+- Shared entities (, , , ) have been added to the SaaS Core schema () to be consumed by the POS module.
 
 **Last working item**:
-- **Last item agent was working**: Implementing Phase 6 (Partner Dashboard Core) and Phase 7 (Event & Audit Integration). The agent created the initial library files and API routes required to provide data for a partner-facing dashboard and a dedicated service for partner-related audit logging.
+- **Last item agent was working**: Defining the POS-specific roles and permissions as part of **MODULE 1 · PHASE 5 — STAFF & PERMISSIONS**. The agent created the necessary library file and documentation.
 - **Status**: IN PROGRESS
 - **Agent Testing Done**: N
-- **Which testing method agent to use?**: backend testing agent. The new dashboard API endpoints need to be tested to ensure they return the correct, authorized data for a given partner.
+- **Which testing method agent to use?**: backend testing agent. Once the POS APIs are built and integrated with this permission system, the agent will need to test that different roles (e.g., Cashier, Manager) have the correct access rights to various actions.
 - **User Testing Done**: N
 
 **All Pending/In progress Issue list**:
 There are no outstanding bugs. All pending work is related to feature implementation.
 
 **In progress Task List**:
-- **Task 1: Complete Partner Dashboard & Audit Integration (P0)**
-    - **Where to resume**: The agent has just created several files for the partner dashboard and audit system. The immediate next step is to implement the logic within these files, starting with a TypeScript compilation check (yarn run v1.22.22
-info Visit https://yarnpkg.com/en/docs/cli/run for documentation about this command.) to identify any initial errors.
-        - 
-        - 
-        - 
-        - 
-        - 
-    - **What will be achieved with this?**: The backend data contracts and API endpoints for a read-only partner dashboard will be complete. A comprehensive audit trail for all partner activities will also be established.
-    - **Status**: IN PROGRESS
-    - **Should Test frontend/backend/both after fix?**: backend
-    - **Blocked on something**: None.
+- **Task 1: Implement POS Module Backend Logic (P0)**
+  - **Where to resume**: The agent has created the scaffolding for the POS module's backend. The next step is to implement the actual logic within the created files, starting with the permissions system.
+    - 
+    - 
+    - 
+    - 
+  - **What will be achieved with this?**: A functional backend for the POS module that can manage sales, handle offline actions, consume inventory data, and enforce role-based permissions, all while remaining decoupled from the SaaS Core.
+  - **Status**: IN PROGRESS
+  - **Should Test frontend/backend/both after fix?**: backend
+  - **Blocked on something**: None.
 
 **Upcoming and Future Tasks**
 - **Upcoming Tasks:**
-  - **P0: Partner Dashboard UI**: Build the frontend portal for partners to view their referrals, earnings, and performance metrics, using the APIs currently being built.
+  - **P0: POS UI & UX (PWA)**: As per **MODULE 1 · PHASE 6**, build the frontend for the Point of Sale system. This will be a Progressive Web App (PWA) and will consume the backend services currently being developed.
 - **Future Tasks:**
-  - **P2: Global User Management**: Implement the All Users section in the Super Admin dashboard.
-  - **P2: Production Email Sending**: Guide the user to verify their Resend domain and remove the dev-mode magic link workaround.
-  - **P3: Payout Execution**: Integrate a payment gateway to process partner payouts.
+  - **P2: Production Email Sending**: Guide the user to verify their Resend domain and remove the dev-mode magic link workaround in the SaaS Core.
+  - **P3: Additional Modules**: Implement other planned modules like SVM (Service-based Vertical) and MVM (Multi-sided Vertical Marketplace).
 
 **Completed work in this session**
-- **Partner Access Control Documentation (DONE)**: Enhanced and finalized the  document.
-- **Partner Attribution & Tenant Linking (Phase 2 - DONE)**: Implemented the database schema, services, and APIs for linking tenants to partners.
-- **Subscription & Entitlement Integration (Phase 3 - DONE)**: Built the subscription engine, including database models, entitlement services, and event definitions.
-- **Commission & Earnings Engine (Phase 4 - DONE)**: Implemented a flexible commission engine and an immutable earnings ledger for partners.
-- **Payout Readiness (Phase 5 - DONE)**: Built the system to prepare partner earnings for payouts, including batching, threshold checks, and tax hooks (without actual money movement).
+- **Partner Dashboard Backend & Audit (Phase 6 & 7 - DONE)**: Implemented and tested the backend APIs and audit logging for the Partner Dashboard.
+- **Partner Portal Frontend (P0 - DONE)**: Built and tested the complete frontend for partners to view referrals, earnings, and performance.
+- **Global User Management (P2 - DONE)**: Implemented and tested the All Users section in the Super Admin dashboard.
+- **Partner System Stable Release (Phase 8 & 9 - DONE)**: Performed architectural validation, froze the Partner Program feature set, updated documentation, and versioned the release.
+- **POS Domain Model (Module 1, Phase 1 - DONE)**: Defined and created the isolated Prisma schema for the POS module and added shared entities to the SaaS Core schema.
+- **POS Backend Scaffolding (Phases 2-5 - DONE)**: Created the foundational files and documentation for the POS Transaction Engine, Offline Behavior, Inventory Interaction, and Staff & Permissions.
 
 **Earlier issues found/mentioned but not fixed**
 None.
@@ -72,66 +62,81 @@ None.
 
 **Key Technical Concepts**
 - **Framework**: Next.js 14 (App Router)
-- **Database**: PostgreSQL (managed by Supabase) with Prisma ORM.
-- **Tenancy Model**: Middleware-based tenant resolution, secured by an application-layer data isolation engine.
-- **Partner Model**: A platform-level entity, distinct from tenants, with its own event-driven lifecycle for attribution, earnings, and payouts.
-- **Authentication**: Passwordless (Magic Link) using Resend.
+- **Database**: PostgreSQL with Prisma ORM.
+- **Architecture**: Modular Monolith. A central **SaaS Core** provides shared services (tenancy, auth, billing), and independent **Modules** (like POS) build on top of it.
+- **Data Isolation**: Modules have their own isolated Prisma schemas and cannot directly modify Core schemas or data. Interaction is done via foreign key references and an event-driven pattern.
 
 **key DB schema**
-- The schema has been significantly expanded with models for , , , , , and numerous supporting enums and relations. The  model now includes a  JSON field for flexible commission structures.
+- ****: Contains , , , , and recently added shared models: , , , , .
+- ****: Contains POS-specific models: , , , , , , , . It references Core entities via string IDs (e.g., ).
 
 **changes in tech stack**
 None.
 
 **All files of reference**
-- : Source of truth for all data models.
-- : **CRITICAL**: Enforces application-layer data isolation.
-- : (New) Core logic for partner dashboard data.
-- : (New) Service for logging partner-related actions.
-- : (New) API routes for the partner dashboard.
+- : Defines shared entities consumed by modules.
+- : Isolated schema for the POS module.
+- : **(Current focus)** Defines POS-specific roles.
+- : Logic for the sales lifecycle.
+- : Logic for handling offline actions.
+- : Logic for read-only interaction with inventory.
 
 **key api endpoints**
--  (GET)
--  (GET)
--  (GET)
+- : (GET, POST) For Super Admin user management.
+- : (GET, PUT, DELETE) For managing individual users.
+- : (GET) For the current partner's dashboard data.
+- : (GET) APIs for partner performance and referrals.
 
 **Critical Info for New Agent**
-- The immediate task is to complete the implementation of the partner dashboard and audit logging services. The files have been created, but the logic is not yet implemented or tested.
-- Start by running yarn run v1.22.22
-info Visit https://yarnpkg.com/en/docs/cli/run for documentation about this command. to check for compilation errors in the newly created files and then proceed to implement the business logic.
-- The user is providing prompts in distinct, sequential phases. Expect the next prompt to be about building the frontend UI for the Partner Dashboard after the current backend task is complete.
+- You are building a **Module**, not modifying the **SaaS Core**. All new code for the POS feature must go inside .
+- The user is providing prompts in distinct, sequential phases. The current task is to finish implementing the backend logic for the POS module (Phases 1-5) before starting the UI (Phase 6).
+- Strict adherence to the event-driven architecture is required. The POS module must **never** write directly to Core-owned tables like . Instead, it should emit events (e.g., ) that the SaaS Core will listen for and process.
+- The immediate next step is to implement the logic inside the files created in .
 
 **documents and test reports created in this job**
--  (Created and updated throughout the session)
 - 
 - 
 - 
 - 
--  (Updated)
+- 
+- 
+- 
+- 
+- 
+- 
 -  (Updated)
 
 **Last 10 User Messages and any pending HUMAN messages**
-1. **User**: Prompted for PHASE 6 (Partner Dashboard) and PHASE 7 (Audit Integration).
+The last several user messages have been a series of phased prompts to build the POS module:
+1.  **User**: Confirmed understanding of the POS module's responsibilities and isolation.
+2.  **User**: Prompted for **Phase 1**: POS Domain Model.
+3.  **User**: Prompted for **Phase 2**: POS Transaction Engine.
+4.  **User**: Prompted for **Phase 3**: Offline POS Behavior.
+5.  **User**: Prompted for **Phase 4**: Inventory Interaction (Read-Only).
+6.  **User**: Prompted for **Phase 5**: Staff & Permissions. (This is the current task).
 
 **Project Health Check:**
-- **Working**: The core multi-tenant application, authentication, admin portals, data isolation, and the backend engines for the partner program (up to Phase 5) are functional.
+- **Working**: The  application is stable, tested, and feature-complete, including the entire Partner Program.
 - **Broken**: Nothing is broken.
-- **Mocked**: Email sending via Resend still uses a dev-mode UI display, pending production key setup.
+- **In Development**: The  module is under active development. The backend structure is in place, but the business logic is not yet implemented. It is not yet functional.
 
 **3rd Party Integrations**
 - **Supabase (PostgreSQL)** — requires User API Key.
 - **Prisma ORM** — configured in the project.
-- **Resend (Email)** — requires User API Key.
+- **Resend (Email)** — requires User API Key (currently using dev-mode UI mock).
 
 **Testing status**
-- **Testing agent used after significant changes**: NO. Agent has been self-verifying with Prisma commands, TypeScript compilation, and server health checks after each phase.
+- **Testing agent used after significant changes**: YES. The agent was used to validate the Partner Dashboard, Partner Frontend, and Global User Management features in the SaaS Core.
 - **Troubleshoot agent used after agent stuck in loop**: NO
-- **Test files created**: None.
+- **Test files created**:
+    - 
+    - 
+    - 
 - **Known regressions**: None.
 
 **Credentials to test flow:**
-- **Super Admin**: Login with . The magic link will appear in the UI.
+- **Super Admin**: Login with . The magic link will appear in the UI during development.
 - **Tenant Admin**: Login with . The magic link will appear in the UI.
 
 **What agent forgot to execute**
-The agent has followed all user prompts sequentially. The current task of implementing the dashboard/audit services is the active work-in-progress and was not forgotten. The immediate next action is to continue that implementation.</analysis>
+The agent has followed all user prompts sequentially and correctly. The current task is to continue the implementation of the POS module based on the files and documentation already created.</analysis>
