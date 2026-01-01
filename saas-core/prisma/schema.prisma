@@ -665,6 +665,7 @@ model PartnerUser {
 // PARTNER AGREEMENT
 // Versioned agreement terms between platform and partner
 // Supports multiple versions over time - only one ACTIVE at a time
+// Commission rules are DECLARATIVE, not procedural
 // ============================================================================
 model PartnerAgreement {
   id              String          @id @default(uuid())
@@ -677,13 +678,46 @@ model PartnerAgreement {
   effectiveFrom   DateTime        // When this agreement takes effect
   effectiveTo     DateTime?       // Null = current/indefinite
   
-  // Commission terms
+  // =========================================================================
+  // COMMISSION RULES - Declarative, flexible structure
+  // =========================================================================
+  
+  // Primary commission model
   commissionType  CommissionType  @default(PERCENTAGE)
+  
+  // When commission is triggered
+  commissionTrigger CommissionTrigger @default(ON_PAYMENT)
+  
+  // Base commission rate (for PERCENTAGE type)
   commissionRate  Decimal         @db.Decimal(5, 4) // e.g., 0.1500 = 15%
   
-  // Tiered commission structure (if commissionType = TIERED)
+  // Fixed amount (for FIXED type)
+  fixedAmount     Decimal?        @db.Decimal(12, 2) // e.g., 10.00
+  
+  // One-time setup fee (in addition to recurring)
+  setupFee        Decimal?        @db.Decimal(12, 2) // e.g., 50.00 on first payment
+  
+  // Tiered commission structure (if commissionType = TIERED or HYBRID)
   // Format: [{ "minVolume": 0, "maxVolume": 1000, "rate": 0.10 }, ...]
   commissionTiers Json?
+  
+  // Full commission rules (for HYBRID and complex scenarios)
+  // Format: { "rules": [...], "conditions": [...] }
+  commissionRules Json?
+  
+  // Minimum and maximum commission per transaction
+  minCommission   Decimal?        @db.Decimal(12, 2)
+  maxCommission   Decimal?        @db.Decimal(12, 2)
+  
+  // Clearance period (days before PENDING -> CLEARED)
+  clearanceDays   Int             @default(30)
+  
+  // Currency for fixed amounts
+  currency        String          @default("USD")
+  
+  // =========================================================================
+  // AGREEMENT TERMS
+  // =========================================================================
   
   // Full agreement terms (flexible structure)
   terms           Json?           // Payment terms, conditions, etc.
