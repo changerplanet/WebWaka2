@@ -209,14 +209,15 @@ All Partner APIs are marked **STABLE** and follow semantic versioning.
 |-------|---------|--------|
 | 0 | Module Constitution | ✅ COMPLETE |
 | 1 | Domain Model | ✅ COMPLETE |
-| 2 | Ordering Engine | 🔜 NEXT |
-| 3 | Shipping Logic | ⏳ Pending |
-| 4 | Promotions Engine | ⏳ Pending |
-| 5 | Reviews System | ⏳ Pending |
-| 6 | Storefront UI | ⏳ Pending |
-| 7 | SEO & CMS | ⏳ Pending |
-| 8 | Events & Analytics | ⏳ Pending |
-| 9 | Module Freeze | ⏳ Pending |
+| 2 | Catalog Consumption | ✅ COMPLETE |
+| 3 | Ordering Engine | 🔜 NEXT |
+| 4 | Shipping Logic | ⏳ Pending |
+| 5 | Promotions Engine | ⏳ Pending |
+| 6 | Reviews System | ⏳ Pending |
+| 7 | Storefront UI | ⏳ Pending |
+| 8 | SEO & CMS | ⏳ Pending |
+| 9 | Events & Analytics | ⏳ Pending |
+| 10 | Module Freeze | ⏳ Pending |
 
 ### SVM Module Architecture
 
