@@ -451,19 +451,6 @@ export async function GET(request: NextRequest, { params }) {
 
 ---
 
-## Comparison: Partner vs Tenant Authorization
-
-| Aspect | Partner Auth | Tenant Auth |
-|--------|--------------|-------------|
-| Scope | Platform-level | Workspace-level |
-| Isolation Key | `partnerId` | `tenantId` |
-| Roles | OWNER, STAFF | ADMIN, USER |
-| Cross-access | Never to tenants | Never to partners |
-| Super Admin | Full access | Full access |
-| Data visibility | Limited tenant view | Full workspace |
-
----
-
 ## Security Considerations
 
 1. **No Implicit Trust**: Even if a partner referred a tenant, they get no special access
@@ -557,19 +544,6 @@ export async function PUT(request: Request, { params }) {
   // ...
 }
 ```
-
----
-
-## Comparison: Partner vs Tenant Authorization
-
-| Aspect | Partner Auth | Tenant Auth |
-|--------|--------------|-------------|
-| Scope | Platform-level | Workspace-level |
-| Isolation Key | `partnerId` | `tenantId` |
-| Roles | OWNER, STAFF | ADMIN, USER |
-| Cross-access | Never to tenants | Never to partners |
-| Super Admin | Full access | Full access |
-| Data visibility | Limited tenant view | Full workspace |
 
 ---
 
