@@ -5,9 +5,11 @@
   "/partner/audit/page": "app/partner/audit/page.js",
   "/partner/page": "app/partner/page.js",
   "/api/admin/users/route": "app/api/admin/users/route.js",
-  "/api/health/route": "app/api/health/route.js",
   "/page": "app/page.js",
   "/offline/page": "app/offline/page.js",
   "/api/admin/users/[userId]/route": "app/api/admin/users/[userId]/route.js",
+  "/api/auth/magic-link/route": "app/api/auth/magic-link/route.js",
+  "/manifest.json/route": "app/manifest.json/route.js",
+  "/admin/users/page": "app/admin/users/page.js",
   "/api/auth/session/route": "app/api/auth/session/route.js"
 }
