@@ -3,7 +3,6 @@
   "/login/page": "app/login/page.js",
   "/offline/page": "app/offline/page.js",
   "/manifest.json/route": "app/manifest.json/route.js",
-  "/partner/page": "app/partner/page.js",
   "/api/auth/magic-link/route": "app/api/auth/magic-link/route.js",
   "/api/auth/session/route": "app/api/auth/session/route.js",
   "/api/auth/verify/route": "app/api/auth/verify/route.js",
@@ -11,8 +10,8 @@
   "/api/tenants/resolve/route": "app/api/tenants/resolve/route.js",
   "/api/partners/me/route": "app/api/partners/me/route.js",
   "/partner/referrals/page": "app/partner/referrals/page.js",
-  "/api/partners/[partnerId]/dashboard/referrals/route": "app/api/partners/[partnerId]/dashboard/referrals/route.js",
   "/partner/earnings/page": "app/partner/earnings/page.js",
   "/api/partners/[partnerId]/dashboard/route": "app/api/partners/[partnerId]/dashboard/route.js",
-  "/api/partners/[partnerId]/dashboard/performance/route": "app/api/partners/[partnerId]/dashboard/performance/route.js"
+  "/partner/audit/page": "app/partner/audit/page.js",
+  "/api/partners/[partnerId]/audit/route": "app/api/partners/[partnerId]/audit/route.js"
 }
