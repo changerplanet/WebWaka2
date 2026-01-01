@@ -398,6 +398,7 @@ CANCELLED  CANCELLED CANCELLED/REFUNDED  REFUNDED   REFUNDED
 | **SVM Catalog Consumption** | `/modules/svm/docs/SVM_CATALOG_CONSUMPTION.md` |
 | **SVM Order Lifecycle** | `/modules/svm/docs/SVM_ORDER_LIFECYCLE.md` |
 | **SVM API Reference** | `/modules/svm/docs/SVM_API_REFERENCE.md` |
+| **SVM Shipping** | `/modules/svm/docs/SVM_SHIPPING.md` |
 
 ---
 
