@@ -5,5 +5,7 @@
   "/partner/audit/page": "app/partner/audit/page.js",
   "/partner/page": "app/partner/page.js",
   "/api/admin/users/route": "app/api/admin/users/route.js",
-  "/api/health/route": "app/api/health/route.js"
+  "/api/health/route": "app/api/health/route.js",
+  "/page": "app/page.js",
+  "/offline/page": "app/offline/page.js"
 }
