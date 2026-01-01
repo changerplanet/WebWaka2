@@ -141,6 +141,37 @@ See: `/docs/PARTNER_ARCHITECTURE_VALIDATION.md`
 
 ---
 
+## POS Core Integration (NEW)
+
+### Event Handlers
+| Event | Core Action |
+|-------|-------------|
+| `pos.sale.completed` | Audit log, (future: inventory deduction) |
+| `pos.sale.cancelled` | Audit log, (future: inventory release) |
+| `pos.payment.captured` | Audit log, record payment |
+| `pos.refund.created` | Audit log, (future: inventory restore) |
+
+### API Routes (Core)
+| Route | Purpose |
+|-------|---------|
+| `POST /api/pos/events` | Receive POS events |
+| `GET /api/pos/entitlements` | Return tenant entitlements |
+
+### Files Created
+- `/saas-core/src/lib/pos-event-handlers.ts` - Event handlers
+- `/saas-core/src/app/api/pos/events/route.ts` - Events API
+- `/saas-core/src/app/api/pos/entitlements/route.ts` - Entitlements API
+- `/modules/pos/scripts/migrate-pos.sh` - DB migration script
+- `/modules/pos/docs/POS_CORE_INTEGRATION.md` - Integration guide
+
+### Database Migration
+**Status**: Script ready, requires DATABASE_URL from Supabase
+```bash
+./modules/pos/scripts/migrate-pos.sh push
+```
+
+---
+
 ## Module Integration Guide
 
 Modules should use ONLY:
