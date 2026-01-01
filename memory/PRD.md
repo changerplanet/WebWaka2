@@ -237,7 +237,7 @@ Location: `/app/modules/svm/`
 ### Database Tables (15 total)
 `svm_online_orders`, `svm_online_order_items`, `svm_order_status_history`, `svm_shipping_zones`, `svm_shipping_rates`, `svm_promotions`, `svm_promotion_usages`, `svm_reviews`, `svm_storefront_pages`, `svm_storefront_banners`, `svm_storefront_settings`, `svm_carts`, `svm_cart_items`, `svm_wishlists`, `svm_wishlist_items`
 
-### SVM API Endpoints (Phase 3 Complete)
+### SVM API Endpoints (Phase 4 Complete)
 
 | Category | Endpoint | Method | Description |
 |----------|----------|--------|-------------|
@@ -251,6 +251,12 @@ Location: `/app/modules/svm/`
 | Cart | `/api/svm/cart` | DELETE | Clear cart |
 | Products | `/api/svm/products` | GET | List products |
 | Products | `/api/svm/products/:productId` | GET | Get product |
+| **Shipping** | `/api/svm/shipping` | POST | **Calculate shipping options** |
+| **Shipping** | `/api/svm/shipping` | GET | **List shipping zones** |
+| **Shipping** | `/api/svm/shipping/zones` | POST | **Create zone** |
+| **Shipping** | `/api/svm/shipping/zones/:zoneId` | GET | **Get zone details** |
+| **Shipping** | `/api/svm/shipping/zones/:zoneId` | PUT | **Update zone/rates** |
+| **Shipping** | `/api/svm/shipping/zones/:zoneId` | DELETE | **Delete zone** |
 | Entitlements | `/api/svm/entitlements` | GET | Get module entitlements |
 | Events | `/api/svm/events` | POST | Process SVM events |
 
