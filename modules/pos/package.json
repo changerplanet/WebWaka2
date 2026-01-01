@@ -1,0 +1,35 @@
+{
+  "name": "@saas-core/pos",
+  "version": "1.0.0",
+  "description": "POS (Point of Sale) Module for SaaS Core",
+  "main": "src/lib/index.ts",
+  "types": "src/lib/index.ts",
+  "scripts": {
+    "db:generate": "prisma generate --schema=prisma/schema.prisma",
+    "db:push": "prisma db push --schema=prisma/schema.prisma",
+    "db:migrate": "prisma migrate dev --schema=prisma/schema.prisma",
+    "test": "jest",
+    "lint": "eslint src/"
+  },
+  "dependencies": {
+    "@prisma/client": "^5.22.0",
+    "decimal.js": "^10.4.3"
+  },
+  "devDependencies": {
+    "prisma": "^5.22.0",
+    "typescript": "^5.0.0",
+    "@types/node": "^20.0.0"
+  },
+  "peerDependencies": {
+    "@saas-core/core": "^1.7.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "internal"
+  },
+  "license": "UNLICENSED",
+  "private": true
+}
