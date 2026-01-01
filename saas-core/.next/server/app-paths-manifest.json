@@ -9,5 +9,6 @@
   "/api/auth/verify/route": "app/api/auth/verify/route.js",
   "/dashboard/page": "app/dashboard/page.js",
   "/api/tenants/resolve/route": "app/api/tenants/resolve/route.js",
-  "/api/partners/me/route": "app/api/partners/me/route.js"
+  "/api/partners/me/route": "app/api/partners/me/route.js",
+  "/api/partners/[partnerId]/dashboard/route": "app/api/partners/[partnerId]/dashboard/route.js"
 }
