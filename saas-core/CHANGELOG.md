@@ -2,6 +2,47 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.5.0] - 2025-01-01
+
+### Added
+
+#### Payout Readiness System (Phase 5)
+Complete payout preparation WITHOUT actual money movement.
+
+**New Schema Models:**
+- `PartnerPayoutSettings` - Partner-specific payout configuration
+  - Minimum payout thresholds
+  - Tax withholding settings
+  - Payment method tracking
+  - Payout hold status
+
+**Enhanced PayoutBatch:**
+- Added `grossAmount`, `taxWithholding`, `netAmount` breakdown
+- Added `readinessChecks` and `readinessStatus`
+- Added cancellation tracking
+- Status: DRAFT → PENDING_APPROVAL → APPROVED → READY
+
+**New Services:**
+- `/src/lib/payout-readiness.ts` - Complete payout readiness service
+
+**Features:**
+- **Payable Balance Tracking**: Per-partner breakdown (pending, cleared, approved, inBatch)
+- **Payout Thresholds**: Configurable minimums per partner (default $100)
+- **Tax Withholding Hooks**: Rate configuration, document status tracking
+- **Payout Holds**: Apply/release holds with reasons
+- **Readiness Checks**: 6-point verification (status, threshold, hold, tax, payment, agreement)
+- **Reporting Views**: Partner reports, platform summary
+
+**Key Verification:**
+- ✅ No actual payout execution (`EXECUTION_ENABLED: false`)
+- ✅ No payment gateway integration
+- ✅ Only readiness and reporting
+
+### Documentation
+- Added `/docs/PAYOUT_READINESS.md` with complete system documentation
+
+---
+
 ## [1.4.0] - 2025-01-01
 
 ### Added
