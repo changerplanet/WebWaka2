@@ -1131,6 +1131,15 @@ enum AuditAction {
   PAYOUT_BATCH_APPROVED         // Payout batch approved
   PAYOUT_BATCH_PROCESSED        // Payout batch processed
   PAYOUT_BATCH_FAILED           // Payout batch failed
+  PAYOUT_BATCH_CANCELLED        // Payout batch cancelled
+  
+  // Payout readiness actions
+  PAYOUT_READINESS_CHECKED      // Readiness check performed
+  PAYOUT_HOLD_APPLIED           // Partner payout put on hold
+  PAYOUT_HOLD_RELEASED          // Partner payout hold released
+  PAYOUT_SETTINGS_UPDATED       // Partner payout settings changed
+  TAX_DOCUMENT_SUBMITTED        // Tax document submitted
+  TAX_DOCUMENT_VERIFIED         // Tax document verified
 }
 
 model AuditLog {
