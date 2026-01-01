@@ -438,8 +438,16 @@ model PartnerReferral {
   tenantId        String    @unique // Each tenant can only have ONE referral (immutable)
   referralCodeId  String?   // The code used (if any)
   
+  // Attribution method - HOW the tenant was linked
+  attributionMethod AttributionMethod @default(REFERRAL_LINK)
+  
   // Attribution timestamp - IMMUTABLE
   referredAt      DateTime  @default(now())
+  
+  // Attribution window configuration
+  // If set, attribution is only valid for commissions within this period
+  attributionWindowDays Int?     // null = lifetime attribution
+  attributionExpiresAt  DateTime? // Calculated: referredAt + windowDays
   
   // Lock flag - set to true after first successful billing
   // Once locked, this record can NEVER be modified or deleted
@@ -450,6 +458,9 @@ model PartnerReferral {
   referralSource  String?   // e.g., "website", "email", "direct"
   landingPage     String?   // URL where signup occurred
   metadata        Json?     // Additional attribution data
+  
+  // Who created this attribution
+  createdByUserId String?   // Partner user or Super Admin who created
   
   // Audit fields
   createdAt       DateTime  @default(now())
@@ -465,6 +476,7 @@ model PartnerReferral {
   @@index([tenantId])
   @@index([referredAt])
   @@index([attributionLocked])
+  @@index([attributionMethod])
 }
 
 // ============================================================================
