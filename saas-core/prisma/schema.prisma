@@ -558,18 +558,36 @@ enum AgreementStatus {
 
 // Commission calculation type
 enum CommissionType {
-  PERCENTAGE   // % of transaction
-  FIXED        // Fixed amount per transaction
-  TIERED       // Based on volume tiers
+  PERCENTAGE   // % of transaction amount
+  FIXED        // Fixed amount per transaction/period
+  TIERED       // Volume-based tiers
+  HYBRID       // Combination of multiple models
 }
 
-// Earning status
+// Commission trigger - when commission is earned
+enum CommissionTrigger {
+  ON_PAYMENT       // When payment is received
+  ON_ACTIVATION    // When subscription activates (first payment)
+  ON_RENEWAL       // On each renewal
+  ON_SIGNUP        // One-time on signup
+}
+
+// Earning status - ledger state machine
 enum EarningStatus {
-  PENDING      // Calculated, awaiting approval
-  APPROVED     // Approved for payment
+  PENDING      // Calculated, awaiting clearance period
+  CLEARED      // Clearance period passed, ready for payout
+  APPROVED     // Approved for payment batch
   PAID         // Payment processed
-  DISPUTED     // Under review
-  CANCELLED    // Cancelled/reversed
+  DISPUTED     // Under review/dispute
+  REVERSED     // Reversed (chargeback, refund)
+  VOIDED       // Voided before clearance
+}
+
+// Earning entry type - for ledger
+enum EarningEntryType {
+  CREDIT       // Positive earning (commission)
+  DEBIT        // Negative (reversal, adjustment)
+  ADJUSTMENT   // Manual adjustment
 }
 
 // ============================================================================
