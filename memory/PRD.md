@@ -388,7 +388,6 @@ CANCELLED  CANCELLED CANCELLED/REFUNDED  REFUNDED   REFUNDED
 ## Backlog / Future Work
 
 ### P0 - SVM Module Completion (Next Phases)
-- **Phase 5**: Promotions Engine - Coupon codes, automatic discounts
 - **Phase 6**: Reviews System - Product reviews, ratings
 - **Phase 7**: Storefront UI (PWA) - Customer-facing marketplace UI
 - **Phase 8**: SEO & CMS - Pages, banners, meta content
@@ -404,6 +403,7 @@ CANCELLED  CANCELLED CANCELLED/REFUNDED  REFUNDED   REFUNDED
 - POS/SVM Database Integration - Connect to Supabase
 - Order persistence to database
 - Shipping zones persistence to database
+- Promotions persistence to database
 
 ### P3 - Additional Modules
 - MVM (Multi-sided Vertical Marketplace)
