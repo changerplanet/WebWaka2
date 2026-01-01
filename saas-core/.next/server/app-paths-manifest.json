@@ -1,8 +1,7 @@
 {
   "/page": "app/page.js",
-  "/api/partners/[partnerId]/dashboard/performance/route": "app/api/partners/[partnerId]/dashboard/performance/route.js",
-  "/api/partners/[partnerId]/dashboard/referrals/route": "app/api/partners/[partnerId]/dashboard/referrals/route.js",
   "/api/tenants/route": "app/api/tenants/route.js",
-  "/api/partners/[partnerId]/audit/route": "app/api/partners/[partnerId]/audit/route.js",
-  "/api/partners/[partnerId]/dashboard/route": "app/api/partners/[partnerId]/dashboard/route.js"
+  "/manifest.json/route": "app/manifest.json/route.js",
+  "/login/page": "app/login/page.js",
+  "/offline/page": "app/offline/page.js"
 }
