@@ -12,7 +12,7 @@
  * - Safe query builders that enforce tenant scoping
  */
 
-// Models that require tenant isolation
+// Models that require tenant isolation (tenant-scoped)
 export const TENANT_SCOPED_MODELS = [
   'TenantMembership',
   'TenantDomain', 
@@ -20,12 +20,42 @@ export const TENANT_SCOPED_MODELS = [
   // Add future tenant-scoped models here
 ] as const
 
+// Models that require partner isolation (partner-scoped)
+// These are separate from tenant isolation - partners are platform-level
+export const PARTNER_SCOPED_MODELS = [
+  'PartnerUser',
+  'PartnerAgreement',
+  'PartnerReferralCode',
+  'PartnerReferral',
+  'PartnerEarning',
+] as const
+
+// Platform-level models (no isolation, Super Admin only)
+export const PLATFORM_MODELS = [
+  'Partner',
+  'User',
+  'Tenant',
+  'Session',
+  'MagicLink',
+] as const
+
 export type TenantScopedModel = typeof TENANT_SCOPED_MODELS[number]
+export type PartnerScopedModel = typeof PARTNER_SCOPED_MODELS[number]
+export type PlatformModel = typeof PLATFORM_MODELS[number]
 
 export interface TenantContext {
   tenantId: string | null
   userId: string | null
   isSuperAdmin: boolean
+  bypassIsolation?: boolean
+}
+
+export interface PartnerContext {
+  partnerId: string | null
+  userId: string | null
+  isSuperAdmin: boolean
+  isPartnerOwner?: boolean
+  isPartnerAdmin?: boolean
   bypassIsolation?: boolean
 }
 
