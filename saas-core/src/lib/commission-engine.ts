@@ -343,7 +343,7 @@ function calculateTieredCommission(
     }
   }
   
-  const tiers = agreement.commissionTiers as CommissionTier[]
+  const tiers = agreement.commissionTiers as unknown as CommissionTier[]
   const volume = input.historicalVolume ?? input.grossAmount
   
   // Find applicable tier based on volume
