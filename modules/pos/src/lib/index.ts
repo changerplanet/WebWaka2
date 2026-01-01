@@ -54,3 +54,26 @@ export {
   type EventHandler,
   type CoreEventSubscriber
 } from './event-bus'
+
+// Offline Queue
+export {
+  OfflineQueue,
+  OfflineSaleManager,
+  OfflineSyncService,
+  OFFLINE_SAFE_ACTIONS,
+  ONLINE_REQUIRED_ACTIONS,
+  OFFLINE_PAYMENT_METHODS,
+  QUEUED_PAYMENT_METHODS,
+  generateOfflineId,
+  generateIdempotencyKey,
+  type OfflineAction,
+  type OfflineActionType,
+  type OfflineActionStatus,
+  type ConflictData,
+  type ConflictType,
+  type ConflictResolution,
+  type OfflineStorage,
+  type QueueStats,
+  type SyncResult,
+  type SyncHandler
+} from './offline-queue'
