@@ -1,8 +1,1 @@
-{
-  "/page": "app/page.js",
-  "/api/tenants/[slug]/route": "app/api/tenants/[slug]/route.js",
-  "/manifest.json/route": "app/manifest.json/route.js",
-  "/api/tenants/route": "app/api/tenants/route.js",
-  "/login/page": "app/login/page.js",
-  "/offline/page": "app/offline/page.js"
-}
+{}
