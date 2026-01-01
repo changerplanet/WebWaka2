@@ -279,6 +279,21 @@ CANCELLED  CANCELLED CANCELLED/REFUNDED  REFUNDED   REFUNDED
 - Event processing with idempotency checks working
 - Entitlements API returning proper features/limits
 
+### Testing Results (Phase 4 - Shipping)
+- Zone-based shipping calculation working
+- Free shipping thresholds ($50 US, $75 CA, $100 Express)
+- Zone CRUD operations (create, read, update, delete)
+- Rate management (add, update, delete rates per zone)
+- Cheapest/fastest option identification
+- Weight-based calculations
+
+### Shipping Capabilities (Phase 4)
+- **Zone-based shipping**: Country, state, city, postal code matching
+- **Rate types**: Flat, weight-based, price-based, item-based
+- **Free shipping rules**: Per-rate thresholds with amount-to-free display
+- **Product restrictions**: Include/exclude by product ID or category
+- **Default zones**: US Domestic, Canada, International auto-created
+
 ### Files Created (Phase 3)
 **SaaS Core:**
 - `/saas-core/src/lib/svm-event-handlers.ts`
@@ -299,12 +314,24 @@ CANCELLED  CANCELLED CANCELLED/REFUNDED  REFUNDED   REFUNDED
 - `/modules/svm/src/app/api/cart/route.ts`
 - `/modules/svm/docs/SVM_API_REFERENCE.md`
 
+### Files Created (Phase 4 - Shipping)
+**SaaS Core:**
+- `/saas-core/src/lib/shipping-storage.ts` - Shared globalThis storage
+- `/saas-core/src/app/api/svm/shipping/route.ts` - Calculate & list zones
+- `/saas-core/src/app/api/svm/shipping/zones/route.ts` - Create zone
+- `/saas-core/src/app/api/svm/shipping/zones/[zoneId]/route.ts` - Zone CRUD
+
+**SVM Module:**
+- `/modules/svm/src/lib/shipping-engine.ts` - Business logic classes
+- `/modules/svm/docs/SVM_SHIPPING.md` - Documentation
+
 ### Current Mocked Components
 | Component | Status | Notes |
 |-----------|--------|-------|
 | Product Catalog | MOCKED | Returns empty (Core not integrated) |
-| Cart Storage | MOCKED | In-memory Map |
+| Cart Storage | MOCKED | In-memory Map (globalThis) |
 | Order Storage | MOCKED | Not persisted to DB |
+| **Shipping Zones** | **MOCKED** | **In-memory globalThis storage** |
 | Inventory Reservation | MOCKED | TODO in event handlers |
 | Payment Processing | MOCKED | TODO in event handlers |
 | Email Notifications | MOCKED | TODO in event handlers |
