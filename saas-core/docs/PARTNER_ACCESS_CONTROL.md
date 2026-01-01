@@ -20,9 +20,58 @@ This document defines the access control model for the Partner Program. The Part
 
 ---
 
-## Core Principles
+## Role Hierarchy
 
-### 1. Partner Users ≠ Tenant Users
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                      PLATFORM LEVEL                              │
+│                                                                  │
+│  ┌──────────────┐                                               │
+│  │ SUPER_ADMIN  │ ─────── Full platform access (all partners)   │
+│  └──────┬───────┘                                               │
+│         │                                                        │
+│         │ Can access any partner                                 │
+│         ▼                                                        │
+│  ┌─────────────────────────────────────────────────────────┐    │
+│  │              PARTNER ORGANIZATION                        │    │
+│  │                                                          │    │
+│  │   ┌────────────────┐     ┌─────────────────┐            │    │
+│  │   │ PARTNER_OWNER  │ ──▶ │  PARTNER_STAFF  │            │    │
+│  │   └────────────────┘     └─────────────────┘            │    │
+│  │         │                        │                       │    │
+│  │         │ Full control           │ Limited access        │    │
+│  │         │ within partner         │ within partner        │    │
+│  │         ▼                        ▼                       │    │
+│  │   ┌─────────────────────────────────────────────────┐   │    │
+│  │   │        PARTNER DATA (isolated per partner)       │   │    │
+│  │   │   • Profile        • Referrals                   │   │    │
+│  │   │   • Agreements     • Earnings                    │   │    │
+│  │   │   • Referral Codes                               │   │    │
+│  │   └─────────────────────────────────────────────────┘   │    │
+│  │                                                          │    │
+│  └─────────────────────────────────────────────────────────┘    │
+│                                                                  │
+│  ════════════════════════ HARD BOUNDARY ═════════════════════   │
+│                                                                  │
+│  ┌─────────────────────────────────────────────────────────┐    │
+│  │              TENANT DOMAIN (INACCESSIBLE)                │    │
+│  │                                                          │    │
+│  │   Partners can ONLY see limited tenant metadata:         │    │
+│  │   • Tenant name, status, signup date                     │    │
+│  │                                                          │    │
+│  │   Partners CANNOT access:                                │    │
+│  │   • Tenant users, settings, domains, or internal data    │    │
+│  │                                                          │    │
+│  └─────────────────────────────────────────────────────────┘    │
+│                                                                  │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## Identity Model
+
+### Partner Users ≠ Tenant Users
 Partner users and tenant users are **completely separate** identity spaces:
 
 ```
@@ -45,7 +94,7 @@ Partner users and tenant users are **completely separate** identity spaces:
 └─────────────────────────────────────────────────────────────────┘
 ```
 
-### 2. Access Boundary
+### Access Boundary Summary
 ```
 ┌──────────────────────────────────────────────────────────────────┐
 │                     PARTNER VISIBLE DATA                         │
