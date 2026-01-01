@@ -27,9 +27,17 @@ enum TenantRole {
 
 // Tenant lifecycle status
 enum TenantStatus {
-  ACTIVE       // Normal operation
-  SUSPENDED    // Temporarily disabled (e.g., payment issue)
-  DEACTIVATED  // Soft-deleted, data retained
+  PENDING_ACTIVATION  // Created by partner, awaiting tenant signup/payment
+  ACTIVE              // Normal operation
+  SUSPENDED           // Temporarily disabled (e.g., payment issue)
+  DEACTIVATED         // Soft-deleted, data retained
+}
+
+// Attribution method - how the tenant was linked to a partner
+enum AttributionMethod {
+  PARTNER_CREATED     // Partner created the tenant directly
+  REFERRAL_LINK       // Tenant signed up via referral link/code
+  MANUAL_ASSIGNMENT   // Super Admin manually assigned (rare, audit logged)
 }
 
 // Domain verification status
