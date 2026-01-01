@@ -2,6 +2,54 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.6.0] - 2026-01-01
+
+### Added
+
+#### Partner Dashboard & Audit Integration (Phase 6 & 7)
+Complete partner-facing dashboard APIs and comprehensive audit logging.
+
+**Partner Dashboard APIs:**
+- `GET /api/partners/{partnerId}/dashboard` - Complete dashboard overview
+- `GET /api/partners/{partnerId}/dashboard/performance` - Performance metrics with date range
+- `GET /api/partners/{partnerId}/dashboard/referrals` - Paginated referral list
+- `GET /api/partners/{partnerId}/audit` - Audit logs for partner
+
+**Dashboard Data Contracts:**
+- `PartnerDashboardOverview` - Main dashboard response
+- `PartnerInfo` - Safe partner profile data
+- `DashboardSummary` - High-level counts and earnings
+- `EarningsSummary` - Balance breakdown and monthly trends
+- `ReferralsSummary` - Referral counts with recent and top performers
+- `ActivityItem` - Recent activity feed items
+- `PartnerPerformanceMetrics` - Conversion, retention, and growth metrics
+
+**Services:**
+- `/src/lib/partner-dashboard.ts` - Complete dashboard data service
+- `/src/lib/partner-audit.ts` - Audit logging and compliance reporting
+
+**Audit Features:**
+- Immutable audit entries (no updates or deletes)
+- Partner-specific audit actions tracked
+- Activity reports with summaries
+- Retention policy enforcement (7 years for financial data)
+- Compliance report generation
+
+**Security Boundaries:**
+- ✅ Partners see ONLY their own data
+- ✅ NO tenant internals exposed (only name, slug, status)
+- ✅ NO module data exposed
+- ✅ Read-only visibility
+- ✅ Aggregated metrics only
+
+**Test Evidence:**
+- All 4 APIs verified working with test data
+- Authentication enforced on all endpoints
+- Partner isolation working correctly
+- TypeScript compilation passes
+
+---
+
 ## [1.5.0] - 2025-01-01
 
 ### Added
