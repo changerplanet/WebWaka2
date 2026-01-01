@@ -7,5 +7,6 @@
   "/api/admin/users/route": "app/api/admin/users/route.js",
   "/api/health/route": "app/api/health/route.js",
   "/page": "app/page.js",
-  "/offline/page": "app/offline/page.js"
+  "/offline/page": "app/offline/page.js",
+  "/api/admin/users/[userId]/route": "app/api/admin/users/[userId]/route.js"
 }
