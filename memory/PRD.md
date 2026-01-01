@@ -213,7 +213,7 @@ All Partner APIs are marked **STABLE** and follow semantic versioning.
 | 3 | Online Order Lifecycle | ✅ COMPLETE |
 | 4 | Shipping Logic | ✅ COMPLETE |
 | 5 | Promotions Engine | ✅ COMPLETE |
-| 6 | Reviews System | ⏳ Pending |
+| 6 | Offline & PWA | ✅ COMPLETE |
 | 7 | Storefront UI | ⏳ Pending |
 | 8 | SEO & CMS | ⏳ Pending |
 | 9 | Events & Analytics | ⏳ Pending |
