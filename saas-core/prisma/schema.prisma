@@ -935,8 +935,52 @@ model PartnerEarning {
 }
 
 // ============================================================================
+// PARTNER PAYOUT SETTINGS
+// Configuration for payout thresholds and tax withholding
+// ============================================================================
+model PartnerPayoutSettings {
+  id              String   @id @default(uuid())
+  partnerId       String   @unique
+  
+  // Payout thresholds
+  minimumPayout   Decimal  @db.Decimal(12, 2) @default(100.00) // Minimum balance for payout
+  currency        String   @default("USD")
+  
+  // Payout schedule preference
+  payoutFrequency String   @default("MONTHLY") // WEEKLY, BIWEEKLY, MONTHLY, QUARTERLY
+  
+  // Tax withholding
+  taxWithholdingEnabled Boolean @default(false)
+  taxWithholdingRate    Decimal? @db.Decimal(5, 4) // e.g., 0.30 = 30%
+  taxWithholdingReason  String?  // "W-8BEN", "1099-MISC", etc.
+  
+  // Tax documentation status
+  taxDocumentStatus     String   @default("NOT_SUBMITTED") // NOT_SUBMITTED, PENDING, VERIFIED, EXPIRED
+  taxDocumentType       String?  // "W-9", "W-8BEN", etc.
+  taxDocumentVerifiedAt DateTime?
+  
+  // Bank/Payment details (placeholder - no actual integration)
+  paymentMethodType     String?  // "BANK_TRANSFER", "PAYPAL", "CHECK"
+  paymentMethodVerified Boolean  @default(false)
+  paymentMethodDetails  Json?    // Encrypted/masked details
+  
+  // Hold status
+  payoutHold            Boolean  @default(false)
+  payoutHoldReason      String?
+  payoutHoldUntil       DateTime?
+  
+  // Audit
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  // Relations
+  partner         Partner  @relation(fields: [partnerId], references: [id], onDelete: Cascade)
+}
+
+// ============================================================================
 // PAYOUT BATCH
-// Groups earnings for payment processing (Phase 5)
+// Groups earnings for payment processing
+// Status: DRAFT → PENDING_APPROVAL → APPROVED → READY → PROCESSING → COMPLETED/FAILED
 // ============================================================================
 model PayoutBatch {
   id              String   @id @default(uuid())
@@ -944,10 +988,12 @@ model PayoutBatch {
   
   // Batch details
   batchNumber     String   @unique // e.g., "PO-2025-001234"
-  status          String   @default("PENDING") // PENDING, APPROVED, PROCESSING, COMPLETED, FAILED
+  status          String   @default("DRAFT") // DRAFT, PENDING_APPROVAL, APPROVED, READY, PROCESSING, COMPLETED, FAILED, CANCELLED
   
   // Financial summary
-  totalAmount     Decimal  @db.Decimal(12, 2)
+  grossAmount     Decimal  @db.Decimal(12, 2) // Total before withholding
+  taxWithholding  Decimal  @db.Decimal(12, 2) @default(0) // Tax withheld
+  netAmount       Decimal  @db.Decimal(12, 2) // Amount to be paid
   currency        String   @default("USD")
   earningsCount   Int      // Number of earnings in batch
   
@@ -955,17 +1001,32 @@ model PayoutBatch {
   periodStart     DateTime
   periodEnd       DateTime
   
-  // Payment details (populated when processed)
+  // Readiness checks
+  readinessChecks Json?    // { "minimumMet": true, "taxDocsVerified": true, ... }
+  readinessStatus String   @default("NOT_CHECKED") // NOT_CHECKED, READY, BLOCKED
+  blockReason     String?  // Why payout is blocked
+  
+  // Payment details (populated when processed - NOT in Phase 5)
   paymentMethod   String?
   paymentReference String?
   processedAt     DateTime?
+  failureReason   String?
   
-  // Approval
+  // Approval workflow
   approvedAt      DateTime?
   approvedByUserId String?
   
+  // Cancellation
+  cancelledAt     DateTime?
+  cancelledByUserId String?
+  cancellationReason String?
+  
+  // Notes
+  internalNotes   String?
+  
   // Audit
   createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
   
   // Relations
   partner         Partner  @relation(fields: [partnerId], references: [id], onDelete: Restrict)
@@ -973,6 +1034,7 @@ model PayoutBatch {
   @@index([partnerId])
   @@index([status])
   @@index([createdAt])
+  @@index([readinessStatus])
 }
 
 // ============================================================================
