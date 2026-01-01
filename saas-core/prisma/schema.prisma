@@ -235,9 +235,8 @@ enum PartnerTier {
 
 // Partner user roles within a partner organization
 enum PartnerRole {
-  PARTNER_OWNER    // Full control, can manage agreement
-  PARTNER_ADMIN    // Can manage users, view all data
-  PARTNER_MEMBER   // Limited access, view own referrals
+  PARTNER_OWNER    // Full control: manage agreement, users, view all data
+  PARTNER_STAFF    // Limited: view referrals/earnings, create referral codes
 }
 
 // Agreement status
