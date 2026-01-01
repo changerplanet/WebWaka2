@@ -150,8 +150,8 @@ export default function SuperAdminDashboard() {
         <nav className="p-4">
           <ul className="space-y-2">
             {[
-              { icon: Building2, label: 'Tenants', active: true },
-              { icon: Users, label: 'All Users', disabled: true },
+              { icon: Building2, label: 'Tenants', active: true, href: '/admin' },
+              { icon: Users, label: 'All Users', href: '/admin/users' },
               { icon: Activity, label: 'Audit Logs', href: '/admin/audit-logs' },
               { icon: Settings, label: 'Settings', disabled: true },
             ].map((item, i) => (
