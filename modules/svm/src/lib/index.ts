@@ -90,3 +90,21 @@ export {
   type OrderData,
   type CreateOrderInput
 } from './order-engine'
+
+// Shipping Engine
+export {
+  ShippingEngine,
+  ShippingRuleBuilder,
+  SVMShippingService,
+  getShippingService,
+  formatDeliveryEstimate,
+  getEstimatedDeliveryDate,
+  type ShippingZone,
+  type ShippingRate,
+  type ShippingRateType,
+  type ShippingDestination,
+  type ShippingCartItem,
+  type ShippingCalculationRequest,
+  type ShippingOption,
+  type ShippingCalculationResult
+} from './shipping-engine'
