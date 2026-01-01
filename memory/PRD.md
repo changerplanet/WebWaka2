@@ -319,16 +319,25 @@ CANCELLED  CANCELLED CANCELLED/REFUNDED  REFUNDED   REFUNDED
 
 ## Backlog / Future Work
 
-### P0 - POS Module Completion
-- **Phase 6**: POS UI & UX (PWA) - Frontend for Point of Sale
+### P0 - SVM Module Completion (Next Phases)
+- **Phase 4**: Shipping Logic - Shipping zones, rates, carrier integration
+- **Phase 5**: Promotions Engine - Coupon codes, automatic discounts
+- **Phase 6**: Reviews System - Product reviews, ratings
+- **Phase 7**: Storefront UI (PWA) - Customer-facing marketplace UI
+- **Phase 8**: SEO & CMS - Pages, banners, meta content
+- **Phase 9**: Events & Analytics - Tracking, reporting
+
+### P1 - Core Entities
+- Add `Product`, `Customer`, `InventoryLevel` models to SaaS Core schema
+- Implement Core catalog service for SVM to consume
 
 ### P2 - Production Readiness
 - Production Email Sending - Resend domain verification
 - Payment Gateway Integration - Stripe/PayPal
-- POS Database Integration - Connect to Supabase
+- POS/SVM Database Integration - Connect to Supabase
+- Order persistence to database
 
 ### P3 - Additional Modules
-- SVM (Service-based Vertical Module)
 - MVM (Multi-sided Vertical Marketplace)
 
 ---
