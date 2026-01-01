@@ -367,6 +367,14 @@ CANCELLED  CANCELLED CANCELLED/REFUNDED  REFUNDED   REFUNDED
 - `/modules/svm/src/lib/promotions-engine.ts` - Business logic classes
 - `/modules/svm/docs/SVM_PROMOTIONS.md` - Documentation
 
+### Files Created (Phase 6 - Offline & PWA)
+**SVM Module:**
+- `/modules/svm/src/lib/offline-behavior.ts` - Offline behavior rules and utilities
+- `/modules/svm/src/components/offline-ui.tsx` - React components for offline UI
+- `/modules/svm/public/sw.js` - Service worker for caching
+- `/modules/svm/public/manifest.json` - PWA manifest
+- `/modules/svm/docs/SVM_OFFLINE.md` - Documentation
+
 ### Current Mocked Components
 | Component | Status | Notes |
 |-----------|--------|-------|
