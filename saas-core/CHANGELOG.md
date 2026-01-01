@@ -2,6 +2,55 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.3.0] - 2025-01-01
+
+### Added
+
+#### Subscription & Entitlement System (Phase 3)
+Complete subscription engine with entitlements and lifecycle events.
+
+**New Schema Models:**
+- `SubscriptionPlan` - Plan definitions with module bundles and pricing
+- `Subscription` - Tenant subscriptions with optional partner attribution
+- `Entitlement` - Module access grants (the only interface for modules)
+- `SubscriptionEvent` - Immutable event log for commission calculation
+- `Invoice` - Billing records
+
+**New Enums:**
+- `SubscriptionStatus` - PENDING, TRIALING, ACTIVE, PAST_DUE, CANCELLED, EXPIRED, PAUSED
+- `BillingInterval` - MONTHLY, QUARTERLY, YEARLY
+- `EntitlementStatus` - ACTIVE, SUSPENDED, EXPIRED
+- `SubscriptionEventType` - All lifecycle events
+
+**New Services:**
+- `/src/lib/entitlements.ts` - Module access checks (USE THIS IN MODULES)
+- `/src/lib/subscription.ts` - Subscription management
+- `/src/lib/subscription-events.ts` - Event emission and listening
+
+**Key Features:**
+- Subscriptions have OPTIONAL partner attribution (partnerReferralId can be null)
+- Modules only check entitlements, NOT subscriptions or payments
+- Partner/commission logic isolated from modules
+- Events are module-agnostic
+
+**Subscription Events:**
+- `SUBSCRIPTION_CREATED` - New subscription created
+- `SUBSCRIPTION_ACTIVATED` - After first successful payment
+- `SUBSCRIPTION_RENEWED` - After renewal payment
+- `SUBSCRIPTION_CANCELLED` - After cancellation
+
+**Event Schema Includes:**
+- `tenantId` (required)
+- `partnerId` (OPTIONAL - null if no partner)
+- `modules[]` (module-agnostic list)
+- `billingAmount`, `billingCurrency`, `billingInterval`
+- `periodStart`, `periodEnd`
+
+### Documentation
+- Added `/docs/SUBSCRIPTION_ENTITLEMENT.md` with complete system documentation
+
+---
+
 ## [1.2.0] - 2025-01-01
 
 ### Added
