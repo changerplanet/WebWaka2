@@ -16,13 +16,13 @@ import {
   HeldSales,
   type Product,
   type PaymentMethod
-} from '../components/pos'
+} from './index'
 import {
   useConnectionStatus,
   useCart,
   useOfflineQueue
-} from '../hooks'
-import type { CartItem, HeldSale } from '../lib/client/offline-store'
+} from '../../hooks'
+import type { CartItem, HeldSale } from '../../lib/client/offline-store'
 
 // Mock products for demo (in production, loaded from cache/API)
 const DEMO_PRODUCTS: Product[] = [
