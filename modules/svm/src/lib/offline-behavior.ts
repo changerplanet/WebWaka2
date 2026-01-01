@@ -752,13 +752,5 @@ export class ConnectivityListener {
   }
 }
 
-// ============================================================================
-// EXPORTS
-// ============================================================================
-
-export {
-  isOnline,
-  getNetworkInfo,
-  getConnectionStatus,
-  validateAction
-}
+// Functions isOnline, getNetworkInfo, getConnectionStatus, validateAction
+// are already exported with their function declarations above
