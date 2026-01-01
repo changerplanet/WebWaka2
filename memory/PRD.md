@@ -82,21 +82,23 @@ Production-grade, reusable SaaS Core with Next.js App Router, PostgreSQL (Prisma
 - **Module Selection**: POS, SVM, MVM
 - **Tenant Activation**: System activates after payment
 
-#### Partner Program - Phase 3 ✅ (2025-01-01)
-- **Subscription Engine**: Plans, subscriptions, billing intervals
-- **Entitlement System**: Clean abstraction for module access checks
-- **Lifecycle Events**: CREATED, ACTIVATED, RENEWED, CANCELLED
-- **Partner Attribution**: Optional on subscriptions (partnerReferralId)
-- **Event-Driven**: Events for commission calculation (Phase 4)
+#### Partner Program - Phase 4 ✅ (2025-01-01)
+- **Commission Engine**: Flexible, declarative commission calculation
+- **Supported Models**: PERCENTAGE, FIXED, TIERED, HYBRID
+- **Commission Triggers**: ON_PAYMENT, ON_ACTIVATION, ON_RENEWAL, ON_SIGNUP
+- **Setup Fees**: One-time fees in addition to recurring
+- **Earnings Ledger**: Immutable, append-only ledger
+- **State Machine**: PENDING → CLEARED → APPROVED → PAID
+- **Reversals**: Via DEBIT entries (no direct edits)
+- **Idempotency**: Duplicate prevention via unique keys
 
 ---
 
 ## Backlog / Upcoming Tasks
 
-### P0 - Partner Program Phase 4 (Next)
-1. **Commission & Earnings Engine** - Calculate partner commissions from events
-2. **Earnings Dashboard** - Partner view of commissions
-3. **Payout Processing** - Commission payment workflow
+### P0 - Partner Program Phase 5 (Next)
+1. **Payout Readiness** - Batch earnings for payment (NO money movement)
+2. **Partner Earnings Dashboard** - Partner view of commissions
 
 ### P1 - Partner Portal
 - Partner Portal UI - Frontend for partners to manage tenants/referrals
