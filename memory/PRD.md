@@ -30,7 +30,8 @@ Production-grade, reusable SaaS Core with Next.js App Router, PostgreSQL (Prisma
 - Platform-level reseller/affiliate system
 - Completely isolated from tenant and module structure
 - Partner-specific domain models, roles, access control
-- Future: commissions, billing, attribution tracking
+- Attribution system with immutability guarantees
+- Partner-assisted tenant creation
 
 ---
 
@@ -67,29 +68,37 @@ Production-grade, reusable SaaS Core with Next.js App Router, PostgreSQL (Prisma
 - Audit log viewing
 - Tenant isolation testing
 
-#### Partner Program Foundation ✅
+#### Partner Program - Phase 1 ✅
 - Partner domain models in Prisma schema
 - PartnerRole enum (PARTNER_OWNER, PARTNER_STAFF)
-- Partner authorization library (`partner-authorization.ts`)
-- **Partner Access Control Documentation** ✅ (2025-01-01)
+- Partner authorization library
+- Partner Access Control Documentation
+
+#### Partner Program - Phase 2 ✅ (2025-01-01)
+- **Attribution System**: Immutable Partner-to-Tenant attribution
+- **Attribution Methods**: PARTNER_CREATED, REFERRAL_LINK, MANUAL_ASSIGNMENT
+- **Attribution Windows**: Lifetime or time-bound
+- **Partner Tenant Creation**: Partners create tenants in PENDING state
+- **Module Selection**: POS, SVM, MVM
+- **Tenant Activation**: System activates after payment
 
 ---
 
 ## Backlog / Upcoming Tasks
 
-### P0 - Partner Program (Sequential)
-1. ~~Define Partner access control model~~ ✅ DONE
-2. Partner Capabilities API - APIs for partners to manage profiles, view referrals, track earnings
-3. Partner Portal UI - Frontend portal for partners
+### P0 - Partner Program Phase 3 (Next)
+1. **Subscription & Entitlement Integration** - Connect attribution to billing
+2. **Commission Calculation** - Calculate partner earnings per billing cycle
+3. **Earnings Dashboard** - Partner view of commissions
 
-### P1 - Partner Program (Continued)
-4. Commission Model - Logic for calculating partner commissions
-5. Billing Integration - Subscriptions and commission payouts
-6. Attribution Tracking - Link sign-ups to referring partners
+### P1 - Partner Portal
+- Partner Portal UI - Frontend for partners to manage tenants/referrals
 
 ### P2 - Platform Enhancements
 - Global User Management - Super Admin "All Users" section
 - Production Email Sending - Resend domain verification
+- Billing Integration (Stripe)
+- Attribution Tracking - Link sign-ups to referring partners
 
 ---
 
@@ -102,12 +111,25 @@ Production-grade, reusable SaaS Core with Next.js App Router, PostgreSQL (Prisma
 **Partner Domain:**
 - Partner, PartnerUser, PartnerAgreement, PartnerReferralCode, PartnerReferral, PartnerEarning
 
+**New Enums (Phase 2):**
+- AttributionMethod: PARTNER_CREATED, REFERRAL_LINK, MANUAL_ASSIGNMENT
+- TenantStatus now includes: PENDING_ACTIVATION
+
 ### Key Files
 - `/app/saas-core/prisma/schema.prisma` - All DB models
 - `/app/saas-core/src/lib/tenant-isolation.ts` - Tenant data isolation
 - `/app/saas-core/src/lib/partner-authorization.ts` - Partner access control
-- `/app/saas-core/docs/PARTNER_ACCESS_CONTROL.md` - Partner ACL documentation
-- `/app/saas-core/docs/PARTNER_DOMAIN_MODELS.md` - Partner schema docs
+- `/app/saas-core/src/lib/partner-attribution.ts` - Attribution service
+- `/app/saas-core/src/lib/partner-tenant-creation.ts` - Partner tenant creation
+- `/app/saas-core/docs/PARTNER_ACCESS_CONTROL.md` - Partner ACL docs
+- `/app/saas-core/docs/PARTNER_ATTRIBUTION.md` - Attribution & linking docs
+
+### API Endpoints (Phase 2)
+- `POST /api/attribution` - Create attribution via referral code
+- `GET /api/attribution?tenantId=xxx` - Get attribution for tenant
+- `POST /api/attribution/lock` - Lock attribution (internal)
+- `POST /api/partners/{id}/tenants` - Create tenant in PENDING state
+- `GET /api/partners/{id}/tenants` - List partner's tenants
 
 ### 3rd Party Integrations
 - **Supabase (PostgreSQL)** - Database
@@ -117,6 +139,7 @@ Production-grade, reusable SaaS Core with Next.js App Router, PostgreSQL (Prisma
 ---
 
 ## Version History
-- **v1.1.1** (2025-01-01): Partner Access Control documentation complete
-- **v1.1.0** (2025-01-01): Partner domain models implemented
+- **v1.2.0** (2025-01-01): Partner Attribution & Tenant Linking (Phase 2)
+- **v1.1.1** (2025-01-01): Partner Access Control documentation
+- **v1.1.0** (2025-01-01): Partner domain models
 - **v1.0.0** (2024-12-31): Initial SaaS Core release
