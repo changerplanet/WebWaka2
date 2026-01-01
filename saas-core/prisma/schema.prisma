@@ -98,7 +98,12 @@ model Tenant {
   faviconUrl     String?
   primaryColor   String   @default("#6366f1")
   secondaryColor String   @default("#8b5cf6")
-
+  
+  // Partner-assisted creation fields
+  requestedModules   String[]  @default([]) // ["POS", "SVM", "MVM"] - requested at creation
+  activatedModules   String[]  @default([]) // Actually provisioned after payment
+  activatedAt        DateTime? // When tenant completed signup and payment
+  
   // Audit fields
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
