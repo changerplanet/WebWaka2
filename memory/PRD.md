@@ -82,6 +82,17 @@ Production-grade, reusable SaaS Core with Next.js App Router, PostgreSQL (Prisma
 - **Module Selection**: POS, SVM, MVM
 - **Tenant Activation**: System activates after payment
 
+#### Partner Program - Phase 3 ✅ (2025-01-01)
+- **Subscription Plans**: Plan definitions with module bundles and pricing
+- **Subscriptions**: Tenant subscriptions with optional partner attribution
+- **Entitlements**: Module access grants (interface for modules)
+- **Subscription Events**: Immutable lifecycle event log
+
+#### Partner Program - Phase 4 ✅ (2025-01-01)
+- **Commission Engine**: Flexible commission calculation (PERCENTAGE, FIXED, TIERED, HYBRID)
+- **Earnings Ledger**: Immutable, append-only ledger
+- **Commission Triggers**: ON_PAYMENT, ON_ACTIVATION, ON_RENEWAL, ON_SIGNUP
+
 #### Partner Program - Phase 5 ✅ (2025-01-01)
 - **Payout Readiness**: Preparation without money movement
 - **Payable Balances**: Per-partner tracking (pending/cleared/approved)
@@ -92,21 +103,26 @@ Production-grade, reusable SaaS Core with Next.js App Router, PostgreSQL (Prisma
 - **Reporting**: Partner and platform-wide views
 - **NO execution**: EXECUTION_ENABLED = false
 
+#### Partner Program - Phase 6 & 7 ✅ (2026-01-01)
+- **Partner Dashboard APIs**: Complete dashboard data services
+  - `/api/partners/{id}/dashboard` - Overview
+  - `/api/partners/{id}/dashboard/performance` - Metrics
+  - `/api/partners/{id}/dashboard/referrals` - Referral list
+  - `/api/partners/{id}/audit` - Audit logs
+- **Audit Integration**: Comprehensive audit logging and compliance reporting
+- **Security Boundaries**: Partner-only data, no tenant internals exposed
+
 ---
 
 ## Backlog / Upcoming Tasks
 
-### P0 - Partner Program Phase 6 (Next)
-1. **Partner Dashboard (Core Only)** - Partner-facing UI for earnings/payouts
-
-### P1 - Partner Portal
-- Partner Portal UI - Frontend for partners to manage tenants/referrals
+### P0 - Partner Dashboard Frontend (Next)
+1. **Partner Portal UI** - Frontend for partners to view dashboard, referrals, earnings
 
 ### P2 - Platform Enhancements
 - Global User Management - Super Admin "All Users" section
 - Production Email Sending - Resend domain verification
-- Billing Integration (Stripe)
-- Attribution Tracking - Link sign-ups to referring partners
+- Payout Execution - Integrate payment gateway for actual payouts
 
 ---
 
@@ -118,10 +134,10 @@ Production-grade, reusable SaaS Core with Next.js App Router, PostgreSQL (Prisma
 
 **Partner Domain:**
 - Partner, PartnerUser, PartnerAgreement, PartnerReferralCode, PartnerReferral, PartnerEarning
+- PartnerPayoutSettings, PayoutBatch
 
-**New Enums (Phase 2):**
-- AttributionMethod: PARTNER_CREATED, REFERRAL_LINK, MANUAL_ASSIGNMENT
-- TenantStatus now includes: PENDING_ACTIVATION
+**Subscription Domain:**
+- SubscriptionPlan, Subscription, Entitlement, SubscriptionEvent, Invoice
 
 ### Key Files
 - `/app/saas-core/prisma/schema.prisma` - All DB models
@@ -129,24 +145,29 @@ Production-grade, reusable SaaS Core with Next.js App Router, PostgreSQL (Prisma
 - `/app/saas-core/src/lib/partner-authorization.ts` - Partner access control
 - `/app/saas-core/src/lib/partner-attribution.ts` - Attribution service
 - `/app/saas-core/src/lib/partner-tenant-creation.ts` - Partner tenant creation
-- `/app/saas-core/src/lib/entitlements.ts` - Module access checks (for modules)
+- `/app/saas-core/src/lib/entitlements.ts` - Module access checks
 - `/app/saas-core/src/lib/subscription.ts` - Subscription management
 - `/app/saas-core/src/lib/subscription-events.ts` - Lifecycle events
 - `/app/saas-core/src/lib/commission-engine.ts` - Commission calculation
 - `/app/saas-core/src/lib/earnings-ledger.ts` - Append-only earnings ledger
 - `/app/saas-core/src/lib/payout-readiness.ts` - Payout preparation
-- `/app/saas-core/docs/PARTNER_ACCESS_CONTROL.md` - Partner ACL docs
-- `/app/saas-core/docs/PARTNER_ATTRIBUTION.md` - Attribution & linking docs
-- `/app/saas-core/docs/SUBSCRIPTION_ENTITLEMENT.md` - Subscription & entitlement docs
-- `/app/saas-core/docs/COMMISSION_EARNINGS.md` - Commission & earnings docs
-- `/app/saas-core/docs/PAYOUT_READINESS.md` - Payout readiness docs
+- `/app/saas-core/src/lib/partner-dashboard.ts` - Dashboard data service
+- `/app/saas-core/src/lib/partner-audit.ts` - Audit logging service
 
-### API Endpoints (Phase 2)
+### API Endpoints
+**Attribution:**
 - `POST /api/attribution` - Create attribution via referral code
 - `GET /api/attribution?tenantId=xxx` - Get attribution for tenant
-- `POST /api/attribution/lock` - Lock attribution (internal)
+
+**Partner Tenants:**
 - `POST /api/partners/{id}/tenants` - Create tenant in PENDING state
 - `GET /api/partners/{id}/tenants` - List partner's tenants
+
+**Partner Dashboard:**
+- `GET /api/partners/{id}/dashboard` - Dashboard overview
+- `GET /api/partners/{id}/dashboard/performance` - Performance metrics
+- `GET /api/partners/{id}/dashboard/referrals` - Referral list
+- `GET /api/partners/{id}/audit` - Audit logs
 
 ### 3rd Party Integrations
 - **Supabase (PostgreSQL)** - Database
@@ -156,6 +177,7 @@ Production-grade, reusable SaaS Core with Next.js App Router, PostgreSQL (Prisma
 ---
 
 ## Version History
+- **v1.6.0** (2026-01-01): Partner Dashboard & Audit Integration (Phase 6 & 7)
 - **v1.5.0** (2025-01-01): Payout Readiness (Phase 5) - No money movement
 - **v1.4.0** (2025-01-01): Commission & Earnings Engine (Phase 4)
 - **v1.3.0** (2025-01-01): Subscription & Entitlement System (Phase 3)
