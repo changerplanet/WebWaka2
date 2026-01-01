@@ -1,0 +1,156 @@
+<analysis>**original_problem_statement**: The user wants to build a production-grade, reusable SaaS Core with a Next.js App Router, PostgreSQL (with Prisma ORM), and a Node.js backend.
+
+Key requirements include:
+- **Architecture**: True multi-tenancy with strict data isolation, resolved via middleware based on subdomains or custom domains.
+- **Roles**: Super Admin (global), Tenant Admin, and Tenant User.
+- **Branding**: Full white-label branding per tenant (app name, logo, colors).
+- **Offline & PWA**: The application must be a Progressive Web App (PWA) with offline-first behavior.
+- **Partner Program**: A new requirement to build a platform-level Partner/reseller program, which must be completely isolated from the tenant and module structure. This includes partner-specific domain models, roles, access control, and future capabilities for commissions and billing.
+
+**User's preferred language**: English
+
+**what currently exists?**
+A robust multi-tenant SaaS core application has been built using Next.js, Prisma, and PostgreSQL (Supabase) under .
+
+Key implemented features include:
+- **Core Architecture**: A full-stack Next.js App Router application with middleware-based tenant resolution by hostname.
+- **Database & Schema**: A comprehensive Prisma schema defining models for , , , , and now -related entities.
+- **Authentication**: A complete Magic Link authentication flow using Resend, with a development-mode UI workaround.
+- **Super Admin**: A functional Super Admin dashboard for tenant management and audit logging.
+- **Tenant Admin Portal**: A new settings area for  at  allows management of branding, custom domains, and team members.
+- **White-Label Branding**: The application dynamically applies tenant-specific branding (app name, colors) to the UI and PWA .
+- **PWA/Offline**: The complete infrastructure for PWA and offline-first capabilities is in place, including a service worker, IndexedDB helpers, and React hooks.
+- **Tenant Data Isolation**: A critical, application-layer security system is implemented in  to prevent any cross-tenant data access, with a secure bypass for Super Admins.
+- **Partner Program Foundation**: The initial Prisma domain models for the Partner program (, , , etc.) have been created and migrated to the database.
+
+**Last working item**:
+- **Last item agent was working**: Defining the Partner access control model. The agent updated the  enum in  to include  and  and created the authorization library .
+- **Status**: IN PROGRESS
+- **Agent Testing Done**: N
+- **Which testing method agent to use?**: backend testing agent. Once Partner-specific APIs are created, they must be tested to ensure the new authorization rules are correctly enforced for different partner roles.
+- **User Testing Done**: N
+
+**All Pending/In progress Issue list**:
+There are no outstanding bugs. All pending work relates to feature implementation.
+
+**In progress Task List**:
+- **Task 1: Complete Partner Access Control Model Definition (P0)**
+    - **Where to resume**: Create the documentation file at  to formally define the partner roles, permissions, and access boundaries.
+    - **What will be achieved with this?**: A clear, documented access control policy for the Partner program that will guide the implementation of APIs and the Partner Portal.
+    - **Status**: IN PROGRESS
+    - **Should Test frontend/backend/both after fix?**: N/A
+    - **Blocked on something**: None.
+
+**Upcoming and Future Tasks**
+- **Upcoming Tasks (Partner Program - sequential prompts from user):**
+  - **P0: Partner Capabilities API**: Build APIs for partners to manage their profiles, view referrals, and track earnings, enforcing the new access control rules.
+  - **P1: Partner Portal UI**: Build the frontend portal for partners.
+  - **P2: Commission Model**: Implement the logic for calculating partner commissions.
+  - **P3: Billing Integration**: Integrate a billing system for subscriptions and commission payouts.
+  - **P4: Attribution Tracking**: Implement robust tracking to link sign-ups to referring partners.
+- **Future Tasks (SaaS Core Backlog):**
+  - **Global User Management (P2)**: Implement the All Users section in the Super Admin dashboard.
+  - **Production Email Sending (P2)**: Guide the user to verify their Resend domain and remove the dev-mode magic link workaround.
+
+**Completed work in this session**
+- **PWA & Offline Infrastructure (DONE)**: Fully implemented and verified the PWA manifest, service worker, and offline status components.
+- **Tenant Admin Features (DONE)**: Implemented role-gated UI and APIs for tenant admins to manage settings, branding, domains, and members.
+- **Custom Domain Verification (DONE)**: Implemented backend logic and UI for tenants to add custom domains and see verification instructions.
+- **Tenant Data Isolation (DONE)**: Successfully implemented and tested a robust, application-layer data isolation system to prevent cross-tenant access.
+- **SaaS Core Module Refactor (DONE)**: Initiated a refactor to move reusable logic into  and created  and  files.
+- **Deployment Readiness (DONE)**: Fixed hardcoded URLs and performed a full health check, verifying the application is stable and ready.
+- **Partner Domain Models (DONE)**: Designed and implemented the Prisma schema for the Partner program and successfully migrated the database.
+
+**Earlier issues found/mentioned but not fixed**
+None.
+
+**Known issue recurrence from previous fork**
+- **Issue recurrence in previous fork**: N/A
+- **Recurrence count**: 0
+- **Status**: N/A
+
+**Code Architecture**
+
+
+**Key Technical Concepts**
+- **Framework**: Next.js 14 (App Router)
+- **Database**: PostgreSQL (managed by Supabase) with Prisma ORM.
+- **Tenancy Model**: Middleware-based tenant resolution, secured by an application-layer data isolation engine.
+- **Partner Model**: A new set of platform-level entities (, , etc.) that are distinct from tenants.
+- **Authentication**: Passwordless (Magic Link) using Resend.
+- **Offline Strategy**: PWA with a Service Worker and IndexedDB for queuing actions.
+
+**key DB schema**
+- Existing models: , , , , .
+- **New Partner Models**:
+  - : {id, name, status}
+  - : {userId, partnerId, role: PartnerRole}
+  - : {partnerId, version, commissionRate, effectiveDate}
+  - : {partnerId, tenantId} (Immutable link)
+  - : {partnerId, tenantId, amount, date}
+  -  (Enum): , .
+
+**changes in tech stack**
+None.
+
+**All files of reference**
+- : Source of truth for all data models, including the new Partner entities.
+- : **CRITICAL**: Contains the application-layer logic that enforces data isolation.
+- : The new library for partner-specific access control.
+- : The entry point for the reusable SaaS Core module.
+- : Documentation for the new partner schema.
+- : The main UI for tenant admins.
+
+**key api endpoints**
+-  (GET): Test endpoint for verifying data isolation rules.
+-  (GET, PUT): Manage tenant branding.
+-  (GET, POST): Manage tenant custom domains.
+-  (GET): List tenant members.
+-  (PUT, DELETE): Update/remove tenant members.
+
+**Critical Info for New Agent**
+- The application's security relies on the **application-layer tenant isolation** in . Do not attempt to change this to a Prisma middleware approach, as previous attempts failed due to async context issues.
+- The distinction between platform-level  and  is fundamental. All new partner functionality must use the logic in  and must not be scoped to a tenant.
+- Follow the user's upcoming prompts sequentially to build out the Partner program features.
+
+**documents and test reports created in this job**
+- 
+- 
+- 
+- 
+- 
+
+**Last 10 User Messages and any pending HUMAN messages**
+1.  **User**: Define Partner access control model. (IN PROGRESS)
+2.  **User**: Design and implement Partner domain models in SaaS Core. (DONE)
+3.  **User**: I will post prompts for partner features step-by-step. (ACKNOWLEDGED)
+4.  **User**: Provided high-level rules for building the Partner Program. (ACKNOWLEDGED)
+5.  **User**: Call Deployer Agent and Run Health Check. (DONE, issues fixed)
+6.  **User**: Add enforcement for tenant isolation and refactor to a SaaS Core module. (DONE)
+7.  **User**: Proceed with Tenant Admin/User role UI and custom domain verification. (DONE)
+8.  **User**: Acknowledged completion of PWA manifest verification. (ACKNOWLEDGED)
+9.  **User**: Agent confirmed plan for PWA verification. (ACKNOWLEDGED)
+10. **User**: Provided feedback on PWA implementation plan. (ACKNOWLEDGED)
+
+**Project Health Check:**
+- **Working**: The core multi-tenant application, authentication, super admin dashboard, tenant admin portal, data isolation, and PWA infrastructure are all functional and verified.
+- **Broken**: Nothing is broken.
+- **Mocked**: Email sending via Resend still uses a dev-mode UI display. Domain verification with Resend is required for production use.
+
+**3rd Party Integrations**
+- **Supabase (PostgreSQL)** — requires User API Key.
+- **Prisma ORM (v5.22.0)** — configured in the project.
+- **Resend (Email)** — requires User API Key.
+
+**Testing status**
+- **Testing agent used after significant changes**: NO. Agent attempted to use it but switched to manual  and  testing after an input error. The manual tests were comprehensive and successful.
+- **Troubleshoot agent used after agent stuck in loop**: NO
+- **Test files created**: None. A temporary verification API endpoint () was created and used.
+- **Known regressions**: None.
+
+**Credentials to test flow:**
+- **Super Admin**: Login with . The magic link will appear in the UI.
+- **Tenant Admin**: Login with . The magic link will appear in the UI.
+
+**What agent forgot to execute**
+The agent has followed all user prompts sequentially and has not forgotten any tasks. The current task is in progress as expected.</analysis>
