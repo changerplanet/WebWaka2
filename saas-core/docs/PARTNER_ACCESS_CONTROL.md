@@ -1,8 +1,22 @@
 # Partner Access Control Model
 
 ## Version
-**Schema Version:** 1.1.0  
-**Date:** 2025-01-01
+**Document Version:** 1.1.0  
+**Date:** 2025-01-01  
+**Status:** Defined
+
+---
+
+## Overview
+
+This document defines the access control model for the Partner Program. The Partner domain is **completely isolated** from the Tenant domain. Partner users operate at the **platform level** and cannot access tenant internals.
+
+### Key Principles
+
+1. **Platform-Level Isolation**: Partners exist outside the tenant hierarchy
+2. **Hard Boundaries**: Partner users can NEVER access tenant internal data
+3. **Role-Based Permissions**: Granular permissions based on partner role
+4. **Least Privilege**: Users get minimum permissions needed for their function
 
 ---
 
