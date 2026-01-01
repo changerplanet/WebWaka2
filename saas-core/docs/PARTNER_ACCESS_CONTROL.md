@@ -352,7 +352,7 @@ interface PartnerVisibleTenantData {
 
 ---
 
-## Access Boundary Explanation
+## Access Boundary Details
 
 ### What Partners CAN See About Referred Tenants
 
@@ -388,66 +388,16 @@ interface PartnerVisibleTenantData {
 
 ---
 
-## Implementation Reference
+## Comparison: Partner vs Tenant Authorization
 
-### Authorization Functions
-
-```typescript
-// Require any partner user
-const auth = await requirePartnerUser()
-
-// Require partner owner
-const auth = await requirePartnerOwner()
-
-// Require access to specific partner
-const auth = await requirePartnerAccess(partnerId)
-
-// Require owner access to specific partner
-const auth = await requirePartnerOwnerAccess(partnerId)
-
-// Check specific permission
-if (hasPartnerPermission(role, 'canManagePartnerUsers')) {
-  // Allow action
-}
-```
-
-### Usage Example
-
-```typescript
-// API Route: GET /api/partners/[id]/earnings
-export async function GET(request: NextRequest, { params }) {
-  const { id: partnerId } = await params
-  
-  // 1. Check authorization
-  const auth = await requirePartnerAccess(partnerId)
-  if (!auth.authorized) {
-    return NextResponse.json(
-      { error: auth.error },
-      { status: auth.status }
-    )
-  }
-  
-  // 2. Check permission
-  const permissions = getPartnerPermissions(auth.role)
-  if (!permissions.canViewEarnings) {
-    return NextResponse.json(
-      { error: 'Permission denied' },
-      { status: 403 }
-    )
-  }
-  
-  // 3. Apply data filtering based on role
-  const earnings = await prisma.partnerEarning.findMany({
-    where: {
-      partnerId,
-      // Staff sees summary only, Owner sees all
-      ...(permissions.canViewAllEarnings ? {} : { status: 'PAID' })
-    }
-  })
-  
-  return NextResponse.json({ earnings })
-}
-```
+| Aspect | Partner Auth | Tenant Auth |
+|--------|--------------|-------------|
+| Scope | Platform-level | Workspace-level |
+| Isolation Key | `partnerId` | `tenantId` |
+| Roles | OWNER, STAFF | ADMIN, USER |
+| Cross-access | Never to tenants | Never to partners |
+| Super Admin | Full access | Full access |
+| Data visibility | Limited tenant view | Full workspace |
 
 ---
 
