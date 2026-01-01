@@ -43,7 +43,7 @@ export async function GET(
             }
           }
         },
-        partnerUser: {
+        partnerMembership: {
           include: {
             partner: {
               select: { id: true, name: true, slug: true, status: true, tier: true }
@@ -102,13 +102,13 @@ export async function GET(
           role: m.role,
           createdAt: m.createdAt.toISOString()
         })),
-        partnerMembership: user.partnerUser ? {
-          partnerId: user.partnerUser.partnerId,
-          partnerName: user.partnerUser.partner.name,
-          partnerSlug: user.partnerUser.partner.slug,
-          partnerTier: user.partnerUser.partner.tier,
-          role: user.partnerUser.role,
-          isActive: user.partnerUser.isActive
+        partnerMembership: user.partnerMembership ? {
+          partnerId: user.partnerMembership.partnerId,
+          partnerName: user.partnerMembership.partner.name,
+          partnerSlug: user.partnerMembership.partner.slug,
+          partnerTier: user.partnerMembership.partner.tier,
+          role: user.partnerMembership.role,
+          isActive: user.partnerMembership.isActive
         } : null
       }
     })
