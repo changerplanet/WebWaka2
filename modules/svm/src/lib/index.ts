@@ -57,3 +57,36 @@ export {
   type UnavailableItem,
   type OfflineInventoryStore
 } from './inventory-consumer'
+
+// Order Engine
+export {
+  OrderEngine,
+  canTransition,
+  getValidTransitions,
+  isTerminalState,
+  canCancel,
+  canRefund,
+  generateId,
+  generateEventId,
+  generateOrderNumber,
+  ORDER_TRANSITIONS,
+  type OrderState,
+  type OrderEventType,
+  type OrderEvent,
+  type OrderCreatedEvent,
+  type OrderPlacedEvent,
+  type PaymentRequestedEvent,
+  type OrderPaidEvent,
+  type OrderShippedEvent,
+  type OrderDeliveredEvent,
+  type OrderCancelledEvent,
+  type RefundRequestedEvent,
+  type OrderRefundedEvent,
+  type OrderStatusChangedEvent,
+  type OrderItemSnapshot,
+  type ShippingAddress,
+  type OrderEngineConfig,
+  type OrderEventEmitter,
+  type OrderData,
+  type CreateOrderInput
+} from './order-engine'
