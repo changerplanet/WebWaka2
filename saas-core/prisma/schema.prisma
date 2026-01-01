@@ -578,6 +578,16 @@ enum AuditAction {
   PARTNER_EARNING_CREATED
   PARTNER_EARNING_APPROVED
   PARTNER_EARNING_PAID
+  
+  // Attribution actions
+  ATTRIBUTION_CREATED           // New attribution link created
+  ATTRIBUTION_LOCKED            // Attribution locked after first billing
+  ATTRIBUTION_LOCK_ATTEMPTED    // Failed attempt to modify locked attribution
+  ATTRIBUTION_REASSIGN_BLOCKED  // Attempted reassignment blocked
+  
+  // Partner-assisted tenant creation
+  PARTNER_TENANT_CREATED        // Partner created tenant in PENDING state
+  PARTNER_TENANT_ACTIVATED      // Tenant completed signup and activated
 }
 
 model AuditLog {
