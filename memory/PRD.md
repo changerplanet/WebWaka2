@@ -3,7 +3,7 @@
 ## Overview
 Production-grade, reusable SaaS Core with Next.js App Router, PostgreSQL (Prisma ORM), and multi-tenant architecture.
 
-## Current Version: saas-core-v1.8.0 + pos-v1.0.0 (FROZEN)
+## Current Version: saas-core-v1.8.0 + pos-v1.0.0 + svm-v1.0.0 (IN PROGRESS)
 
 ---
 
