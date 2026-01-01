@@ -834,43 +834,93 @@ model PartnerReferral {
 }
 
 // ============================================================================
-// PARTNER EARNING
-// Tracks commission earned by partner for each billing period
+// PARTNER EARNING LEDGER
+// IMMUTABLE, APPEND-ONLY earning records
+// No direct edits allowed - use DEBIT entries for reversals
 // Linked to specific agreement version that was active at time of earning
 // ============================================================================
 model PartnerEarning {
-  id              String        @id @default(uuid())
+  id              String           @id @default(uuid())
   partnerId       String
-  referralId      String        // Which tenant referral generated this
-  agreementId     String        // Which agreement terms applied
+  referralId      String           // Which tenant referral generated this
+  agreementId     String           // Which agreement terms applied
+  
+  // Entry type - for ledger accounting
+  entryType       EarningEntryType @default(CREDIT)
+  
+  // Link to subscription event that triggered this earning
+  subscriptionEventId String?      // For traceability
+  
+  // Idempotency key - prevents duplicate processing
+  idempotencyKey  String           @unique // e.g., "evt_{eventId}_comm"
   
   // Billing period
-  periodStart     DateTime      // Start of billing period
-  periodEnd       DateTime      // End of billing period
+  periodStart     DateTime         // Start of billing period
+  periodEnd       DateTime         // End of billing period
   
-  // Financial details
-  grossAmount     Decimal       @db.Decimal(12, 2) // Total billed to tenant
-  commissionRate  Decimal       @db.Decimal(5, 4)  // Rate at time of earning
-  commissionAmount Decimal      @db.Decimal(12, 2) // Calculated earning
-  currency        String        @default("USD")
+  // =========================================================================
+  // FINANCIAL DETAILS - Snapshot at time of earning (IMMUTABLE)
+  // =========================================================================
   
-  // Status tracking
-  status          EarningStatus @default(PENDING)
+  // Source amount
+  grossAmount     Decimal          @db.Decimal(12, 2) // Total billed to tenant
   
-  // Payment tracking
-  paidAt          DateTime?
-  paymentReference String?      // External payment ID
-  paymentMethod   String?       // e.g., "bank_transfer", "paypal"
+  // Commission calculation snapshot
+  commissionType  CommissionType   // Type used for calculation
+  commissionRate  Decimal?         @db.Decimal(5, 4)  // Rate if PERCENTAGE
+  fixedAmount     Decimal?         @db.Decimal(12, 2) // Amount if FIXED
   
-  // Audit fields
-  createdAt       DateTime      @default(now())
-  updatedAt       DateTime      @updatedAt
-  approvedAt      DateTime?
-  approvedByUserId String?      // Super Admin who approved
+  // Final calculated commission (can be negative for DEBIT)
+  commissionAmount Decimal         @db.Decimal(12, 2) // The actual earning
+  currency        String           @default("USD")
+  
+  // Calculation details (for audit trail)
+  calculationDetails Json?         // { "formula": "...", "inputs": {...} }
+  
+  // =========================================================================
+  // STATUS - State machine for ledger
+  // =========================================================================
+  
+  status          EarningStatus    @default(PENDING)
+  
+  // State transition timestamps
+  clearedAt       DateTime?        // When PENDING -> CLEARED
+  approvedAt      DateTime?        // When CLEARED -> APPROVED
+  paidAt          DateTime?        // When APPROVED -> PAID
+  disputedAt      DateTime?        // When disputed
+  reversedAt      DateTime?        // When reversed
+  voidedAt        DateTime?        // When voided
+  
+  // For REVERSED/VOIDED - link to reversal entry
+  reversalEntryId String?          // Points to the DEBIT entry
+  reversedById    String?          // Original entry this reverses
+  reversalReason  String?          // Why reversed/voided
+  
+  // =========================================================================
+  // PAYMENT TRACKING
+  // =========================================================================
+  
+  payoutBatchId   String?          // Which payout batch this belongs to
+  paymentReference String?         // External payment ID
+  paymentMethod   String?          // e.g., "bank_transfer", "paypal"
+  
+  // =========================================================================
+  // AUDIT FIELDS - Immutable
+  // =========================================================================
+  
+  createdAt       DateTime         @default(now())
+  // NO updatedAt - this is an APPEND-ONLY ledger
+  // State changes create new entries or use state transition timestamps
+  
+  createdByUserId String?          // System or user who created
+  approvedByUserId String?         // Super Admin who approved
+  
+  // Context at time of creation
+  metadata        Json?            // Additional context
 
   // Relations
-  partner         Partner       @relation(fields: [partnerId], references: [id], onDelete: Restrict)
-  referral        PartnerReferral @relation(fields: [referralId], references: [id], onDelete: Restrict)
+  partner         Partner          @relation(fields: [partnerId], references: [id], onDelete: Restrict)
+  referral        PartnerReferral  @relation(fields: [referralId], references: [id], onDelete: Restrict)
   agreement       PartnerAgreement @relation(fields: [agreementId], references: [id], onDelete: Restrict)
 
   @@index([partnerId])
@@ -878,6 +928,7 @@ model PartnerEarning {
   @@index([agreementId])
   @@index([status])
   @@index([periodStart, periodEnd])
+  @@index([createdAt])
   @@index([createdAt])
 }
 
