@@ -885,6 +885,27 @@ enum AuditAction {
   // Partner-assisted tenant creation
   PARTNER_TENANT_CREATED        // Partner created tenant in PENDING state
   PARTNER_TENANT_ACTIVATED      // Tenant completed signup and activated
+  
+  // Subscription actions (module-agnostic)
+  SUBSCRIPTION_CREATED
+  SUBSCRIPTION_ACTIVATED
+  SUBSCRIPTION_RENEWED
+  SUBSCRIPTION_CANCELLED
+  SUBSCRIPTION_PAUSED
+  SUBSCRIPTION_RESUMED
+  SUBSCRIPTION_UPGRADED
+  SUBSCRIPTION_DOWNGRADED
+  SUBSCRIPTION_EXPIRED
+  
+  // Entitlement actions
+  ENTITLEMENT_GRANTED
+  ENTITLEMENT_REVOKED
+  ENTITLEMENT_EXPIRED
+  
+  // Invoice actions
+  INVOICE_CREATED
+  INVOICE_PAID
+  INVOICE_VOIDED
 }
 
 model AuditLog {
