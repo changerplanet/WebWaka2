@@ -127,3 +127,44 @@ export {
   type PromotionErrorCode,
   type DiscountCalculation
 } from './promotions-engine'
+
+// Offline Behavior
+export {
+  // Action classification
+  OFFLINE_SAFE_ACTIONS,
+  ONLINE_REQUIRED_ACTIONS,
+  QUEUEABLE_ACTIONS,
+  
+  // Connectivity
+  isOnline,
+  getNetworkInfo,
+  getConnectionStatus,
+  validateAction,
+  ConnectivityListener,
+  
+  // Offline cart
+  OfflineCartManager,
+  
+  // Offline queue
+  OfflineQueue,
+  
+  // Cache configs
+  CACHE_CONFIGS,
+  STORAGE_KEYS,
+  OFFLINE_MESSAGES,
+  
+  // Types
+  type OfflineSafeAction,
+  type OnlineRequiredAction,
+  type MarketplaceAction,
+  type ConnectionStatus,
+  type ConnectivityState,
+  type ActionValidation,
+  type QueuedAction,
+  type CacheStrategy,
+  type CacheConfig,
+  type OfflineMessage,
+  type OfflineCartItem,
+  type OfflineCart,
+  type ConnectivityCallback
+} from './offline-behavior'
