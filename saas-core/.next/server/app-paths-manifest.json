@@ -1,4 +1,7 @@
 {
   "/page": "app/page.js",
-  "/api/svm/orders/route": "app/api/svm/orders/route.js"
+  "/api/svm/orders/route": "app/api/svm/orders/route.js",
+  "/api/svm/cart/route": "app/api/svm/cart/route.js",
+  "/api/svm/entitlements/route": "app/api/svm/entitlements/route.js",
+  "/api/svm/products/route": "app/api/svm/products/route.js"
 }
