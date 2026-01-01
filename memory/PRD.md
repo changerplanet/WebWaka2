@@ -285,6 +285,7 @@ Location: `/app/modules/svm/`
 | **POS Inventory Interaction** | `/modules/pos/docs/POS_INVENTORY_INTERACTION.md` |
 | **POS Permissions** | `/modules/pos/docs/POS_PERMISSIONS.md` |
 | **POS API Reference** | `/modules/pos/docs/POS_API_REFERENCE.md` |
+| **SVM Domain Model** | `/modules/svm/docs/SVM_DOMAIN_MODEL.md` |
 
 ---
 
