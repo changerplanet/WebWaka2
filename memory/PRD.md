@@ -150,6 +150,7 @@ Production-grade, reusable SaaS Core with Next.js App Router, PostgreSQL (Prisma
 ---
 
 ## Version History
+- **v1.3.0** (2025-01-01): Subscription & Entitlement System (Phase 3)
 - **v1.2.0** (2025-01-01): Partner Attribution & Tenant Linking (Phase 2)
 - **v1.1.1** (2025-01-01): Partner Access Control documentation
 - **v1.1.0** (2025-01-01): Partner domain models
