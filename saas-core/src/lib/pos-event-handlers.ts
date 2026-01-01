@@ -116,7 +116,7 @@ async function markEventProcessed(
   staffId: string
 ): Promise<void> {
   await createAuditLog({
-    action: 'SETTINGS_UPDATED' as AuditAction, // Using existing action
+    action: 'TENANT_UPDATED' as AuditAction, // Using existing action
     actorId: staffId || 'system',
     actorEmail: 'pos-system@internal',
     tenantId,
@@ -232,7 +232,7 @@ export async function handlePaymentCaptured(
     console.log('[POS] Payment captured:', method, '$' + amount, 'for sale', saleId)
 
     await createAuditLog({
-      action: 'SETTINGS_UPDATED' as AuditAction, // Using for POS_PAYMENT
+      action: 'TENANT_UPDATED' as AuditAction, // Using for POS_PAYMENT
       actorId: staffId,
       actorEmail: 'pos@internal',
       tenantId,
@@ -273,7 +273,7 @@ export async function handleRefundCreated(
     console.log('[POS] Refund created:', refundNumber, 'for $' + totalRefunded)
 
     await createAuditLog({
-      action: 'TENANT_REACTIVATED' as AuditAction, // Using for POS_REFUND
+      action: 'TENANT_ACTIVATED' as AuditAction, // Using for POS_REFUND
       actorId: staffId,
       actorEmail: 'pos@internal',
       tenantId,
