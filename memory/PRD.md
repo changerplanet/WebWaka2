@@ -292,6 +292,25 @@ CANCELLED  CANCELLED CANCELLED/REFUNDED  REFUNDED   REFUNDED
 - Cheapest/fastest option identification
 - Weight-based calculations
 
+### Testing Results (Phase 5 - Promotions)
+- Percentage discounts with max cap
+- Fixed amount discounts, per-item discounts
+- Free shipping promotions
+- Buy X Get Y (BOGO) deals
+- Automatic promotions applied when conditions met
+- Coupon code validation with detailed error messages
+- First order only restriction
+- Minimum order total/quantity validation
+- Stackable and non-stackable promotions
+- CRUD operations (create, read, update, delete)
+
+### Promotions Capabilities (Phase 5)
+- **Discount types**: PERCENTAGE, FIXED_AMOUNT, FIXED_PER_ITEM, FREE_SHIPPING, BUY_X_GET_Y
+- **Promotion types**: COUPON, AUTOMATIC, FLASH_SALE
+- **Conditions**: Min order total, min quantity, product/category restrictions
+- **Limits**: Usage limit, per-customer limit, date range
+- **Stacking**: Priority-based, stackable flag
+
 ### Shipping Capabilities (Phase 4)
 - **Zone-based shipping**: Country, state, city, postal code matching
 - **Rate types**: Flat, weight-based, price-based, item-based
