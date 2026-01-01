@@ -2,6 +2,36 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.1.1] - 2025-01-01
+
+### Added
+
+#### Partner Access Control Model
+Comprehensive access control documentation and implementation for the Partner Program.
+
+**Documentation:**
+- Added `/docs/PARTNER_ACCESS_CONTROL.md` with complete access control model
+- Role hierarchy diagrams (SUPER_ADMIN → PARTNER_OWNER → PARTNER_STAFF)
+- Permission matrix for all partner operations
+- Authorization flow documentation
+- API request flow diagrams
+- Audit requirements specification
+
+**Key Concepts Documented:**
+- Partner domain is completely isolated from Tenant domain
+- Partners operate at platform level, not workspace level
+- Hard boundary: Partner users can NEVER access tenant internals
+- Role-based permissions with granular controls
+- Comparison of Partner vs Tenant authorization models
+
+**Authorization Library:**
+- `partner-authorization.ts` with typed permissions
+- Functions: `requirePartnerUser()`, `requirePartnerOwner()`, `requirePartnerAccess()`
+- Permission checks: `hasPartnerPermission()`, `getPartnerPermissions()`
+- Partner isolation enforcement at API level
+
+---
+
 ## [1.1.0] - 2025-01-01
 
 ### Added
