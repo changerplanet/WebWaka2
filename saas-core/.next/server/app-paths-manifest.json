@@ -6,5 +6,7 @@
   "/api/tenants/[slug]/route": "app/api/tenants/[slug]/route.js",
   "/api/admin/test-isolation/route": "app/api/admin/test-isolation/route.js",
   "/manifest.json/route": "app/manifest.json/route.js",
-  "/api/icons/[size]/route": "app/api/icons/[size]/route.js"
+  "/api/icons/[size]/route": "app/api/icons/[size]/route.js",
+  "/api/tenants/[slug]/settings/route": "app/api/tenants/[slug]/settings/route.js",
+  "/api/tenants/[slug]/domains/route": "app/api/tenants/[slug]/domains/route.js"
 }
