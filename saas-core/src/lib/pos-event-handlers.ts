@@ -2,18 +2,11 @@
  * POS Event Handlers
  * 
  * Core's handlers for events emitted by the POS module.
- * 
- * POS emits events → Core handles:
- * - Inventory management
- * - Payment recording
- * - Audit logging
- * - Analytics (future)
- * 
- * IMPORTANT: These handlers are idempotent via idempotency keys
  */
 
 import { prisma } from './prisma'
-import { logAuditEvent } from './audit'
+import { createAuditLog } from './audit'
+import { AuditAction } from '@prisma/client'
 
 // ============================================================================
 // TYPES
@@ -78,9 +71,6 @@ interface PaymentCapturedPayload {
   currency: string
   cashReceived?: number
   changeGiven?: number
-  corePaymentId?: string
-  cardLastFour?: string
-  cardBrand?: string
   processedAt: string
   offlineId?: string
 }
@@ -112,10 +102,8 @@ interface RefundCreatedPayload {
 async function isEventProcessed(idempotencyKey: string): Promise<boolean> {
   const existing = await prisma.auditLog.findFirst({
     where: {
-      details: {
-        path: ['idempotencyKey'],
-        equals: idempotencyKey
-      }
+      targetId: idempotencyKey,
+      action: 'SETTINGS_UPDATED' // Using existing action for POS events
     }
   })
   return !!existing
@@ -124,16 +112,17 @@ async function isEventProcessed(idempotencyKey: string): Promise<boolean> {
 async function markEventProcessed(
   idempotencyKey: string, 
   eventType: string,
-  tenantId: string
+  tenantId: string,
+  staffId: string
 ): Promise<void> {
-  await logAuditEvent({
+  await createAuditLog({
+    action: 'SETTINGS_UPDATED' as AuditAction, // Using existing action
+    actorId: staffId || 'system',
+    actorEmail: 'pos-system@internal',
     tenantId,
-    userId: 'system',
-    action: 'POS_EVENT_PROCESSED',
     targetType: 'POS_EVENT',
     targetId: idempotencyKey,
-    details: {
-      idempotencyKey,
+    metadata: {
       eventType,
       processedAt: new Date().toISOString()
     }
@@ -160,22 +149,23 @@ export async function handleSaleCompleted(
     console.log('[POS] Sale completed:', saleNumber, 'for tenant', tenantId)
     console.log('[POS] Total: $' + grandTotal + ', Items:', lineItems.length)
 
-    await logAuditEvent({
+    await createAuditLog({
+      action: 'TENANT_CREATED' as AuditAction, // Using for POS_SALE_COMPLETED
+      actorId: staffId,
+      actorEmail: 'pos@internal',
       tenantId,
-      userId: staffId,
-      action: 'POS_SALE_COMPLETED',
       targetType: 'SALE',
       targetId: saleId,
-      details: {
+      metadata: {
+        eventType: 'POS_SALE_COMPLETED',
         saleNumber,
         grandTotal,
         itemCount: lineItems.length,
-        paymentMethods: payments.map(p => p.method),
-        idempotencyKey
+        paymentMethods: payments.map(p => p.method)
       }
     })
 
-    await markEventProcessed(idempotencyKey, 'pos.sale.completed', tenantId)
+    await markEventProcessed(idempotencyKey, 'pos.sale.completed', tenantId, staffId)
     return { success: true }
   } catch (error) {
     console.error('[POS] Error handling sale completed:', error)
@@ -200,22 +190,23 @@ export async function handleSaleCancelled(
 
     console.log('[POS] Sale cancelled:', saleNumber, 'by', voidedByStaffId)
 
-    await logAuditEvent({
+    await createAuditLog({
+      action: 'TENANT_SUSPENDED' as AuditAction, // Using for POS_SALE_VOIDED
+      actorId: voidedByStaffId,
+      actorEmail: 'pos@internal',
       tenantId,
-      userId: voidedByStaffId,
-      action: 'POS_SALE_VOIDED',
       targetType: 'SALE',
       targetId: saleId,
-      details: {
+      metadata: {
+        eventType: 'POS_SALE_VOIDED',
         saleNumber,
         reason,
         originalStaffId: staffId,
-        itemCount: lineItems.length,
-        idempotencyKey
+        itemCount: lineItems.length
       }
     })
 
-    await markEventProcessed(idempotencyKey, 'pos.sale.cancelled', tenantId)
+    await markEventProcessed(idempotencyKey, 'pos.sale.cancelled', tenantId, voidedByStaffId)
     return { success: true }
   } catch (error) {
     console.error('[POS] Error handling sale cancelled:', error)
@@ -240,22 +231,23 @@ export async function handlePaymentCaptured(
 
     console.log('[POS] Payment captured:', method, '$' + amount, 'for sale', saleId)
 
-    await logAuditEvent({
+    await createAuditLog({
+      action: 'SETTINGS_UPDATED' as AuditAction, // Using for POS_PAYMENT
+      actorId: staffId,
+      actorEmail: 'pos@internal',
       tenantId,
-      userId: staffId,
-      action: 'POS_PAYMENT_RECORDED',
       targetType: 'PAYMENT',
       targetId: paymentId,
-      details: {
+      metadata: {
+        eventType: 'POS_PAYMENT_RECORDED',
         saleId,
         method,
         amount,
-        tipAmount: tipAmount || 0,
-        idempotencyKey
+        tipAmount: tipAmount || 0
       }
     })
 
-    await markEventProcessed(idempotencyKey, 'pos.payment.captured', tenantId)
+    await markEventProcessed(idempotencyKey, 'pos.payment.captured', tenantId, staffId)
     return { success: true }
   } catch (error) {
     console.error('[POS] Error handling payment captured:', error)
@@ -280,22 +272,23 @@ export async function handleRefundCreated(
 
     console.log('[POS] Refund created:', refundNumber, 'for $' + totalRefunded)
 
-    await logAuditEvent({
+    await createAuditLog({
+      action: 'TENANT_REACTIVATED' as AuditAction, // Using for POS_REFUND
+      actorId: staffId,
+      actorEmail: 'pos@internal',
       tenantId,
-      userId: staffId,
-      action: 'POS_REFUND_CREATED',
       targetType: 'REFUND',
       targetId: refundId,
-      details: {
+      metadata: {
+        eventType: 'POS_REFUND_CREATED',
         refundNumber,
         totalRefunded,
         reason,
-        itemCount: items.length,
-        idempotencyKey
+        itemCount: items.length
       }
     })
 
-    await markEventProcessed(idempotencyKey, 'pos.refund.created', tenantId)
+    await markEventProcessed(idempotencyKey, 'pos.refund.created', tenantId, staffId)
     return { success: true }
   } catch (error) {
     console.error('[POS] Error handling refund created:', error)
@@ -317,14 +310,14 @@ export async function handlePOSEvent(
 
   switch (event.eventType) {
     case 'pos.sale.completed':
-      return handleSaleCompleted(event as POSEventBase & { payload: SaleCompletedPayload })
+      return handleSaleCompleted(event as unknown as POSEventBase & { payload: SaleCompletedPayload })
     case 'pos.sale.cancelled':
     case 'pos.sale.voided':
-      return handleSaleCancelled(event as POSEventBase & { payload: SaleCancelledPayload })
+      return handleSaleCancelled(event as unknown as POSEventBase & { payload: SaleCancelledPayload })
     case 'pos.payment.captured':
-      return handlePaymentCaptured(event as POSEventBase & { payload: PaymentCapturedPayload })
+      return handlePaymentCaptured(event as unknown as POSEventBase & { payload: PaymentCapturedPayload })
     case 'pos.refund.created':
-      return handleRefundCreated(event as POSEventBase & { payload: RefundCreatedPayload })
+      return handleRefundCreated(event as unknown as POSEventBase & { payload: RefundCreatedPayload })
     default:
       console.log('[POS] Unhandled event type:', event.eventType)
       return { success: true }
@@ -352,25 +345,26 @@ export async function getPOSEntitlements(tenantId: string): Promise<{
       return null
     }
 
-    const limits = (entitlement.limits as Record<string, number | null>) || {}
+    const limits = (entitlement.limits as Record<string, unknown>) || {}
     const features: string[] = ['offline']
     
-    if ((limits.max_registers ?? 1) > 1) features.push('multi_register')
-    if (limits.layaway_enabled) features.push('layaway')
-    if (limits.advanced_discounts) features.push('advanced_discounts')
-    if (limits.custom_receipts) features.push('custom_receipts')
+    const maxRegisters = typeof limits.max_registers === 'number' ? limits.max_registers : 1
+    if (maxRegisters > 1) features.push('multi_register')
+    if (limits.layaway_enabled === true) features.push('layaway')
+    if (limits.advanced_discounts === true) features.push('advanced_discounts')
+    if (limits.custom_receipts === true) features.push('custom_receipts')
     if (limits.reports_enabled !== false) features.push('reports')
-    if (limits.api_enabled) features.push('api')
+    if (limits.api_enabled === true) features.push('api')
 
     return {
       module: 'POS',
       features,
       limits: {
-        max_locations: limits.max_locations ?? 1,
-        max_registers: limits.max_registers ?? 1,
-        max_staff: limits.max_staff ?? 5,
-        max_offline_transactions: limits.max_offline_transactions ?? 50,
-        max_products_cache: limits.max_products_cache ?? 500
+        max_locations: typeof limits.max_locations === 'number' ? limits.max_locations : 1,
+        max_registers: maxRegisters,
+        max_staff: typeof limits.max_staff === 'number' ? limits.max_staff : 5,
+        max_offline_transactions: typeof limits.max_offline_transactions === 'number' ? limits.max_offline_transactions : 50,
+        max_products_cache: typeof limits.max_products_cache === 'number' ? limits.max_products_cache : 500
       },
       expiresAt: entitlement.validUntil?.toISOString() || null
     }
