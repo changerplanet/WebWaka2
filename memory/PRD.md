@@ -210,7 +210,7 @@ All Partner APIs are marked **STABLE** and follow semantic versioning.
 | 0 | Module Constitution | ✅ COMPLETE |
 | 1 | Domain Model | ✅ COMPLETE |
 | 2 | Catalog Consumption | ✅ COMPLETE |
-| 3 | Ordering Engine | 🔜 NEXT |
+| 3 | Online Order Lifecycle | ✅ COMPLETE |
 | 4 | Shipping Logic | ⏳ Pending |
 | 5 | Promotions Engine | ⏳ Pending |
 | 6 | Reviews System | ⏳ Pending |
@@ -236,6 +236,72 @@ Location: `/app/modules/svm/`
 
 ### Database Tables (15 total)
 `svm_online_orders`, `svm_online_order_items`, `svm_order_status_history`, `svm_shipping_zones`, `svm_shipping_rates`, `svm_promotions`, `svm_promotion_usages`, `svm_reviews`, `svm_storefront_pages`, `svm_storefront_banners`, `svm_storefront_settings`, `svm_carts`, `svm_cart_items`, `svm_wishlists`, `svm_wishlist_items`
+
+### SVM API Endpoints (Phase 3 Complete)
+
+| Category | Endpoint | Method | Description |
+|----------|----------|--------|-------------|
+| Orders | `/api/svm/orders` | POST | Create order |
+| Orders | `/api/svm/orders` | GET | List orders |
+| Orders | `/api/svm/orders/:orderId` | GET | Get order |
+| Orders | `/api/svm/orders/:orderId` | PUT | Update order status |
+| Orders | `/api/svm/orders/:orderId` | DELETE | Cancel order |
+| Cart | `/api/svm/cart` | GET | Get cart |
+| Cart | `/api/svm/cart` | POST | Cart actions |
+| Cart | `/api/svm/cart` | DELETE | Clear cart |
+| Products | `/api/svm/products` | GET | List products |
+| Products | `/api/svm/products/:productId` | GET | Get product |
+| Entitlements | `/api/svm/entitlements` | GET | Get module entitlements |
+| Events | `/api/svm/events` | POST | Process SVM events |
+
+### Order State Machine
+```
+DRAFT → PLACED → PAID → PROCESSING → SHIPPED → DELIVERED → FULFILLED
+   ↓       ↓       ↓         ↓           ↓          ↓
+CANCELLED  CANCELLED CANCELLED/REFUNDED  REFUNDED   REFUNDED
+```
+
+### Event Types
+- `svm.order.created`, `svm.order.placed`, `svm.order.payment_requested`
+- `svm.order.paid`, `svm.order.processing`, `svm.order.shipped`
+- `svm.order.delivered`, `svm.order.fulfilled`, `svm.order.cancelled`
+- `svm.order.refund_requested`, `svm.order.refunded`, `svm.order.status_changed`
+
+### Testing Results (Phase 3)
+- **54 backend tests passed** (100% pass rate)
+- Order creation, status transitions, cart operations all working
+- Event processing with idempotency checks working
+- Entitlements API returning proper features/limits
+
+### Files Created (Phase 3)
+**SaaS Core:**
+- `/saas-core/src/lib/svm-event-handlers.ts`
+- `/saas-core/src/app/api/svm/orders/route.ts`
+- `/saas-core/src/app/api/svm/orders/[orderId]/route.ts`
+- `/saas-core/src/app/api/svm/cart/route.ts`
+- `/saas-core/src/app/api/svm/products/route.ts`
+- `/saas-core/src/app/api/svm/products/[productId]/route.ts`
+- `/saas-core/src/app/api/svm/entitlements/route.ts`
+- `/saas-core/src/app/api/svm/events/route.ts`
+
+**SVM Module:**
+- `/modules/svm/src/lib/order-engine.ts`
+- `/modules/svm/src/app/api/orders/route.ts`
+- `/modules/svm/src/app/api/orders/[orderId]/route.ts`
+- `/modules/svm/src/app/api/products/route.ts`
+- `/modules/svm/src/app/api/products/[productId]/route.ts`
+- `/modules/svm/src/app/api/cart/route.ts`
+- `/modules/svm/docs/SVM_API_REFERENCE.md`
+
+### Current Mocked Components
+| Component | Status | Notes |
+|-----------|--------|-------|
+| Product Catalog | MOCKED | Returns empty (Core not integrated) |
+| Cart Storage | MOCKED | In-memory Map |
+| Order Storage | MOCKED | Not persisted to DB |
+| Inventory Reservation | MOCKED | TODO in event handlers |
+| Payment Processing | MOCKED | TODO in event handlers |
+| Email Notifications | MOCKED | TODO in event handlers |
 
 ---
 
