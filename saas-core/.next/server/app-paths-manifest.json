@@ -1,1 +1,3 @@
-{}
+{
+  "/api/svm/promotions/route": "app/api/svm/promotions/route.js"
+}
