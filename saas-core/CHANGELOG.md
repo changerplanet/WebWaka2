@@ -2,6 +2,52 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.4.0] - 2025-01-01
+
+### Added
+
+#### Commission & Earnings Engine (Phase 4)
+Flexible commission calculation and immutable earnings ledger.
+
+**Commission Model Engine:**
+- Supported models: PERCENTAGE, FIXED, TIERED, HYBRID
+- Commission triggers: ON_PAYMENT, ON_ACTIVATION, ON_RENEWAL, ON_SIGNUP
+- One-time setup fees in addition to recurring commissions
+- Volume-based tier support
+- Min/max commission caps
+- Hybrid models with conditional rules
+- Full calculation breakdown for audit
+
+**Earnings Ledger:**
+- Immutable, append-only ledger
+- Entry types: CREDIT (earnings), DEBIT (reversals)
+- Status machine: PENDING → CLEARED → APPROVED → PAID
+- Reversal via DEBIT entries (no direct edits)
+- Idempotency keys prevent duplicate processing
+- Full audit trail on all state changes
+
+**Schema Enhancements:**
+- `PartnerAgreement`: Added `commissionTrigger`, `fixedAmount`, `setupFee`, `commissionRules`, `minCommission`, `maxCommission`, `clearanceDays`
+- `PartnerEarning`: Added `entryType`, `idempotencyKey`, `subscriptionEventId`, `calculationDetails`, state timestamps, reversal linking
+- New enums: `CommissionTrigger`, `EarningEntryType`
+- Enhanced `EarningStatus`: PENDING, CLEARED, APPROVED, PAID, DISPUTED, REVERSED, VOIDED
+- New model: `PayoutBatch` for Phase 5
+
+**New Services:**
+- `/src/lib/commission-engine.ts` - Declarative commission calculation
+- `/src/lib/earnings-ledger.ts` - Append-only earnings ledger
+
+**Key Verification:**
+- ✅ No assumptions about pricing - rules are declarative
+- ✅ No hardcoded logic - all from agreement configuration
+- ✅ Earnings are append-only - no direct edits
+- ✅ Reversals create DEBIT entries
+
+### Documentation
+- Added `/docs/COMMISSION_EARNINGS.md` with examples and state machine
+
+---
+
 ## [1.3.0] - 2025-01-01
 
 ### Added
