@@ -349,13 +349,24 @@ CANCELLED  CANCELLED CANCELLED/REFUNDED  REFUNDED   REFUNDED
 - `/modules/svm/src/lib/shipping-engine.ts` - Business logic classes
 - `/modules/svm/docs/SVM_SHIPPING.md` - Documentation
 
+### Files Created (Phase 5 - Promotions)
+**SaaS Core:**
+- `/saas-core/src/lib/promotions-storage.ts` - Shared globalThis storage
+- `/saas-core/src/app/api/svm/promotions/route.ts` - List, create, validate, calculate
+- `/saas-core/src/app/api/svm/promotions/[promotionId]/route.ts` - Get, update, delete
+
+**SVM Module:**
+- `/modules/svm/src/lib/promotions-engine.ts` - Business logic classes
+- `/modules/svm/docs/SVM_PROMOTIONS.md` - Documentation
+
 ### Current Mocked Components
 | Component | Status | Notes |
 |-----------|--------|-------|
 | Product Catalog | MOCKED | Returns empty (Core not integrated) |
 | Cart Storage | MOCKED | In-memory Map (globalThis) |
 | Order Storage | MOCKED | Not persisted to DB |
-| **Shipping Zones** | **MOCKED** | **In-memory globalThis storage** |
+| Shipping Zones | MOCKED | In-memory globalThis storage |
+| **Promotions** | **MOCKED** | **In-memory globalThis storage** |
 | Inventory Reservation | MOCKED | TODO in event handlers |
 | Payment Processing | MOCKED | TODO in event handlers |
 | Email Notifications | MOCKED | TODO in event handlers |
