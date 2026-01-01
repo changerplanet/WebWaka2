@@ -3,7 +3,7 @@
 ## Overview
 Production-grade, reusable SaaS Core with Next.js App Router, PostgreSQL (Prisma ORM), and multi-tenant architecture.
 
-## Current Version: saas-core-v1.7.0-partners (STABLE)
+## Current Version: saas-core-v1.8.0 + pos-v1.0.0 (FROZEN)
 
 ---
 
@@ -51,9 +51,11 @@ Production-grade, reusable SaaS Core with Next.js App Router, PostgreSQL (Prisma
 
 ---
 
-## POS Module (MODULE 1)
+## POS Module (MODULE 1) — FROZEN ❄️
 
-### Implementation Status: BACKEND COMPLETE ✅
+### Version: `pos-v1.0.0`
+
+### Implementation Status: ALL PHASES COMPLETE ✅
 
 | Phase | Feature | Status |
 |-------|---------|--------|
@@ -62,7 +64,18 @@ Production-grade, reusable SaaS Core with Next.js App Router, PostgreSQL (Prisma
 | 3 | Offline POS Behavior | ✅ COMPLETE |
 | 4 | Inventory Interaction | ✅ COMPLETE |
 | 5 | Staff & Permissions | ✅ COMPLETE |
-| 6 | POS UI & UX (PWA) | 🔜 NEXT |
+| 6 | POS UI & UX (PWA) | ✅ COMPLETE |
+| 7 | Events & Analytics | ✅ COMPLETE |
+| 8 | Module Entitlements | ✅ COMPLETE |
+| 9 | Module Freeze | ✅ FROZEN |
+
+### Validation Results (56 tests passed)
+- ✅ No Core schema modifications
+- ✅ No cross-module dependencies
+- ✅ No billing logic present
+- ✅ Events module-scoped (`pos.*`)
+- ✅ Entitlements abstracted
+- ✅ Safe removal possible
 
 ### POS Module Architecture
 
@@ -79,22 +92,27 @@ modules/pos/
 │   │   ├── sale-engine.ts     # Sales state machine
 │   │   ├── offline-queue.ts   # Offline action handling
 │   │   ├── inventory-consumer.ts # Read-only inventory
+│   │   ├── entitlements.ts    # Feature/limit checks
 │   │   └── event-bus.ts       # Event emission to Core
+│   ├── components/pos/        # UI components
+│   ├── hooks/                 # React hooks
 │   └── app/api/
 │       ├── sales/             # Sales CRUD (22 endpoints total)
 │       ├── registers/         # Register management
 │       ├── shifts/            # Shift tracking
 │       ├── refunds/           # Refund processing
 │       └── settings/          # POS configuration
-└── docs/                      # Module documentation
+└── docs/                      # 10 documentation files
 ```
 
 ### POS Key Features
 
-- **Permissions**: 40+ granular permissions, 3 role hierarchy
+- **Permissions**: 40+ granular permissions, 3-level role hierarchy
 - **Sale Engine**: Full lifecycle (DRAFT → COMPLETED → REFUNDED)
-- **Offline Support**: Idempotent actions, conflict resolution
-- **Event-Driven**: POS emits events, Core handles inventory
+- **Offline Support**: IndexedDB, idempotent actions, conflict resolution
+- **Event-Driven**: 20 event types, all `pos.*` scoped
+- **Entitlements**: Feature/limit checks without billing knowledge
+- **Touch-First UI**: 7 components with offline support
 
 ### POS API Endpoints: 22 Total
 
