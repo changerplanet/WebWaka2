@@ -471,3 +471,118 @@ export async function GET(request: NextRequest, { params }) {
 3. **Principle of Least Privilege**: Staff role is default, Owner is explicit
 4. **Immutable Attribution**: Referral links cannot be changed
 5. **Active Checks**: Both user AND partner must be active
+
+---
+
+## Audit Requirements
+
+All partner actions MUST be logged:
+
+| Action | When Logged |
+|--------|-------------|
+| `PARTNER_CREATED` | New partner registered |
+| `PARTNER_UPDATED` | Partner profile changed |
+| `PARTNER_APPROVED` | Super Admin approves partner |
+| `PARTNER_SUSPENDED` | Partner suspended |
+| `PARTNER_TERMINATED` | Partner terminated |
+| `PARTNER_USER_ADDED` | User added to partner |
+| `PARTNER_USER_REMOVED` | User removed from partner |
+| `PARTNER_AGREEMENT_CREATED` | New agreement drafted |
+| `PARTNER_AGREEMENT_SIGNED` | Owner signs agreement |
+| `PARTNER_AGREEMENT_APPROVED` | Super Admin approves |
+| `PARTNER_REFERRAL_CREATED` | New referral tracked |
+| `PARTNER_REFERRAL_LOCKED` | Attribution locked |
+| `PARTNER_EARNING_CREATED` | Commission calculated |
+| `PARTNER_EARNING_APPROVED` | Earning approved |
+| `PARTNER_EARNING_PAID` | Payment processed |
+
+---
+
+## Implementation Reference
+
+### Library Location
+```
+/app/saas-core/src/lib/partner-authorization.ts
+```
+
+### Key Types
+
+```typescript
+// Authorization result
+type PartnerAuthorizationResult = 
+  | { authorized: true; user: User; partner: Partner; role: PartnerRole }
+  | { authorized: false; error: string; status: number }
+
+// Access levels
+type PartnerAccessLevel = 'NONE' | 'STAFF' | 'OWNER' | 'SUPER_ADMIN'
+
+// Permission set
+interface PartnerPermissions {
+  canViewPartner: boolean
+  canEditPartner: boolean
+  canManagePartnerUsers: boolean
+  canSignAgreement: boolean
+  canViewReferrals: boolean
+  canCreateReferralCodes: boolean
+  canViewAllReferrals: boolean
+  canViewEarnings: boolean
+  canViewAllEarnings: boolean
+  canExportEarnings: boolean
+  canViewAgreement: boolean
+  canViewAgreementHistory: boolean
+}
+```
+
+### Usage Example
+
+```typescript
+import { 
+  requirePartnerOwnerAccess, 
+  hasPartnerPermission 
+} from '@/lib/partner-authorization'
+
+export async function PUT(request: Request, { params }) {
+  // 1. Verify OWNER access to this partner
+  const auth = await requirePartnerOwnerAccess(params.partnerId)
+  if (!auth.authorized) {
+    return Response.json({ error: auth.error }, { status: auth.status })
+  }
+
+  // 2. Check specific permission
+  if (!hasPartnerPermission(auth.role, 'canEditPartner')) {
+    return Response.json({ error: 'Permission denied' }, { status: 403 })
+  }
+
+  // 3. Proceed with update
+  // ...
+}
+```
+
+---
+
+## Comparison: Partner vs Tenant Authorization
+
+| Aspect | Partner Auth | Tenant Auth |
+|--------|--------------|-------------|
+| Scope | Platform-level | Workspace-level |
+| Isolation Key | `partnerId` | `tenantId` |
+| Roles | OWNER, STAFF | ADMIN, USER |
+| Cross-access | Never to tenants | Never to partners |
+| Super Admin | Full access | Full access |
+| Data visibility | Limited tenant view | Full workspace |
+
+---
+
+## Related Documents
+
+- [Partner Domain Models](./PARTNER_DOMAIN_MODELS.md) - Database schema documentation
+- [Tenant Isolation](../src/lib/tenant-isolation.ts) - Tenant data isolation (separate domain)
+
+---
+
+## Changelog
+
+| Version | Date | Changes |
+|---------|------|---------|
+| 1.0.0 | 2024-12-31 | Initial draft |
+| 1.1.0 | 2025-01-01 | Added permission matrix, authorization flow, audit requirements |
