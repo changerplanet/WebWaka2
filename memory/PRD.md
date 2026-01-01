@@ -434,6 +434,7 @@ CANCELLED  CANCELLED CANCELLED/REFUNDED  REFUNDED   REFUNDED
 | **SVM Order Lifecycle** | `/modules/svm/docs/SVM_ORDER_LIFECYCLE.md` |
 | **SVM API Reference** | `/modules/svm/docs/SVM_API_REFERENCE.md` |
 | **SVM Shipping** | `/modules/svm/docs/SVM_SHIPPING.md` |
+| **SVM Promotions** | `/modules/svm/docs/SVM_PROMOTIONS.md` |
 
 ---
 
