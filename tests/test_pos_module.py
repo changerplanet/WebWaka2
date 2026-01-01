@@ -2,9 +2,10 @@
 POS Module Unit Tests
 
 Tests for:
-1. Permissions system - role hierarchy (CASHIER < SUPERVISOR < MANAGER)
-2. Sale engine state machine - valid transitions
-3. API route validation (mock responses)
+1. TypeScript compilation passes for all POS module files
+2. Permissions system - role hierarchy (CASHIER < SUPERVISOR < MANAGER)
+3. Sale engine state machine - valid transitions
+4. API route files exist and are syntactically correct
 """
 
 import pytest
@@ -14,6 +15,7 @@ import os
 
 # Get the base URL from environment
 BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', '').rstrip('/')
+POS_MODULE_PATH = '/app/modules/pos'
 
 
 class TestTypeScriptCompilation:
@@ -23,7 +25,7 @@ class TestTypeScriptCompilation:
         """Verify TypeScript compiles without errors"""
         result = subprocess.run(
             ['npx', 'tsc', '--noEmit'],
-            cwd='/app/modules/pos',
+            cwd=POS_MODULE_PATH,
             capture_output=True,
             text=True
         )
@@ -37,13 +39,13 @@ class TestPermissionsSystem:
     def test_role_hierarchy_cashier_lowest(self):
         """Verify CASHIER has lowest hierarchy level (1)"""
         script = """
-        const { POS_ROLE_HIERARCHY } = require('./src/lib/permissions.ts');
-        console.log(JSON.stringify({
-            cashier: POS_ROLE_HIERARCHY['POS_CASHIER'],
-            supervisor: POS_ROLE_HIERARCHY['POS_SUPERVISOR'],
-            manager: POS_ROLE_HIERARCHY['POS_MANAGER']
-        }));
-        """
+import { POS_ROLE_HIERARCHY } from './src/lib/permissions.ts';
+console.log(JSON.stringify({
+    cashier: POS_ROLE_HIERARCHY['POS_CASHIER'],
+    supervisor: POS_ROLE_HIERARCHY['POS_SUPERVISOR'],
+    manager: POS_ROLE_HIERARCHY['POS_MANAGER']
+}));
+"""
         result = self._run_ts_script(script)
         data = json.loads(result)
         
@@ -56,16 +58,16 @@ class TestPermissionsSystem:
     def test_cashier_permissions_basic_sales(self):
         """Verify CASHIER has basic sale permissions"""
         script = """
-        const { POS_PERMISSIONS_BY_ROLE } = require('./src/lib/permissions.ts');
-        const cashierPerms = POS_PERMISSIONS_BY_ROLE['POS_CASHIER'];
-        console.log(JSON.stringify({
-            canCreateSale: cashierPerms.has('pos.sale.create'),
-            canAddItem: cashierPerms.has('pos.sale.add_item'),
-            canCompleteSale: cashierPerms.has('pos.sale.complete'),
-            canVoidSale: cashierPerms.has('pos.sale.void'),
-            canVoidOthers: cashierPerms.has('pos.sale.void_others')
-        }));
-        """
+import { POS_PERMISSIONS_BY_ROLE } from './src/lib/permissions.ts';
+const cashierPerms = POS_PERMISSIONS_BY_ROLE['POS_CASHIER'];
+console.log(JSON.stringify({
+    canCreateSale: cashierPerms.has('pos.sale.create'),
+    canAddItem: cashierPerms.has('pos.sale.add_item'),
+    canCompleteSale: cashierPerms.has('pos.sale.complete'),
+    canVoidSale: cashierPerms.has('pos.sale.void'),
+    canVoidOthers: cashierPerms.has('pos.sale.void_others')
+}));
+"""
         result = self._run_ts_script(script)
         data = json.loads(result)
         
@@ -79,17 +81,17 @@ class TestPermissionsSystem:
     def test_supervisor_additional_permissions(self):
         """Verify SUPERVISOR has additional permissions over CASHIER"""
         script = """
-        const { POS_PERMISSIONS_BY_ROLE } = require('./src/lib/permissions.ts');
-        const supervisorPerms = POS_PERMISSIONS_BY_ROLE['POS_SUPERVISOR'];
-        console.log(JSON.stringify({
-            canVoidSale: supervisorPerms.has('pos.sale.void'),
-            canResumeOthers: supervisorPerms.has('pos.sale.resume_others'),
-            canApplyCustomDiscount: supervisorPerms.has('pos.discount.apply_custom'),
-            canCreateRefund: supervisorPerms.has('pos.refund.create'),
-            canVoidOthers: supervisorPerms.has('pos.sale.void_others'),
-            canEditSettings: supervisorPerms.has('pos.settings.edit')
-        }));
-        """
+import { POS_PERMISSIONS_BY_ROLE } from './src/lib/permissions.ts';
+const supervisorPerms = POS_PERMISSIONS_BY_ROLE['POS_SUPERVISOR'];
+console.log(JSON.stringify({
+    canVoidSale: supervisorPerms.has('pos.sale.void'),
+    canResumeOthers: supervisorPerms.has('pos.sale.resume_others'),
+    canApplyCustomDiscount: supervisorPerms.has('pos.discount.apply_custom'),
+    canCreateRefund: supervisorPerms.has('pos.refund.create'),
+    canVoidOthers: supervisorPerms.has('pos.sale.void_others'),
+    canEditSettings: supervisorPerms.has('pos.settings.edit')
+}));
+"""
         result = self._run_ts_script(script)
         data = json.loads(result)
         
@@ -104,18 +106,18 @@ class TestPermissionsSystem:
     def test_manager_full_permissions(self):
         """Verify MANAGER has full POS permissions"""
         script = """
-        const { POS_PERMISSIONS_BY_ROLE } = require('./src/lib/permissions.ts');
-        const managerPerms = POS_PERMISSIONS_BY_ROLE['POS_MANAGER'];
-        console.log(JSON.stringify({
-            canVoidOthers: managerPerms.has('pos.sale.void_others'),
-            canOverrideMaxDiscount: managerPerms.has('pos.discount.override_max'),
-            canRefundWithoutReceipt: managerPerms.has('pos.refund.without_receipt'),
-            canApproveRefund: managerPerms.has('pos.refund.approve'),
-            canEditSettings: managerPerms.has('pos.settings.edit'),
-            canManageRegisters: managerPerms.has('pos.settings.registers'),
-            canEndOthersShifts: managerPerms.has('pos.shift.end_others')
-        }));
-        """
+import { POS_PERMISSIONS_BY_ROLE } from './src/lib/permissions.ts';
+const managerPerms = POS_PERMISSIONS_BY_ROLE['POS_MANAGER'];
+console.log(JSON.stringify({
+    canVoidOthers: managerPerms.has('pos.sale.void_others'),
+    canOverrideMaxDiscount: managerPerms.has('pos.discount.override_max'),
+    canRefundWithoutReceipt: managerPerms.has('pos.refund.without_receipt'),
+    canApproveRefund: managerPerms.has('pos.refund.approve'),
+    canEditSettings: managerPerms.has('pos.settings.edit'),
+    canManageRegisters: managerPerms.has('pos.settings.registers'),
+    canEndOthersShifts: managerPerms.has('pos.shift.end_others')
+}));
+"""
         result = self._run_ts_script(script)
         data = json.loads(result)
         
@@ -131,24 +133,24 @@ class TestPermissionsSystem:
     def test_has_permission_function_cashier(self):
         """Test hasPermission function for CASHIER role"""
         script = """
-        const { hasPermission } = require('./src/lib/permissions.ts');
-        const staff = {
-            userId: 'user1',
-            tenantId: 'tenant1',
-            email: 'cashier@test.com',
-            coreRole: 'TENANT_USER',
-            posRole: 'POS_CASHIER'
-        };
-        const createResult = hasPermission(staff, 'pos.sale.create');
-        const voidResult = hasPermission(staff, 'pos.sale.void');
-        console.log(JSON.stringify({
-            createAllowed: createResult.allowed,
-            voidAllowed: voidResult.allowed,
-            voidReason: voidResult.reason,
-            voidRequiresApproval: voidResult.requiresApproval,
-            voidApproverRole: voidResult.approverRole
-        }));
-        """
+import { hasPermission } from './src/lib/permissions.ts';
+const staff = {
+    userId: 'user1',
+    tenantId: 'tenant1',
+    email: 'cashier@test.com',
+    coreRole: 'TENANT_USER' as const,
+    posRole: 'POS_CASHIER' as const
+};
+const createResult = hasPermission(staff, 'pos.sale.create');
+const voidResult = hasPermission(staff, 'pos.sale.void');
+console.log(JSON.stringify({
+    createAllowed: createResult.allowed,
+    voidAllowed: voidResult.allowed,
+    voidReason: voidResult.reason,
+    voidRequiresApproval: voidResult.requiresApproval,
+    voidApproverRole: voidResult.approverRole
+}));
+"""
         result = self._run_ts_script(script)
         data = json.loads(result)
         
@@ -161,21 +163,21 @@ class TestPermissionsSystem:
     def test_tenant_admin_has_all_permissions(self):
         """Test that TENANT_ADMIN has all POS permissions regardless of POS role"""
         script = """
-        const { hasPermission } = require('./src/lib/permissions.ts');
-        const staff = {
-            userId: 'admin1',
-            tenantId: 'tenant1',
-            email: 'admin@test.com',
-            coreRole: 'TENANT_ADMIN',
-            posRole: 'POS_CASHIER'  // Even with CASHIER role
-        };
-        const voidResult = hasPermission(staff, 'pos.sale.void_others');
-        const settingsResult = hasPermission(staff, 'pos.settings.edit');
-        console.log(JSON.stringify({
-            voidOthersAllowed: voidResult.allowed,
-            editSettingsAllowed: settingsResult.allowed
-        }));
-        """
+import { hasPermission } from './src/lib/permissions.ts';
+const staff = {
+    userId: 'admin1',
+    tenantId: 'tenant1',
+    email: 'admin@test.com',
+    coreRole: 'TENANT_ADMIN' as const,
+    posRole: 'POS_CASHIER' as const  // Even with CASHIER role
+};
+const voidResult = hasPermission(staff, 'pos.sale.void_others');
+const settingsResult = hasPermission(staff, 'pos.settings.edit');
+console.log(JSON.stringify({
+    voidOthersAllowed: voidResult.allowed,
+    editSettingsAllowed: settingsResult.allowed
+}));
+"""
         result = self._run_ts_script(script)
         data = json.loads(result)
         
@@ -186,29 +188,29 @@ class TestPermissionsSystem:
     def test_can_assign_role_hierarchy(self):
         """Test canAssignRole respects hierarchy"""
         script = """
-        const { canAssignRole } = require('./src/lib/permissions.ts');
-        const manager = {
-            userId: 'manager1',
-            tenantId: 'tenant1',
-            email: 'manager@test.com',
-            coreRole: 'TENANT_USER',
-            posRole: 'POS_MANAGER'
-        };
-        const supervisor = {
-            userId: 'supervisor1',
-            tenantId: 'tenant1',
-            email: 'supervisor@test.com',
-            coreRole: 'TENANT_USER',
-            posRole: 'POS_SUPERVISOR'
-        };
-        console.log(JSON.stringify({
-            managerCanAssignSupervisor: canAssignRole(manager, 'POS_SUPERVISOR'),
-            managerCanAssignCashier: canAssignRole(manager, 'POS_CASHIER'),
-            managerCanAssignManager: canAssignRole(manager, 'POS_MANAGER'),
-            supervisorCanAssignCashier: canAssignRole(supervisor, 'POS_CASHIER'),
-            supervisorCanAssignSupervisor: canAssignRole(supervisor, 'POS_SUPERVISOR')
-        }));
-        """
+import { canAssignRole } from './src/lib/permissions.ts';
+const manager = {
+    userId: 'manager1',
+    tenantId: 'tenant1',
+    email: 'manager@test.com',
+    coreRole: 'TENANT_USER' as const,
+    posRole: 'POS_MANAGER' as const
+};
+const supervisor = {
+    userId: 'supervisor1',
+    tenantId: 'tenant1',
+    email: 'supervisor@test.com',
+    coreRole: 'TENANT_USER' as const,
+    posRole: 'POS_SUPERVISOR' as const
+};
+console.log(JSON.stringify({
+    managerCanAssignSupervisor: canAssignRole(manager, 'POS_SUPERVISOR'),
+    managerCanAssignCashier: canAssignRole(manager, 'POS_CASHIER'),
+    managerCanAssignManager: canAssignRole(manager, 'POS_MANAGER'),
+    supervisorCanAssignCashier: canAssignRole(supervisor, 'POS_CASHIER'),
+    supervisorCanAssignSupervisor: canAssignRole(supervisor, 'POS_SUPERVISOR')
+}));
+"""
         result = self._run_ts_script(script)
         data = json.loads(result)
         
@@ -220,33 +222,28 @@ class TestPermissionsSystem:
         print("✓ canAssignRole correctly respects role hierarchy")
     
     def _run_ts_script(self, script: str) -> str:
-        """Helper to run TypeScript code using ts-node or tsx"""
-        # Write script to temp file
-        script_path = '/tmp/test_pos_script.ts'
+        """Helper to run TypeScript code using tsx"""
+        # Write script to temp file inside the POS module
+        script_path = os.path.join(POS_MODULE_PATH, '_test_script.ts')
         with open(script_path, 'w') as f:
             f.write(script)
         
-        # Try using npx tsx first (faster)
-        result = subprocess.run(
-            ['npx', 'tsx', script_path],
-            cwd='/app/modules/pos',
-            capture_output=True,
-            text=True
-        )
-        
-        if result.returncode != 0:
-            # Fallback to ts-node
+        try:
             result = subprocess.run(
-                ['npx', 'ts-node', '--esm', script_path],
-                cwd='/app/modules/pos',
+                ['npx', 'tsx', '_test_script.ts'],
+                cwd=POS_MODULE_PATH,
                 capture_output=True,
                 text=True
             )
-        
-        if result.returncode != 0:
-            raise Exception(f"Script execution failed:\n{result.stderr}\n{result.stdout}")
-        
-        return result.stdout.strip()
+            
+            if result.returncode != 0:
+                raise Exception(f"Script execution failed:\n{result.stderr}\n{result.stdout}")
+            
+            return result.stdout.strip()
+        finally:
+            # Clean up
+            if os.path.exists(script_path):
+                os.remove(script_path)
 
 
 class TestSaleEngineStateMachine:
@@ -255,16 +252,16 @@ class TestSaleEngineStateMachine:
     def test_valid_transitions_from_draft(self):
         """Verify valid transitions from DRAFT status"""
         script = """
-        const { VALID_TRANSITIONS, canTransition } = require('./src/lib/sale-engine.ts');
-        console.log(JSON.stringify({
-            validFromDraft: VALID_TRANSITIONS['DRAFT'],
-            canGoToSuspended: canTransition('DRAFT', 'SUSPENDED'),
-            canGoToPendingPayment: canTransition('DRAFT', 'PENDING_PAYMENT'),
-            canGoToVoided: canTransition('DRAFT', 'VOIDED'),
-            canGoToCompleted: canTransition('DRAFT', 'COMPLETED'),
-            canGoToRefunded: canTransition('DRAFT', 'REFUNDED')
-        }));
-        """
+import { VALID_TRANSITIONS, canTransition } from './src/lib/sale-engine.ts';
+console.log(JSON.stringify({
+    validFromDraft: VALID_TRANSITIONS['DRAFT'],
+    canGoToSuspended: canTransition('DRAFT', 'SUSPENDED'),
+    canGoToPendingPayment: canTransition('DRAFT', 'PENDING_PAYMENT'),
+    canGoToVoided: canTransition('DRAFT', 'VOIDED'),
+    canGoToCompleted: canTransition('DRAFT', 'COMPLETED'),
+    canGoToRefunded: canTransition('DRAFT', 'REFUNDED')
+}));
+"""
         result = self._run_ts_script(script)
         data = json.loads(result)
         
@@ -281,14 +278,14 @@ class TestSaleEngineStateMachine:
     def test_valid_transitions_from_suspended(self):
         """Verify valid transitions from SUSPENDED status"""
         script = """
-        const { VALID_TRANSITIONS, canTransition } = require('./src/lib/sale-engine.ts');
-        console.log(JSON.stringify({
-            validFromSuspended: VALID_TRANSITIONS['SUSPENDED'],
-            canGoToDraft: canTransition('SUSPENDED', 'DRAFT'),
-            canGoToVoided: canTransition('SUSPENDED', 'VOIDED'),
-            canGoToCompleted: canTransition('SUSPENDED', 'COMPLETED')
-        }));
-        """
+import { VALID_TRANSITIONS, canTransition } from './src/lib/sale-engine.ts';
+console.log(JSON.stringify({
+    validFromSuspended: VALID_TRANSITIONS['SUSPENDED'],
+    canGoToDraft: canTransition('SUSPENDED', 'DRAFT'),
+    canGoToVoided: canTransition('SUSPENDED', 'VOIDED'),
+    canGoToCompleted: canTransition('SUSPENDED', 'COMPLETED')
+}));
+"""
         result = self._run_ts_script(script)
         data = json.loads(result)
         
@@ -302,15 +299,15 @@ class TestSaleEngineStateMachine:
     def test_valid_transitions_from_pending_payment(self):
         """Verify valid transitions from PENDING_PAYMENT status"""
         script = """
-        const { VALID_TRANSITIONS, canTransition } = require('./src/lib/sale-engine.ts');
-        console.log(JSON.stringify({
-            validFromPending: VALID_TRANSITIONS['PENDING_PAYMENT'],
-            canGoToPartiallyPaid: canTransition('PENDING_PAYMENT', 'PARTIALLY_PAID'),
-            canGoToCompleted: canTransition('PENDING_PAYMENT', 'COMPLETED'),
-            canGoToSuspended: canTransition('PENDING_PAYMENT', 'SUSPENDED'),
-            canGoToVoided: canTransition('PENDING_PAYMENT', 'VOIDED')
-        }));
-        """
+import { VALID_TRANSITIONS, canTransition } from './src/lib/sale-engine.ts';
+console.log(JSON.stringify({
+    validFromPending: VALID_TRANSITIONS['PENDING_PAYMENT'],
+    canGoToPartiallyPaid: canTransition('PENDING_PAYMENT', 'PARTIALLY_PAID'),
+    canGoToCompleted: canTransition('PENDING_PAYMENT', 'COMPLETED'),
+    canGoToSuspended: canTransition('PENDING_PAYMENT', 'SUSPENDED'),
+    canGoToVoided: canTransition('PENDING_PAYMENT', 'VOIDED')
+}));
+"""
         result = self._run_ts_script(script)
         data = json.loads(result)
         
@@ -327,14 +324,14 @@ class TestSaleEngineStateMachine:
     def test_valid_transitions_from_completed(self):
         """Verify valid transitions from COMPLETED status"""
         script = """
-        const { VALID_TRANSITIONS, canTransition } = require('./src/lib/sale-engine.ts');
-        console.log(JSON.stringify({
-            validFromCompleted: VALID_TRANSITIONS['COMPLETED'],
-            canGoToRefunded: canTransition('COMPLETED', 'REFUNDED'),
-            canGoToVoided: canTransition('COMPLETED', 'VOIDED'),
-            canGoToDraft: canTransition('COMPLETED', 'DRAFT')
-        }));
-        """
+import { VALID_TRANSITIONS, canTransition } from './src/lib/sale-engine.ts';
+console.log(JSON.stringify({
+    validFromCompleted: VALID_TRANSITIONS['COMPLETED'],
+    canGoToRefunded: canTransition('COMPLETED', 'REFUNDED'),
+    canGoToVoided: canTransition('COMPLETED', 'VOIDED'),
+    canGoToDraft: canTransition('COMPLETED', 'DRAFT')
+}));
+"""
         result = self._run_ts_script(script)
         data = json.loads(result)
         
@@ -347,14 +344,14 @@ class TestSaleEngineStateMachine:
     def test_terminal_states_have_no_transitions(self):
         """Verify VOIDED and REFUNDED are terminal states"""
         script = """
-        const { VALID_TRANSITIONS, getValidTransitions } = require('./src/lib/sale-engine.ts');
-        console.log(JSON.stringify({
-            voidedTransitions: VALID_TRANSITIONS['VOIDED'],
-            refundedTransitions: VALID_TRANSITIONS['REFUNDED'],
-            voidedValid: getValidTransitions('VOIDED'),
-            refundedValid: getValidTransitions('REFUNDED')
-        }));
-        """
+import { VALID_TRANSITIONS, getValidTransitions } from './src/lib/sale-engine.ts';
+console.log(JSON.stringify({
+    voidedTransitions: VALID_TRANSITIONS['VOIDED'],
+    refundedTransitions: VALID_TRANSITIONS['REFUNDED'],
+    voidedValid: getValidTransitions('VOIDED'),
+    refundedValid: getValidTransitions('REFUNDED')
+}));
+"""
         result = self._run_ts_script(script)
         data = json.loads(result)
         
@@ -366,21 +363,25 @@ class TestSaleEngineStateMachine:
     
     def _run_ts_script(self, script: str) -> str:
         """Helper to run TypeScript code"""
-        script_path = '/tmp/test_pos_script.ts'
+        script_path = os.path.join(POS_MODULE_PATH, '_test_script.ts')
         with open(script_path, 'w') as f:
             f.write(script)
         
-        result = subprocess.run(
-            ['npx', 'tsx', script_path],
-            cwd='/app/modules/pos',
-            capture_output=True,
-            text=True
-        )
-        
-        if result.returncode != 0:
-            raise Exception(f"Script execution failed:\n{result.stderr}\n{result.stdout}")
-        
-        return result.stdout.strip()
+        try:
+            result = subprocess.run(
+                ['npx', 'tsx', '_test_script.ts'],
+                cwd=POS_MODULE_PATH,
+                capture_output=True,
+                text=True
+            )
+            
+            if result.returncode != 0:
+                raise Exception(f"Script execution failed:\n{result.stderr}\n{result.stdout}")
+            
+            return result.stdout.strip()
+        finally:
+            if os.path.exists(script_path):
+                os.remove(script_path)
 
 
 class TestAPIRouteFiles:
@@ -388,34 +389,34 @@ class TestAPIRouteFiles:
     
     def test_sales_route_exists(self):
         """Verify sales API route file exists"""
-        assert os.path.exists('/app/modules/pos/src/app/api/sales/route.ts'), "Sales route file should exist"
+        assert os.path.exists(f'{POS_MODULE_PATH}/src/app/api/sales/route.ts'), "Sales route file should exist"
         print("✓ Sales API route file exists")
     
     def test_registers_route_exists(self):
         """Verify registers API route file exists"""
-        assert os.path.exists('/app/modules/pos/src/app/api/registers/route.ts'), "Registers route file should exist"
+        assert os.path.exists(f'{POS_MODULE_PATH}/src/app/api/registers/route.ts'), "Registers route file should exist"
         print("✓ Registers API route file exists")
     
     def test_shifts_route_exists(self):
         """Verify shifts API route file exists"""
-        assert os.path.exists('/app/modules/pos/src/app/api/shifts/route.ts'), "Shifts route file should exist"
+        assert os.path.exists(f'{POS_MODULE_PATH}/src/app/api/shifts/route.ts'), "Shifts route file should exist"
         print("✓ Shifts API route file exists")
     
     def test_refunds_route_exists(self):
         """Verify refunds API route file exists"""
-        assert os.path.exists('/app/modules/pos/src/app/api/refunds/route.ts'), "Refunds route file should exist"
+        assert os.path.exists(f'{POS_MODULE_PATH}/src/app/api/refunds/route.ts'), "Refunds route file should exist"
         print("✓ Refunds API route file exists")
     
     def test_settings_route_exists(self):
         """Verify settings API route file exists"""
-        assert os.path.exists('/app/modules/pos/src/app/api/settings/route.ts'), "Settings route file should exist"
+        assert os.path.exists(f'{POS_MODULE_PATH}/src/app/api/settings/route.ts'), "Settings route file should exist"
         print("✓ Settings API route file exists")
     
     def test_all_routes_compile(self):
         """Verify all API routes compile without TypeScript errors"""
         result = subprocess.run(
             ['npx', 'tsc', '--noEmit'],
-            cwd='/app/modules/pos',
+            cwd=POS_MODULE_PATH,
             capture_output=True,
             text=True
         )
@@ -429,16 +430,16 @@ class TestLibraryExports:
     def test_index_exports_permissions(self):
         """Verify permissions are exported from index"""
         script = """
-        const lib = require('./src/lib/index.ts');
-        console.log(JSON.stringify({
-            hasPermission: typeof lib.hasPermission === 'function',
-            hasAllPermissions: typeof lib.hasAllPermissions === 'function',
-            hasAnyPermission: typeof lib.hasAnyPermission === 'function',
-            canAssignRole: typeof lib.canAssignRole === 'function',
-            POS_ROLE_HIERARCHY: typeof lib.POS_ROLE_HIERARCHY === 'object',
-            POS_ROLE_PERMISSIONS: typeof lib.POS_ROLE_PERMISSIONS === 'object'
-        }));
-        """
+import * as lib from './src/lib/index.ts';
+console.log(JSON.stringify({
+    hasPermission: typeof lib.hasPermission === 'function',
+    hasAllPermissions: typeof lib.hasAllPermissions === 'function',
+    hasAnyPermission: typeof lib.hasAnyPermission === 'function',
+    canAssignRole: typeof lib.canAssignRole === 'function',
+    POS_ROLE_HIERARCHY: typeof lib.POS_ROLE_HIERARCHY === 'object',
+    POS_ROLE_PERMISSIONS: typeof lib.POS_ROLE_PERMISSIONS === 'object'
+}));
+"""
         result = self._run_ts_script(script)
         data = json.loads(result)
         
@@ -453,15 +454,15 @@ class TestLibraryExports:
     def test_index_exports_sale_engine(self):
         """Verify sale engine is exported from index"""
         script = """
-        const lib = require('./src/lib/index.ts');
-        console.log(JSON.stringify({
-            SaleEngine: typeof lib.SaleEngine === 'function',
-            canTransition: typeof lib.canTransition === 'function',
-            getValidTransitions: typeof lib.getValidTransitions === 'function',
-            VALID_TRANSITIONS: typeof lib.VALID_TRANSITIONS === 'object',
-            generateId: typeof lib.generateId === 'function'
-        }));
-        """
+import * as lib from './src/lib/index.ts';
+console.log(JSON.stringify({
+    SaleEngine: typeof lib.SaleEngine === 'function',
+    canTransition: typeof lib.canTransition === 'function',
+    getValidTransitions: typeof lib.getValidTransitions === 'function',
+    VALID_TRANSITIONS: typeof lib.VALID_TRANSITIONS === 'object',
+    generateId: typeof lib.generateId === 'function'
+}));
+"""
         result = self._run_ts_script(script)
         data = json.loads(result)
         
@@ -475,13 +476,13 @@ class TestLibraryExports:
     def test_index_exports_event_bus(self):
         """Verify event bus is exported from index"""
         script = """
-        const lib = require('./src/lib/index.ts');
-        console.log(JSON.stringify({
-            posEventBus: typeof lib.posEventBus === 'object',
-            createEventEmitter: typeof lib.createEventEmitter === 'function',
-            registerCoreSubscriber: typeof lib.registerCoreSubscriber === 'function'
-        }));
-        """
+import * as lib from './src/lib/index.ts';
+console.log(JSON.stringify({
+    posEventBus: typeof lib.posEventBus === 'object',
+    createEventEmitter: typeof lib.createEventEmitter === 'function',
+    registerCoreSubscriber: typeof lib.registerCoreSubscriber === 'function'
+}));
+"""
         result = self._run_ts_script(script)
         data = json.loads(result)
         
@@ -493,15 +494,15 @@ class TestLibraryExports:
     def test_index_exports_offline_queue(self):
         """Verify offline queue is exported from index"""
         script = """
-        const lib = require('./src/lib/index.ts');
-        console.log(JSON.stringify({
-            OfflineQueue: typeof lib.OfflineQueue === 'function',
-            OfflineSaleManager: typeof lib.OfflineSaleManager === 'function',
-            OfflineSyncService: typeof lib.OfflineSyncService === 'function',
-            OFFLINE_SAFE_ACTIONS: Array.isArray(lib.OFFLINE_SAFE_ACTIONS),
-            ONLINE_REQUIRED_ACTIONS: Array.isArray(lib.ONLINE_REQUIRED_ACTIONS)
-        }));
-        """
+import * as lib from './src/lib/index.ts';
+console.log(JSON.stringify({
+    OfflineQueue: typeof lib.OfflineQueue === 'function',
+    OfflineSaleManager: typeof lib.OfflineSaleManager === 'function',
+    OfflineSyncService: typeof lib.OfflineSyncService === 'function',
+    OFFLINE_SAFE_ACTIONS: Array.isArray(lib.OFFLINE_SAFE_ACTIONS),
+    ONLINE_REQUIRED_ACTIONS: Array.isArray(lib.ONLINE_REQUIRED_ACTIONS)
+}));
+"""
         result = self._run_ts_script(script)
         data = json.loads(result)
         
@@ -515,12 +516,12 @@ class TestLibraryExports:
     def test_index_exports_inventory_consumer(self):
         """Verify inventory consumer is exported from index"""
         script = """
-        const lib = require('./src/lib/index.ts');
-        console.log(JSON.stringify({
-            POSInventoryService: typeof lib.POSInventoryService === 'function',
-            generateEventId: typeof lib.generateEventId === 'function'
-        }));
-        """
+import * as lib from './src/lib/index.ts';
+console.log(JSON.stringify({
+    POSInventoryService: typeof lib.POSInventoryService === 'function',
+    generateEventId: typeof lib.generateEventId === 'function'
+}));
+"""
         result = self._run_ts_script(script)
         data = json.loads(result)
         
@@ -530,21 +531,25 @@ class TestLibraryExports:
     
     def _run_ts_script(self, script: str) -> str:
         """Helper to run TypeScript code"""
-        script_path = '/tmp/test_pos_script.ts'
+        script_path = os.path.join(POS_MODULE_PATH, '_test_script.ts')
         with open(script_path, 'w') as f:
             f.write(script)
         
-        result = subprocess.run(
-            ['npx', 'tsx', script_path],
-            cwd='/app/modules/pos',
-            capture_output=True,
-            text=True
-        )
-        
-        if result.returncode != 0:
-            raise Exception(f"Script execution failed:\n{result.stderr}\n{result.stdout}")
-        
-        return result.stdout.strip()
+        try:
+            result = subprocess.run(
+                ['npx', 'tsx', '_test_script.ts'],
+                cwd=POS_MODULE_PATH,
+                capture_output=True,
+                text=True
+            )
+            
+            if result.returncode != 0:
+                raise Exception(f"Script execution failed:\n{result.stderr}\n{result.stdout}")
+            
+            return result.stdout.strip()
+        finally:
+            if os.path.exists(script_path):
+                os.remove(script_path)
 
 
 if __name__ == '__main__':
