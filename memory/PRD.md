@@ -716,11 +716,14 @@ CANCELLED  CANCELLED CANCELLED/REFUNDED  REFUNDED   REFUNDED
 
 ## Backlog / Future Work
 
-### P0 - SVM Module Completion (Next Phases)
-- **Phase 6**: Reviews System - Product reviews, ratings
-- **Phase 7**: Storefront UI (PWA) - Customer-facing marketplace UI
-- **Phase 8**: SEO & CMS - Pages, banners, meta content
-- **Phase 9**: Events & Analytics - Tracking, reporting
+### Phase B - Commerce Completeness (In Progress)
+- **Step B2: Wallet System** — Customer, Vendor, Platform wallets with ledger-based accounting
+- **Step B3: Vendor Payouts** — Admin-triggered payout logic for MVM
+
+### Phase C - Production Readiness
+- Automated testing (unit, integration, e2e)
+- Performance and load testing
+- Security hardening and observability
 
 ### P1 - Core Entities
 - ~~Add `Product`, `Customer`, `InventoryLevel` models to SaaS Core schema~~ ✅ DONE (Step 1 Remediation)
