@@ -36,6 +36,11 @@
       "static/chunks/main-app.js",
       "static/chunks/app/(marketing)/pricing/page.js"
     ],
+    "/(marketing)/solutions/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/(marketing)/solutions/page.js"
+    ],
     "/_not-found/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
