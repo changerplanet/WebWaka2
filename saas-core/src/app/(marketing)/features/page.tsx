@@ -32,7 +32,7 @@ const featureCategories = [
       { 
         icon: WifiOff, 
         title: 'Works Offline', 
-        desc: 'Keep selling when network is bad. Your data syncs when you're back online.' 
+        desc: 'Keep selling when network is bad. Your data syncs when you are back online.' 
       },
       { 
         icon: Receipt, 
@@ -211,7 +211,7 @@ export default function FeaturesPage() {
               <ul className="space-y-3">
                 {[
                   'Process sales without internet',
-                  'Data syncs automatically when you're online',
+                  'Data syncs automatically when you are online',
                   'Never lose a sale due to network issues',
                   'Works on 2G, 3G, 4G, and WiFi',
                 ].map((item) => (
