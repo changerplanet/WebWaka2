@@ -275,33 +275,34 @@ describe('E2E: Cart to Order to Wallet Flow', () => {
 })
 
 describe('E2E: Order Cancellation and Refund Flow', () => {
-  const sessionId = `e2e-cancel-${Date.now()}`
+  const testRun = Date.now()
+  const sessionId = `e2e-cancel-${testRun}`
   let orderId: string
   let customerWalletId: string
   let vendorWalletId: string
 
   beforeAll(async () => {
-    // Create customer wallet
+    // Create customer wallet (unique per test run)
     const custRes = await fetch(`${API_URL}/api/wallets`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         tenantId: TEST_TENANT,
         type: 'CUSTOMER',
-        customerId: 'e2e-refund-customer'
+        customerId: `e2e-refund-customer-${testRun}`
       })
     })
     const custData = await custRes.json()
     customerWalletId = custData.wallet.id
 
-    // Create vendor wallet with balance
+    // Create vendor wallet with balance (unique per test run)
     const vendorRes = await fetch(`${API_URL}/api/wallets`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         tenantId: TEST_TENANT,
         type: 'VENDOR',
-        vendorId: 'e2e-refund-vendor'
+        vendorId: `e2e-refund-vendor-${testRun}`
       })
     })
     const vendorData = await vendorRes.json()
@@ -316,7 +317,7 @@ describe('E2E: Order Cancellation and Refund Flow', () => {
         action: 'credit',
         amount: 500,
         entryType: 'CREDIT_SALE_PROCEEDS',
-        idempotencyKey: `vendor-initial-${Date.now()}`
+        idempotencyKey: `vendor-initial-${testRun}`
       })
     })
 
