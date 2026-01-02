@@ -84,8 +84,6 @@ Location: `/app/modules/pos/`
 ### Database Tables (14 total)
 `pos_registers`, `pos_register_sessions`, `pos_shifts`, `pos_sales`, `pos_sale_line_items`, `pos_sale_discounts`, `pos_payments`, `pos_refunds`, `pos_refund_items`, `pos_layaways`, `pos_layaway_items`, `pos_layaway_payments`, `pos_settings`, `pos_discount_rules`
 
-Location: `/app/modules/pos/`
-
 ```
 modules/pos/
 ├── prisma/
