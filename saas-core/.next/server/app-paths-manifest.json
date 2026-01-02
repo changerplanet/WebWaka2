@@ -3,13 +3,13 @@
   "/page": "app/page.js",
   "/store/page": "app/store/page.js",
   "/vendor/page": "app/vendor/page.js",
-  "/api/svm/catalog/route": "app/api/svm/catalog/route.js",
   "/offline/page": "app/offline/page.js",
   "/login/page": "app/login/page.js",
   "/manifest.json/route": "app/manifest.json/route.js",
-  "/api/svm/shipping/route": "app/api/svm/shipping/route.js",
   "/api/svm/orders/route": "app/api/svm/orders/route.js",
   "/api/mvm/vendors/[vendorId]/dashboard/route": "app/api/mvm/vendors/[vendorId]/dashboard/route.js",
   "/api/mvm/vendors/[vendorId]/route": "app/api/mvm/vendors/[vendorId]/route.js",
-  "/api/mvm/vendors/[vendorId]/orders/route": "app/api/mvm/vendors/[vendorId]/orders/route.js"
+  "/api/mvm/vendors/[vendorId]/orders/route": "app/api/mvm/vendors/[vendorId]/orders/route.js",
+  "/api/mvm/vendors/[vendorId]/products/route": "app/api/mvm/vendors/[vendorId]/products/route.js",
+  "/api/mvm/commissions/route": "app/api/mvm/commissions/route.js"
 }
