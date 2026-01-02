@@ -324,14 +324,14 @@ export default function HomePage() {
         <div className="bg-slate-900 rounded-3xl p-8 md:p-12">
           <div className="grid md:grid-cols-2 gap-12">
             <div>
-              <h3 className="text-2xl font-bold text-white mb-4">Architecture</h3>
+              <h3 className="text-2xl font-bold text-white mb-4">Platform</h3>
               <ul className="space-y-3">
                 {[
                   'Next.js App Router',
                   'PostgreSQL + Prisma ORM',
-                  'Middleware-based tenant resolution',
-                  'Role-based access (Super Admin, Tenant Admin, User)',
-                  'Magic link passwordless auth',
+                  'Multi-tenant architecture',
+                  'White-label ready',
+                  'POS, SVM, MVM modules',
                 ].map((item, i) => (
                   <li key={i} className="flex items-center gap-3 text-slate-300">
                     <Check className="w-5 h-5 text-green-400" />
@@ -406,7 +406,7 @@ export default function HomePage() {
                     placeholder="acme"
                   />
                   <span className="px-4 py-3 bg-slate-100 border border-l-0 border-slate-200 rounded-r-xl text-slate-500 text-sm">
-                    .saascore.com
+                    .emarketwaka.com
                   </span>
                 </div>
               </div>
