@@ -535,6 +535,8 @@ Location: `/app/modules/mvm/`
 | **SVM Events** | `/modules/svm/docs/SVM_EVENTS.md` |
 | **SVM Entitlements** | `/modules/svm/docs/SVM_ENTITLEMENTS.md` |
 | **SVM Validation Checklist** | `/modules/svm/docs/SVM_VALIDATION_CHECKLIST.md` |
+|| **MVM Constitution** | `/modules/mvm/docs/MVM_CONSTITUTION.md` |
+|| **MVM Validation Checklist** | `/modules/mvm/docs/MVM_VALIDATION_CHECKLIST.md` |
 
 ---
 
