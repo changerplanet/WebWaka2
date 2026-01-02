@@ -1,16 +1,16 @@
 /**
  * SVM Promotions Storage
  * 
- * Shared in-memory storage for promotions.
- * Using globalThis to ensure single instance across all Next.js API routes.
- * 
- * In production, this would be replaced with database queries.
+ * Database-backed storage for promotions using Prisma.
+ * All data is tenant-isolated and persists across restarts.
  */
 
+import { prisma } from './prisma'
+import { Prisma } from '@prisma/client'
 import Decimal from 'decimal.js'
 
 // ============================================================================
-// TYPES
+// TYPES (maintained for API compatibility)
 // ============================================================================
 
 export type PromotionType = 'COUPON' | 'AUTOMATIC' | 'FLASH_SALE'
@@ -20,30 +20,30 @@ export interface Promotion {
   id: string
   tenantId: string
   name: string
-  description?: string
-  code?: string
+  description?: string | null
+  code?: string | null
   type: PromotionType
   discountType: DiscountType
   discountValue: number
-  maxDiscount?: number
-  minOrderTotal?: number
-  minQuantity?: number
+  maxDiscount?: number | null
+  minOrderTotal?: number | null
+  minQuantity?: number | null
   productIds: string[]
   categoryIds: string[]
   excludeProductIds: string[]
   customerIds: string[]
   firstOrderOnly: boolean
-  usageLimit?: number
+  usageLimit?: number | null
   usageCount: number
-  perCustomerLimit?: number
+  perCustomerLimit?: number | null
   startsAt: Date
-  endsAt?: Date
+  endsAt?: Date | null
   isActive: boolean
   stackable: boolean
   priority: number
-  buyQuantity?: number
-  getQuantity?: number
-  getDiscountPercent?: number
+  buyQuantity?: number | null
+  getQuantity?: number | null
+  getDiscountPercent?: number | null
   createdAt?: string
   updatedAt?: string
 }
@@ -69,7 +69,7 @@ export interface PromotionCartItem {
 export interface AppliedPromotion {
   promotionId: string
   promotionName: string
-  code?: string
+  code?: string | null
   discountType: DiscountType
   discountAmount: number
   originalAmount?: number
@@ -80,28 +80,177 @@ export interface AppliedPromotion {
 }
 
 // ============================================================================
-// SHARED STORAGE (Singleton using globalThis)
+// HELPERS
 // ============================================================================
-
-const PROMOTIONS_STORAGE_KEY = '__svm_promotions_storage__'
-const USAGE_STORAGE_KEY = '__svm_promotion_usage_storage__'
-
-function getPromotionsStorage(): Map<string, Promotion[]> {
-  if (!(globalThis as any)[PROMOTIONS_STORAGE_KEY]) {
-    (globalThis as any)[PROMOTIONS_STORAGE_KEY] = new Map<string, Promotion[]>()
-  }
-  return (globalThis as any)[PROMOTIONS_STORAGE_KEY]
-}
-
-function getUsageStorage(): Map<string, PromotionUsage[]> {
-  if (!(globalThis as any)[USAGE_STORAGE_KEY]) {
-    (globalThis as any)[USAGE_STORAGE_KEY] = new Map<string, PromotionUsage[]>()
-  }
-  return (globalThis as any)[USAGE_STORAGE_KEY]
-}
 
 export function generateId(prefix: string = 'promo'): string {
   return `${prefix}_${Date.now().toString(36)}${Math.random().toString(36).substring(2, 9)}`
+}
+
+function decimalToNumber(val: Prisma.Decimal | null | undefined): number | null {
+  if (val === null || val === undefined) return null
+  return Number(val)
+}
+
+function mapDbPromotionToInterface(dbPromo: any): Promotion {
+  return {
+    id: dbPromo.id,
+    tenantId: dbPromo.tenantId,
+    name: dbPromo.name,
+    description: dbPromo.description,
+    code: dbPromo.code,
+    type: dbPromo.type as PromotionType,
+    discountType: dbPromo.discountType as DiscountType,
+    discountValue: Number(dbPromo.discountValue),
+    maxDiscount: decimalToNumber(dbPromo.maxDiscount),
+    minOrderTotal: decimalToNumber(dbPromo.minOrderTotal),
+    minQuantity: dbPromo.minQuantity,
+    productIds: dbPromo.productIds || [],
+    categoryIds: dbPromo.categoryIds || [],
+    excludeProductIds: dbPromo.excludeProductIds || [],
+    customerIds: dbPromo.customerIds || [],
+    firstOrderOnly: dbPromo.firstOrderOnly,
+    usageLimit: dbPromo.usageLimit,
+    usageCount: dbPromo.usageCount,
+    perCustomerLimit: dbPromo.perCustomerLimit,
+    startsAt: dbPromo.startsAt,
+    endsAt: dbPromo.endsAt,
+    isActive: dbPromo.isActive,
+    stackable: dbPromo.stackable,
+    priority: dbPromo.priority,
+    buyQuantity: dbPromo.buyQuantity,
+    getQuantity: dbPromo.getQuantity,
+    getDiscountPercent: dbPromo.getDiscountPercent,
+    createdAt: dbPromo.createdAt?.toISOString(),
+    updatedAt: dbPromo.updatedAt?.toISOString()
+  }
+}
+
+// ============================================================================
+// DEFAULT PROMOTIONS SEEDING
+// ============================================================================
+
+async function seedDefaultPromotions(tenantId: string): Promise<Promotion[]> {
+  const now = new Date()
+  
+  const promotions = await prisma.$transaction([
+    prisma.svmPromotion.create({
+      data: {
+        tenantId,
+        name: 'Welcome Discount',
+        description: '10% off your first order',
+        code: 'WELCOME10',
+        type: 'COUPON',
+        discountType: 'PERCENTAGE',
+        discountValue: 10,
+        productIds: [],
+        categoryIds: [],
+        excludeProductIds: [],
+        customerIds: [],
+        firstOrderOnly: true,
+        usageCount: 0,
+        startsAt: now,
+        isActive: true,
+        stackable: false,
+        priority: 0
+      }
+    }),
+    prisma.svmPromotion.create({
+      data: {
+        tenantId,
+        name: 'Summer Sale',
+        description: '15% off orders over $100 (max $50 discount)',
+        code: null,
+        type: 'AUTOMATIC',
+        discountType: 'PERCENTAGE',
+        discountValue: 15,
+        maxDiscount: 50,
+        minOrderTotal: 100,
+        productIds: [],
+        categoryIds: [],
+        excludeProductIds: [],
+        customerIds: [],
+        firstOrderOnly: false,
+        usageCount: 0,
+        startsAt: now,
+        isActive: true,
+        stackable: true,
+        priority: 10
+      }
+    }),
+    prisma.svmPromotion.create({
+      data: {
+        tenantId,
+        name: 'Free Shipping',
+        description: 'Free shipping on orders over $50',
+        code: 'FREESHIP',
+        type: 'COUPON',
+        discountType: 'FREE_SHIPPING',
+        discountValue: 0,
+        minOrderTotal: 50,
+        productIds: [],
+        categoryIds: [],
+        excludeProductIds: [],
+        customerIds: [],
+        firstOrderOnly: false,
+        usageCount: 0,
+        startsAt: now,
+        isActive: true,
+        stackable: true,
+        priority: 5
+      }
+    }),
+    prisma.svmPromotion.create({
+      data: {
+        tenantId,
+        name: 'Buy 2 Get 1 Free',
+        description: 'Buy any 2 items, get 1 free',
+        code: 'BOGO',
+        type: 'COUPON',
+        discountType: 'BUY_X_GET_Y',
+        discountValue: 100,
+        buyQuantity: 2,
+        getQuantity: 1,
+        getDiscountPercent: 100,
+        productIds: [],
+        categoryIds: [],
+        excludeProductIds: [],
+        customerIds: [],
+        firstOrderOnly: false,
+        usageCount: 0,
+        startsAt: now,
+        isActive: true,
+        stackable: false,
+        priority: 0
+      }
+    }),
+    prisma.svmPromotion.create({
+      data: {
+        tenantId,
+        name: '$20 Off',
+        description: '$20 off orders over $75 (limit 100 uses)',
+        code: 'SAVE20',
+        type: 'COUPON',
+        discountType: 'FIXED_AMOUNT',
+        discountValue: 20,
+        minOrderTotal: 75,
+        usageLimit: 100,
+        perCustomerLimit: 1,
+        productIds: [],
+        categoryIds: [],
+        excludeProductIds: [],
+        customerIds: [],
+        firstOrderOnly: false,
+        usageCount: 0,
+        startsAt: now,
+        isActive: true,
+        stackable: false,
+        priority: 0
+      }
+    })
+  ])
+  
+  return promotions.map(mapDbPromotionToInterface)
 }
 
 // ============================================================================
@@ -111,240 +260,210 @@ export function generateId(prefix: string = 'promo'): string {
 /**
  * Get or create sample promotions for a tenant
  */
-export function getOrCreatePromotions(tenantId: string): Promotion[] {
-  const storage = getPromotionsStorage()
+export async function getOrCreatePromotions(tenantId: string): Promise<Promotion[]> {
+  const existing = await prisma.svmPromotion.findMany({
+    where: { tenantId }
+  })
   
-  if (storage.has(tenantId)) {
-    return storage.get(tenantId)!
+  if (existing.length > 0) {
+    return existing.map(mapDbPromotionToInterface)
   }
   
-  // Create sample promotions
-  const now = new Date()
-  const samplePromotions: Promotion[] = [
-    {
-      id: generateId('promo'),
-      tenantId,
-      name: 'Welcome Discount',
-      description: '10% off your first order',
-      code: 'WELCOME10',
-      type: 'COUPON',
-      discountType: 'PERCENTAGE',
-      discountValue: 10,
-      productIds: [],
-      categoryIds: [],
-      excludeProductIds: [],
-      customerIds: [],
-      firstOrderOnly: true,
-      usageCount: 0,
-      startsAt: now,
-      isActive: true,
-      stackable: false,
-      priority: 0,
-      createdAt: now.toISOString(),
-      updatedAt: now.toISOString()
-    },
-    {
-      id: generateId('promo'),
-      tenantId,
-      name: 'Summer Sale',
-      description: '15% off orders over $100 (max $50 discount)',
-      type: 'AUTOMATIC',
-      discountType: 'PERCENTAGE',
-      discountValue: 15,
-      maxDiscount: 50,
-      minOrderTotal: 100,
-      productIds: [],
-      categoryIds: [],
-      excludeProductIds: [],
-      customerIds: [],
-      firstOrderOnly: false,
-      usageCount: 0,
-      startsAt: now,
-      isActive: true,
-      stackable: true,
-      priority: 10,
-      createdAt: now.toISOString(),
-      updatedAt: now.toISOString()
-    },
-    {
-      id: generateId('promo'),
-      tenantId,
-      name: 'Free Shipping',
-      description: 'Free shipping on orders over $50',
-      code: 'FREESHIP',
-      type: 'COUPON',
-      discountType: 'FREE_SHIPPING',
-      discountValue: 0,
-      minOrderTotal: 50,
-      productIds: [],
-      categoryIds: [],
-      excludeProductIds: [],
-      customerIds: [],
-      firstOrderOnly: false,
-      usageCount: 0,
-      startsAt: now,
-      isActive: true,
-      stackable: true,
-      priority: 5,
-      createdAt: now.toISOString(),
-      updatedAt: now.toISOString()
-    },
-    {
-      id: generateId('promo'),
-      tenantId,
-      name: 'Buy 2 Get 1 Free',
-      description: 'Buy any 2 items, get 1 free',
-      code: 'BOGO',
-      type: 'COUPON',
-      discountType: 'BUY_X_GET_Y',
-      discountValue: 100,
-      buyQuantity: 2,
-      getQuantity: 1,
-      getDiscountPercent: 100,
-      productIds: [],
-      categoryIds: [],
-      excludeProductIds: [],
-      customerIds: [],
-      firstOrderOnly: false,
-      usageCount: 0,
-      startsAt: now,
-      isActive: true,
-      stackable: false,
-      priority: 0,
-      createdAt: now.toISOString(),
-      updatedAt: now.toISOString()
-    },
-    {
-      id: generateId('promo'),
-      tenantId,
-      name: '$20 Off',
-      description: '$20 off orders over $75 (limit 100 uses)',
-      code: 'SAVE20',
-      type: 'COUPON',
-      discountType: 'FIXED_AMOUNT',
-      discountValue: 20,
-      minOrderTotal: 75,
-      usageLimit: 100,
-      perCustomerLimit: 1,
-      productIds: [],
-      categoryIds: [],
-      excludeProductIds: [],
-      customerIds: [],
-      firstOrderOnly: false,
-      usageCount: 0,
-      startsAt: now,
-      isActive: true,
-      stackable: false,
-      priority: 0,
-      createdAt: now.toISOString(),
-      updatedAt: now.toISOString()
-    }
-  ]
-  
-  storage.set(tenantId, samplePromotions)
-  return samplePromotions
+  return seedDefaultPromotions(tenantId)
 }
 
-export function getPromotions(tenantId: string): Promotion[] {
+export async function getPromotions(tenantId: string): Promise<Promotion[]> {
   return getOrCreatePromotions(tenantId)
 }
 
-export function getActivePromotions(tenantId: string): Promotion[] {
+export async function getActivePromotions(tenantId: string): Promise<Promotion[]> {
   const now = new Date()
-  return getPromotions(tenantId).filter(p => 
-    p.isActive && 
-    p.startsAt <= now && 
-    (!p.endsAt || p.endsAt > now) &&
-    (!p.usageLimit || p.usageCount < p.usageLimit)
-  )
-}
-
-export function getAutomaticPromotions(tenantId: string): Promotion[] {
-  return getActivePromotions(tenantId).filter(p => 
-    p.type === 'AUTOMATIC' || p.type === 'FLASH_SALE'
-  )
-}
-
-export function findByCode(tenantId: string, code: string): Promotion | null {
-  const promotions = getActivePromotions(tenantId)
-  return promotions.find(p => p.code?.toUpperCase() === code.toUpperCase()) || null
-}
-
-export function getPromotion(tenantId: string, promotionId: string): Promotion | null {
-  const promotions = getPromotions(tenantId)
-  return promotions.find(p => p.id === promotionId) || null
-}
-
-export function addPromotion(promotion: Promotion): void {
-  const storage = getPromotionsStorage()
-  const promotions = getOrCreatePromotions(promotion.tenantId)
-  promotions.push(promotion)
-}
-
-export function updatePromotion(tenantId: string, promotionId: string, updates: Partial<Promotion>): Promotion | null {
-  const promotions = getPromotions(tenantId)
-  const index = promotions.findIndex(p => p.id === promotionId)
-  if (index < 0) return null
   
-  promotions[index] = { ...promotions[index], ...updates, updatedAt: new Date().toISOString() }
-  return promotions[index]
+  const promotions = await prisma.svmPromotion.findMany({
+    where: {
+      tenantId,
+      isActive: true,
+      startsAt: { lte: now },
+      OR: [
+        { endsAt: null },
+        { endsAt: { gt: now } }
+      ]
+    }
+  })
+  
+  // Filter by usage limit in application layer
+  return promotions
+    .map(mapDbPromotionToInterface)
+    .filter(p => !p.usageLimit || p.usageCount < p.usageLimit)
 }
 
-export function deletePromotion(tenantId: string, promotionId: string): Promotion | null {
-  const storage = getPromotionsStorage()
-  const promotions = storage.get(tenantId) || []
-  const index = promotions.findIndex(p => p.id === promotionId)
-  if (index < 0) return null
+export async function getAutomaticPromotions(tenantId: string): Promise<Promotion[]> {
+  const active = await getActivePromotions(tenantId)
+  return active.filter(p => p.type === 'AUTOMATIC' || p.type === 'FLASH_SALE')
+}
+
+export async function findByCode(tenantId: string, code: string): Promise<Promotion | null> {
+  const promotion = await prisma.svmPromotion.findFirst({
+    where: {
+      tenantId,
+      code: { equals: code, mode: 'insensitive' },
+      isActive: true,
+      startsAt: { lte: new Date() },
+      OR: [
+        { endsAt: null },
+        { endsAt: { gt: new Date() } }
+      ]
+    }
+  })
   
-  const [deleted] = promotions.splice(index, 1)
-  return deleted
+  if (!promotion) return null
+  
+  const mapped = mapDbPromotionToInterface(promotion)
+  
+  // Check usage limit
+  if (mapped.usageLimit && mapped.usageCount >= mapped.usageLimit) {
+    return null
+  }
+  
+  return mapped
+}
+
+export async function getPromotion(tenantId: string, promotionId: string): Promise<Promotion | null> {
+  const promotion = await prisma.svmPromotion.findFirst({
+    where: { id: promotionId, tenantId }
+  })
+  
+  return promotion ? mapDbPromotionToInterface(promotion) : null
+}
+
+export async function addPromotion(promotion: Promotion): Promise<void> {
+  await prisma.svmPromotion.create({
+    data: {
+      id: promotion.id,
+      tenantId: promotion.tenantId,
+      name: promotion.name,
+      description: promotion.description,
+      code: promotion.code,
+      type: promotion.type,
+      discountType: promotion.discountType,
+      discountValue: promotion.discountValue,
+      maxDiscount: promotion.maxDiscount,
+      minOrderTotal: promotion.minOrderTotal,
+      minQuantity: promotion.minQuantity,
+      productIds: promotion.productIds,
+      categoryIds: promotion.categoryIds,
+      excludeProductIds: promotion.excludeProductIds,
+      customerIds: promotion.customerIds,
+      firstOrderOnly: promotion.firstOrderOnly,
+      usageLimit: promotion.usageLimit,
+      usageCount: promotion.usageCount,
+      perCustomerLimit: promotion.perCustomerLimit,
+      buyQuantity: promotion.buyQuantity,
+      getQuantity: promotion.getQuantity,
+      getDiscountPercent: promotion.getDiscountPercent,
+      startsAt: promotion.startsAt,
+      endsAt: promotion.endsAt,
+      isActive: promotion.isActive,
+      stackable: promotion.stackable,
+      priority: promotion.priority
+    }
+  })
+}
+
+export async function updatePromotion(tenantId: string, promotionId: string, updates: Partial<Promotion>): Promise<Promotion | null> {
+  const existing = await prisma.svmPromotion.findFirst({
+    where: { id: promotionId, tenantId }
+  })
+  
+  if (!existing) return null
+  
+  const updated = await prisma.svmPromotion.update({
+    where: { id: promotionId },
+    data: {
+      name: updates.name,
+      description: updates.description,
+      discountValue: updates.discountValue,
+      maxDiscount: updates.maxDiscount,
+      minOrderTotal: updates.minOrderTotal,
+      minQuantity: updates.minQuantity,
+      productIds: updates.productIds,
+      categoryIds: updates.categoryIds,
+      excludeProductIds: updates.excludeProductIds,
+      customerIds: updates.customerIds,
+      firstOrderOnly: updates.firstOrderOnly,
+      usageLimit: updates.usageLimit,
+      perCustomerLimit: updates.perCustomerLimit,
+      buyQuantity: updates.buyQuantity,
+      getQuantity: updates.getQuantity,
+      getDiscountPercent: updates.getDiscountPercent,
+      startsAt: updates.startsAt,
+      endsAt: updates.endsAt,
+      isActive: updates.isActive,
+      stackable: updates.stackable,
+      priority: updates.priority
+    }
+  })
+  
+  return mapDbPromotionToInterface(updated)
+}
+
+export async function deletePromotion(tenantId: string, promotionId: string): Promise<Promotion | null> {
+  const existing = await prisma.svmPromotion.findFirst({
+    where: { id: promotionId, tenantId }
+  })
+  
+  if (!existing) return null
+  
+  await prisma.svmPromotion.delete({
+    where: { id: promotionId }
+  })
+  
+  return mapDbPromotionToInterface(existing)
 }
 
 // ============================================================================
 // USAGE TRACKING
 // ============================================================================
 
-export function recordUsage(
+export async function recordUsage(
   promotionId: string,
   orderId: string,
   customerId: string | undefined,
   discountApplied: number
-): PromotionUsage {
-  const usageStorage = getUsageStorage()
-  const promotionsStorage = getPromotionsStorage()
-  
-  const usage: PromotionUsage = {
-    id: generateId('usage'),
-    promotionId,
-    orderId,
-    customerId,
-    discountApplied,
-    createdAt: new Date()
-  }
-  
-  // Store usage
-  const usages = usageStorage.get(promotionId) || []
-  usages.push(usage)
-  usageStorage.set(promotionId, usages)
+): Promise<PromotionUsage> {
+  const usage = await prisma.svmPromotionUsage.create({
+    data: {
+      promotionId,
+      orderId,
+      customerId,
+      discountApplied
+    }
+  })
   
   // Increment usage count on promotion
-  for (const [tenantId, promotions] of promotionsStorage) {
-    const promotion = promotions.find(p => p.id === promotionId)
-    if (promotion) {
-      promotion.usageCount++
-      break
-    }
-  }
+  await prisma.svmPromotion.update({
+    where: { id: promotionId },
+    data: { usageCount: { increment: 1 } }
+  })
   
-  return usage
+  return {
+    id: usage.id,
+    promotionId: usage.promotionId,
+    orderId: usage.orderId,
+    customerId: usage.customerId || undefined,
+    discountApplied: Number(usage.discountApplied),
+    createdAt: usage.createdAt
+  }
 }
 
-export function getCustomerUsageCount(promotionId: string, customerId?: string): number {
+export async function getCustomerUsageCount(promotionId: string, customerId?: string): Promise<number> {
   if (!customerId) return 0
   
-  const usageStorage = getUsageStorage()
-  const usages = usageStorage.get(promotionId) || []
-  return usages.filter(u => u.customerId === customerId).length
+  const count = await prisma.svmPromotionUsage.count({
+    where: { promotionId, customerId }
+  })
+  
+  return count
 }
 
 // ============================================================================
@@ -357,14 +476,14 @@ export interface ValidationResult {
   errorCode?: string
 }
 
-export function validatePromotion(
+export async function validatePromotion(
   promotion: Promotion,
   subtotal: number,
   totalQuantity: number,
   customerId?: string,
   isFirstOrder?: boolean,
   currentDiscounts: AppliedPromotion[] = []
-): ValidationResult {
+): Promise<ValidationResult> {
   const now = new Date()
   
   if (!promotion.isActive) {
@@ -383,7 +502,7 @@ export function validatePromotion(
     return { valid: false, error: 'This promotion has reached its usage limit', errorCode: 'USAGE_LIMIT_REACHED' }
   }
   
-  const customerUsageCount = getCustomerUsageCount(promotion.id, customerId)
+  const customerUsageCount = await getCustomerUsageCount(promotion.id, customerId)
   if (promotion.perCustomerLimit && customerUsageCount >= promotion.perCustomerLimit) {
     return { valid: false, error: 'You have already used this promotion the maximum number of times', errorCode: 'CUSTOMER_LIMIT_REACHED' }
   }
