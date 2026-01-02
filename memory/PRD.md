@@ -471,6 +471,10 @@ CANCELLED  CANCELLED CANCELLED/REFUNDED  REFUNDED   REFUNDED
 | **SVM API Reference** | `/modules/svm/docs/SVM_API_REFERENCE.md` |
 | **SVM Shipping** | `/modules/svm/docs/SVM_SHIPPING.md` |
 | **SVM Promotions** | `/modules/svm/docs/SVM_PROMOTIONS.md` |
+| **SVM Offline/PWA** | `/modules/svm/docs/SVM_OFFLINE.md` |
+| **SVM Events** | `/modules/svm/docs/SVM_EVENTS.md` |
+| **SVM Entitlements** | `/modules/svm/docs/SVM_ENTITLEMENTS.md` |
+| **SVM Validation Checklist** | `/modules/svm/docs/SVM_VALIDATION_CHECKLIST.md` |
 
 ---
 
