@@ -17,12 +17,13 @@ type SvmFulfillmentStatus = 'UNFULFILLED' | 'PARTIALLY_FULFILLED' | 'FULFILLED' 
 // Valid status transitions
 const validOrderTransitions: Record<string, string[]> = {
   'PENDING': ['CONFIRMED', 'CANCELLED'],
-  'CONFIRMED': ['PROCESSING', 'ON_HOLD', 'CANCELLED'],
-  'PROCESSING': ['COMPLETED', 'ON_HOLD', 'CANCELLED'],
-  'ON_HOLD': ['PROCESSING', 'CANCELLED'],
-  'COMPLETED': ['REFUNDED'],
+  'CONFIRMED': ['PROCESSING', 'CANCELLED'],
+  'PROCESSING': ['SHIPPED', 'CANCELLED'],
+  'SHIPPED': ['DELIVERED', 'CANCELLED'],
+  'DELIVERED': ['REFUNDED', 'PARTIALLY_REFUNDED'],
   'CANCELLED': [],
-  'REFUNDED': []
+  'REFUNDED': [],
+  'PARTIALLY_REFUNDED': ['REFUNDED']
 }
 
 const validPaymentTransitions: Record<string, string[]> = {
