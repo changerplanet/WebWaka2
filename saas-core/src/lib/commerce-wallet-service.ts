@@ -56,18 +56,16 @@ interface TransferParams {
 export async function getOrCreateWallet(params: CreateWalletParams) {
   const { tenantId, type, customerId, vendorId, currency = 'USD', metadata } = params
 
-  // Build unique constraint query
-  const where: Prisma.CommerceWalletWhereUniqueInput = {
-    tenantId_type_customerId_vendorId: {
-      tenantId,
-      type,
-      customerId: customerId || null,
-      vendorId: vendorId || null
-    }
+  // Build where clause for findFirst (handles nullable fields better)
+  const whereClause = {
+    tenantId,
+    type,
+    customerId: customerId || null,
+    vendorId: vendorId || null
   }
 
   // Try to find existing wallet
-  let wallet = await prisma.commerceWallet.findUnique({ where })
+  let wallet = await prisma.commerceWallet.findFirst({ where: whereClause })
 
   if (!wallet) {
     // Create new wallet
