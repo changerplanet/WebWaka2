@@ -885,14 +885,15 @@ CANCELLED  CANCELLED CANCELLED/REFUNDED  REFUNDED   REFUNDED
 
 ## Backlog / Future Work
 
-### Production Enhancements (P1)
-- **Redis Integration** — Replace in-memory rate limiter with Redis for distributed deployments
-- **Auth Provider** — Integrate NextAuth or similar for JWT validation
-- **APM Integration** — Add DataDog, New Relic for production monitoring
-- **Log Aggregation** — Ship audit logs to CloudWatch, ELK
+### Phase E: Customer-Facing Website (Next)
+- Marketing website (separate from app)
+- Home, Features, Solutions, Pricing, About, Contact
+- Signup/Login handoff to main app
 
-### Phase B - Remaining (P2)
-- **Step B3: Vendor Payouts** — Admin-triggered payout logic for MVM
+### Production Enhancements (P1)
+- **Redis Integration** — Replace in-memory rate limiter with Redis
+- **Auth Provider** — Integrate NextAuth for JWT validation
+- **APM Integration** — Add DataDog, New Relic for monitoring
 
 ### P1 - Core Entities
 - ~~Add `Product`, `Customer`, `InventoryLevel` models to SaaS Core schema~~ ✅ DONE (Step 1 Remediation)
