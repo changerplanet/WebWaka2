@@ -191,7 +191,7 @@ export function POSProvider({ children, tenantId }: POSProviderProps) {
 
   // Load session and cart from storage on mount
   useEffect(() => {
-    const session = loadFromStorage(STORAGE_KEYS.SESSION, {})
+    const session = loadFromStorage<POSSession>(STORAGE_KEYS.SESSION, {})
     const cart = loadFromStorage(STORAGE_KEYS.CART, state.cart)
     const pending = loadFromStorage<any[]>(STORAGE_KEYS.PENDING_TRANSACTIONS, [])
     
