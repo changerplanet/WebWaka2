@@ -555,3 +555,430 @@ export async function getPlan(idOrSlug: string): Promise<SubscriptionPlan | null
     }
   })
 }
+
+// ============================================================================
+// GRACE PERIOD MANAGEMENT
+// ============================================================================
+
+/**
+ * Enter grace period after payment failure
+ * Subscription enters PAST_DUE -> GRACE_PERIOD status progression
+ */
+export async function enterGracePeriod(
+  subscriptionId: string,
+  options?: {
+    reason?: string
+    gracePeriodDays?: number
+  }
+): Promise<SubscriptionResult> {
+  const subscription = await prisma.subscription.findUnique({
+    where: { id: subscriptionId },
+    include: { plan: true, tenant: true }
+  })
+  
+  if (!subscription) {
+    return { success: false, error: 'Subscription not found', code: 'NOT_FOUND' }
+  }
+  
+  // Already in grace period or suspended
+  if (subscription.status === 'GRACE_PERIOD' || subscription.status === 'SUSPENDED') {
+    return { success: true, subscription }
+  }
+  
+  // Calculate grace period end
+  const gracePeriodDays = options?.gracePeriodDays ?? subscription.gracePeriodDays ?? subscription.plan.gracePeriodDays ?? 7
+  const gracePeriodStart = new Date()
+  const gracePeriodEnd = new Date(gracePeriodStart.getTime() + gracePeriodDays * 24 * 60 * 60 * 1000)
+  
+  const updatedSubscription = await prisma.$transaction(async (tx) => {
+    const sub = await tx.subscription.update({
+      where: { id: subscriptionId },
+      data: {
+        status: 'GRACE_PERIOD',
+        gracePeriodStart,
+        gracePeriodEnd,
+        paymentFailedAt: subscription.paymentFailedAt ?? new Date(),
+        paymentRetryCount: subscription.paymentRetryCount + 1
+      }
+    })
+    
+    // Audit log
+    await tx.auditLog.create({
+      data: {
+        action: 'SUBSCRIPTION_UPDATED',
+        actorId: 'system',
+        actorEmail: 'subscription@saascore.internal',
+        tenantId: subscription.tenantId,
+        targetType: 'Subscription',
+        targetId: sub.id,
+        metadata: {
+          eventType: 'GRACE_PERIOD_STARTED',
+          reason: options?.reason ?? 'Payment failed',
+          gracePeriodDays,
+          gracePeriodEnd: gracePeriodEnd.toISOString(),
+          retryCount: sub.paymentRetryCount
+        }
+      }
+    })
+    
+    return sub
+  })
+  
+  // Emit event
+  await emitSubscriptionEvent({
+    eventType: 'SUBSCRIPTION_GRACE_PERIOD_STARTED',
+    subscriptionId: subscription.id,
+    tenantId: subscription.tenantId,
+    partnerId: null,
+    modules: subscription.plan.includedModules,
+    billingAmount: Number(subscription.amount),
+    billingCurrency: subscription.currency,
+    billingInterval: subscription.billingInterval,
+    periodStart: subscription.currentPeriodStart,
+    periodEnd: subscription.currentPeriodEnd,
+    metadata: {
+      gracePeriodDays,
+      gracePeriodEnd: gracePeriodEnd.toISOString(),
+      reason: options?.reason ?? 'Payment failed'
+    }
+  })
+  
+  return { success: true, subscription: updatedSubscription }
+}
+
+/**
+ * Suspend subscription after grace period expires
+ * Full access revocation
+ */
+export async function suspendSubscription(
+  subscriptionId: string,
+  options?: {
+    reason?: string
+  }
+): Promise<SubscriptionResult> {
+  const subscription = await prisma.subscription.findUnique({
+    where: { id: subscriptionId },
+    include: { plan: true, tenant: true }
+  })
+  
+  if (!subscription) {
+    return { success: false, error: 'Subscription not found', code: 'NOT_FOUND' }
+  }
+  
+  if (subscription.status === 'SUSPENDED') {
+    return { success: true, subscription }
+  }
+  
+  const updatedSubscription = await prisma.$transaction(async (tx) => {
+    const sub = await tx.subscription.update({
+      where: { id: subscriptionId },
+      data: {
+        status: 'SUSPENDED'
+      }
+    })
+    
+    // Deactivate all entitlements
+    await tx.entitlement.updateMany({
+      where: {
+        subscriptionId,
+        status: 'ACTIVE'
+      },
+      data: {
+        status: 'SUSPENDED'
+      }
+    })
+    
+    // Audit log
+    await tx.auditLog.create({
+      data: {
+        action: 'SUBSCRIPTION_SUSPENDED',
+        actorId: 'system',
+        actorEmail: 'subscription@saascore.internal',
+        tenantId: subscription.tenantId,
+        targetType: 'Subscription',
+        targetId: sub.id,
+        metadata: {
+          reason: options?.reason ?? 'Grace period expired',
+          paymentFailedAt: subscription.paymentFailedAt?.toISOString(),
+          gracePeriodDays: subscription.gracePeriodDays,
+          retryCount: subscription.paymentRetryCount
+        }
+      }
+    })
+    
+    return sub
+  })
+  
+  // Emit event
+  await emitSubscriptionEvent({
+    eventType: 'SUBSCRIPTION_SUSPENDED',
+    subscriptionId: subscription.id,
+    tenantId: subscription.tenantId,
+    partnerId: null,
+    modules: subscription.plan.includedModules,
+    billingAmount: Number(subscription.amount),
+    billingCurrency: subscription.currency,
+    billingInterval: subscription.billingInterval,
+    periodStart: subscription.currentPeriodStart,
+    periodEnd: subscription.currentPeriodEnd,
+    metadata: {
+      reason: options?.reason ?? 'Grace period expired'
+    }
+  })
+  
+  return { success: true, subscription: updatedSubscription }
+}
+
+/**
+ * Recover subscription after payment success (during grace period)
+ */
+export async function recoverSubscription(
+  subscriptionId: string,
+  options?: {
+    paymentReference?: string
+  }
+): Promise<SubscriptionResult> {
+  const subscription = await prisma.subscription.findUnique({
+    where: { id: subscriptionId },
+    include: { plan: true, tenant: true }
+  })
+  
+  if (!subscription) {
+    return { success: false, error: 'Subscription not found', code: 'NOT_FOUND' }
+  }
+  
+  if (subscription.status === 'ACTIVE') {
+    return { success: true, subscription }
+  }
+  
+  // Can only recover from PAST_DUE, GRACE_PERIOD, or SUSPENDED
+  const recoverableStatuses = ['PAST_DUE', 'GRACE_PERIOD', 'SUSPENDED']
+  if (!recoverableStatuses.includes(subscription.status)) {
+    return { 
+      success: false, 
+      error: `Cannot recover subscription from ${subscription.status} status`,
+      code: 'INVALID_STATUS'
+    }
+  }
+  
+  const updatedSubscription = await prisma.$transaction(async (tx) => {
+    const sub = await tx.subscription.update({
+      where: { id: subscriptionId },
+      data: {
+        status: 'ACTIVE',
+        gracePeriodStart: null,
+        gracePeriodEnd: null,
+        paymentFailedAt: null,
+        paymentRetryCount: 0
+      }
+    })
+    
+    // Reactivate entitlements
+    await tx.entitlement.updateMany({
+      where: {
+        subscriptionId,
+        status: 'SUSPENDED'
+      },
+      data: {
+        status: 'ACTIVE'
+      }
+    })
+    
+    // Audit log
+    await tx.auditLog.create({
+      data: {
+        action: 'SUBSCRIPTION_ACTIVATED',
+        actorId: 'system',
+        actorEmail: 'subscription@saascore.internal',
+        tenantId: subscription.tenantId,
+        targetType: 'Subscription',
+        targetId: sub.id,
+        metadata: {
+          eventType: 'SUBSCRIPTION_RECOVERED',
+          previousStatus: subscription.status,
+          paymentReference: options?.paymentReference,
+          gracePeriodDaysUsed: subscription.gracePeriodStart 
+            ? Math.ceil((Date.now() - subscription.gracePeriodStart.getTime()) / (24 * 60 * 60 * 1000))
+            : 0
+        }
+      }
+    })
+    
+    return sub
+  })
+  
+  // Emit event
+  await emitSubscriptionEvent({
+    eventType: 'SUBSCRIPTION_RECOVERED',
+    subscriptionId: subscription.id,
+    tenantId: subscription.tenantId,
+    partnerId: null,
+    modules: subscription.plan.includedModules,
+    billingAmount: Number(subscription.amount),
+    billingCurrency: subscription.currency,
+    billingInterval: subscription.billingInterval,
+    periodStart: subscription.currentPeriodStart,
+    periodEnd: subscription.currentPeriodEnd,
+    metadata: {
+      previousStatus: subscription.status,
+      paymentReference: options?.paymentReference
+    }
+  })
+  
+  return { success: true, subscription: updatedSubscription }
+}
+
+/**
+ * Check if subscription is in grace period
+ */
+export function isInGracePeriod(subscription: {
+  status: string
+  gracePeriodEnd?: Date | null
+}): boolean {
+  if (subscription.status !== 'GRACE_PERIOD') {
+    return false
+  }
+  
+  if (!subscription.gracePeriodEnd) {
+    return false
+  }
+  
+  return new Date() < subscription.gracePeriodEnd
+}
+
+/**
+ * Check if grace period has expired
+ */
+export function isGracePeriodExpired(subscription: {
+  status: string
+  gracePeriodEnd?: Date | null
+}): boolean {
+  if (subscription.status !== 'GRACE_PERIOD') {
+    return false
+  }
+  
+  if (!subscription.gracePeriodEnd) {
+    return true // No end date means expired
+  }
+  
+  return new Date() >= subscription.gracePeriodEnd
+}
+
+/**
+ * Get remaining grace period days
+ */
+export function getRemainingGraceDays(subscription: {
+  gracePeriodEnd?: Date | null
+}): number {
+  if (!subscription.gracePeriodEnd) {
+    return 0
+  }
+  
+  const remaining = subscription.gracePeriodEnd.getTime() - Date.now()
+  return Math.max(0, Math.ceil(remaining / (24 * 60 * 60 * 1000)))
+}
+
+/**
+ * Check subscription access status
+ * Returns whether tenant has access and any limitations
+ */
+export async function checkSubscriptionAccess(tenantId: string): Promise<{
+  hasAccess: boolean
+  status: string
+  isGracePeriod: boolean
+  gracePeriodDaysRemaining: number
+  message?: string
+}> {
+  const subscription = await prisma.subscription.findUnique({
+    where: { tenantId },
+    include: { plan: true }
+  })
+  
+  if (!subscription) {
+    return {
+      hasAccess: false,
+      status: 'NO_SUBSCRIPTION',
+      isGracePeriod: false,
+      gracePeriodDaysRemaining: 0,
+      message: 'No active subscription found'
+    }
+  }
+  
+  switch (subscription.status) {
+    case 'ACTIVE':
+    case 'TRIALING':
+      return {
+        hasAccess: true,
+        status: subscription.status,
+        isGracePeriod: false,
+        gracePeriodDaysRemaining: 0
+      }
+      
+    case 'GRACE_PERIOD':
+      const daysRemaining = getRemainingGraceDays(subscription)
+      if (daysRemaining > 0) {
+        return {
+          hasAccess: true, // Limited access during grace period
+          status: 'GRACE_PERIOD',
+          isGracePeriod: true,
+          gracePeriodDaysRemaining: daysRemaining,
+          message: `Payment failed. ${daysRemaining} days remaining to update payment method.`
+        }
+      } else {
+        return {
+          hasAccess: false,
+          status: 'GRACE_PERIOD_EXPIRED',
+          isGracePeriod: true,
+          gracePeriodDaysRemaining: 0,
+          message: 'Grace period has expired. Please update your payment method.'
+        }
+      }
+      
+    case 'PAST_DUE':
+      return {
+        hasAccess: true, // Still has access, payment retry in progress
+        status: 'PAST_DUE',
+        isGracePeriod: false,
+        gracePeriodDaysRemaining: 0,
+        message: 'Payment failed. We will retry shortly.'
+      }
+      
+    case 'CANCELLED':
+      // Access until period end
+      if (subscription.currentPeriodEnd > new Date()) {
+        return {
+          hasAccess: true,
+          status: 'CANCELLED',
+          isGracePeriod: false,
+          gracePeriodDaysRemaining: 0,
+          message: 'Subscription cancelled. Access until end of billing period.'
+        }
+      } else {
+        return {
+          hasAccess: false,
+          status: 'CANCELLED_EXPIRED',
+          isGracePeriod: false,
+          gracePeriodDaysRemaining: 0,
+          message: 'Subscription has ended.'
+        }
+      }
+      
+    case 'SUSPENDED':
+    case 'EXPIRED':
+      return {
+        hasAccess: false,
+        status: subscription.status,
+        isGracePeriod: false,
+        gracePeriodDaysRemaining: 0,
+        message: 'Subscription is not active. Please renew to continue.'
+      }
+      
+    default:
+      return {
+        hasAccess: false,
+        status: subscription.status,
+        isGracePeriod: false,
+        gracePeriodDaysRemaining: 0
+      }
+  }
+}
