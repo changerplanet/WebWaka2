@@ -580,8 +580,4 @@ export class OrderSplittingEngine {
   }
 }
 
-// ============================================================================
-// EXPORTS
-// ============================================================================
-
-export { OrderSplittingEngine }
+// OrderSplittingEngine is exported inline with its declaration

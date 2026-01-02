@@ -432,11 +432,4 @@ export const DEFAULT_NOTIFICATION_PREFERENCES: Omit<VendorNotificationPreference
   }
 }
 
-// ============================================================================
-// EXPORTS
-// ============================================================================
-
-export {
-  VendorDataAccess,
-  DEFAULT_NOTIFICATION_PREFERENCES
-}
+// VendorDataAccess and DEFAULT_NOTIFICATION_PREFERENCES are exported inline

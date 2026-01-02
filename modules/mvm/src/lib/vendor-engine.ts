@@ -509,12 +509,4 @@ export class VendorTierEngine {
   }
 }
 
-// ============================================================================
-// EXPORTS
-// ============================================================================
-
-export {
-  VendorEngine,
-  ProductMappingEngine,
-  VendorTierEngine
-}
+// All classes are exported inline with their declarations

@@ -292,14 +292,4 @@ export function getMVMConnectivityChecker(): MVMConnectivityChecker {
   return checkerInstance
 }
 
-// ============================================================================
-// EXPORTS
-// ============================================================================
-
-export {
-  OFFLINE_SAFE_ACTIONS,
-  ONLINE_REQUIRED_ACTIONS,
-  OFFLINE_MESSAGES,
-  MVM_CACHE_STRATEGIES,
-  MVMConnectivityChecker
-}
+// All constants and classes are exported inline with their declarations

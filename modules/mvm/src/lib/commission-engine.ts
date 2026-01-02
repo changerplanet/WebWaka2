@@ -473,8 +473,4 @@ export class CommissionEngine {
   }
 }
 
-// ============================================================================
-// EXPORTS
-// ============================================================================
-
-export { CommissionEngine }
+// CommissionEngine is exported inline with its declaration
