@@ -278,18 +278,14 @@ export function POSProvider({ children, tenantId }: POSProviderProps) {
     
     // Fallback to cached products (which includes demo products)
     const cached = loadFromStorage<POSProduct[]>(STORAGE_KEYS.PRODUCTS_CACHE, [])
-    
-    // If cache is empty, use current state products (demo products)
-    const searchIn = cached.length > 0 ? cached : state.products
-    
     const q = query.toLowerCase()
-    return searchIn.filter(p => 
+    return cached.filter(p => 
       p.name.toLowerCase().includes(q) ||
       p.sku?.toLowerCase().includes(q) ||
       p.barcode?.toLowerCase().includes(q) ||
       p.categoryName?.toLowerCase().includes(q)
     ).slice(0, 20)
-  }, [tenantId, state.isOnline, state.locationId, state.products])
+  }, [tenantId, state.isOnline, state.locationId])
 
   const refreshProducts = useCallback(async () => {
     setState(s => ({ ...s, isLoadingProducts: true }))
