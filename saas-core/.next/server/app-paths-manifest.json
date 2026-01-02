@@ -1,1 +1,7 @@
-{}
+{
+  "/api/svm/catalog/route": "app/api/svm/catalog/route.js",
+  "/api/svm/inventory/route": "app/api/svm/inventory/route.js",
+  "/api/svm/customers/route": "app/api/svm/customers/route.js",
+  "/api/svm/shipping/route": "app/api/svm/shipping/route.js",
+  "/api/svm/promotions/route": "app/api/svm/promotions/route.js"
+}
