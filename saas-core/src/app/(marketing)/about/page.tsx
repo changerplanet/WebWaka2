@@ -94,7 +94,7 @@ export default function AboutPage() {
             <p className="text-gray-600 text-lg leading-relaxed mb-6">
               Today, thousands of businesses across Nigeria use eMarketWaka to manage their daily operations. 
               From market traders in Mile 12 to supermarkets in Abuja, from restaurants in Port Harcourt to 
-              phone shops in Kano — we're proud to serve them all.
+              phone shops in Kano — we are proud to serve them all.
             </p>
             <p className="text-gray-900 text-lg leading-relaxed font-semibold">
               Our mission is simple: make it easy for every Nigerian business to grow with technology.
@@ -177,7 +177,7 @@ export default function AboutPage() {
           <p className="text-lg text-gray-600 mb-8">
             Our team is made up of people who've run businesses, worked in markets, and understand 
             the daily challenges Nigerian businesses face. We're not just building software — 
-            we're building tools for our own community.
+            we are building tools for our own community.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link 

@@ -141,7 +141,7 @@ export default function PartnersPage() {
             Choose Your Partner Type
           </h2>
           <p className="text-lg text-gray-600 text-center mb-12 max-w-2xl mx-auto">
-            Whether you want to simply refer businesses or actively sell, there's a partner program for you.
+            Whether you want to simply refer businesses or actively sell, there is a partner program for you.
           </p>
           
           <div className="grid md:grid-cols-3 gap-8">

@@ -42,7 +42,7 @@ const featureCategories = [
       { 
         icon: Package, 
         title: 'Stock Management', 
-        desc: 'Know what you have, what's selling, and when to restock.' 
+        desc: 'Know what you have, what is selling, and when to restock.' 
       },
       { 
         icon: CreditCard, 
@@ -120,7 +120,7 @@ const featureCategories = [
       { 
         icon: BarChart3, 
         title: 'Platform Analytics', 
-        desc: 'See all sales across vendors. Know what's working.' 
+        desc: 'See all sales across vendors. Know what is working.' 
       },
       { 
         icon: Globe, 

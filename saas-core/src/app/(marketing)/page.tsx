@@ -212,7 +212,7 @@ export default function MarketingHomePage() {
               Built for Businesses Like Yours
             </h2>
             <p className="text-lg text-gray-600">
-              From market traders to supermarkets, we've got you covered.
+              From market traders to supermarkets, we have got you covered.
             </p>
           </div>
 
