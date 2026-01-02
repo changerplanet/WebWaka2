@@ -1163,3 +1163,883 @@ model AuditLog {
   @@index([createdAt])
   @@index([targetType, targetId])
 }
+
+// ============================================================================
+// ============================================================================
+// SHARED BUSINESS ENTITIES
+// ============================================================================
+// ============================================================================
+// 
+// These entities are OWNED by SaaS Core and USED by all modules (POS, SVM, MVM).
+// Modules reference these via ID only. Modules do NOT mutate these directly.
+// All mutations happen through Core APIs or Core event handlers.
+//
+// OWNERSHIP:
+// - Product, ProductVariant, ProductCategory: Core owns master catalog
+// - InventoryLevel: Core owns single source of truth
+// - Customer, CustomerAddress: Core owns customer data
+// - StaffMember: Core owns staff/employee data
+// - Supplier: Core owns supplier relationships
+// - Location: Core owns branch/location data
+// - Wallet, WalletTransaction: Core owns financial balances
+// - TaxRule, TaxRate: Core owns tax configuration
+// - PricingRule: Core owns pricing logic
+// - Notification, NotificationPreference: Core owns communication
+// - BusinessProfile: Core owns tenant business details
+//
+// ============================================================================
+
+// ============================================================================
+// BUSINESS PROFILE
+// Extended business details for a tenant
+// ============================================================================
+model BusinessProfile {
+  id                String    @id @default(uuid())
+  tenantId          String    @unique
+  
+  // Business identity
+  legalName         String?   // Legal business name
+  tradingName       String?   // DBA / Trading as
+  taxId             String?   // VAT/GST/EIN number
+  registrationNumber String?  // Company registration
+  
+  // Business type
+  businessType      String?   // SOLE_PROPRIETOR, LLC, CORPORATION, etc.
+  industry          String?   // Industry classification
+  
+  // Contact details
+  email             String?   // Primary business email
+  phone             String?   // Primary phone
+  website           String?
+  
+  // Address
+  addressLine1      String?
+  addressLine2      String?
+  city              String?
+  state             String?
+  postalCode        String?
+  country           String?   @default("US")
+  
+  // Operating details
+  timezone          String    @default("UTC")
+  currency          String    @default("USD")
+  dateFormat        String    @default("YYYY-MM-DD")
+  
+  // Audit
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  
+  // Relations
+  tenant            Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  
+  @@index([tenantId])
+}
+
+// ============================================================================
+// LOCATION / BRANCH
+// Physical or virtual business locations
+// ============================================================================
+enum LocationStatus {
+  ACTIVE
+  INACTIVE
+  CLOSED
+}
+
+model Location {
+  id                String         @id @default(uuid())
+  tenantId          String
+  
+  // Location identity
+  name              String         // "Main Store", "Warehouse #1"
+  code              String?        // Internal code: "LOC-001"
+  type              String         @default("STORE") // STORE, WAREHOUSE, OFFICE, VIRTUAL
+  
+  // Status
+  status            LocationStatus @default(ACTIVE)
+  
+  // Contact
+  email             String?
+  phone             String?
+  
+  // Address
+  addressLine1      String?
+  addressLine2      String?
+  city              String?
+  state             String?
+  postalCode        String?
+  country           String?
+  latitude          Decimal?       @db.Decimal(10, 8)
+  longitude         Decimal?       @db.Decimal(11, 8)
+  
+  // Operating hours (JSON for flexibility)
+  operatingHours    Json?          // { "mon": { "open": "09:00", "close": "17:00" }, ... }
+  
+  // Capabilities
+  isDefaultLocation Boolean        @default(false)
+  allowsPickup      Boolean        @default(false)
+  allowsShipping    Boolean        @default(false)
+  
+  // Audit
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+  
+  // Relations
+  inventoryLevels   InventoryLevel[]
+  staffAssignments  StaffMember[]
+  
+  @@unique([tenantId, code])
+  @@index([tenantId])
+  @@index([status])
+}
+
+// ============================================================================
+// PRODUCT CATEGORY
+// Hierarchical product categorization
+// ============================================================================
+model ProductCategory {
+  id                String            @id @default(uuid())
+  tenantId          String
+  
+  // Category identity
+  name              String
+  slug              String
+  description       String?
+  imageUrl          String?
+  
+  // Hierarchy
+  parentId          String?
+  parent            ProductCategory?  @relation("CategoryHierarchy", fields: [parentId], references: [id], onDelete: SetNull)
+  children          ProductCategory[] @relation("CategoryHierarchy")
+  
+  // Ordering
+  sortOrder         Int               @default(0)
+  
+  // Status
+  isActive          Boolean           @default(true)
+  
+  // Audit
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+  
+  // Relations
+  products          Product[]
+  
+  @@unique([tenantId, slug])
+  @@index([tenantId])
+  @@index([parentId])
+}
+
+// ============================================================================
+// PRODUCT
+// Master product catalog - single source of truth
+// ============================================================================
+enum ProductStatus {
+  DRAFT
+  ACTIVE
+  ARCHIVED
+}
+
+enum ProductType {
+  PHYSICAL          // Tangible goods
+  DIGITAL           // Digital downloads
+  SERVICE           // Services
+  BUNDLE            // Product bundles
+}
+
+model Product {
+  id                String          @id @default(uuid())
+  tenantId          String
+  
+  // Product identity
+  name              String
+  slug              String
+  sku               String?         // Stock keeping unit
+  barcode           String?         // UPC/EAN
+  description       String?         @db.Text
+  shortDescription  String?
+  
+  // Categorization
+  categoryId        String?
+  category          ProductCategory? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  tags              String[]        @default([])
+  
+  // Type
+  type              ProductType     @default(PHYSICAL)
+  
+  // Pricing (base price, variants may override)
+  price             Decimal         @db.Decimal(12, 2)
+  compareAtPrice    Decimal?        @db.Decimal(12, 2) // Original/strikethrough price
+  costPrice         Decimal?        @db.Decimal(12, 2) // Cost for margin calculation
+  
+  // Tax
+  taxable           Boolean         @default(true)
+  taxCategoryId     String?         // Reference to tax category
+  
+  // Physical attributes
+  weight            Decimal?        @db.Decimal(10, 4) // In kg
+  weightUnit        String?         @default("kg")
+  length            Decimal?        @db.Decimal(10, 2)
+  width             Decimal?        @db.Decimal(10, 2)
+  height            Decimal?        @db.Decimal(10, 2)
+  dimensionUnit     String?         @default("cm")
+  
+  // Inventory tracking
+  trackInventory    Boolean         @default(true)
+  allowBackorder    Boolean         @default(false)
+  
+  // Media
+  images            Json?           // [{ url, alt, position }]
+  
+  // SEO
+  metaTitle         String?
+  metaDescription   String?
+  
+  // Status
+  status            ProductStatus   @default(DRAFT)
+  publishedAt       DateTime?
+  
+  // Audit
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+  
+  // Relations
+  variants          ProductVariant[]
+  inventoryLevels   InventoryLevel[]
+  
+  @@unique([tenantId, slug])
+  @@unique([tenantId, sku])
+  @@index([tenantId])
+  @@index([categoryId])
+  @@index([status])
+  @@index([barcode])
+}
+
+// ============================================================================
+// PRODUCT VARIANT
+// Variations of a product (size, color, etc.)
+// ============================================================================
+model ProductVariant {
+  id                String          @id @default(uuid())
+  productId         String
+  product           Product         @relation(fields: [productId], references: [id], onDelete: Cascade)
+  
+  // Variant identity
+  name              String          // "Red / Large"
+  sku               String?
+  barcode           String?
+  
+  // Options (JSON for flexibility)
+  options           Json?           // { "color": "Red", "size": "Large" }
+  
+  // Pricing (overrides product price)
+  price             Decimal?        @db.Decimal(12, 2)
+  compareAtPrice    Decimal?        @db.Decimal(12, 2)
+  costPrice         Decimal?        @db.Decimal(12, 2)
+  
+  // Physical attributes (overrides product)
+  weight            Decimal?        @db.Decimal(10, 4)
+  
+  // Media
+  imageUrl          String?
+  
+  // Status
+  isActive          Boolean         @default(true)
+  
+  // Ordering
+  position          Int             @default(0)
+  
+  // Audit
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+  
+  // Relations
+  inventoryLevels   InventoryLevel[]
+  
+  @@index([productId])
+  @@index([sku])
+  @@index([barcode])
+}
+
+// ============================================================================
+// INVENTORY LEVEL
+// Single source of truth for stock levels per location
+// ============================================================================
+model InventoryLevel {
+  id                String          @id @default(uuid())
+  tenantId          String
+  
+  // Product reference (either product or variant)
+  productId         String
+  product           Product         @relation(fields: [productId], references: [id], onDelete: Cascade)
+  variantId         String?
+  variant           ProductVariant? @relation(fields: [variantId], references: [id], onDelete: Cascade)
+  
+  // Location
+  locationId        String
+  location          Location        @relation(fields: [locationId], references: [id], onDelete: Cascade)
+  
+  // Stock quantities
+  quantityOnHand    Int             @default(0)  // Physical stock
+  quantityReserved  Int             @default(0)  // Reserved for orders
+  quantityAvailable Int             @default(0)  // On hand - reserved (computed)
+  quantityIncoming  Int             @default(0)  // Expected from suppliers
+  
+  // Reorder settings
+  reorderPoint      Int?            // Alert when below this
+  reorderQuantity   Int?            // Suggested reorder amount
+  
+  // Bin/shelf location
+  binLocation       String?
+  
+  // Audit
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+  lastCountedAt     DateTime?       // Last physical count
+  
+  @@unique([productId, variantId, locationId])
+  @@index([tenantId])
+  @@index([productId])
+  @@index([locationId])
+  @@index([quantityAvailable])
+}
+
+// ============================================================================
+// CUSTOMER
+// Unified customer data across all modules
+// ============================================================================
+enum CustomerStatus {
+  ACTIVE
+  INACTIVE
+  BLOCKED
+}
+
+model Customer {
+  id                String          @id @default(uuid())
+  tenantId          String
+  
+  // Identity
+  email             String?
+  phone             String?
+  
+  // Name
+  firstName         String?
+  lastName          String?
+  fullName          String?         // Computed or provided
+  
+  // Company (B2B)
+  company           String?
+  taxId             String?
+  
+  // Default address ID
+  defaultAddressId  String?
+  
+  // Status
+  status            CustomerStatus  @default(ACTIVE)
+  
+  // Marketing
+  acceptsMarketing  Boolean         @default(false)
+  marketingOptInAt  DateTime?
+  
+  // Notes
+  notes             String?         @db.Text
+  tags              String[]        @default([])
+  
+  // Metrics (denormalized for performance)
+  totalOrders       Int             @default(0)
+  totalSpent        Decimal         @default(0) @db.Decimal(12, 2)
+  averageOrderValue Decimal?        @db.Decimal(12, 2)
+  lastOrderAt       DateTime?
+  
+  // Loyalty
+  loyaltyPoints     Int             @default(0)
+  loyaltyTier       String?
+  
+  // Audit
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+  
+  // Relations
+  addresses         CustomerAddress[]
+  wallets           Wallet[]
+  
+  @@unique([tenantId, email])
+  @@index([tenantId])
+  @@index([email])
+  @@index([phone])
+  @@index([status])
+}
+
+// ============================================================================
+// CUSTOMER ADDRESS
+// Customer shipping/billing addresses
+// ============================================================================
+enum AddressType {
+  SHIPPING
+  BILLING
+  BOTH
+}
+
+model CustomerAddress {
+  id                String      @id @default(uuid())
+  customerId        String
+  customer          Customer    @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  
+  // Address type
+  type              AddressType @default(BOTH)
+  
+  // Contact
+  firstName         String?
+  lastName          String?
+  company           String?
+  phone             String?
+  
+  // Address
+  addressLine1      String
+  addressLine2      String?
+  city              String
+  state             String?
+  postalCode        String
+  country           String
+  
+  // Flags
+  isDefault         Boolean     @default(false)
+  
+  // Audit
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
+  
+  @@index([customerId])
+}
+
+// ============================================================================
+// STAFF MEMBER
+// Employees/staff working for the tenant
+// ============================================================================
+enum StaffStatus {
+  ACTIVE
+  INACTIVE
+  TERMINATED
+}
+
+model StaffMember {
+  id                String      @id @default(uuid())
+  tenantId          String
+  
+  // Link to User (optional - staff may not have login)
+  userId            String?     // If staff has system access
+  
+  // Identity
+  email             String
+  firstName         String
+  lastName          String
+  phone             String?
+  
+  // Employment
+  employeeId        String?     // Internal employee number
+  department        String?
+  jobTitle          String?
+  hireDate          DateTime?
+  
+  // Assignment
+  locationId        String?
+  location          Location?   @relation(fields: [locationId], references: [id], onDelete: SetNull)
+  
+  // Status
+  status            StaffStatus @default(ACTIVE)
+  
+  // Permissions (module-specific permissions handled by modules)
+  permissions       String[]    @default([])
+  
+  // PIN for POS login (hashed)
+  pinHash           String?
+  
+  // Audit
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
+  
+  @@unique([tenantId, email])
+  @@unique([tenantId, employeeId])
+  @@index([tenantId])
+  @@index([locationId])
+  @@index([status])
+}
+
+// ============================================================================
+// SUPPLIER
+// Vendors/suppliers for inventory procurement
+// ============================================================================
+enum SupplierStatus {
+  ACTIVE
+  INACTIVE
+}
+
+model Supplier {
+  id                String         @id @default(uuid())
+  tenantId          String
+  
+  // Identity
+  name              String
+  code              String?        // Supplier code
+  
+  // Contact
+  email             String?
+  phone             String?
+  website           String?
+  
+  // Primary contact person
+  contactName       String?
+  contactEmail      String?
+  contactPhone      String?
+  
+  // Address
+  addressLine1      String?
+  addressLine2      String?
+  city              String?
+  state             String?
+  postalCode        String?
+  country           String?
+  
+  // Payment terms
+  paymentTerms      String?        // "NET30", "NET60", etc.
+  currency          String         @default("USD")
+  
+  // Status
+  status            SupplierStatus @default(ACTIVE)
+  
+  // Notes
+  notes             String?        @db.Text
+  
+  // Audit
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+  
+  @@unique([tenantId, code])
+  @@index([tenantId])
+  @@index([status])
+}
+
+// ============================================================================
+// WALLET / BALANCE
+// Customer store credit, gift card balances, loyalty points
+// ============================================================================
+enum WalletType {
+  STORE_CREDIT      // Store credit balance
+  GIFT_CARD         // Gift card
+  LOYALTY_POINTS    // Loyalty points (value conversion needed)
+  PREPAID           // Prepaid balance
+}
+
+enum WalletStatus {
+  ACTIVE
+  FROZEN            // Cannot be used
+  EXPIRED
+}
+
+model Wallet {
+  id                String        @id @default(uuid())
+  tenantId          String
+  
+  // Owner (customer or anonymous for gift cards)
+  customerId        String?
+  customer          Customer?     @relation(fields: [customerId], references: [id], onDelete: SetNull)
+  
+  // Wallet identity
+  type              WalletType
+  code              String?       // Gift card code, etc.
+  
+  // Balance
+  balance           Decimal       @default(0) @db.Decimal(12, 2)
+  currency          String        @default("USD")
+  
+  // For gift cards
+  initialValue      Decimal?      @db.Decimal(12, 2)
+  
+  // Status
+  status            WalletStatus  @default(ACTIVE)
+  
+  // Expiry
+  expiresAt         DateTime?
+  
+  // Audit
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+  
+  // Relations
+  transactions      WalletTransaction[]
+  
+  @@unique([tenantId, code])
+  @@index([tenantId])
+  @@index([customerId])
+  @@index([type])
+  @@index([status])
+}
+
+// ============================================================================
+// WALLET TRANSACTION
+// Immutable ledger of wallet balance changes
+// ============================================================================
+enum WalletTransactionType {
+  CREDIT            // Add to balance
+  DEBIT             // Subtract from balance
+  ADJUSTMENT        // Manual adjustment
+  EXPIRY            // Balance expired
+}
+
+model WalletTransaction {
+  id                String                @id @default(uuid())
+  walletId          String
+  wallet            Wallet                @relation(fields: [walletId], references: [id], onDelete: Cascade)
+  
+  // Transaction details
+  type              WalletTransactionType
+  amount            Decimal               @db.Decimal(12, 2)
+  balanceAfter      Decimal               @db.Decimal(12, 2)
+  
+  // Reference to source (module event)
+  sourceModule      String?               // "POS", "SVM", etc.
+  sourceType        String?               // "SALE", "ORDER", "REFUND"
+  sourceId          String?               // Sale/Order ID
+  
+  // Description
+  description       String?
+  
+  // Idempotency
+  idempotencyKey    String?               @unique
+  
+  // Audit
+  createdAt         DateTime              @default(now())
+  createdBy         String?               // User/System ID
+  
+  @@index([walletId])
+  @@index([sourceModule, sourceId])
+  @@index([createdAt])
+}
+
+// ============================================================================
+// TAX RULE
+// Tax configuration per jurisdiction
+// ============================================================================
+model TaxRule {
+  id                String      @id @default(uuid())
+  tenantId          String
+  
+  // Rule identity
+  name              String      // "US Sales Tax", "UK VAT"
+  code              String?     // Internal code
+  
+  // Jurisdiction
+  country           String
+  state             String?     // State/Province
+  postalCode        String?     // Postal code pattern
+  city              String?
+  
+  // Rate
+  rate              Decimal     @db.Decimal(6, 4) // e.g., 0.0825 for 8.25%
+  isCompound        Boolean     @default(false)  // Apply on top of other taxes
+  
+  // Priority (for compound taxes)
+  priority          Int         @default(0)
+  
+  // Applicability
+  appliesToShipping Boolean     @default(false)
+  
+  // Status
+  isActive          Boolean     @default(true)
+  
+  // Effective dates
+  validFrom         DateTime    @default(now())
+  validUntil        DateTime?
+  
+  // Audit
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
+  
+  // Relations
+  rates             TaxRate[]
+  
+  @@unique([tenantId, code])
+  @@index([tenantId])
+  @@index([country, state])
+  @@index([isActive])
+}
+
+// ============================================================================
+// TAX RATE
+// Product category-specific tax rates
+// ============================================================================
+model TaxRate {
+  id                String    @id @default(uuid())
+  taxRuleId         String
+  taxRule           TaxRule   @relation(fields: [taxRuleId], references: [id], onDelete: Cascade)
+  
+  // Category this rate applies to
+  taxCategoryId     String?   // Product tax category
+  
+  // Override rate (null = use parent rule rate)
+  rate              Decimal?  @db.Decimal(6, 4)
+  
+  // Special handling
+  isExempt          Boolean   @default(false) // Zero rate
+  
+  // Audit
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  
+  @@index([taxRuleId])
+  @@index([taxCategoryId])
+}
+
+// ============================================================================
+// PRICING RULE
+// Dynamic pricing rules (discounts, markups, time-based pricing)
+// ============================================================================
+enum PricingRuleType {
+  PERCENTAGE_DISCOUNT
+  FIXED_DISCOUNT
+  PERCENTAGE_MARKUP
+  FIXED_MARKUP
+  FIXED_PRICE
+}
+
+enum PricingRuleScope {
+  ALL_PRODUCTS
+  CATEGORY
+  PRODUCT
+  VARIANT
+  CUSTOMER_GROUP
+}
+
+model PricingRule {
+  id                String           @id @default(uuid())
+  tenantId          String
+  
+  // Rule identity
+  name              String
+  description       String?
+  
+  // Type and value
+  type              PricingRuleType
+  value             Decimal          @db.Decimal(12, 4) // Percentage or amount
+  
+  // Scope
+  scope             PricingRuleScope @default(ALL_PRODUCTS)
+  scopeIds          String[]         @default([]) // Category/Product/Customer IDs
+  
+  // Conditions
+  minQuantity       Int?             // Minimum quantity for rule to apply
+  minOrderValue     Decimal?         @db.Decimal(12, 2)
+  
+  // Validity
+  startsAt          DateTime?
+  endsAt            DateTime?
+  
+  // Priority (higher = applied first)
+  priority          Int              @default(0)
+  
+  // Status
+  isActive          Boolean          @default(true)
+  
+  // Stacking
+  isStackable       Boolean          @default(false)
+  
+  // Audit
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
+  
+  @@index([tenantId])
+  @@index([scope])
+  @@index([isActive])
+  @@index([startsAt, endsAt])
+}
+
+// ============================================================================
+// NOTIFICATION
+// System notifications to users
+// ============================================================================
+enum NotificationChannel {
+  IN_APP
+  EMAIL
+  SMS
+  PUSH
+}
+
+enum NotificationStatus {
+  PENDING
+  SENT
+  DELIVERED
+  FAILED
+  READ
+}
+
+model Notification {
+  id                String              @id @default(uuid())
+  tenantId          String?             // Null for system-wide notifications
+  
+  // Recipient
+  userId            String?             // Specific user
+  recipientEmail    String?             // Or email for non-users
+  recipientPhone    String?             // For SMS
+  
+  // Channel
+  channel           NotificationChannel
+  
+  // Content
+  title             String?
+  body              String              @db.Text
+  actionUrl         String?             // Click-through URL
+  
+  // Template reference
+  templateId        String?
+  templateData      Json?               // Template variables
+  
+  // Status
+  status            NotificationStatus  @default(PENDING)
+  
+  // Timestamps
+  scheduledAt       DateTime?
+  sentAt            DateTime?
+  deliveredAt       DateTime?
+  readAt            DateTime?
+  failedAt          DateTime?
+  failureReason     String?
+  
+  // Source (what triggered this)
+  sourceModule      String?             // "POS", "SVM", "CORE"
+  sourceEvent       String?             // Event type
+  sourceId          String?             // Entity ID
+  
+  // Audit
+  createdAt         DateTime            @default(now())
+  
+  @@index([tenantId])
+  @@index([userId])
+  @@index([status])
+  @@index([channel])
+  @@index([createdAt])
+}
+
+// ============================================================================
+// NOTIFICATION PREFERENCE
+// User preferences for notification channels
+// ============================================================================
+model NotificationPreference {
+  id                String              @id @default(uuid())
+  userId            String
+  tenantId          String?             // Null = global preference
+  
+  // Category
+  category          String              // "ORDER_UPDATES", "MARKETING", etc.
+  
+  // Channel preferences
+  email             Boolean             @default(true)
+  sms               Boolean             @default(false)
+  push              Boolean             @default(true)
+  inApp             Boolean             @default(true)
+  
+  // Audit
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime            @updatedAt
+  
+  @@unique([userId, tenantId, category])
+  @@index([userId])
+}
