@@ -9,5 +9,6 @@
   "/api/mvm/vendors/[vendorId]/route": "app/api/mvm/vendors/[vendorId]/route.js",
   "/manifest.json/route": "app/manifest.json/route.js",
   "/api/mvm/vendors/[vendorId]/orders/route": "app/api/mvm/vendors/[vendorId]/orders/route.js",
-  "/api/mvm/vendors/[vendorId]/products/route": "app/api/mvm/vendors/[vendorId]/products/route.js"
+  "/api/mvm/vendors/[vendorId]/products/route": "app/api/mvm/vendors/[vendorId]/products/route.js",
+  "/api/mvm/commissions/route": "app/api/mvm/commissions/route.js"
 }
