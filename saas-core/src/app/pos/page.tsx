@@ -179,6 +179,7 @@ function QuickProductCard({ product, onSelect }: QuickProductCardProps) {
       onClick={onSelect}
       disabled={product.trackInventory && !product.isInStock}
       className="bg-white border border-slate-200 rounded-xl p-3 text-left hover:border-indigo-300 hover:shadow-md transition-all disabled:opacity-50 disabled:cursor-not-allowed touch-manipulation"
+      data-testid={`product-card-${product.productId}`}
     >
       {/* Product image placeholder */}
       <div className="aspect-square bg-slate-100 rounded-lg flex items-center justify-center mb-2">
