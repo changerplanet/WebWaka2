@@ -1,0 +1,519 @@
+// MVM Module - Prisma Schema
+// Multi Vendor Marketplace Domain Model
+//
+// OWNERSHIP RULES:
+// - All models owned by MVM module
+// - All tables prefixed with 'mvm_'
+// - References to Core/SVM entities via String IDs only
+// - No duplication of Core or SVM models
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../node_modules/.prisma/mvm-client"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================================================
+// VENDOR TIER
+// ============================================================================
+
+/// Vendor classification tiers for commission and feature access
+model VendorTier {
+  id          String   @id @default(cuid())
+  tenantId    String   // Core tenant reference
+  
+  name        String   // e.g., "Bronze", "Silver", "Gold", "Platinum"
+  code        String   // e.g., "BRONZE", "SILVER", "GOLD", "PLATINUM"
+  description String?
+  
+  // Tier benefits
+  commissionRate    Decimal  @default(15.0) @db.Decimal(5, 2) // Default commission %
+  priorityLevel     Int      @default(0)    // Higher = better visibility
+  featuredSlots     Int      @default(0)    // Homepage featured slots
+  supportLevel      String   @default("STANDARD") // STANDARD, PRIORITY, DEDICATED
+  
+  // Tier requirements
+  minMonthlySales   Decimal? @db.Decimal(12, 2) // Minimum monthly sales to qualify
+  minRating         Decimal? @db.Decimal(3, 2)  // Minimum vendor rating
+  minOrderCount     Int?     // Minimum completed orders
+  
+  // Status
+  isActive    Boolean  @default(true)
+  isDefault   Boolean  @default(false) // Default tier for new vendors
+  
+  // Timestamps
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  // Relations
+  vendors     Vendor[]
+  
+  @@unique([tenantId, code])
+  @@index([tenantId])
+  @@map("mvm_vendor_tiers")
+}
+
+// ============================================================================
+// VENDOR
+// ============================================================================
+
+/// Vendor status enumeration
+enum VendorStatus {
+  PENDING_APPROVAL  // Application submitted
+  APPROVED          // Active and can sell
+  SUSPENDED         // Temporarily disabled
+  REJECTED          // Application rejected
+  CHURNED           // Left the platform
+}
+
+/// Vendor profile - sellers on the marketplace
+/// NOTE: Vendors are NOT tenants. They sell within a tenant's marketplace.
+model Vendor {
+  id          String       @id @default(cuid())
+  tenantId    String       // Core tenant this vendor belongs to
+  
+  // Basic info
+  name        String       // Business/display name
+  slug        String       // URL-friendly identifier
+  email       String       // Primary contact email
+  phone       String?      // Contact phone
+  
+  // Business details
+  legalName       String?  // Legal business name
+  taxId           String?  // Tax identification number
+  businessType    String?  // INDIVIDUAL, LLC, CORPORATION, etc.
+  
+  // Profile
+  description     String?  @db.Text
+  logo            String?  // Logo URL
+  banner          String?  // Banner image URL
+  
+  // Address
+  addressLine1    String?
+  addressLine2    String?
+  city            String?
+  state           String?
+  postalCode      String?
+  country         String?
+  
+  // Bank/Payout info (for display only - no money movement)
+  bankAccountLast4    String?  // Last 4 digits for display
+  payoutMethod        String?  // BANK_TRANSFER, PAYPAL, etc.
+  payoutEmail         String?  // PayPal email if applicable
+  
+  // Status & verification
+  status          VendorStatus @default(PENDING_APPROVAL)
+  isVerified      Boolean      @default(false)
+  verifiedAt      DateTime?
+  
+  // Tier assignment
+  tierId          String?
+  tier            VendorTier?  @relation(fields: [tierId], references: [id])
+  
+  // Performance metrics (denormalized for quick access)
+  totalSales      Decimal      @default(0) @db.Decimal(12, 2)
+  totalOrders     Int          @default(0)
+  averageRating   Decimal?     @db.Decimal(3, 2)
+  reviewCount     Int          @default(0)
+  
+  // Commission override (null = use tier default)
+  commissionOverride  Decimal? @db.Decimal(5, 2)
+  
+  // Onboarding tracking
+  onboardingStep      String   @default("REGISTERED")
+  onboardingCompletedAt DateTime?
+  
+  // Timestamps
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+  approvedAt      DateTime?
+  suspendedAt     DateTime?
+  
+  // Relations
+  staff               VendorStaff[]
+  productMappings     VendorProductMapping[]
+  commissionRules     VendorCommissionRule[]
+  subOrders           VendorSubOrder[]
+  payoutRecords       VendorPayoutRecord[]
+  settings            VendorSettings?
+  
+  @@unique([tenantId, slug])
+  @@unique([tenantId, email])
+  @@index([tenantId, status])
+  @@index([tenantId, tierId])
+  @@map("mvm_vendors")
+}
+
+// ============================================================================
+// VENDOR STAFF
+// ============================================================================
+
+/// Vendor staff role enumeration
+enum VendorStaffRole {
+  OWNER           // Full access, can manage other staff
+  MANAGER         // Can manage orders and products
+  STAFF           // Limited access to orders
+  VIEWER          // Read-only access
+}
+
+/// Vendor team members
+/// NOTE: These are NOT Core users. They are vendor-specific staff.
+model VendorStaff {
+  id          String          @id @default(cuid())
+  vendorId    String
+  vendor      Vendor          @relation(fields: [vendorId], references: [id], onDelete: Cascade)
+  
+  // Identity (can link to Core user if exists)
+  coreUserId  String?         // Optional link to Core user
+  email       String
+  name        String
+  phone       String?
+  
+  // Access
+  role        VendorStaffRole @default(STAFF)
+  permissions String[]        @default([]) // Additional granular permissions
+  
+  // Status
+  isActive    Boolean         @default(true)
+  invitedAt   DateTime?
+  acceptedAt  DateTime?
+  lastLoginAt DateTime?
+  
+  // Timestamps
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+  
+  @@unique([vendorId, email])
+  @@index([vendorId])
+  @@index([coreUserId])
+  @@map("mvm_vendor_staff")
+}
+
+// ============================================================================
+// VENDOR SETTINGS
+// ============================================================================
+
+/// Vendor-specific settings
+model VendorSettings {
+  id          String   @id @default(cuid())
+  vendorId    String   @unique
+  vendor      Vendor   @relation(fields: [vendorId], references: [id], onDelete: Cascade)
+  
+  // Notification preferences
+  emailNotifications      Boolean @default(true)
+  orderNotifications      Boolean @default(true)
+  payoutNotifications     Boolean @default(true)
+  
+  // Display preferences
+  showPhoneOnStorefront   Boolean @default(false)
+  showEmailOnStorefront   Boolean @default(false)
+  
+  // Fulfillment settings
+  defaultProcessingDays   Int     @default(3)
+  autoAcceptOrders        Boolean @default(false)
+  
+  // Payout settings
+  minimumPayoutAmount     Decimal @default(50.00) @db.Decimal(10, 2)
+  payoutFrequency         String  @default("WEEKLY") // DAILY, WEEKLY, BIWEEKLY, MONTHLY
+  
+  // Timestamps
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@map("mvm_vendor_settings")
+}
+
+// ============================================================================
+// VENDOR PRODUCT MAPPING
+// ============================================================================
+
+/// Maps vendors to Core products they are allowed to sell
+/// NOTE: Inventory remains Core-owned. This is just assignment.
+model VendorProductMapping {
+  id          String   @id @default(cuid())
+  vendorId    String
+  vendor      Vendor   @relation(fields: [vendorId], references: [id], onDelete: Cascade)
+  
+  // Core product reference (NOT a relation - Core owns products)
+  productId   String   // Core product ID
+  variantId   String?  // Core variant ID (if specific variant)
+  
+  // Vendor's pricing (within allowed rules)
+  vendorPrice     Decimal? @db.Decimal(10, 2) // Vendor's selling price
+  compareAtPrice  Decimal? @db.Decimal(10, 2) // Original/compare price
+  
+  // Pricing constraints (set by tenant)
+  minPrice        Decimal? @db.Decimal(10, 2) // Minimum allowed price
+  maxPrice        Decimal? @db.Decimal(10, 2) // Maximum allowed price
+  
+  // Stock management (reference to Core inventory)
+  // Vendor doesn't own inventory, but can have allocation
+  allocatedStock  Int?     // Stock allocated to this vendor
+  
+  // Commission override for this product
+  commissionOverride  Decimal? @db.Decimal(5, 2)
+  
+  // Status
+  isActive    Boolean  @default(true)
+  isFeatured  Boolean  @default(false)
+  
+  // Timestamps
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@unique([vendorId, productId, variantId])
+  @@index([vendorId])
+  @@index([productId])
+  @@map("mvm_vendor_product_mappings")
+}
+
+// ============================================================================
+// VENDOR COMMISSION RULES
+// ============================================================================
+
+/// Commission rule type enumeration
+enum CommissionRuleType {
+  GLOBAL          // Applies to all vendor sales
+  CATEGORY        // Applies to specific category
+  PRODUCT         // Applies to specific product
+  VENDOR_TIER     // Applies to vendors in specific tier
+  PROMOTIONAL     // Time-limited promotional rate
+}
+
+/// Commission calculation method
+enum CommissionCalculation {
+  PERCENTAGE      // % of sale price
+  FIXED           // Fixed amount per item
+  TIERED          // Tiered based on volume
+}
+
+/// Vendor commission configuration
+model VendorCommissionRule {
+  id          String                @id @default(cuid())
+  tenantId    String                // Tenant-wide rule
+  vendorId    String?               // Vendor-specific rule (null = tenant default)
+  vendor      Vendor?               @relation(fields: [vendorId], references: [id], onDelete: Cascade)
+  
+  // Rule definition
+  name        String
+  description String?
+  ruleType    CommissionRuleType    @default(GLOBAL)
+  calculation CommissionCalculation @default(PERCENTAGE)
+  
+  // Rate
+  rate        Decimal               @db.Decimal(10, 4) // Commission rate/amount
+  
+  // Applicability filters
+  categoryId      String?   // Core category ID (for CATEGORY type)
+  productId       String?   // Core product ID (for PRODUCT type)
+  vendorTierId    String?   // Vendor tier ID (for VENDOR_TIER type)
+  
+  // Tiered rates (for TIERED calculation)
+  tierRates   Json?     // [{ min: 0, max: 1000, rate: 15 }, { min: 1000, max: null, rate: 10 }]
+  
+  // Time constraints (for PROMOTIONAL type)
+  startsAt    DateTime?
+  endsAt      DateTime?
+  
+  // Priority (higher = applies first)
+  priority    Int       @default(0)
+  
+  // Status
+  isActive    Boolean   @default(true)
+  
+  // Timestamps
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  
+  @@index([tenantId])
+  @@index([vendorId])
+  @@index([ruleType])
+  @@map("mvm_vendor_commission_rules")
+}
+
+// ============================================================================
+// VENDOR SUB-ORDER
+// ============================================================================
+
+/// Vendor sub-order status
+enum VendorSubOrderStatus {
+  PENDING         // Awaiting vendor action
+  ACCEPTED        // Vendor accepted
+  PROCESSING      // Being prepared
+  READY_TO_SHIP   // Packed and ready
+  SHIPPED         // Handed to carrier
+  DELIVERED       // Confirmed delivery
+  CANCELLED       // Cancelled
+  REFUNDED        // Refunded
+}
+
+/// Vendor sub-order - split from parent SVM order
+/// Links to parent order in SVM module via orderId
+model VendorSubOrder {
+  id              String              @id @default(cuid())
+  tenantId        String
+  vendorId        String
+  vendor          Vendor              @relation(fields: [vendorId], references: [id])
+  
+  // Parent order reference (SVM OnlineOrder)
+  parentOrderId   String              // SVM order ID
+  parentOrderNumber String            // For display
+  
+  // Sub-order number
+  subOrderNumber  String              // e.g., "ORD-001-V1"
+  
+  // Status
+  status          VendorSubOrderStatus @default(PENDING)
+  
+  // Financials (calculated at split time)
+  subtotal        Decimal             @db.Decimal(12, 2)
+  shippingTotal   Decimal             @default(0) @db.Decimal(12, 2)
+  taxTotal        Decimal             @default(0) @db.Decimal(12, 2)
+  discountTotal   Decimal             @default(0) @db.Decimal(12, 2)
+  grandTotal      Decimal             @db.Decimal(12, 2)
+  
+  // Commission (calculated, not captured)
+  commissionRate      Decimal         @db.Decimal(5, 2)
+  commissionAmount    Decimal         @db.Decimal(12, 2)
+  vendorEarnings      Decimal         @db.Decimal(12, 2) // grandTotal - commissionAmount
+  
+  // Fulfillment
+  shippingMethod      String?
+  trackingNumber      String?
+  trackingUrl         String?
+  shippedAt           DateTime?
+  deliveredAt         DateTime?
+  
+  // Customer info (copied from parent for vendor reference)
+  customerName        String?
+  shippingAddress     Json?           // Full shipping address
+  
+  // Notes
+  vendorNotes         String?         @db.Text
+  internalNotes       String?         @db.Text
+  
+  // Timestamps
+  createdAt       DateTime            @default(now())
+  updatedAt       DateTime            @updatedAt
+  acceptedAt      DateTime?
+  
+  // Relations
+  items           VendorSubOrderItem[]
+  payoutRecord    VendorPayoutRecord?
+  
+  @@unique([tenantId, subOrderNumber])
+  @@index([tenantId, vendorId])
+  @@index([parentOrderId])
+  @@index([status])
+  @@map("mvm_vendor_sub_orders")
+}
+
+/// Vendor sub-order line item
+model VendorSubOrderItem {
+  id              String          @id @default(cuid())
+  subOrderId      String
+  subOrder        VendorSubOrder  @relation(fields: [subOrderId], references: [id], onDelete: Cascade)
+  
+  // Product reference (Core)
+  productId       String
+  variantId       String?
+  sku             String?
+  
+  // Product snapshot
+  productName     String
+  variantName     String?
+  imageUrl        String?
+  
+  // Quantity & pricing
+  quantity        Int
+  unitPrice       Decimal         @db.Decimal(10, 2)
+  lineTotal       Decimal         @db.Decimal(12, 2)
+  
+  // Discount applied to this item
+  discountAmount  Decimal         @default(0) @db.Decimal(10, 2)
+  
+  // Commission for this item
+  commissionRate  Decimal         @db.Decimal(5, 2)
+  commissionAmount Decimal        @db.Decimal(10, 2)
+  
+  // Fulfillment
+  fulfilledQuantity   Int         @default(0)
+  
+  // Timestamps
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+  
+  @@index([subOrderId])
+  @@index([productId])
+  @@map("mvm_vendor_sub_order_items")
+}
+
+// ============================================================================
+// VENDOR PAYOUT RECORD
+// ============================================================================
+
+/// Payout status enumeration
+enum PayoutStatus {
+  PENDING         // Earnings accrued, not yet scheduled
+  SCHEDULED       // Scheduled for payout
+  PROCESSING      // Being processed
+  COMPLETED       // Payout completed (external system)
+  FAILED          // Payout failed
+  CANCELLED       // Cancelled
+}
+
+/// Vendor payout tracking
+/// NOTE: This module does NOT move money. It only tracks payout records.
+/// Actual money movement happens in Core/external payment system.
+model VendorPayoutRecord {
+  id              String        @id @default(cuid())
+  tenantId        String
+  vendorId        String
+  
+  // Optional link to specific sub-order
+  subOrderId      String?       @unique
+  subOrder        VendorSubOrder? @relation(fields: [subOrderId], references: [id])
+  
+  // Payout reference
+  payoutReference String?       // External payout system reference
+  
+  // Amounts
+  grossAmount     Decimal       @db.Decimal(12, 2) // Total before commission
+  commissionAmount Decimal      @db.Decimal(12, 2) // Commission deducted
+  netAmount       Decimal       @db.Decimal(12, 2) // Amount to vendor
+  
+  // Currency
+  currency        String        @default("USD")
+  
+  // Status
+  status          PayoutStatus  @default(PENDING)
+  
+  // Period (for aggregated payouts)
+  periodStart     DateTime?
+  periodEnd       DateTime?
+  
+  // Processing dates
+  scheduledAt     DateTime?
+  processedAt     DateTime?
+  completedAt     DateTime?
+  failedAt        DateTime?
+  
+  // Failure info
+  failureReason   String?
+  
+  // Notes
+  notes           String?       @db.Text
+  
+  // Timestamps
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  
+  @@index([tenantId, vendorId])
+  @@index([vendorId, status])
+  @@index([status])
+  @@map("mvm_vendor_payout_records")
+}
