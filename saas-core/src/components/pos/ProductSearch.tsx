@@ -15,7 +15,7 @@ export function ProductSearch({ onSelect }: ProductSearchProps) {
   const [isLoading, setIsLoading] = useState(false)
   const [showResults, setShowResults] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
-  const searchTimeout = useRef<NodeJS.Timeout>()
+  const searchTimeout = useRef<NodeJS.Timeout | null>(null)
 
   // Debounced search
   useEffect(() => {
