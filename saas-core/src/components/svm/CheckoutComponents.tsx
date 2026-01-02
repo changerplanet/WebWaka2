@@ -614,4 +614,4 @@ export function CheckoutPage({ onBack, onComplete }: CheckoutPageProps) {
   )
 }
 
-export { CheckoutPage }
+// Note: CheckoutPage exported inline with 'export function'

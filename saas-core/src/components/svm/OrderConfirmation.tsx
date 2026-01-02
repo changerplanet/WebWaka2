@@ -248,4 +248,4 @@ export function OrderConfirmation({ onContinueShopping }: OrderConfirmationProps
   )
 }
 
-export { OrderConfirmation }
+// Note: OrderConfirmation exported inline with 'export function'
