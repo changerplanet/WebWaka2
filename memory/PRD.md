@@ -92,6 +92,32 @@ Integrated POS, SVM, and MVM modules to consume Core shared entities as the sing
 
 ---
 
+## P2: MVM Module Mounting ✅ (Jan 2026)
+
+### Routes Mounted (13 total):
+- `/api/mvm/catalog` - Product catalog (Core)
+- `/api/mvm/inventory` - Inventory checks (Core)
+- `/api/mvm/customers` - Customer lookup (Core)
+- `/api/mvm/entitlements` - Entitlement checks
+- `/api/mvm/events` - Event processing
+- `/api/mvm/vendors` - Vendor CRUD
+- `/api/mvm/vendors/:vendorId` - Individual vendor ops
+- `/api/mvm/vendors/:vendorId/products` - Product mappings
+- `/api/mvm/vendors/:vendorId/orders` - Vendor sub-orders
+- `/api/mvm/vendors/:vendorId/dashboard` - Vendor dashboard
+- `/api/mvm/orders` - Multi-vendor orders
+- `/api/mvm/orders/:orderId` - Individual order ops
+- `/api/mvm/commissions` - Commission queries
+
+### Verification:
+- [x] All MVM APIs reachable via saas-core
+- [x] Tenant isolation enforced
+- [x] No business logic changes
+- [x] No new schemas or services
+- [x] Commission = calculation only (no wallet/payout)
+
+---
+
 ## Implementation Status: COMPLETE ✅
 
 ### Core Infrastructure ✅
