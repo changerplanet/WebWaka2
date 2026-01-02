@@ -851,9 +851,14 @@ CANCELLED  CANCELLED CANCELLED/REFUNDED  REFUNDED   REFUNDED
 
 ## Backlog / Future Work
 
-### Phase C - Production Readiness (In Progress)
-- **Step C2: Performance & Load Testing** — POS concurrency, marketplace traffic, event throughput
-- **Step C3: Security & Observability** — Auth hardening, rate limiting, audit logs, metrics
+### Production Enhancements (P1)
+- **Redis Integration** — Replace in-memory rate limiter with Redis for distributed deployments
+- **Auth Provider** — Integrate NextAuth or similar for JWT validation
+- **APM Integration** — Add DataDog, New Relic for production monitoring
+- **Log Aggregation** — Ship audit logs to CloudWatch, ELK
+
+### Phase B - Remaining (P2)
+- **Step B3: Vendor Payouts** — Admin-triggered payout logic for MVM
 
 ### P1 - Core Entities
 - ~~Add `Product`, `Customer`, `InventoryLevel` models to SaaS Core schema~~ ✅ DONE (Step 1 Remediation)
