@@ -423,8 +423,8 @@ CANCELLED  CANCELLED CANCELLED/REFUNDED  REFUNDED   REFUNDED
 | Product Catalog | MOCKED | Returns empty (Core not integrated) |
 | Cart Storage | MOCKED | In-memory Map (globalThis) |
 | Order Storage | MOCKED | Not persisted to DB |
-| Shipping Zones | MOCKED | In-memory globalThis storage |
-| **Promotions** | **MOCKED** | **In-memory globalThis storage** |
+| ~~Shipping Zones~~ | **PERSISTED** | **Now uses database (SvmShippingZone)** |
+| ~~Promotions~~ | **PERSISTED** | **Now uses database (SvmPromotion)** |
 | Inventory Reservation | MOCKED | TODO in event handlers |
 | Payment Processing | MOCKED | TODO in event handlers |
 | Email Notifications | MOCKED | TODO in event handlers |
