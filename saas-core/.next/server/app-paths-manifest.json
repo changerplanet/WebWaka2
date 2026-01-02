@@ -1,10 +1,8 @@
 {
   "/pos/page": "app/pos/page.js",
-  "/api/pos/locations/route": "app/api/pos/locations/route.js",
-  "/login/page": "app/login/page.js",
-  "/offline/page": "app/offline/page.js",
   "/page": "app/page.js",
+  "/api/tenants/route": "app/api/tenants/route.js",
   "/manifest.json/route": "app/manifest.json/route.js",
-  "/api/pos/inventory/route": "app/api/pos/inventory/route.js",
-  "/api/pos/products/route": "app/api/pos/products/route.js"
+  "/login/page": "app/login/page.js",
+  "/offline/page": "app/offline/page.js"
 }
