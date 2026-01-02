@@ -60,10 +60,10 @@ export async function POST(request: NextRequest) {
         freeAbove: rate.freeAbove,
         minDays: rate.minDays,
         maxDays: rate.maxDays,
-        allowedProductIds: rate.allowedProductIds,
-        excludedProductIds: rate.excludedProductIds,
-        allowedCategoryIds: rate.allowedCategoryIds,
-        excludedCategoryIds: rate.excludedCategoryIds,
+        allowedProductIds: rate.allowedProductIds || [],
+        excludedProductIds: rate.excludedProductIds || [],
+        allowedCategoryIds: rate.allowedCategoryIds || [],
+        excludedCategoryIds: rate.excludedCategoryIds || [],
         isActive: rate.isActive !== false,
         priority: index
       })),
@@ -71,7 +71,7 @@ export async function POST(request: NextRequest) {
       updatedAt: new Date().toISOString()
     }
     
-    addZone(newZone)
+    await addZone(newZone)
     
     return NextResponse.json({
       success: true,
