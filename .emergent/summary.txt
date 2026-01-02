@@ -1,66 +1,62 @@
-<analysis>**original_problem_statement**: The user wants to build a production-grade, reusable SaaS Core with a Next.js App Router, PostgreSQL (with Prisma ORM), and a Node.js backend. The core application is being extended with independently subscribable modules.
+<analysis>**original_problem_statement**: The user wants to build a production-grade, reusable SaaS Core with a Next.js App Router and PostgreSQL (with Prisma ORM). The core application is being extended with independently subscribable modules.
 
-The agent has completed the first module, **POS (Point of Sale & Business Management)**, and has now started building the second module: **SVM (Single Vendor Marketplace)**.
+The first module, **POS (Point of Sale & Business Management)**, is complete. Development is currently focused on the second module: **SVM (Single Vendor Marketplace)**.
 
-This SVM module must be architecturally isolated from the SaaS Core. It will rely on the Core for shared entities like , , and , interacting with them via read-only references and an event-driven pattern. The SVM module will own its specific domains, such as storefront UI, online ordering, shipping, and promotions.
+The SVM module must be architecturally isolated from the SaaS Core. It relies on the Core for shared entities like  and  through read-only references and an event-driven pattern. The SVM module owns its specific domains, such as storefront UI, online ordering, shipping, and promotions. The user provides step-by-step prompts for each phase of development.
 
 **User's preferred language**: English
 
 **what currently exists?**
-- A feature-complete, production-grade **SaaS Core** application located in .
-- A completed, tested, and versioned **POS (Point of Sale) module** () located in . This module has been integrated into the SaaS Core, with event handlers and API routes mounted.
-- A new **SVM (Single Vendor Marketplace) module** located in . The foundational scaffolding for this module has been created, including the Prisma schema, package configurations, and the initial business logic for catalog consumption and the order lifecycle.
+- A feature-complete, production-grade **SaaS Core** application in .
+- A completed and tested **POS module ()** in , fully integrated into the SaaS Core.
+- A new **SVM (Single Vendor Marketplace) module** in . The backend logic and APIs for several phases are complete:
+  - **Phase 1 & 2 (Domain Model, Catalog Consumption):** Foundational logic and schemas are in place.
+  - **Phase 3 (Order Lifecycle):** Backend APIs for creating and managing orders are implemented and tested.
+  - **Phase 4 (Shipping):** The shipping calculation engine and zone management APIs are implemented. **Crucially, this uses a temporary in-memory mock for data storage () instead of the database.**
+  - **Phase 5 (Promotions):** The promotions engine and validation APIs are implemented, also using a temporary in-memory mock.
+  - **Phase 6 (Offline/PWA):** Scaffolding files (service worker, manifest, offline utilities) have been created but are not yet integrated into a frontend.
 
 **Last working item**:
-- **Last item agent was working**: Implementing the Online Order Lifecycle for the SVM module (**MODULE 2 · PHASE 3**). The agent created the state machine logic in  and the corresponding documentation.
-- **Status**: IN PROGRESS
-- **Agent Testing Done**: N
-- **Which testing method agent to use?**: backend testing agent. Testing will be required once the SVM module's APIs are created to expose the order engine functionality.
+- **Last item agent was working**: Completing **MODULE 2 · PHASE 6 — OFFLINE & PWA BEHAVIOR**. The agent created the foundational files for making the SVM module a Progressive Web App (PWA) with offline capabilities. This included , , , and a UI component placeholder ().
+- **Status**: USER VERIFICATION PENDING (The files have been created as requested by the user's prompt, but no functional integration or testing has been performed as there is no UI yet).
+- **Agent Testing Done**: N (Only a TypeScript check was performed).
+- **Which testing method agent to use?**: Frontend testing agent. This will be required to test the service worker, manifest, and offline UI behavior once the SVM storefront UI is built.
 - **User Testing Done**: N
 
 **All Pending/In progress Issue list**:
-- There are no outstanding bugs. All pending work is related to feature implementation.
+- There are no outstanding bugs. All pending work is related to feature implementation and refactoring.
 
 **In progress Task List**:
-- **Task 1: Complete SVM Order Engine Implementation (P0)**
-  - **Where to resume**: The  file has been created. The next step is to update the module's main index file () to export the new order engine components, and then run a TypeScript check to ensure there are no compilation errors.
-  - **What will be achieved with this?**: The business logic for managing the lifecycle of an online order will be complete and integrated into the SVM module's library.
-  - **Status**: IN PROGRESS
-  - **Should Test frontend/backend/both after fix?**: backend (once APIs are built)
-  - **Blocked on something**: None
+- There are no tasks currently in progress. The agent just completed Phase 6 and is awaiting the user's prompt for the next phase.
 
 **Upcoming and Future Tasks**
+
 - **Upcoming Tasks:**
-  - **P0: Implement SVM Backend Logic**: Continue with the SVM module phases, including shipping, promotions, reviews, and SEO.
-  - **P0: Build SVM API Routes**: Create the Next.js API routes within the SVM module to expose its functionality (e.g., creating orders, fetching products).
-  - **P1: Build SVM Storefront UI (PWA)**: Build the frontend for the Single Vendor Marketplace.
+  - **P0: Refactor Shipping & Promotions to Use Database**: The current implementation for shipping zones and promotions uses a temporary, in-memory mock (). This must be refactored to use the existing Prisma models (, , etc.) in  to persist data in the PostgreSQL database.
+  - **P0: Implement SVM Reviews & Ratings (Phase 7)**: Based on the updated PRD, this is the next backend feature.
+  - **P0: Implement SVM SEO & Metatags (Phase 8)**.
+  - **P1: Build SVM Storefront UI (PWA) (Phase 9)**: Build the frontend for the Single Vendor Marketplace, which will consume all the backend APIs and integrate the PWA/offline features.
 - **Future Tasks:**
-  - **P2: Implement Core Schema Entities**: Add the shared entities (, , , ) to the  Prisma schema. This was noted as a discrepancy from the initial handoff.
+  - **P2: Implement Core Schema Entities**: Add the shared entities (, , , ) to the  Prisma schema.
   - **P2: Production Email Sending**: Guide the user to verify their Resend domain in the SaaS Core.
   - **P3: Additional Modules**: Implement other planned modules like MVM (Multi-sided Vertical Marketplace).
 
 **Completed work in this session**
-- **POS Backend API Implementation (Phases 1-5 DONE)**: Identified that the library logic was complete and implemented all missing API routes for the POS module, including fixing all related TypeScript errors.
-- **POS Full Module Testing (DONE)**: Used the testing agent to run 24 backend tests, achieving 100% pass rate.
-- **POS Schema Audit (DONE)**: Verified that the POS module schema correctly isolates its data and references Core entities via string IDs only.
-- **POS UI/UX, Events, Entitlements, Freeze (Phases 6-9 DONE)**: Implemented the frontend scaffolding, event definitions, entitlement checks, and module validation for the POS module.
-- **POS Full Module Validation (DONE)**: Used the testing agent to run 56 comprehensive tests covering the entire module, freezing it at .
-- **POS Core Integration (DONE)**: Integrated the POS module into the SaaS Core by creating event handlers, mounting API routes, and creating a database migration script. Tested the integration points.
-- **SVM Domain Model (Phase 1 DONE)**: Created the directory structure, Prisma schema, and documentation for the new SVM module.
-- **SVM Catalog Consumption (Phase 2 DONE)**: Defined and implemented the logic for how the SVM module will read product and inventory data from the SaaS Core.
-- **SVM Order Lifecycle (Phase 3 IN PROGRESS)**: Created the initial files for the order state machine.
+- **SVM Order Lifecycle (Phase 3 DONE)**: Implemented and tested backend APIs for orders, products, and cart management, including mounting them in the  via proxy routes. Passed 54/54 tests from the testing agent.
+- **SVM Shipping & Delivery Rules (Phase 4 DONE)**: Implemented a shipping calculation engine and APIs. Fixed a critical state-sharing bug in Next.js dev mode by using a  in-memory mock as a temporary workaround.
+- **SVM Promotions & Discounts (Phase 5 DONE)**: Implemented a promotions engine with validation and CRUD APIs, using the same in-memory mock pattern.
+- **SVM Offline & PWA Behavior (Phase 6 DONE)**: Created all necessary scaffolding files (, , utility functions, and a React component) for offline functionality.
+- **Documentation & PRD Maintenance**: Created API and feature documentation for each completed SVM phase and consistently updated .
 
 **Earlier issues found/mentioned but not fixed**
 - **Issue 1: Shared Entities Missing in SaaS Core Schema**
-  - The handoff summary stated that shared entities (, , , ) were added to , but an audit revealed they are not present.
-  - **Why to solve this issue and what will be achieved with this?**: While not a blocker for module development (which correctly uses string IDs), the SaaS Core will eventually need to implement these models to provide the master data for the modules to consume. This is a foundational part of the architecture.
+  - The  file is still missing the foundational , , and  models.
+  - **Why to solve this issue and what will be achieved with this?**: This is not an immediate blocker for module development (which uses string IDs), but it's a core architectural debt. The SaaS Core needs to own this master data for the modules to consume.
   - **Should Test frontend/backend/both after fix**: backend
-  - **Is recurring issue?**: N
+  - **Is recurring issue?**: Y
 
 **Known issue recurrence from previous fork**
-- **Issue recurrence in previous fork**: N/A
-- **Recurrence count**: 0
-- **Status**: N/A
+- N/A
 
 **Code Architecture**
 
@@ -68,37 +64,39 @@ This SVM module must be architecturally isolated from the SaaS Core. It will rel
 **Key Technical Concepts**
 - **Framework**: Next.js 14 (App Router)
 - **Database**: PostgreSQL with Prisma ORM.
-- **Architecture**: Modular Monolith. A central **SaaS Core** provides shared services, and independent **Modules** (POS, SVM) build on top of it.
-- **Data Isolation**: Modules have their own isolated Prisma schemas and only reference Core entities via string IDs, with no direct database relations ().
+- **Architecture**: Modular Monolith.
+- **API Route Mounting**: The  app acts as a gateway, proxying requests to the module-specific APIs in .
+- **Mock Data Storage for Dev Mode**: A  singleton is used to create an in-memory store (, ) to work around Next.js dev mode state-sharing issues. This is a temporary mock.
 
 **key DB schema**
-- ****: Contains , , , . Still needs , , .
-- ****: Contains POS-specific models: , , , etc.
-- ****: Contains SVM-specific models: , , , , , .
+- ****: Contains , . Still needs , .
+- ****: Contains SVM models like . **Importantly, it also contains  and  models that are currently NOT being used by the application logic.**
 
 **changes in tech stack**
-None.
+-  was added as a dependency to the  project.
 
 **All files of reference**
-- : Isolated schema for the SVM module.
-- : **(Current focus)** Logic for the online order state machine.
-- : Logic for reading product data from the Core.
-- : Logic for reading inventory data from the Core.
-- : Main export file for the SVM library.
-- : Example of how a module is integrated into the Core.
-- : Core schema that is missing the shared entities.
+- **Key Logic**:  (shipping-engine.ts, promotions-engine.ts, offline-behavior.ts)
+- **Mock Storage**:  (shipping-storage.ts, promotions-storage.ts)
+- **New APIs**: , 
+- **PWA Files**:  (sw.js, manifest.json)
+- **Documentation**:  (SVM_API_REFERENCE.md, SVM_SHIPPING.md, etc.)
+
+**Areas that need refactoring**
+- The in-memory storage for Shipping and Promotions ( and ) is a development mock. This is the highest priority refactoring task. The logic in the API routes must be updated to use Prisma to interact with the existing  and  models in the SVM module's database schema.
 
 **key api endpoints**
-- : (POST) Core endpoint to receive events from the POS module.
-- : (GET) Core endpoint for the POS module to check tenant entitlements.
-*No SVM API endpoints exist yet.*
+-  (POST, GET)
+-  (GET, POST, DELETE)
+-  (POST calculation, GET/POST zones)
+-  (GET/POST promotions, POST validation)
+-  (POST)
+-  (GET)
 
 **Critical Info for New Agent**
-- You are building the **SVM (Single Vendor Marketplace)** module. The POS module is complete and serves as a reference.
-- All new code for this feature must go inside .
-- Strict adherence to the modular architecture is critical. The SVM module must **not** write directly to Core-owned data. It must consume data via read-only patterns and emit events to request changes (e.g.,  to trigger inventory deduction).
-- **Discrepancy Note**: The  schema is missing the , , and  models that were expected to be there. This does not block you, as the module correctly uses un-related string IDs, but be aware that the Core side of that integration is not yet built.
-- Your immediate next step is to complete the in-progress task: update  to export the new  contents and run a TypeScript check.
+- You are continuing work on the **SVM module**. The user provides prompts for each development phase. Await the user's prompt for **Phase 7**.
+- **HIGH PRIORITY REFACTOR**: The Shipping and Promotions features are currently using a **temporary in-memory mock** for data persistence. Your first task, before or during the implementation of the next feature, should be to refactor the API routes in  to use the **PostgreSQL database via Prisma**. The necessary models (, , etc.) already exist in .
+- The Offline/PWA implementation (Phase 6) is just scaffolding. It needs to be integrated into a real frontend to be functional.
 
 **documents and test reports created in this job**
 - 
@@ -107,40 +105,28 @@ None.
 - 
 - 
 - 
-- [0;32m=======================================[0m
-[0;32m  POS Database Migration Script[0m
-[0;32m=======================================[0m
-[1;33mCreating .env file...[0m
-[0;31mERROR: Please configure DATABASE_URL in /app/modules/pos/.env[0m
-- 
-- 
-- 
--  (POS Backend Test)
--  (POS Full Module Validation)
--  (Updated with POS completion and SVM progress)
+-  (Continuously updated)
 
 **Last 10 User Messages and any pending HUMAN messages**
-1.  **User**: Confirmed plan to integrate the completed POS module into the SaaS Core.
-2.  **User**: Provided the first prompt for  (SVM), Phase 1: Domain Model.
-3.  **User**: Provided prompt for SVM Phase 2: Catalog Consumption.
-4.  **User**: Provided prompt for SVM Phase 3: Online Order Lifecycle.
+1. **User**: Provided prompt for . (Completed)
+2. **User**: Provided prompt for . (Completed)
+3. **User**: Provided prompt for . (Completed)
+4. **User**: 1. Proceed with the P0 items 2. I shall post the phase by phase step by step prompts that should be followed (Acknowledged)
 
 **Project Health Check:**
-- **Working**: The  application and the  module are stable and tested.
+- **Working**: The  application and the  module are stable.
 - **Broken**: Nothing is broken.
-- **In Development**: The  module is under active development. The backend business logic is partially implemented but not yet exposed via APIs or connected to a UI.
+- **Mocked**: The backend for Shipping Zones and Promotions is mocked using an in-memory store. This is functional for development but not production-ready and needs to be refactored to use the database.
 
 **3rd Party Integrations**
 - **Supabase (PostgreSQL)** — requires User API Key.
 - **Prisma ORM** — configured in the project.
-- **Resend (Email)** — requires User API Key (currently using dev-mode UI mock in SaaS Core).
+- **Resend (Email)** — requires User API Key (dev-mode mock).
 
 **Testing status**
-- **Testing agent used after significant changes**: YES. The agent was used successfully to validate the POS backend and the complete POS module freeze.
+- **Testing agent used after significant changes**: YES, for the Order Lifecycle APIs (Phase 3). It found a bug in the Shipping APIs (Phase 4), which was then fixed and manually tested.
 - **Troubleshoot agent used after agent stuck in loop**: NO
-- **Test files created**:
-  - 
-  - 
+- **Test files created**: , 
 - **Known regressions**: None.
 
 **Credentials to test flow:**
@@ -148,4 +134,5 @@ None.
 - **Tenant Admin**: Login with . Magic link appears in UI.
 
 **What agent forgot to execute**
-The agent has followed all user prompts sequentially and correctly. No tasks were forgotten.</analysis>
+- The agent correctly identified the need for a mock storage solution for development but failed to create an explicit follow-up task to **refactor it to a persistent database solution**. This is the most critical pending action.
+- After the testing agent found a bug in the shipping module, the agent fixed it but only performed manual  tests instead of re-running the full test suite with the testing agent to ensure the fix was comprehensive and introduced no regressions.</analysis>
