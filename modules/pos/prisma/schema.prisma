@@ -126,6 +126,7 @@ model POSRegister {
   
   @@unique([tenantId, code])
   @@index([tenantId])
+  @@map("pos_registers")
 }
 
 // Register session (cash drawer open/close)
@@ -164,6 +165,7 @@ model RegisterSession {
   @@index([registerId])
   @@index([staffId])
   @@index([openedAt])
+  @@map("pos_register_sessions")
 }
 
 // Staff shift tracking
@@ -198,6 +200,7 @@ model Shift {
   @@index([tenantId])
   @@index([staffId])
   @@index([startedAt])
+  @@map("pos_shifts")
 }
 
 // ============================================================================
@@ -272,6 +275,7 @@ model Sale {
   @@index([status])
   @@index([createdAt])
   @@index([offlineId])
+  @@map("pos_sales")
 }
 
 // ============================================================================
@@ -328,6 +332,7 @@ model SaleLineItem {
   
   @@index([saleId])
   @@index([productId])
+  @@map("pos_sale_line_items")
 }
 
 // ============================================================================
@@ -370,6 +375,7 @@ model SaleDiscount {
   
   @@index([saleId])
   @@index([lineItemId])
+  @@map("pos_sale_discounts")
 }
 
 // ============================================================================
@@ -424,6 +430,7 @@ model POSPayment {
   @@index([saleId])
   @@index([status])
   @@index([corePaymentId])
+  @@map("pos_payments")
 }
 
 // ============================================================================
@@ -475,6 +482,7 @@ model Refund {
   @@unique([tenantId, refundNumber])
   @@index([tenantId])
   @@index([originalSaleId])
+  @@map("pos_refunds")
 }
 
 model RefundItem {
@@ -500,6 +508,7 @@ model RefundItem {
   
   @@index([refundId])
   @@index([lineItemId])
+  @@map("pos_refund_items")
 }
 
 // ============================================================================
@@ -560,6 +569,7 @@ model Layaway {
   @@index([customerId])
   @@index([status])
   @@index([nextPaymentDue])
+  @@map("pos_layaways")
 }
 
 model LayawayItem {
@@ -590,6 +600,7 @@ model LayawayItem {
   
   @@index([layawayId])
   @@index([productId])
+  @@map("pos_layaway_items")
 }
 
 model LayawayPayment {
@@ -613,6 +624,7 @@ model LayawayPayment {
   layaway         Layaway     @relation(fields: [layawayId], references: [id], onDelete: Cascade)
   
   @@index([layawayId])
+  @@map("pos_layaway_payments")
 }
 
 // ============================================================================
@@ -655,6 +667,7 @@ model POSSettings {
   updatedAt       DateTime  @updatedAt
   
   @@index([tenantId])
+  @@map("pos_settings")
 }
 
 // ============================================================================
@@ -706,6 +719,7 @@ model DiscountRule {
   @@index([tenantId])
   @@index([isActive])
   @@index([validFrom, validUntil])
+  @@map("pos_discount_rules")
 }
 
 // ============================================================================
