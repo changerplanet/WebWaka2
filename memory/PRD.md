@@ -435,7 +435,7 @@ CANCELLED  CANCELLED CANCELLED/REFUNDED  REFUNDED   REFUNDED
 - **Phase 9**: Events & Analytics - Tracking, reporting
 
 ### P1 - Core Entities
-- Add `Product`, `Customer`, `InventoryLevel` models to SaaS Core schema
+- ~~Add `Product`, `Customer`, `InventoryLevel` models to SaaS Core schema~~ ✅ DONE (Step 1 Remediation)
 - Implement Core catalog service for SVM to consume
 
 ### P2 - Production Readiness
