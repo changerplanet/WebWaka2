@@ -314,6 +314,9 @@ model SubscriptionPlan {
   // Trial configuration
   trialDays     Int      @default(14)
   
+  // Grace period configuration (per plan)
+  gracePeriodDays Int    @default(7)  // Days of grace before suspension
+  
   // Audit fields
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
