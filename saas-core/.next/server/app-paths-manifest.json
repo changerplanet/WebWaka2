@@ -1,1 +1,3 @@
-{}
+{
+  "/api/svm/cart/route": "app/api/svm/cart/route.js"
+}
