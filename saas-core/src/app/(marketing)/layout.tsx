@@ -1,133 +1,219 @@
 /**
  * Marketing Layout
- * Shared layout for all marketing pages (separate from app)
+ * Nigerian-business focused design with green color scheme
  */
 
+'use client'
+
 import Link from 'next/link'
-import { Building2, Menu, X } from 'lucide-react'
+import { useState } from 'react'
+import { ShoppingBag, Menu, X, Phone, Mail } from 'lucide-react'
+
+const navLinks = [
+  { href: '/features', label: 'Features' },
+  { href: '/solutions', label: 'Solutions' },
+  { href: '/pricing', label: 'Pricing' },
+  { href: '/partners', label: 'Partners' },
+  { href: '/about', label: 'About' },
+]
 
 export default function MarketingLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+
   return (
     <div className="min-h-screen bg-white">
+      {/* Top Bar */}
+      <div className="bg-gray-900 text-white text-sm py-2 hidden sm:block">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between">
+          <p>Built for Nigerian businesses</p>
+          <div className="flex items-center gap-4">
+            <a href="tel:+2348000000000" className="flex items-center gap-1 hover:text-green-400 transition-colors">
+              <Phone className="w-3 h-3" />
+              +234 800 000 0000
+            </a>
+            <a href="mailto:hello@emarketwaka.com" className="flex items-center gap-1 hover:text-green-400 transition-colors">
+              <Mail className="w-3 h-3" />
+              hello@emarketwaka.com
+            </a>
+          </div>
+        </div>
+      </div>
+
       {/* Navigation */}
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-lg border-b border-slate-200">
+      <nav className="sticky top-0 z-50 bg-white border-b border-gray-100 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
+          <div className="flex items-center justify-between h-16 md:h-20">
             {/* Logo */}
-            <Link href="/" className="flex items-center gap-2">
-              <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-600 to-purple-600 flex items-center justify-center">
-                <Building2 className="w-5 h-5 text-white" />
+            <Link href="/" className="flex items-center gap-2" data-testid="logo-link">
+              <div className="w-10 h-10 rounded-xl bg-green-600 flex items-center justify-center">
+                <ShoppingBag className="w-5 h-5 text-white" />
               </div>
-              <span className="text-xl font-bold text-slate-900">eMarketWaka</span>
+              <span className="text-xl font-bold text-gray-900">eMarketWaka</span>
             </Link>
 
             {/* Desktop Navigation */}
             <div className="hidden md:flex items-center gap-8">
-              <Link href="/features" className="text-slate-600 hover:text-slate-900 font-medium transition-colors">
-                Features
-              </Link>
-              <Link href="/solutions" className="text-slate-600 hover:text-slate-900 font-medium transition-colors">
-                Solutions
-              </Link>
-              <Link href="/pricing" className="text-slate-600 hover:text-slate-900 font-medium transition-colors">
-                Pricing
-              </Link>
-              <Link href="/partners" className="text-slate-600 hover:text-slate-900 font-medium transition-colors">
-                Partners
-              </Link>
-              <Link href="/about" className="text-slate-600 hover:text-slate-900 font-medium transition-colors">
-                About
-              </Link>
+              {navLinks.map((link) => (
+                <Link 
+                  key={link.href}
+                  href={link.href} 
+                  className="text-gray-600 hover:text-green-600 font-medium transition-colors"
+                  data-testid={`nav-${link.label.toLowerCase()}`}
+                >
+                  {link.label}
+                </Link>
+              ))}
             </div>
 
             {/* CTA Buttons */}
             <div className="hidden md:flex items-center gap-3">
               <Link 
                 href="/login" 
-                className="px-4 py-2 text-slate-700 font-medium hover:text-slate-900 transition-colors"
+                className="px-4 py-2 text-gray-700 font-medium hover:text-green-600 transition-colors"
+                data-testid="nav-login"
               >
                 Log in
               </Link>
               <Link 
                 href="/login?signup=true" 
-                className="px-5 py-2.5 bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-medium rounded-xl hover:shadow-lg hover:shadow-indigo-500/25 transition-all"
+                className="px-5 py-2.5 bg-amber-500 hover:bg-amber-600 text-white font-semibold rounded-lg transition-all"
+                data-testid="nav-get-started"
               >
-                Get Started
+                Get Started Free
               </Link>
             </div>
 
             {/* Mobile menu button */}
-            <button className="md:hidden p-2 text-slate-600" data-testid="mobile-menu-btn">
-              <Menu className="w-6 h-6" />
+            <button 
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="md:hidden p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors" 
+              data-testid="mobile-menu-btn"
+            >
+              {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
             </button>
           </div>
         </div>
+
+        {/* Mobile Menu */}
+        {mobileMenuOpen && (
+          <div className="md:hidden border-t border-gray-100 bg-white">
+            <div className="px-4 py-4 space-y-2">
+              {navLinks.map((link) => (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="block px-4 py-3 text-gray-700 hover:bg-gray-50 rounded-lg font-medium"
+                >
+                  {link.label}
+                </Link>
+              ))}
+              <div className="pt-4 border-t border-gray-100 space-y-2">
+                <Link
+                  href="/login"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="block px-4 py-3 text-gray-700 hover:bg-gray-50 rounded-lg font-medium text-center"
+                >
+                  Log in
+                </Link>
+                <Link
+                  href="/login?signup=true"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="block px-4 py-3 bg-amber-500 hover:bg-amber-600 text-white rounded-lg font-semibold text-center"
+                >
+                  Get Started Free
+                </Link>
+              </div>
+            </div>
+          </div>
+        )}
       </nav>
 
       {/* Main Content */}
-      <main className="pt-16">
+      <main>
         {children}
       </main>
 
       {/* Footer */}
-      <footer className="bg-slate-900 text-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+      <footer className="bg-gray-900 text-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             {/* Company */}
-            <div>
-              <div className="flex items-center gap-2 mb-6">
-                <div className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center">
-                  <Building2 className="w-4 h-4 text-white" />
+            <div className="col-span-2 md:col-span-1">
+              <div className="flex items-center gap-2 mb-4">
+                <div className="w-9 h-9 rounded-lg bg-green-600 flex items-center justify-center">
+                  <ShoppingBag className="w-4 h-4 text-white" />
                 </div>
-                <span className="font-bold">eMarketWaka</span>
+                <span className="font-bold text-lg">eMarketWaka</span>
               </div>
-              <p className="text-slate-400 text-sm">
-                Complete commerce platform for African businesses.
+              <p className="text-gray-400 text-sm mb-4">
+                Your business, simplified. Built for Nigerian businesses.
+              </p>
+              <p className="text-gray-400 text-sm">
+                Works online and offline — even when network is bad.
               </p>
             </div>
 
             {/* Solutions */}
             <div>
               <h4 className="font-semibold mb-4">Solutions</h4>
-              <ul className="space-y-3 text-slate-400 text-sm">
-                <li><Link href="/solutions#pos" className="hover:text-white transition-colors">Point of Sale</Link></li>
-                <li><Link href="/solutions#store" className="hover:text-white transition-colors">Online Store</Link></li>
-                <li><Link href="/solutions#marketplace" className="hover:text-white transition-colors">Marketplace</Link></li>
+              <ul className="space-y-3 text-gray-400 text-sm">
+                <li><Link href="/solutions#pos" className="hover:text-green-400 transition-colors">Point of Sale</Link></li>
+                <li><Link href="/solutions#store" className="hover:text-green-400 transition-colors">Online Store</Link></li>
+                <li><Link href="/solutions#marketplace" className="hover:text-green-400 transition-colors">Marketplace</Link></li>
+                <li><Link href="/features" className="hover:text-green-400 transition-colors">All Features</Link></li>
               </ul>
             </div>
 
             {/* Company */}
             <div>
               <h4 className="font-semibold mb-4">Company</h4>
-              <ul className="space-y-3 text-slate-400 text-sm">
-                <li><Link href="/about" className="hover:text-white transition-colors">About Us</Link></li>
-                <li><Link href="/partners" className="hover:text-white transition-colors">Partners</Link></li>
-                <li><Link href="/contact" className="hover:text-white transition-colors">Contact</Link></li>
+              <ul className="space-y-3 text-gray-400 text-sm">
+                <li><Link href="/about" className="hover:text-green-400 transition-colors">About Us</Link></li>
+                <li><Link href="/partners" className="hover:text-green-400 transition-colors">Partners</Link></li>
+                <li><Link href="/pricing" className="hover:text-green-400 transition-colors">Pricing</Link></li>
+                <li><Link href="/contact" className="hover:text-green-400 transition-colors">Contact</Link></li>
               </ul>
             </div>
 
-            {/* Legal */}
+            {/* Contact */}
             <div>
-              <h4 className="font-semibold mb-4">Legal</h4>
-              <ul className="space-y-3 text-slate-400 text-sm">
-                <li><Link href="/privacy" className="hover:text-white transition-colors">Privacy Policy</Link></li>
-                <li><Link href="/terms" className="hover:text-white transition-colors">Terms of Service</Link></li>
+              <h4 className="font-semibold mb-4">Get in Touch</h4>
+              <ul className="space-y-3 text-gray-400 text-sm">
+                <li>
+                  <a href="mailto:hello@emarketwaka.com" className="hover:text-green-400 transition-colors">
+                    hello@emarketwaka.com
+                  </a>
+                </li>
+                <li>
+                  <a href="tel:+2348000000000" className="hover:text-green-400 transition-colors">
+                    +234 800 000 0000
+                  </a>
+                </li>
+                <li>
+                  <a href="https://wa.me/2348000000000" className="hover:text-green-400 transition-colors">
+                    WhatsApp Support
+                  </a>
+                </li>
               </ul>
             </div>
           </div>
 
-          <div className="border-t border-slate-800 mt-12 pt-8 flex flex-col md:flex-row items-center justify-between gap-4">
-            <p className="text-slate-400 text-sm">
+          <div className="border-t border-gray-800 mt-12 pt-8 flex flex-col md:flex-row items-center justify-between gap-4">
+            <p className="text-gray-400 text-sm">
               © {new Date().getFullYear()} eMarketWaka. All rights reserved.
             </p>
-            <div className="flex items-center gap-6 text-slate-400">
-              <a href="mailto:hello@emarketwaka.com" className="hover:text-white transition-colors text-sm">
-                hello@emarketwaka.com
-              </a>
+            <div className="flex items-center gap-6 text-gray-400 text-sm">
+              <Link href="/privacy" className="hover:text-green-400 transition-colors">
+                Privacy Policy
+              </Link>
+              <Link href="/terms" className="hover:text-green-400 transition-colors">
+                Terms of Service
+              </Link>
             </div>
           </div>
         </div>
