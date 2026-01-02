@@ -517,8 +517,4 @@ export function ProductDetail({ productId, onBack }: ProductDetailProps) {
   )
 }
 
-// ============================================================================
-// EXPORTS
-// ============================================================================
-
-export { ProductCard, ProductGrid, ProductDetail }
+// Note: All components exported inline with 'export function'
