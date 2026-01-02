@@ -100,10 +100,10 @@ function isRateApplicable(
   subtotal: number,
   totalWeight: number
 ): boolean {
-  if (rate.minOrderTotal !== undefined && subtotal < rate.minOrderTotal) return false
-  if (rate.maxOrderTotal !== undefined && subtotal > rate.maxOrderTotal) return false
-  if (rate.minWeight !== undefined && totalWeight < rate.minWeight) return false
-  if (rate.maxWeight !== undefined && totalWeight > rate.maxWeight) return false
+  if (rate.minOrderTotal !== undefined && rate.minOrderTotal !== null && subtotal < rate.minOrderTotal) return false
+  if (rate.maxOrderTotal !== undefined && rate.maxOrderTotal !== null && subtotal > rate.maxOrderTotal) return false
+  if (rate.minWeight !== undefined && rate.minWeight !== null && totalWeight < rate.minWeight) return false
+  if (rate.maxWeight !== undefined && rate.maxWeight !== null && totalWeight > rate.maxWeight) return false
   
   if (rate.allowedProductIds?.length) {
     const hasAllowed = items.some(item => rate.allowedProductIds!.includes(item.productId))
@@ -159,7 +159,7 @@ function calculateRateFee(
   
   const originalFee = fee.toDecimalPlaces(2).toNumber()
   
-  if (rate.freeAbove !== undefined && subtotal >= rate.freeAbove) {
+  if (rate.freeAbove !== undefined && rate.freeAbove !== null && subtotal >= rate.freeAbove) {
     return {
       fee: 0,
       originalFee,
@@ -218,7 +218,7 @@ export async function POST(request: NextRequest) {
       )
     }
     
-    const zones = getOrCreateDefaultZones(tenantId)
+    const zones = await getOrCreateDefaultZones(tenantId)
     
     const itemCount = items.reduce((sum: number, item: ShippingCartItem) => sum + item.quantity, 0)
     const totalWeight = items.reduce((sum: number, item: ShippingCartItem) => 
@@ -327,7 +327,7 @@ export async function GET(request: NextRequest) {
       )
     }
     
-    const zones = getOrCreateDefaultZones(tenantId)
+    const zones = await getOrCreateDefaultZones(tenantId)
     
     return NextResponse.json({
       success: true,
