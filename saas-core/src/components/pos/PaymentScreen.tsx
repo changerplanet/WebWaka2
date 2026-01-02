@@ -67,10 +67,10 @@ export function PaymentScreen({ onComplete, onCancel }: PaymentScreenProps) {
         <h2 className="text-2xl font-bold text-emerald-700 mb-2">Payment Complete!</h2>
         <p className="text-emerald-600 mb-4">Sale #{result.saleId}</p>
         
-        {selectedMethod === 'CASH' && changeAmount > 0 && (
+        {selectedMethod === 'CASH' && finalChangeAmount > 0 && (
           <div className="bg-white rounded-xl p-6 shadow-lg mb-6">
             <p className="text-sm text-slate-500 mb-1">Change Due</p>
-            <p className="text-4xl font-bold text-emerald-600">${changeAmount.toFixed(2)}</p>
+            <p className="text-4xl font-bold text-emerald-600">${finalChangeAmount.toFixed(2)}</p>
           </div>
         )}
         
