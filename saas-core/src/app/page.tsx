@@ -134,7 +134,7 @@ export default function HomePage() {
               <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center">
                 <Building2 className="w-6 h-6 text-white" />
               </div>
-              <span className="text-xl font-bold text-white">SaaS Core</span>
+              <span className="text-xl font-bold text-white">eMarketWaka</span>
             </div>
             <div className="flex items-center gap-4">
               <button className="text-white/80 hover:text-white transition">Documentation</button>
@@ -148,18 +148,18 @@ export default function HomePage() {
         <div className="relative z-10 container mx-auto px-6 py-20 text-center">
           <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/20 rounded-full text-white/90 text-sm mb-6">
             <Shield className="w-4 h-4" />
-            Production-Grade Multi-Tenancy
+            Complete Commerce Platform
           </div>
           <h1 className="text-5xl md:text-6xl font-bold text-white mb-6 leading-tight">
-            Multi-Tenant SaaS
+            eMarketWaka
             <br />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-200 to-pink-200">
-              Platform Core
+              Commerce Platform
             </span>
           </h1>
           <p className="text-xl text-white/80 max-w-2xl mx-auto mb-10">
-            Strict tenant isolation, subdomain &amp; custom domain resolution,
-            white-label branding, and role-based access control.
+            POS, Online Store &amp; Marketplace — all in one platform.
+            Multi-tenant, white-label ready, built for African commerce.
           </p>
           <button
             onClick={() => setShowCreateModal(true)}
