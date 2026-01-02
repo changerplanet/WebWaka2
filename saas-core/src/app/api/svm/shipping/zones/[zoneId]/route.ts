@@ -45,7 +45,7 @@ export async function GET(request: NextRequest, context: RouteParams) {
       )
     }
     
-    const zone = getZone(tenantId, zoneId)
+    const zone = await getZone(tenantId, zoneId)
     
     if (!zone) {
       return NextResponse.json(
@@ -84,7 +84,7 @@ export async function PUT(request: NextRequest, context: RouteParams) {
       )
     }
     
-    const zone = getZone(tenantId, zoneId)
+    const zone = await getZone(tenantId, zoneId)
     
     if (!zone) {
       return NextResponse.json(
@@ -108,7 +108,7 @@ export async function PUT(request: NextRequest, context: RouteParams) {
         if (isActive !== undefined) updates.isActive = isActive
         if (priority !== undefined) updates.priority = priority
         
-        const updated = updateZone(tenantId, zoneId, updates)
+        const updated = await updateZone(tenantId, zoneId, updates)
         
         return NextResponse.json({
           success: true,
@@ -145,21 +145,22 @@ export async function PUT(request: NextRequest, context: RouteParams) {
           freeAbove: rate.freeAbove,
           minDays: rate.minDays,
           maxDays: rate.maxDays,
-          allowedProductIds: rate.allowedProductIds,
-          excludedProductIds: rate.excludedProductIds,
-          allowedCategoryIds: rate.allowedCategoryIds,
-          excludedCategoryIds: rate.excludedCategoryIds,
+          allowedProductIds: rate.allowedProductIds || [],
+          excludedProductIds: rate.excludedProductIds || [],
+          allowedCategoryIds: rate.allowedCategoryIds || [],
+          excludedCategoryIds: rate.excludedCategoryIds || [],
           isActive: rate.isActive ?? true,
           priority: zone.rates.length
         }
         
-        addRate(tenantId, zoneId, newRate)
+        await addRate(tenantId, zoneId, newRate)
+        const updatedZone = await getZone(tenantId, zoneId)
         
         return NextResponse.json({
           success: true,
           message: 'Rate added',
           rate: newRate,
-          zone: getZone(tenantId, zoneId)
+          zone: updatedZone
         })
       }
       
@@ -172,7 +173,7 @@ export async function PUT(request: NextRequest, context: RouteParams) {
           )
         }
         
-        const updated = updateRate(tenantId, zoneId, rateId, rate)
+        const updated = await updateRate(tenantId, zoneId, rateId, rate)
         if (!updated) {
           return NextResponse.json(
             { success: false, error: `Rate ${rateId} not found` },
@@ -180,11 +181,13 @@ export async function PUT(request: NextRequest, context: RouteParams) {
           )
         }
         
+        const updatedZone = await getZone(tenantId, zoneId)
+        
         return NextResponse.json({
           success: true,
           message: 'Rate updated',
           rate: updated,
-          zone: getZone(tenantId, zoneId)
+          zone: updatedZone
         })
       }
       
@@ -197,7 +200,7 @@ export async function PUT(request: NextRequest, context: RouteParams) {
           )
         }
         
-        const deleted = deleteRate(tenantId, zoneId, rateId)
+        const deleted = await deleteRate(tenantId, zoneId, rateId)
         if (!deleted) {
           return NextResponse.json(
             { success: false, error: `Rate ${rateId} not found` },
@@ -205,10 +208,12 @@ export async function PUT(request: NextRequest, context: RouteParams) {
           )
         }
         
+        const updatedZone = await getZone(tenantId, zoneId)
+        
         return NextResponse.json({
           success: true,
           message: 'Rate deleted',
-          zone: getZone(tenantId, zoneId)
+          zone: updatedZone
         })
       }
       
@@ -227,7 +232,7 @@ export async function PUT(request: NextRequest, context: RouteParams) {
         if (isActive !== undefined) updates.isActive = isActive
         if (priority !== undefined) updates.priority = priority
         
-        const updated = updateZone(tenantId, zoneId, updates)
+        const updated = await updateZone(tenantId, zoneId, updates)
         
         return NextResponse.json({
           success: true,
@@ -262,7 +267,7 @@ export async function DELETE(request: NextRequest, context: RouteParams) {
       )
     }
     
-    const deleted = deleteZone(tenantId, zoneId)
+    const deleted = await deleteZone(tenantId, zoneId)
     
     if (!deleted) {
       return NextResponse.json(
