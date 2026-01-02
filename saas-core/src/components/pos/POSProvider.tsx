@@ -268,23 +268,28 @@ export function POSProvider({ children, tenantId }: POSProviderProps) {
           `/api/pos/products?tenantId=${tenantId}&query=${encodeURIComponent(query)}&locationId=${state.locationId || ''}&limit=20`
         )
         const data = await res.json()
-        if (data.success) {
-          return data.products || []
+        if (data.success && data.products?.length > 0) {
+          return data.products
         }
       } catch (e) {
         console.warn('Online search failed, using cache:', e)
       }
     }
     
-    // Fallback to cached products
+    // Fallback to cached products (which includes demo products)
     const cached = loadFromStorage<POSProduct[]>(STORAGE_KEYS.PRODUCTS_CACHE, [])
+    
+    // If cache is empty, use current state products (demo products)
+    const searchIn = cached.length > 0 ? cached : state.products
+    
     const q = query.toLowerCase()
-    return cached.filter(p => 
+    return searchIn.filter(p => 
       p.name.toLowerCase().includes(q) ||
       p.sku?.toLowerCase().includes(q) ||
-      p.barcode?.toLowerCase().includes(q)
+      p.barcode?.toLowerCase().includes(q) ||
+      p.categoryName?.toLowerCase().includes(q)
     ).slice(0, 20)
-  }, [tenantId, state.isOnline, state.locationId])
+  }, [tenantId, state.isOnline, state.locationId, state.products])
 
   const refreshProducts = useCallback(async () => {
     setState(s => ({ ...s, isLoadingProducts: true }))
