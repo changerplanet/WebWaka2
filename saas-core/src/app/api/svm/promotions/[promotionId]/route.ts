@@ -40,7 +40,7 @@ export async function GET(request: NextRequest, context: RouteParams) {
       )
     }
     
-    const promotion = getPromotion(tenantId, promotionId)
+    const promotion = await getPromotion(tenantId, promotionId)
     
     if (!promotion) {
       return NextResponse.json(
@@ -79,7 +79,7 @@ export async function PUT(request: NextRequest, context: RouteParams) {
       )
     }
     
-    const existing = getPromotion(tenantId, promotionId)
+    const existing = await getPromotion(tenantId, promotionId)
     if (!existing) {
       return NextResponse.json(
         { success: false, error: `Promotion ${promotionId} not found` },
@@ -111,7 +111,7 @@ export async function PUT(request: NextRequest, context: RouteParams) {
       updates.endsAt = new Date(body.endsAt)
     }
     
-    const updated = updatePromotion(tenantId, promotionId, updates)
+    const updated = await updatePromotion(tenantId, promotionId, updates)
     
     return NextResponse.json({
       success: true,
@@ -144,7 +144,7 @@ export async function DELETE(request: NextRequest, context: RouteParams) {
       )
     }
     
-    const deleted = deletePromotion(tenantId, promotionId)
+    const deleted = await deletePromotion(tenantId, promotionId)
     
     if (!deleted) {
       return NextResponse.json(
