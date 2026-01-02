@@ -6,5 +6,6 @@
   "/api/svm/catalog/route": "app/api/svm/catalog/route.js",
   "/offline/page": "app/offline/page.js",
   "/login/page": "app/login/page.js",
-  "/manifest.json/route": "app/manifest.json/route.js"
+  "/manifest.json/route": "app/manifest.json/route.js",
+  "/api/svm/promotions/route": "app/api/svm/promotions/route.js"
 }
