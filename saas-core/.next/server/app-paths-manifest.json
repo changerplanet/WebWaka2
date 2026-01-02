@@ -8,5 +8,6 @@
   "/api/mvm/vendors/[vendorId]/dashboard/route": "app/api/mvm/vendors/[vendorId]/dashboard/route.js",
   "/api/mvm/vendors/[vendorId]/route": "app/api/mvm/vendors/[vendorId]/route.js",
   "/manifest.json/route": "app/manifest.json/route.js",
-  "/api/mvm/vendors/[vendorId]/orders/route": "app/api/mvm/vendors/[vendorId]/orders/route.js"
+  "/api/mvm/vendors/[vendorId]/orders/route": "app/api/mvm/vendors/[vendorId]/orders/route.js",
+  "/api/mvm/vendors/[vendorId]/products/route": "app/api/mvm/vendors/[vendorId]/products/route.js"
 }
