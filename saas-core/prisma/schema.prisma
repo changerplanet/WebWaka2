@@ -15,42 +15,42 @@ datasource db {
 // Global role - only SUPER_ADMIN has meaning here
 // Regular users get their roles via TenantMembership
 enum GlobalRole {
-  SUPER_ADMIN  // Can access all tenants, manage platform
-  USER         // Regular user, gets access via TenantMembership
+  SUPER_ADMIN // Can access all tenants, manage platform
+  USER // Regular user, gets access via TenantMembership
 }
 
 // Tenant-specific role - assigned via TenantMembership
 enum TenantRole {
-  TENANT_ADMIN  // Full control of tenant (users, settings, billing)
-  TENANT_USER   // Regular member with limited permissions
+  TENANT_ADMIN // Full control of tenant (users, settings, billing)
+  TENANT_USER // Regular member with limited permissions
 }
 
 // Tenant lifecycle status
 enum TenantStatus {
-  PENDING_ACTIVATION  // Created by partner, awaiting tenant signup/payment
-  ACTIVE              // Normal operation
-  SUSPENDED           // Temporarily disabled (e.g., payment issue)
-  DEACTIVATED         // Soft-deleted, data retained
+  PENDING_ACTIVATION // Created by partner, awaiting tenant signup/payment
+  ACTIVE // Normal operation
+  SUSPENDED // Temporarily disabled (e.g., payment issue)
+  DEACTIVATED // Soft-deleted, data retained
 }
 
 // Attribution method - how the tenant was linked to a partner
 enum AttributionMethod {
-  PARTNER_CREATED     // Partner created the tenant directly
-  REFERRAL_LINK       // Tenant signed up via referral link/code
-  MANUAL_ASSIGNMENT   // Super Admin manually assigned (rare, audit logged)
+  PARTNER_CREATED // Partner created the tenant directly
+  REFERRAL_LINK // Tenant signed up via referral link/code
+  MANUAL_ASSIGNMENT // Super Admin manually assigned (rare, audit logged)
 }
 
 // Domain verification status
 enum DomainStatus {
-  PENDING      // Awaiting DNS verification
-  VERIFIED     // DNS verified, domain active
-  FAILED       // Verification failed
+  PENDING // Awaiting DNS verification
+  VERIFIED // DNS verified, domain active
+  FAILED // Verification failed
 }
 
 // Domain type for clarity
 enum DomainType {
-  SUBDOMAIN    // e.g., acme.saascore.com (platform-provided)
-  CUSTOM       // e.g., app.acme.com (customer-owned)
+  SUBDOMAIN // e.g., acme.saascore.com (platform-provided)
+  CUSTOM // e.g., app.acme.com (customer-owned)
 }
 
 // ============================================================================
@@ -58,23 +58,23 @@ enum DomainType {
 // Global identity - authentication happens here
 // ============================================================================
 model User {
-  id          String     @id @default(uuid())
-  email       String     @unique
-  name        String?
-  avatarUrl   String?
-  globalRole  GlobalRole @default(USER)
-  isActive    Boolean    @default(true)
-  
+  id         String     @id @default(uuid())
+  email      String     @unique
+  name       String?
+  avatarUrl  String?
+  globalRole GlobalRole @default(USER)
+  isActive   Boolean    @default(true)
+
   // Audit fields
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
   lastLoginAt DateTime?
 
   // Relations
   memberships TenantMembership[]
   magicLinks  MagicLink[]
   sessions    Session[]
-  
+
   // Partner relation (a user can belong to ONE partner organization)
   partnerMembership PartnerUser?
 
@@ -87,40 +87,40 @@ model User {
 // Organization/workspace - the isolation boundary
 // ============================================================================
 model Tenant {
-  id          String       @id @default(uuid())
-  name        String       // Display name: "Acme Corporation"
-  slug        String       @unique // URL-safe identifier: "acme"
-  status      TenantStatus @default(ACTIVE)
-  
+  id     String       @id @default(uuid())
+  name   String // Display name: "Acme Corporation"
+  slug   String       @unique // URL-safe identifier: "acme"
+  status TenantStatus @default(ACTIVE)
+
   // Branding (embedded for simplicity, could be separate model)
-  appName        String   @default("SaaS App")
+  appName        String  @default("SaaS App")
   logoUrl        String?
   faviconUrl     String?
-  primaryColor   String   @default("#6366f1")
-  secondaryColor String   @default("#8b5cf6")
-  
+  primaryColor   String  @default("#6366f1")
+  secondaryColor String  @default("#8b5cf6")
+
   // Partner-assisted creation fields
-  requestedModules   String[]  @default([]) // ["POS", "SVM", "MVM"] - requested at creation
-  activatedModules   String[]  @default([]) // Actually provisioned after payment
-  activatedAt        DateTime? // When tenant completed signup and payment
-  
+  requestedModules String[]  @default([]) // ["POS", "SVM", "MVM"] - requested at creation
+  activatedModules String[]  @default([]) // Actually provisioned after payment
+  activatedAt      DateTime? // When tenant completed signup and payment
+
   // Audit fields
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   // Relations
   domains     TenantDomain[]
   memberships TenantMembership[]
   magicLinks  MagicLink[]
-  
+
   // Partner referral (immutable - who referred this tenant)
   partnerReferral PartnerReferral?
-  
+
   // Subscription & Entitlements
-  subscription  Subscription?
-  entitlements  Entitlement[]
-  invoices      Invoice[]
-  
+  subscription Subscription?
+  entitlements Entitlement[]
+  invoices     Invoice[]
+
   // Business profile
   businessProfile BusinessProfile?
 
@@ -134,20 +134,20 @@ model Tenant {
 // This is where tenant-specific permissions live
 // ============================================================================
 model TenantMembership {
-  id        String     @id @default(uuid())
-  userId    String
-  tenantId  String
-  role      TenantRole @default(TENANT_USER)
-  isActive  Boolean    @default(true)
-  
+  id       String     @id @default(uuid())
+  userId   String
+  tenantId String
+  role     TenantRole @default(TENANT_USER)
+  isActive Boolean    @default(true)
+
   // Audit fields
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
-  joinedAt  DateTime   @default(now())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  joinedAt  DateTime @default(now())
 
   // Relations
-  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
-  tenant    Tenant     @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
 
   // A user can only have one membership per tenant
   @@unique([userId, tenantId])
@@ -161,23 +161,23 @@ model TenantMembership {
 // Manages both subdomains and custom domains for tenant resolution
 // ============================================================================
 model TenantDomain {
-  id         String       @id @default(uuid())
-  tenantId   String
-  domain     String       @unique // e.g., "acme" (subdomain) or "app.acme.com" (custom)
-  type       DomainType
-  status     DomainStatus @default(PENDING)
-  isPrimary  Boolean      @default(false) // Primary domain shown in UI
-  
+  id        String       @id @default(uuid())
+  tenantId  String
+  domain    String       @unique // e.g., "acme" (subdomain) or "app.acme.com" (custom)
+  type      DomainType
+  status    DomainStatus @default(PENDING)
+  isPrimary Boolean      @default(false) // Primary domain shown in UI
+
   // For custom domain verification
   verificationToken String?
   verifiedAt        DateTime?
 
   // Audit fields
-  createdAt  DateTime     @default(now())
-  updatedAt  DateTime     @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   // Relations
-  tenant     Tenant       @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
 
   @@index([domain])
   @@index([tenantId])
@@ -192,16 +192,16 @@ model MagicLink {
   id        String    @id @default(uuid())
   token     String    @unique
   userId    String
-  tenantId  String?   // Optional: login directly to a specific tenant
+  tenantId  String? // Optional: login directly to a specific tenant
   expiresAt DateTime
   usedAt    DateTime?
-  
+
   // Audit fields
-  createdAt DateTime  @default(now())
+  createdAt DateTime @default(now())
 
   // Relations
-  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  tenant    Tenant?   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  user   User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tenant Tenant? @relation(fields: [tenantId], references: [id], onDelete: Cascade)
 
   @@index([token])
   @@index([userId])
@@ -216,17 +216,17 @@ model Session {
   id           String   @id @default(uuid())
   userId       String
   token        String   @unique
-  activeTenant String?  // Currently selected tenant (for multi-tenant users)
+  activeTenant String? // Currently selected tenant (for multi-tenant users)
   userAgent    String?
   ipAddress    String?
   expiresAt    DateTime
-  
+
   // Audit fields
   createdAt    DateTime @default(now())
   lastActiveAt DateTime @default(now())
 
   // Relations
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([token])
   @@index([userId])
@@ -241,15 +241,15 @@ model Session {
 
 // Subscription status
 enum SubscriptionStatus {
-  PENDING        // Created but not yet active
-  TRIALING       // In trial period
-  ACTIVE         // Paid and active
-  PAST_DUE       // Payment failed, retry in progress
-  GRACE_PERIOD   // Payment failed, in grace period (limited access)
-  CANCELLED      // Cancelled, access until period end
-  EXPIRED        // Period ended, no access
-  SUSPENDED      // Suspended due to payment failure (no access)
-  PAUSED         // Temporarily paused by user
+  PENDING // Created but not yet active
+  TRIALING // In trial period
+  ACTIVE // Paid and active
+  PAST_DUE // Payment failed, retry in progress
+  GRACE_PERIOD // Payment failed, in grace period (limited access)
+  CANCELLED // Cancelled, access until period end
+  EXPIRED // Period ended, no access
+  SUSPENDED // Suspended due to payment failure (no access)
+  PAUSED // Temporarily paused by user
 }
 
 // Billing interval
@@ -261,9 +261,9 @@ enum BillingInterval {
 
 // Entitlement status
 enum EntitlementStatus {
-  ACTIVE         // Module is accessible
-  SUSPENDED      // Temporarily suspended
-  EXPIRED        // No longer valid
+  ACTIVE // Module is accessible
+  SUSPENDED // Temporarily suspended
+  EXPIRED // No longer valid
 }
 
 // Subscription event types
@@ -291,38 +291,38 @@ enum SubscriptionEventType {
 // Defines available plans and their module bundles
 // ============================================================================
 model SubscriptionPlan {
-  id            String   @id @default(uuid())
-  name          String   // "Starter", "Professional", "Enterprise"
-  slug          String   @unique
-  description   String?
-  
+  id          String  @id @default(uuid())
+  name        String // "Starter", "Professional", "Enterprise"
+  slug        String  @unique
+  description String?
+
   // Pricing
-  priceMonthly  Decimal  @db.Decimal(12, 2)
-  priceYearly   Decimal  @db.Decimal(12, 2)
-  currency      String   @default("USD")
-  
+  priceMonthly Decimal @db.Decimal(12, 2)
+  priceYearly  Decimal @db.Decimal(12, 2)
+  currency     String  @default("USD")
+
   // Module entitlements included in this plan
-  includedModules String[]  // ["POS", "SVM", "MVM"]
-  
+  includedModules String[] // ["POS", "SVM", "MVM"]
+
   // Limits and quotas
-  maxUsers      Int?     // null = unlimited
-  maxStorage    Int?     // GB, null = unlimited
-  features      Json?    // Additional feature flags
-  
+  maxUsers   Int? // null = unlimited
+  maxStorage Int? // GB, null = unlimited
+  features   Json? // Additional feature flags
+
   // Plan metadata
-  isActive      Boolean  @default(true)
-  isPublic      Boolean  @default(true)  // Visible in pricing page
-  sortOrder     Int      @default(0)
-  
+  isActive  Boolean @default(true)
+  isPublic  Boolean @default(true) // Visible in pricing page
+  sortOrder Int     @default(0)
+
   // Trial configuration
-  trialDays     Int      @default(14)
-  
+  trialDays Int @default(14)
+
   // Grace period configuration (per plan)
-  gracePeriodDays Int    @default(7)  // Days of grace before suspension
-  
+  gracePeriodDays Int @default(7) // Days of grace before suspension
+
   // Audit fields
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   // Relations
   subscriptions Subscription[]
@@ -337,60 +337,60 @@ model SubscriptionPlan {
 // Partner ID is OPTIONAL - not all subscriptions have partner attribution
 // ============================================================================
 model Subscription {
-  id              String             @id @default(uuid())
-  tenantId        String             @unique  // One subscription per tenant
-  planId          String
-  
+  id       String @id @default(uuid())
+  tenantId String @unique // One subscription per tenant
+  planId   String
+
   // Status
-  status          SubscriptionStatus @default(PENDING)
-  
+  status SubscriptionStatus @default(PENDING)
+
   // Billing
-  billingInterval BillingInterval    @default(MONTHLY)
+  billingInterval    BillingInterval @default(MONTHLY)
   currentPeriodStart DateTime
   currentPeriodEnd   DateTime
-  
+
   // Pricing at time of subscription (may differ from plan if discounted)
-  amount          Decimal            @db.Decimal(12, 2)
-  currency        String             @default("USD")
-  
+  amount   Decimal @db.Decimal(12, 2)
+  currency String  @default("USD")
+
   // Trial
-  trialStart      DateTime?
-  trialEnd        DateTime?
-  
+  trialStart DateTime?
+  trialEnd   DateTime?
+
   // Grace Period
   // When payment fails, subscription enters GRACE_PERIOD status
   // gracePeriodEnd defines when access is fully revoked
-  gracePeriodDays Int                @default(7)   // Days of grace after payment failure
-  gracePeriodStart DateTime?         // When grace period began
-  gracePeriodEnd   DateTime?         // When grace period ends (full revocation)
-  paymentFailedAt  DateTime?         // When payment first failed
-  paymentRetryCount Int              @default(0)   // Number of retry attempts
-  
+  gracePeriodDays   Int       @default(7) // Days of grace after payment failure
+  gracePeriodStart  DateTime? // When grace period began
+  gracePeriodEnd    DateTime? // When grace period ends (full revocation)
+  paymentFailedAt   DateTime? // When payment first failed
+  paymentRetryCount Int       @default(0) // Number of retry attempts
+
   // Cancellation
-  cancelledAt     DateTime?
-  cancelReason    String?
-  cancelAtPeriodEnd Boolean          @default(false)
-  
+  cancelledAt       DateTime?
+  cancelReason      String?
+  cancelAtPeriodEnd Boolean   @default(false)
+
   // External payment provider reference
-  externalId      String?            // Stripe subscription ID, etc.
-  paymentProvider String?            // "stripe", "paypal", etc.
-  
+  externalId      String? // Stripe subscription ID, etc.
+  paymentProvider String? // "stripe", "paypal", etc.
+
   // Partner attribution (OPTIONAL - may be null)
   // This links to the PartnerReferral, NOT directly to Partner
   // Ensures commission logic stays with attribution
   partnerReferralId String?
-  
+
   // Metadata
-  metadata        Json?
-  
+  metadata Json?
+
   // Audit fields
-  createdAt       DateTime           @default(now())
-  updatedAt       DateTime           @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   // Relations
-  tenant          Tenant             @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  plan            SubscriptionPlan   @relation(fields: [planId], references: [id])
-  partnerReferral PartnerReferral?   @relation(fields: [partnerReferralId], references: [id], onDelete: SetNull)
+  tenant          Tenant              @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  plan            SubscriptionPlan    @relation(fields: [planId], references: [id])
+  partnerReferral PartnerReferral?    @relation(fields: [partnerReferralId], references: [id], onDelete: SetNull)
   entitlements    Entitlement[]
   events          SubscriptionEvent[]
   invoices        Invoice[]
@@ -407,33 +407,33 @@ model Subscription {
 // MODULES ONLY CHECK THIS - no subscription/partner logic in modules
 // ============================================================================
 model Entitlement {
-  id              String            @id @default(uuid())
-  tenantId        String
-  subscriptionId  String?           // null = manually granted
-  
+  id             String  @id @default(uuid())
+  tenantId       String
+  subscriptionId String? // null = manually granted
+
   // Module this entitlement grants access to
-  module          String            // "POS", "SVM", "MVM"
-  
+  module String // "POS", "SVM", "MVM"
+
   // Status
-  status          EntitlementStatus @default(ACTIVE)
-  
+  status EntitlementStatus @default(ACTIVE)
+
   // Validity period
-  validFrom       DateTime          @default(now())
-  validUntil      DateTime?         // null = until subscription ends
-  
+  validFrom  DateTime  @default(now())
+  validUntil DateTime? // null = until subscription ends
+
   // Limits specific to this entitlement
-  limits          Json?             // { "maxTransactions": 1000 }
-  
+  limits Json? // { "maxTransactions": 1000 }
+
   // Source of entitlement (for auditing)
-  source          String            @default("subscription") // "subscription", "addon", "promo", "manual"
-  
+  source String @default("subscription") // "subscription", "addon", "promo", "manual"
+
   // Audit fields
-  createdAt       DateTime          @default(now())
-  updatedAt       DateTime          @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   // Relations
-  tenant          Tenant            @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  subscription    Subscription?     @relation(fields: [subscriptionId], references: [id], onDelete: SetNull)
+  tenant       Tenant        @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  subscription Subscription? @relation(fields: [subscriptionId], references: [id], onDelete: SetNull)
 
   // Tenant can have multiple entitlements for different modules
   @@unique([tenantId, module])
@@ -448,39 +448,39 @@ model Entitlement {
 // Used for commission calculation and auditing
 // ============================================================================
 model SubscriptionEvent {
-  id              String                @id @default(uuid())
-  subscriptionId  String
-  
+  id             String @id @default(uuid())
+  subscriptionId String
+
   // Event type
-  eventType       SubscriptionEventType
-  
+  eventType SubscriptionEventType
+
   // Snapshot at time of event (immutable)
-  tenantId        String
-  partnerId       String?               // From attribution, NULL if no partner
-  
+  tenantId  String
+  partnerId String? // From attribution, NULL if no partner
+
   // Module and billing info at time of event
-  modules         String[]              // Modules at time of event
-  billingAmount   Decimal?              @db.Decimal(12, 2)
+  modules         String[] // Modules at time of event
+  billingAmount   Decimal?         @db.Decimal(12, 2)
   billingCurrency String?
   billingInterval BillingInterval?
-  
+
   // Period info
-  periodStart     DateTime?
-  periodEnd       DateTime?
-  
+  periodStart DateTime?
+  periodEnd   DateTime?
+
   // Additional context
-  metadata        Json?                 // Event-specific data
-  
+  metadata Json? // Event-specific data
+
   // External reference
-  externalEventId String?               // Payment provider event ID
-  
+  externalEventId String? // Payment provider event ID
+
   // Timestamp - immutable
-  occurredAt      DateTime              @default(now())
-  
+  occurredAt DateTime @default(now())
+
   // NO updatedAt - events are immutable
 
   // Relations
-  subscription    Subscription          @relation(fields: [subscriptionId], references: [id], onDelete: Cascade)
+  subscription Subscription @relation(fields: [subscriptionId], references: [id], onDelete: Cascade)
 
   @@index([subscriptionId])
   @@index([tenantId])
@@ -494,46 +494,46 @@ model SubscriptionEvent {
 // Billing records for subscriptions
 // ============================================================================
 model Invoice {
-  id              String   @id @default(uuid())
-  subscriptionId  String
-  tenantId        String
-  
+  id             String @id @default(uuid())
+  subscriptionId String
+  tenantId       String
+
   // Invoice details
-  invoiceNumber   String   @unique
-  status          String   // "draft", "open", "paid", "void", "uncollectible"
-  
+  invoiceNumber String @unique
+  status        String // "draft", "open", "paid", "void", "uncollectible"
+
   // Amounts
-  subtotal        Decimal  @db.Decimal(12, 2)
-  tax             Decimal  @db.Decimal(12, 2) @default(0)
-  total           Decimal  @db.Decimal(12, 2)
-  amountPaid      Decimal  @db.Decimal(12, 2) @default(0)
-  amountDue       Decimal  @db.Decimal(12, 2)
-  currency        String   @default("USD")
-  
+  subtotal   Decimal @db.Decimal(12, 2)
+  tax        Decimal @default(0) @db.Decimal(12, 2)
+  total      Decimal @db.Decimal(12, 2)
+  amountPaid Decimal @default(0) @db.Decimal(12, 2)
+  amountDue  Decimal @db.Decimal(12, 2)
+  currency   String  @default("USD")
+
   // Period
-  periodStart     DateTime
-  periodEnd       DateTime
-  
+  periodStart DateTime
+  periodEnd   DateTime
+
   // Dates
-  issuedAt        DateTime @default(now())
-  dueAt           DateTime
-  paidAt          DateTime?
-  
+  issuedAt DateTime  @default(now())
+  dueAt    DateTime
+  paidAt   DateTime?
+
   // External reference
-  externalId      String?  // Stripe invoice ID
-  hostedUrl       String?  // URL to hosted invoice
-  pdfUrl          String?  // URL to PDF
-  
+  externalId String? // Stripe invoice ID
+  hostedUrl  String? // URL to hosted invoice
+  pdfUrl     String? // URL to PDF
+
   // Partner attribution snapshot (for commission calculation)
-  partnerId       String?
-  
+  partnerId String?
+
   // Audit fields
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   // Relations
-  subscription    Subscription @relation(fields: [subscriptionId], references: [id], onDelete: Cascade)
-  tenant          Tenant       @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  subscription Subscription @relation(fields: [subscriptionId], references: [id], onDelete: Cascade)
+  tenant       Tenant       @relation(fields: [tenantId], references: [id], onDelete: Cascade)
 
   @@index([subscriptionId])
   @@index([tenantId])
@@ -548,66 +548,66 @@ model Invoice {
 
 // Partner lifecycle status
 enum PartnerStatus {
-  PENDING      // Application submitted, awaiting approval
-  ACTIVE       // Approved and operational
-  SUSPENDED    // Temporarily disabled
-  TERMINATED   // Permanently ended
+  PENDING // Application submitted, awaiting approval
+  ACTIVE // Approved and operational
+  SUSPENDED // Temporarily disabled
+  TERMINATED // Permanently ended
 }
 
 // Partner tier for commission structures
 enum PartnerTier {
-  BRONZE       // Entry level
-  SILVER       // Mid tier
-  GOLD         // High performer
-  PLATINUM     // Top tier / enterprise
+  BRONZE // Entry level
+  SILVER // Mid tier
+  GOLD // High performer
+  PLATINUM // Top tier / enterprise
 }
 
 // Partner user roles within a partner organization
 enum PartnerRole {
-  PARTNER_OWNER    // Full control: manage agreement, users, view all data
-  PARTNER_STAFF    // Limited: view referrals/earnings, create referral codes
+  PARTNER_OWNER // Full control: manage agreement, users, view all data
+  PARTNER_STAFF // Limited: view referrals/earnings, create referral codes
 }
 
 // Agreement status
 enum AgreementStatus {
-  DRAFT        // Being prepared
-  ACTIVE       // Currently in effect
-  SUPERSEDED   // Replaced by newer version
-  TERMINATED   // Ended
+  DRAFT // Being prepared
+  ACTIVE // Currently in effect
+  SUPERSEDED // Replaced by newer version
+  TERMINATED // Ended
 }
 
 // Commission calculation type
 enum CommissionType {
-  PERCENTAGE   // % of transaction amount
-  FIXED        // Fixed amount per transaction/period
-  TIERED       // Volume-based tiers
-  HYBRID       // Combination of multiple models
+  PERCENTAGE // % of transaction amount
+  FIXED // Fixed amount per transaction/period
+  TIERED // Volume-based tiers
+  HYBRID // Combination of multiple models
 }
 
 // Commission trigger - when commission is earned
 enum CommissionTrigger {
-  ON_PAYMENT       // When payment is received
-  ON_ACTIVATION    // When subscription activates (first payment)
-  ON_RENEWAL       // On each renewal
-  ON_SIGNUP        // One-time on signup
+  ON_PAYMENT // When payment is received
+  ON_ACTIVATION // When subscription activates (first payment)
+  ON_RENEWAL // On each renewal
+  ON_SIGNUP // One-time on signup
 }
 
 // Earning status - ledger state machine
 enum EarningStatus {
-  PENDING      // Calculated, awaiting clearance period
-  CLEARED      // Clearance period passed, ready for payout
-  APPROVED     // Approved for payment batch
-  PAID         // Payment processed
-  DISPUTED     // Under review/dispute
-  REVERSED     // Reversed (chargeback, refund)
-  VOIDED       // Voided before clearance
+  PENDING // Calculated, awaiting clearance period
+  CLEARED // Clearance period passed, ready for payout
+  APPROVED // Approved for payment batch
+  PAID // Payment processed
+  DISPUTED // Under review/dispute
+  REVERSED // Reversed (chargeback, refund)
+  VOIDED // Voided before clearance
 }
 
 // Earning entry type - for ledger
 enum EarningEntryType {
-  CREDIT       // Positive earning (commission)
-  DEBIT        // Negative (reversal, adjustment)
-  ADJUSTMENT   // Manual adjustment
+  CREDIT // Positive earning (commission)
+  DEBIT // Negative (reversal, adjustment)
+  ADJUSTMENT // Manual adjustment
 }
 
 // ============================================================================
@@ -616,36 +616,36 @@ enum EarningEntryType {
 // Represents a reseller/affiliate organization
 // ============================================================================
 model Partner {
-  id          String        @id @default(uuid())
-  name        String        // Company name: "Digital Solutions Inc"
-  slug        String        @unique // URL-safe identifier: "digital-solutions"
-  email       String        // Primary contact email
-  phone       String?       // Contact phone
-  website     String?       // Partner's website
-  
-  status      PartnerStatus @default(PENDING)
-  tier        PartnerTier   @default(BRONZE)
-  
+  id      String  @id @default(uuid())
+  name    String // Company name: "Digital Solutions Inc"
+  slug    String  @unique // URL-safe identifier: "digital-solutions"
+  email   String // Primary contact email
+  phone   String? // Contact phone
+  website String? // Partner's website
+
+  status PartnerStatus @default(PENDING)
+  tier   PartnerTier   @default(BRONZE)
+
   // Business details
-  companyNumber  String?    // Business registration number
-  taxId          String?    // Tax identification
-  address        Json?      // Structured address
-  
+  companyNumber String? // Business registration number
+  taxId         String? // Tax identification
+  address       Json? // Structured address
+
   // Metadata for flexibility
-  metadata    Json?
-  
+  metadata Json?
+
   // Audit fields
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
-  approvedAt  DateTime?     // When partner was approved
-  
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  approvedAt DateTime? // When partner was approved
+
   // Relations
-  users       PartnerUser[]
-  agreements  PartnerAgreement[]
-  referralCodes PartnerReferralCode[]
-  referrals   PartnerReferral[]
-  earnings    PartnerEarning[]
-  payoutBatches PayoutBatch[]
+  users          PartnerUser[]
+  agreements     PartnerAgreement[]
+  referralCodes  PartnerReferralCode[]
+  referrals      PartnerReferral[]
+  earnings       PartnerEarning[]
+  payoutBatches  PayoutBatch[]
   payoutSettings PartnerPayoutSettings?
 
   @@index([slug])
@@ -665,16 +665,16 @@ model PartnerUser {
   userId    String
   role      PartnerRole @default(PARTNER_STAFF)
   isActive  Boolean     @default(true)
-  
+
   // Audit fields
-  createdAt DateTime    @default(now())
-  updatedAt DateTime    @updatedAt
-  joinedAt  DateTime    @default(now())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  joinedAt  DateTime @default(now())
 
   // Relations
-  partner   Partner     @relation(fields: [partnerId], references: [id], onDelete: Cascade)
-  user      User        @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
+  partner Partner @relation(fields: [partnerId], references: [id], onDelete: Cascade)
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
   // A user can only belong to one partner (prevents conflicts)
   @@unique([userId])
   // Index for partner lookups
@@ -690,76 +690,76 @@ model PartnerUser {
 // Commission rules are DECLARATIVE, not procedural
 // ============================================================================
 model PartnerAgreement {
-  id              String          @id @default(uuid())
-  partnerId       String
-  
+  id        String @id @default(uuid())
+  partnerId String
+
   // Versioning
-  version         Int             // Auto-increment per partner: 1, 2, 3...
-  
+  version Int // Auto-increment per partner: 1, 2, 3...
+
   // Effective period
-  effectiveFrom   DateTime        // When this agreement takes effect
-  effectiveTo     DateTime?       // Null = current/indefinite
-  
+  effectiveFrom DateTime // When this agreement takes effect
+  effectiveTo   DateTime? // Null = current/indefinite
+
   // =========================================================================
   // COMMISSION RULES - Declarative, flexible structure
   // =========================================================================
-  
+
   // Primary commission model
-  commissionType  CommissionType  @default(PERCENTAGE)
-  
+  commissionType CommissionType @default(PERCENTAGE)
+
   // When commission is triggered
   commissionTrigger CommissionTrigger @default(ON_PAYMENT)
-  
+
   // Base commission rate (for PERCENTAGE type)
-  commissionRate  Decimal         @db.Decimal(5, 4) // e.g., 0.1500 = 15%
-  
+  commissionRate Decimal @db.Decimal(5, 4) // e.g., 0.1500 = 15%
+
   // Fixed amount (for FIXED type)
-  fixedAmount     Decimal?        @db.Decimal(12, 2) // e.g., 10.00
-  
+  fixedAmount Decimal? @db.Decimal(12, 2) // e.g., 10.00
+
   // One-time setup fee (in addition to recurring)
-  setupFee        Decimal?        @db.Decimal(12, 2) // e.g., 50.00 on first payment
-  
+  setupFee Decimal? @db.Decimal(12, 2) // e.g., 50.00 on first payment
+
   // Tiered commission structure (if commissionType = TIERED or HYBRID)
   // Format: [{ "minVolume": 0, "maxVolume": 1000, "rate": 0.10 }, ...]
   commissionTiers Json?
-  
+
   // Full commission rules (for HYBRID and complex scenarios)
   // Format: { "rules": [...], "conditions": [...] }
   commissionRules Json?
-  
+
   // Minimum and maximum commission per transaction
-  minCommission   Decimal?        @db.Decimal(12, 2)
-  maxCommission   Decimal?        @db.Decimal(12, 2)
-  
+  minCommission Decimal? @db.Decimal(12, 2)
+  maxCommission Decimal? @db.Decimal(12, 2)
+
   // Clearance period (days before PENDING -> CLEARED)
-  clearanceDays   Int             @default(30)
-  
+  clearanceDays Int @default(30)
+
   // Currency for fixed amounts
-  currency        String          @default("USD")
-  
+  currency String @default("USD")
+
   // =========================================================================
   // AGREEMENT TERMS
   // =========================================================================
-  
+
   // Full agreement terms (flexible structure)
-  terms           Json?           // Payment terms, conditions, etc.
-  
+  terms Json? // Payment terms, conditions, etc.
+
   // Signature tracking
-  status          AgreementStatus @default(DRAFT)
-  signedAt        DateTime?
-  signedByUserId  String?         // PartnerUser who signed
-  
+  status         AgreementStatus @default(DRAFT)
+  signedAt       DateTime?
+  signedByUserId String? // PartnerUser who signed
+
   // Platform approval
-  approvedAt      DateTime?
-  approvedByUserId String?        // Super Admin who approved
-  
+  approvedAt       DateTime?
+  approvedByUserId String? // Super Admin who approved
+
   // Audit fields
-  createdAt       DateTime        @default(now())
-  updatedAt       DateTime        @updatedAt
-  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   // Relations
-  partner         Partner         @relation(fields: [partnerId], references: [id], onDelete: Cascade)
-  earnings        PartnerEarning[]
+  partner  Partner          @relation(fields: [partnerId], references: [id], onDelete: Cascade)
+  earnings PartnerEarning[]
 
   // Only one agreement version number per partner
   @@unique([partnerId, version])
@@ -774,27 +774,27 @@ model PartnerAgreement {
 // Partners can have multiple codes for different campaigns
 // ============================================================================
 model PartnerReferralCode {
-  id          String    @id @default(uuid())
-  partnerId   String
-  code        String    @unique // e.g., "PARTNER2024", "SUMMER-SALE"
-  
+  id        String @id @default(uuid())
+  partnerId String
+  code      String @unique // e.g., "PARTNER2024", "SUMMER-SALE"
+
   // Usage controls
-  isActive    Boolean   @default(true)
-  usageLimit  Int?      // Null = unlimited
-  usageCount  Int       @default(0)
-  expiresAt   DateTime? // Null = never expires
-  
+  isActive   Boolean   @default(true)
+  usageLimit Int? // Null = unlimited
+  usageCount Int       @default(0)
+  expiresAt  DateTime? // Null = never expires
+
   // Campaign tracking
-  campaignName String?  // e.g., "Q4 2024 Promotion"
-  metadata    Json?     // Additional tracking data
-  
+  campaignName String? // e.g., "Q4 2024 Promotion"
+  metadata     Json? // Additional tracking data
+
   // Audit fields
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   // Relations
-  partner     Partner   @relation(fields: [partnerId], references: [id], onDelete: Cascade)
-  referrals   PartnerReferral[]
+  partner   Partner           @relation(fields: [partnerId], references: [id], onDelete: Cascade)
+  referrals PartnerReferral[]
 
   @@index([code])
   @@index([partnerId])
@@ -808,45 +808,45 @@ model PartnerReferralCode {
 // This is the source of truth for "who referred this tenant"
 // ============================================================================
 model PartnerReferral {
-  id              String    @id @default(uuid())
-  partnerId       String
-  tenantId        String    @unique // Each tenant can only have ONE referral (immutable)
-  referralCodeId  String?   // The code used (if any)
-  
+  id             String  @id @default(uuid())
+  partnerId      String
+  tenantId       String  @unique // Each tenant can only have ONE referral (immutable)
+  referralCodeId String? // The code used (if any)
+
   // Attribution method - HOW the tenant was linked
   attributionMethod AttributionMethod @default(REFERRAL_LINK)
-  
+
   // Attribution timestamp - IMMUTABLE
-  referredAt      DateTime  @default(now())
-  
+  referredAt DateTime @default(now())
+
   // Attribution window configuration
   // If set, attribution is only valid for commissions within this period
-  attributionWindowDays Int?     // null = lifetime attribution
+  attributionWindowDays Int? // null = lifetime attribution
   attributionExpiresAt  DateTime? // Calculated: referredAt + windowDays
-  
+
   // Lock flag - set to true after first successful billing
   // Once locked, this record can NEVER be modified or deleted
-  attributionLocked Boolean @default(false)
-  lockedAt        DateTime?
-  
+  attributionLocked Boolean   @default(false)
+  lockedAt          DateTime?
+
   // Context at time of referral
-  referralSource  String?   // e.g., "website", "email", "direct"
-  landingPage     String?   // URL where signup occurred
-  metadata        Json?     // Additional attribution data
-  
+  referralSource String? // e.g., "website", "email", "direct"
+  landingPage    String? // URL where signup occurred
+  metadata       Json? // Additional attribution data
+
   // Who created this attribution
-  createdByUserId String?   // Partner user or Super Admin who created
-  
+  createdByUserId String? // Partner user or Super Admin who created
+
   // Audit fields
-  createdAt       DateTime  @default(now())
+  createdAt DateTime @default(now())
   // NO updatedAt - this is intentionally immutable
 
   // Relations
-  partner         Partner   @relation(fields: [partnerId], references: [id], onDelete: Restrict)
-  tenant          Tenant    @relation(fields: [tenantId], references: [id], onDelete: Restrict)
-  referralCode    PartnerReferralCode? @relation(fields: [referralCodeId], references: [id], onDelete: SetNull)
-  earnings        PartnerEarning[]
-  subscriptions   Subscription[]  // Subscriptions attributed to this referral
+  partner       Partner              @relation(fields: [partnerId], references: [id], onDelete: Restrict)
+  tenant        Tenant               @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  referralCode  PartnerReferralCode? @relation(fields: [referralCodeId], references: [id], onDelete: SetNull)
+  earnings      PartnerEarning[]
+  subscriptions Subscription[] // Subscriptions attributed to this referral
 
   @@index([partnerId])
   @@index([tenantId])
@@ -862,88 +862,88 @@ model PartnerReferral {
 // Linked to specific agreement version that was active at time of earning
 // ============================================================================
 model PartnerEarning {
-  id              String           @id @default(uuid())
-  partnerId       String
-  referralId      String           // Which tenant referral generated this
-  agreementId     String           // Which agreement terms applied
-  
+  id          String @id @default(uuid())
+  partnerId   String
+  referralId  String // Which tenant referral generated this
+  agreementId String // Which agreement terms applied
+
   // Entry type - for ledger accounting
-  entryType       EarningEntryType @default(CREDIT)
-  
+  entryType EarningEntryType @default(CREDIT)
+
   // Link to subscription event that triggered this earning
-  subscriptionEventId String?      // For traceability
-  
+  subscriptionEventId String? // For traceability
+
   // Idempotency key - prevents duplicate processing
-  idempotencyKey  String           @unique // e.g., "evt_{eventId}_comm"
-  
+  idempotencyKey String @unique // e.g., "evt_{eventId}_comm"
+
   // Billing period
-  periodStart     DateTime         // Start of billing period
-  periodEnd       DateTime         // End of billing period
-  
+  periodStart DateTime // Start of billing period
+  periodEnd   DateTime // End of billing period
+
   // =========================================================================
   // FINANCIAL DETAILS - Snapshot at time of earning (IMMUTABLE)
   // =========================================================================
-  
+
   // Source amount
-  grossAmount     Decimal          @db.Decimal(12, 2) // Total billed to tenant
-  
+  grossAmount Decimal @db.Decimal(12, 2) // Total billed to tenant
+
   // Commission calculation snapshot
-  commissionType  CommissionType   // Type used for calculation
-  commissionRate  Decimal?         @db.Decimal(5, 4)  // Rate if PERCENTAGE
-  fixedAmount     Decimal?         @db.Decimal(12, 2) // Amount if FIXED
-  
+  commissionType CommissionType // Type used for calculation
+  commissionRate Decimal?       @db.Decimal(5, 4) // Rate if PERCENTAGE
+  fixedAmount    Decimal?       @db.Decimal(12, 2) // Amount if FIXED
+
   // Final calculated commission (can be negative for DEBIT)
-  commissionAmount Decimal         @db.Decimal(12, 2) // The actual earning
-  currency        String           @default("USD")
-  
+  commissionAmount Decimal @db.Decimal(12, 2) // The actual earning
+  currency         String  @default("USD")
+
   // Calculation details (for audit trail)
-  calculationDetails Json?         // { "formula": "...", "inputs": {...} }
-  
+  calculationDetails Json? // { "formula": "...", "inputs": {...} }
+
   // =========================================================================
   // STATUS - State machine for ledger
   // =========================================================================
-  
-  status          EarningStatus    @default(PENDING)
-  
+
+  status EarningStatus @default(PENDING)
+
   // State transition timestamps
-  clearedAt       DateTime?        // When PENDING -> CLEARED
-  approvedAt      DateTime?        // When CLEARED -> APPROVED
-  paidAt          DateTime?        // When APPROVED -> PAID
-  disputedAt      DateTime?        // When disputed
-  reversedAt      DateTime?        // When reversed
-  voidedAt        DateTime?        // When voided
-  
+  clearedAt  DateTime? // When PENDING -> CLEARED
+  approvedAt DateTime? // When CLEARED -> APPROVED
+  paidAt     DateTime? // When APPROVED -> PAID
+  disputedAt DateTime? // When disputed
+  reversedAt DateTime? // When reversed
+  voidedAt   DateTime? // When voided
+
   // For REVERSED/VOIDED - link to reversal entry
-  reversalEntryId String?          // Points to the DEBIT entry
-  reversedById    String?          // Original entry this reverses
-  reversalReason  String?          // Why reversed/voided
-  
+  reversalEntryId String? // Points to the DEBIT entry
+  reversedById    String? // Original entry this reverses
+  reversalReason  String? // Why reversed/voided
+
   // =========================================================================
   // PAYMENT TRACKING
   // =========================================================================
-  
-  payoutBatchId   String?          // Which payout batch this belongs to
-  paymentReference String?         // External payment ID
-  paymentMethod   String?          // e.g., "bank_transfer", "paypal"
-  
+
+  payoutBatchId    String? // Which payout batch this belongs to
+  paymentReference String? // External payment ID
+  paymentMethod    String? // e.g., "bank_transfer", "paypal"
+
   // =========================================================================
   // AUDIT FIELDS - Immutable
   // =========================================================================
-  
-  createdAt       DateTime         @default(now())
+
+  createdAt DateTime @default(now())
   // NO updatedAt - this is an APPEND-ONLY ledger
   // State changes create new entries or use state transition timestamps
-  
-  createdByUserId String?          // System or user who created
-  approvedByUserId String?         // Super Admin who approved
-  
+
+  createdByUserId  String? // System or user who created
+  approvedByUserId String? // Super Admin who approved
+
   // Context at time of creation
-  metadata        Json?            // Additional context
+  metadata Json? // Additional context
 
   // Relations
-  partner         Partner          @relation(fields: [partnerId], references: [id], onDelete: Restrict)
-  referral        PartnerReferral  @relation(fields: [referralId], references: [id], onDelete: Restrict)
-  agreement       PartnerAgreement @relation(fields: [agreementId], references: [id], onDelete: Restrict)
+  partner   Partner          @relation(fields: [partnerId], references: [id], onDelete: Restrict)
+  referral  PartnerReferral  @relation(fields: [referralId], references: [id], onDelete: Restrict)
+  agreement PartnerAgreement @relation(fields: [agreementId], references: [id], onDelete: Restrict)
 
   @@index([partnerId])
   @@index([referralId])
@@ -960,42 +960,42 @@ model PartnerEarning {
 // Configuration for payout thresholds and tax withholding
 // ============================================================================
 model PartnerPayoutSettings {
-  id              String   @id @default(uuid())
-  partnerId       String   @unique
-  
+  id        String @id @default(uuid())
+  partnerId String @unique
+
   // Payout thresholds
-  minimumPayout   Decimal  @db.Decimal(12, 2) @default(100.00) // Minimum balance for payout
-  currency        String   @default("USD")
-  
+  minimumPayout Decimal @default(100.00) @db.Decimal(12, 2) // Minimum balance for payout
+  currency      String  @default("USD")
+
   // Payout schedule preference
-  payoutFrequency String   @default("MONTHLY") // WEEKLY, BIWEEKLY, MONTHLY, QUARTERLY
-  
+  payoutFrequency String @default("MONTHLY") // WEEKLY, BIWEEKLY, MONTHLY, QUARTERLY
+
   // Tax withholding
-  taxWithholdingEnabled Boolean @default(false)
+  taxWithholdingEnabled Boolean  @default(false)
   taxWithholdingRate    Decimal? @db.Decimal(5, 4) // e.g., 0.30 = 30%
-  taxWithholdingReason  String?  // "W-8BEN", "1099-MISC", etc.
-  
+  taxWithholdingReason  String? // "W-8BEN", "1099-MISC", etc.
+
   // Tax documentation status
-  taxDocumentStatus     String   @default("NOT_SUBMITTED") // NOT_SUBMITTED, PENDING, VERIFIED, EXPIRED
-  taxDocumentType       String?  // "W-9", "W-8BEN", etc.
+  taxDocumentStatus     String    @default("NOT_SUBMITTED") // NOT_SUBMITTED, PENDING, VERIFIED, EXPIRED
+  taxDocumentType       String? // "W-9", "W-8BEN", etc.
   taxDocumentVerifiedAt DateTime?
-  
+
   // Bank/Payment details (placeholder - no actual integration)
-  paymentMethodType     String?  // "BANK_TRANSFER", "PAYPAL", "CHECK"
-  paymentMethodVerified Boolean  @default(false)
-  paymentMethodDetails  Json?    // Encrypted/masked details
-  
+  paymentMethodType     String? // "BANK_TRANSFER", "PAYPAL", "CHECK"
+  paymentMethodVerified Boolean @default(false)
+  paymentMethodDetails  Json? // Encrypted/masked details
+
   // Hold status
-  payoutHold            Boolean  @default(false)
-  payoutHoldReason      String?
-  payoutHoldUntil       DateTime?
-  
+  payoutHold       Boolean   @default(false)
+  payoutHoldReason String?
+  payoutHoldUntil  DateTime?
+
   // Audit
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
-  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   // Relations
-  partner         Partner  @relation(fields: [partnerId], references: [id], onDelete: Cascade)
+  partner Partner @relation(fields: [partnerId], references: [id], onDelete: Cascade)
 }
 
 // ============================================================================
@@ -1004,53 +1004,53 @@ model PartnerPayoutSettings {
 // Status: DRAFT → PENDING_APPROVAL → APPROVED → READY → PROCESSING → COMPLETED/FAILED
 // ============================================================================
 model PayoutBatch {
-  id              String   @id @default(uuid())
-  partnerId       String
-  
+  id        String @id @default(uuid())
+  partnerId String
+
   // Batch details
-  batchNumber     String   @unique // e.g., "PO-2025-001234"
-  status          String   @default("DRAFT") // DRAFT, PENDING_APPROVAL, APPROVED, READY, PROCESSING, COMPLETED, FAILED, CANCELLED
-  
+  batchNumber String @unique // e.g., "PO-2025-001234"
+  status      String @default("DRAFT") // DRAFT, PENDING_APPROVAL, APPROVED, READY, PROCESSING, COMPLETED, FAILED, CANCELLED
+
   // Financial summary
-  grossAmount     Decimal  @db.Decimal(12, 2) // Total before withholding
-  taxWithholding  Decimal  @db.Decimal(12, 2) @default(0) // Tax withheld
-  netAmount       Decimal  @db.Decimal(12, 2) // Amount to be paid
-  currency        String   @default("USD")
-  earningsCount   Int      // Number of earnings in batch
-  
+  grossAmount    Decimal @db.Decimal(12, 2) // Total before withholding
+  taxWithholding Decimal @default(0) @db.Decimal(12, 2) // Tax withheld
+  netAmount      Decimal @db.Decimal(12, 2) // Amount to be paid
+  currency       String  @default("USD")
+  earningsCount  Int // Number of earnings in batch
+
   // Period covered
-  periodStart     DateTime
-  periodEnd       DateTime
-  
+  periodStart DateTime
+  periodEnd   DateTime
+
   // Readiness checks
-  readinessChecks Json?    // { "minimumMet": true, "taxDocsVerified": true, ... }
-  readinessStatus String   @default("NOT_CHECKED") // NOT_CHECKED, READY, BLOCKED
-  blockReason     String?  // Why payout is blocked
-  
+  readinessChecks Json? // { "minimumMet": true, "taxDocsVerified": true, ... }
+  readinessStatus String  @default("NOT_CHECKED") // NOT_CHECKED, READY, BLOCKED
+  blockReason     String? // Why payout is blocked
+
   // Payment details (populated when processed - NOT in Phase 5)
-  paymentMethod   String?
+  paymentMethod    String?
   paymentReference String?
-  processedAt     DateTime?
-  failureReason   String?
-  
+  processedAt      DateTime?
+  failureReason    String?
+
   // Approval workflow
-  approvedAt      DateTime?
+  approvedAt       DateTime?
   approvedByUserId String?
-  
+
   // Cancellation
-  cancelledAt     DateTime?
-  cancelledByUserId String?
+  cancelledAt        DateTime?
+  cancelledByUserId  String?
   cancellationReason String?
-  
+
   // Notes
-  internalNotes   String?
-  
+  internalNotes String?
+
   // Audit
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
-  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   // Relations
-  partner         Partner  @relation(fields: [partnerId], references: [id], onDelete: Restrict)
+  partner Partner @relation(fields: [partnerId], references: [id], onDelete: Restrict)
 
   @@index([partnerId])
   @@index([status])
@@ -1069,25 +1069,25 @@ enum AuditAction {
   TENANT_SUSPENDED
   TENANT_ACTIVATED
   TENANT_DEACTIVATED
-  
+
   // Domain actions
   DOMAIN_ADDED
   DOMAIN_REMOVED
   DOMAIN_VERIFIED
-  
+
   // User actions
   USER_INVITED
   USER_REMOVED
   USER_ROLE_CHANGED
-  
+
   // Auth actions
   USER_LOGIN
   USER_LOGOUT
-  
+
   // Super Admin actions
   SUPER_ADMIN_IMPERSONATION_START
   SUPER_ADMIN_IMPERSONATION_END
-  
+
   // Partner actions
   PARTNER_CREATED
   PARTNER_UPDATED
@@ -1104,17 +1104,17 @@ enum AuditAction {
   PARTNER_EARNING_CREATED
   PARTNER_EARNING_APPROVED
   PARTNER_EARNING_PAID
-  
+
   // Attribution actions
-  ATTRIBUTION_CREATED           // New attribution link created
-  ATTRIBUTION_LOCKED            // Attribution locked after first billing
-  ATTRIBUTION_LOCK_ATTEMPTED    // Failed attempt to modify locked attribution
-  ATTRIBUTION_REASSIGN_BLOCKED  // Attempted reassignment blocked
-  
+  ATTRIBUTION_CREATED // New attribution link created
+  ATTRIBUTION_LOCKED // Attribution locked after first billing
+  ATTRIBUTION_LOCK_ATTEMPTED // Failed attempt to modify locked attribution
+  ATTRIBUTION_REASSIGN_BLOCKED // Attempted reassignment blocked
+
   // Partner-assisted tenant creation
-  PARTNER_TENANT_CREATED        // Partner created tenant in PENDING state
-  PARTNER_TENANT_ACTIVATED      // Tenant completed signup and activated
-  
+  PARTNER_TENANT_CREATED // Partner created tenant in PENDING state
+  PARTNER_TENANT_ACTIVATED // Tenant completed signup and activated
+
   // Subscription actions (module-agnostic)
   SUBSCRIPTION_CREATED
   SUBSCRIPTION_ACTIVATED
@@ -1125,57 +1125,57 @@ enum AuditAction {
   SUBSCRIPTION_UPGRADED
   SUBSCRIPTION_DOWNGRADED
   SUBSCRIPTION_EXPIRED
-  
+
   // Entitlement actions
   ENTITLEMENT_GRANTED
   ENTITLEMENT_REVOKED
   ENTITLEMENT_EXPIRED
-  
+
   // Invoice actions
   INVOICE_CREATED
   INVOICE_PAID
   INVOICE_VOIDED
-  
+
   // Commission & Earnings actions
-  COMMISSION_CALCULATED         // Commission calculated for event
-  EARNING_CREATED               // Earning ledger entry created
-  EARNING_CLEARED               // Earning cleared (after clearance period)
-  EARNING_APPROVED              // Earning approved for payout
-  EARNING_PAID                  // Earning paid
-  EARNING_DISPUTED              // Earning disputed
-  EARNING_REVERSED              // Earning reversed
-  EARNING_VOIDED                // Earning voided
-  
+  COMMISSION_CALCULATED // Commission calculated for event
+  EARNING_CREATED // Earning ledger entry created
+  EARNING_CLEARED // Earning cleared (after clearance period)
+  EARNING_APPROVED // Earning approved for payout
+  EARNING_PAID // Earning paid
+  EARNING_DISPUTED // Earning disputed
+  EARNING_REVERSED // Earning reversed
+  EARNING_VOIDED // Earning voided
+
   // Payout actions
-  PAYOUT_BATCH_CREATED          // Payout batch created
-  PAYOUT_BATCH_APPROVED         // Payout batch approved
-  PAYOUT_BATCH_PROCESSED        // Payout batch processed
-  PAYOUT_BATCH_FAILED           // Payout batch failed
-  PAYOUT_BATCH_CANCELLED        // Payout batch cancelled
-  
+  PAYOUT_BATCH_CREATED // Payout batch created
+  PAYOUT_BATCH_APPROVED // Payout batch approved
+  PAYOUT_BATCH_PROCESSED // Payout batch processed
+  PAYOUT_BATCH_FAILED // Payout batch failed
+  PAYOUT_BATCH_CANCELLED // Payout batch cancelled
+
   // Payout readiness actions
-  PAYOUT_READINESS_CHECKED      // Readiness check performed
-  PAYOUT_HOLD_APPLIED           // Partner payout put on hold
-  PAYOUT_HOLD_RELEASED          // Partner payout hold released
-  PAYOUT_SETTINGS_UPDATED       // Partner payout settings changed
-  TAX_DOCUMENT_SUBMITTED        // Tax document submitted
-  TAX_DOCUMENT_VERIFIED         // Tax document verified
+  PAYOUT_READINESS_CHECKED // Readiness check performed
+  PAYOUT_HOLD_APPLIED // Partner payout put on hold
+  PAYOUT_HOLD_RELEASED // Partner payout hold released
+  PAYOUT_SETTINGS_UPDATED // Partner payout settings changed
+  TAX_DOCUMENT_SUBMITTED // Tax document submitted
+  TAX_DOCUMENT_VERIFIED // Tax document verified
 }
 
 model AuditLog {
-  id          String      @id @default(uuid())
-  action      AuditAction
-  actorId     String      // User who performed the action
-  actorEmail  String      // Denormalized for easy querying
-  tenantId    String?     // Null for super admin global actions
-  targetType  String?     // e.g., "User", "Tenant", "TenantDomain"
-  targetId    String?     // ID of the affected entity
-  metadata    Json?       // Additional context
-  ipAddress   String?
-  userAgent   String?
-  
+  id         String      @id @default(uuid())
+  action     AuditAction
+  actorId    String // User who performed the action
+  actorEmail String // Denormalized for easy querying
+  tenantId   String? // Null for super admin global actions
+  targetType String? // e.g., "User", "Tenant", "TenantDomain"
+  targetId   String? // ID of the affected entity
+  metadata   Json? // Additional context
+  ipAddress  String?
+  userAgent  String?
+
   // Audit fields
-  createdAt   DateTime    @default(now())
+  createdAt DateTime @default(now())
 
   @@index([actorId])
   @@index([tenantId])
@@ -1214,44 +1214,44 @@ model AuditLog {
 // Extended business details for a tenant
 // ============================================================================
 model BusinessProfile {
-  id                String    @id @default(uuid())
-  tenantId          String    @unique
-  
+  id       String @id @default(uuid())
+  tenantId String @unique
+
   // Business identity
-  legalName         String?   // Legal business name
-  tradingName       String?   // DBA / Trading as
-  taxId             String?   // VAT/GST/EIN number
-  registrationNumber String?  // Company registration
-  
+  legalName          String? // Legal business name
+  tradingName        String? // DBA / Trading as
+  taxId              String? // VAT/GST/EIN number
+  registrationNumber String? // Company registration
+
   // Business type
-  businessType      String?   // SOLE_PROPRIETOR, LLC, CORPORATION, etc.
-  industry          String?   // Industry classification
-  
+  businessType String? // SOLE_PROPRIETOR, LLC, CORPORATION, etc.
+  industry     String? // Industry classification
+
   // Contact details
-  email             String?   // Primary business email
-  phone             String?   // Primary phone
-  website           String?
-  
+  email   String? // Primary business email
+  phone   String? // Primary phone
+  website String?
+
   // Address
-  addressLine1      String?
-  addressLine2      String?
-  city              String?
-  state             String?
-  postalCode        String?
-  country           String?   @default("US")
-  
+  addressLine1 String?
+  addressLine2 String?
+  city         String?
+  state        String?
+  postalCode   String?
+  country      String? @default("US")
+
   // Operating details
-  timezone          String    @default("UTC")
-  currency          String    @default("USD")
-  dateFormat        String    @default("YYYY-MM-DD")
-  
+  timezone   String @default("UTC")
+  currency   String @default("USD")
+  dateFormat String @default("YYYY-MM-DD")
+
   // Audit
-  createdAt         DateTime  @default(now())
-  updatedAt         DateTime  @updatedAt
-  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   // Relations
-  tenant            Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
   @@index([tenantId])
 }
 
@@ -1266,47 +1266,47 @@ enum LocationStatus {
 }
 
 model Location {
-  id                String         @id @default(uuid())
-  tenantId          String
-  
+  id       String @id @default(uuid())
+  tenantId String
+
   // Location identity
-  name              String         // "Main Store", "Warehouse #1"
-  code              String?        // Internal code: "LOC-001"
-  type              String         @default("STORE") // STORE, WAREHOUSE, OFFICE, VIRTUAL
-  
+  name String // "Main Store", "Warehouse #1"
+  code String? // Internal code: "LOC-001"
+  type String  @default("STORE") // STORE, WAREHOUSE, OFFICE, VIRTUAL
+
   // Status
-  status            LocationStatus @default(ACTIVE)
-  
+  status LocationStatus @default(ACTIVE)
+
   // Contact
-  email             String?
-  phone             String?
-  
+  email String?
+  phone String?
+
   // Address
-  addressLine1      String?
-  addressLine2      String?
-  city              String?
-  state             String?
-  postalCode        String?
-  country           String?
-  latitude          Decimal?       @db.Decimal(10, 8)
-  longitude         Decimal?       @db.Decimal(11, 8)
-  
+  addressLine1 String?
+  addressLine2 String?
+  city         String?
+  state        String?
+  postalCode   String?
+  country      String?
+  latitude     Decimal? @db.Decimal(10, 8)
+  longitude    Decimal? @db.Decimal(11, 8)
+
   // Operating hours (JSON for flexibility)
-  operatingHours    Json?          // { "mon": { "open": "09:00", "close": "17:00" }, ... }
-  
+  operatingHours Json? // { "mon": { "open": "09:00", "close": "17:00" }, ... }
+
   // Capabilities
-  isDefaultLocation Boolean        @default(false)
-  allowsPickup      Boolean        @default(false)
-  allowsShipping    Boolean        @default(false)
-  
+  isDefaultLocation Boolean @default(false)
+  allowsPickup      Boolean @default(false)
+  allowsShipping    Boolean @default(false)
+
   // Audit
-  createdAt         DateTime       @default(now())
-  updatedAt         DateTime       @updatedAt
-  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   // Relations
-  inventoryLevels   InventoryLevel[]
-  staffAssignments  StaffMember[]
-  
+  inventoryLevels  InventoryLevel[]
+  staffAssignments StaffMember[]
+
   @@unique([tenantId, code])
   @@index([tenantId])
   @@index([status])
@@ -1317,33 +1317,33 @@ model Location {
 // Hierarchical product categorization
 // ============================================================================
 model ProductCategory {
-  id                String            @id @default(uuid())
-  tenantId          String
-  
+  id       String @id @default(uuid())
+  tenantId String
+
   // Category identity
-  name              String
-  slug              String
-  description       String?
-  imageUrl          String?
-  
+  name        String
+  slug        String
+  description String?
+  imageUrl    String?
+
   // Hierarchy
-  parentId          String?
-  parent            ProductCategory?  @relation("CategoryHierarchy", fields: [parentId], references: [id], onDelete: SetNull)
-  children          ProductCategory[] @relation("CategoryHierarchy")
-  
+  parentId String?
+  parent   ProductCategory?  @relation("CategoryHierarchy", fields: [parentId], references: [id], onDelete: SetNull)
+  children ProductCategory[] @relation("CategoryHierarchy")
+
   // Ordering
-  sortOrder         Int               @default(0)
-  
+  sortOrder Int @default(0)
+
   // Status
-  isActive          Boolean           @default(true)
-  
+  isActive Boolean @default(true)
+
   // Audit
-  createdAt         DateTime          @default(now())
-  updatedAt         DateTime          @updatedAt
-  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   // Relations
-  products          Product[]
-  
+  products Product[]
+
   @@unique([tenantId, slug])
   @@index([tenantId])
   @@index([parentId])
@@ -1360,72 +1360,72 @@ enum ProductStatus {
 }
 
 enum ProductType {
-  PHYSICAL          // Tangible goods
-  DIGITAL           // Digital downloads
-  SERVICE           // Services
-  BUNDLE            // Product bundles
+  PHYSICAL // Tangible goods
+  DIGITAL // Digital downloads
+  SERVICE // Services
+  BUNDLE // Product bundles
 }
 
 model Product {
-  id                String          @id @default(uuid())
-  tenantId          String
-  
+  id       String @id @default(uuid())
+  tenantId String
+
   // Product identity
-  name              String
-  slug              String
-  sku               String?         // Stock keeping unit
-  barcode           String?         // UPC/EAN
-  description       String?         @db.Text
-  shortDescription  String?
-  
+  name             String
+  slug             String
+  sku              String? // Stock keeping unit
+  barcode          String? // UPC/EAN
+  description      String? @db.Text
+  shortDescription String?
+
   // Categorization
-  categoryId        String?
-  category          ProductCategory? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
-  tags              String[]        @default([])
-  
+  categoryId String?
+  category   ProductCategory? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  tags       String[]         @default([])
+
   // Type
-  type              ProductType     @default(PHYSICAL)
-  
+  type ProductType @default(PHYSICAL)
+
   // Pricing (base price, variants may override)
-  price             Decimal         @db.Decimal(12, 2)
-  compareAtPrice    Decimal?        @db.Decimal(12, 2) // Original/strikethrough price
-  costPrice         Decimal?        @db.Decimal(12, 2) // Cost for margin calculation
-  
+  price          Decimal  @db.Decimal(12, 2)
+  compareAtPrice Decimal? @db.Decimal(12, 2) // Original/strikethrough price
+  costPrice      Decimal? @db.Decimal(12, 2) // Cost for margin calculation
+
   // Tax
-  taxable           Boolean         @default(true)
-  taxCategoryId     String?         // Reference to tax category
-  
+  taxable       Boolean @default(true)
+  taxCategoryId String? // Reference to tax category
+
   // Physical attributes
-  weight            Decimal?        @db.Decimal(10, 4) // In kg
-  weightUnit        String?         @default("kg")
-  length            Decimal?        @db.Decimal(10, 2)
-  width             Decimal?        @db.Decimal(10, 2)
-  height            Decimal?        @db.Decimal(10, 2)
-  dimensionUnit     String?         @default("cm")
-  
+  weight        Decimal? @db.Decimal(10, 4) // In kg
+  weightUnit    String?  @default("kg")
+  length        Decimal? @db.Decimal(10, 2)
+  width         Decimal? @db.Decimal(10, 2)
+  height        Decimal? @db.Decimal(10, 2)
+  dimensionUnit String?  @default("cm")
+
   // Inventory tracking
-  trackInventory    Boolean         @default(true)
-  allowBackorder    Boolean         @default(false)
-  
+  trackInventory Boolean @default(true)
+  allowBackorder Boolean @default(false)
+
   // Media
-  images            Json?           // [{ url, alt, position }]
-  
+  images Json? // [{ url, alt, position }]
+
   // SEO
-  metaTitle         String?
-  metaDescription   String?
-  
+  metaTitle       String?
+  metaDescription String?
+
   // Status
-  status            ProductStatus   @default(DRAFT)
-  publishedAt       DateTime?
-  
+  status      ProductStatus @default(DRAFT)
+  publishedAt DateTime?
+
   // Audit
-  createdAt         DateTime        @default(now())
-  updatedAt         DateTime        @updatedAt
-  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   // Relations
-  variants          ProductVariant[]
-  inventoryLevels   InventoryLevel[]
-  
+  variants        ProductVariant[]
+  inventoryLevels InventoryLevel[]
+
   @@unique([tenantId, slug])
   @@unique([tenantId, sku])
   @@index([tenantId])
@@ -1439,42 +1439,42 @@ model Product {
 // Variations of a product (size, color, etc.)
 // ============================================================================
 model ProductVariant {
-  id                String          @id @default(uuid())
-  productId         String
-  product           Product         @relation(fields: [productId], references: [id], onDelete: Cascade)
-  
+  id        String  @id @default(uuid())
+  productId String
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
   // Variant identity
-  name              String          // "Red / Large"
-  sku               String?
-  barcode           String?
-  
+  name    String // "Red / Large"
+  sku     String?
+  barcode String?
+
   // Options (JSON for flexibility)
-  options           Json?           // { "color": "Red", "size": "Large" }
-  
+  options Json? // { "color": "Red", "size": "Large" }
+
   // Pricing (overrides product price)
-  price             Decimal?        @db.Decimal(12, 2)
-  compareAtPrice    Decimal?        @db.Decimal(12, 2)
-  costPrice         Decimal?        @db.Decimal(12, 2)
-  
+  price          Decimal? @db.Decimal(12, 2)
+  compareAtPrice Decimal? @db.Decimal(12, 2)
+  costPrice      Decimal? @db.Decimal(12, 2)
+
   // Physical attributes (overrides product)
-  weight            Decimal?        @db.Decimal(10, 4)
-  
+  weight Decimal? @db.Decimal(10, 4)
+
   // Media
-  imageUrl          String?
-  
+  imageUrl String?
+
   // Status
-  isActive          Boolean         @default(true)
-  
+  isActive Boolean @default(true)
+
   // Ordering
-  position          Int             @default(0)
-  
+  position Int @default(0)
+
   // Audit
-  createdAt         DateTime        @default(now())
-  updatedAt         DateTime        @updatedAt
-  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   // Relations
-  inventoryLevels   InventoryLevel[]
-  
+  inventoryLevels InventoryLevel[]
+
   @@index([productId])
   @@index([sku])
   @@index([barcode])
@@ -1485,37 +1485,37 @@ model ProductVariant {
 // Single source of truth for stock levels per location
 // ============================================================================
 model InventoryLevel {
-  id                String          @id @default(uuid())
-  tenantId          String
-  
+  id       String @id @default(uuid())
+  tenantId String
+
   // Product reference (either product or variant)
-  productId         String
-  product           Product         @relation(fields: [productId], references: [id], onDelete: Cascade)
-  variantId         String?
-  variant           ProductVariant? @relation(fields: [variantId], references: [id], onDelete: Cascade)
-  
+  productId String
+  product   Product         @relation(fields: [productId], references: [id], onDelete: Cascade)
+  variantId String?
+  variant   ProductVariant? @relation(fields: [variantId], references: [id], onDelete: Cascade)
+
   // Location
-  locationId        String
-  location          Location        @relation(fields: [locationId], references: [id], onDelete: Cascade)
-  
+  locationId String
+  location   Location @relation(fields: [locationId], references: [id], onDelete: Cascade)
+
   // Stock quantities
-  quantityOnHand    Int             @default(0)  // Physical stock
-  quantityReserved  Int             @default(0)  // Reserved for orders
-  quantityAvailable Int             @default(0)  // On hand - reserved (computed)
-  quantityIncoming  Int             @default(0)  // Expected from suppliers
-  
+  quantityOnHand    Int @default(0) // Physical stock
+  quantityReserved  Int @default(0) // Reserved for orders
+  quantityAvailable Int @default(0) // On hand - reserved (computed)
+  quantityIncoming  Int @default(0) // Expected from suppliers
+
   // Reorder settings
-  reorderPoint      Int?            // Alert when below this
-  reorderQuantity   Int?            // Suggested reorder amount
-  
+  reorderPoint    Int? // Alert when below this
+  reorderQuantity Int? // Suggested reorder amount
+
   // Bin/shelf location
-  binLocation       String?
-  
+  binLocation String?
+
   // Audit
-  createdAt         DateTime        @default(now())
-  updatedAt         DateTime        @updatedAt
-  lastCountedAt     DateTime?       // Last physical count
-  
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  lastCountedAt DateTime? // Last physical count
+
   @@unique([productId, variantId, locationId])
   @@index([tenantId])
   @@index([productId])
@@ -1534,54 +1534,54 @@ enum CustomerStatus {
 }
 
 model Customer {
-  id                String          @id @default(uuid())
-  tenantId          String
-  
+  id       String @id @default(uuid())
+  tenantId String
+
   // Identity
-  email             String?
-  phone             String?
-  
+  email String?
+  phone String?
+
   // Name
-  firstName         String?
-  lastName          String?
-  fullName          String?         // Computed or provided
-  
+  firstName String?
+  lastName  String?
+  fullName  String? // Computed or provided
+
   // Company (B2B)
-  company           String?
-  taxId             String?
-  
+  company String?
+  taxId   String?
+
   // Default address ID
-  defaultAddressId  String?
-  
+  defaultAddressId String?
+
   // Status
-  status            CustomerStatus  @default(ACTIVE)
-  
+  status CustomerStatus @default(ACTIVE)
+
   // Marketing
-  acceptsMarketing  Boolean         @default(false)
-  marketingOptInAt  DateTime?
-  
+  acceptsMarketing Boolean   @default(false)
+  marketingOptInAt DateTime?
+
   // Notes
-  notes             String?         @db.Text
-  tags              String[]        @default([])
-  
+  notes String?  @db.Text
+  tags  String[] @default([])
+
   // Metrics (denormalized for performance)
-  totalOrders       Int             @default(0)
-  totalSpent        Decimal         @default(0) @db.Decimal(12, 2)
-  averageOrderValue Decimal?        @db.Decimal(12, 2)
+  totalOrders       Int       @default(0)
+  totalSpent        Decimal   @default(0) @db.Decimal(12, 2)
+  averageOrderValue Decimal?  @db.Decimal(12, 2)
   lastOrderAt       DateTime?
-  
+
   // Loyalty
-  loyaltyPoints     Int             @default(0)
-  loyaltyTier       String?
-  
+  loyaltyPoints Int     @default(0)
+  loyaltyTier   String?
+
   // Audit
-  createdAt         DateTime        @default(now())
-  updatedAt         DateTime        @updatedAt
-  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   // Relations
-  addresses         CustomerAddress[]
-  wallets           Wallet[]
-  
+  addresses CustomerAddress[]
+  wallets   Wallet[]
+
   @@unique([tenantId, email])
   @@index([tenantId])
   @@index([email])
@@ -1600,34 +1600,34 @@ enum AddressType {
 }
 
 model CustomerAddress {
-  id                String      @id @default(uuid())
-  customerId        String
-  customer          Customer    @relation(fields: [customerId], references: [id], onDelete: Cascade)
-  
+  id         String   @id @default(uuid())
+  customerId String
+  customer   Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+
   // Address type
-  type              AddressType @default(BOTH)
-  
+  type AddressType @default(BOTH)
+
   // Contact
-  firstName         String?
-  lastName          String?
-  company           String?
-  phone             String?
-  
+  firstName String?
+  lastName  String?
+  company   String?
+  phone     String?
+
   // Address
-  addressLine1      String
-  addressLine2      String?
-  city              String
-  state             String?
-  postalCode        String
-  country           String
-  
+  addressLine1 String
+  addressLine2 String?
+  city         String
+  state        String?
+  postalCode   String
+  country      String
+
   // Flags
-  isDefault         Boolean     @default(false)
-  
+  isDefault Boolean @default(false)
+
   // Audit
-  createdAt         DateTime    @default(now())
-  updatedAt         DateTime    @updatedAt
-  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   @@index([customerId])
 }
 
@@ -1642,41 +1642,41 @@ enum StaffStatus {
 }
 
 model StaffMember {
-  id                String      @id @default(uuid())
-  tenantId          String
-  
+  id       String @id @default(uuid())
+  tenantId String
+
   // Link to User (optional - staff may not have login)
-  userId            String?     // If staff has system access
-  
+  userId String? // If staff has system access
+
   // Identity
-  email             String
-  firstName         String
-  lastName          String
-  phone             String?
-  
+  email     String
+  firstName String
+  lastName  String
+  phone     String?
+
   // Employment
-  employeeId        String?     // Internal employee number
-  department        String?
-  jobTitle          String?
-  hireDate          DateTime?
-  
+  employeeId String? // Internal employee number
+  department String?
+  jobTitle   String?
+  hireDate   DateTime?
+
   // Assignment
-  locationId        String?
-  location          Location?   @relation(fields: [locationId], references: [id], onDelete: SetNull)
-  
+  locationId String?
+  location   Location? @relation(fields: [locationId], references: [id], onDelete: SetNull)
+
   // Status
-  status            StaffStatus @default(ACTIVE)
-  
+  status StaffStatus @default(ACTIVE)
+
   // Permissions (module-specific permissions handled by modules)
-  permissions       String[]    @default([])
-  
+  permissions String[] @default([])
+
   // PIN for POS login (hashed)
-  pinHash           String?
-  
+  pinHash String?
+
   // Audit
-  createdAt         DateTime    @default(now())
-  updatedAt         DateTime    @updatedAt
-  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   @@unique([tenantId, email])
   @@unique([tenantId, employeeId])
   @@index([tenantId])
@@ -1694,45 +1694,45 @@ enum SupplierStatus {
 }
 
 model Supplier {
-  id                String         @id @default(uuid())
-  tenantId          String
-  
+  id       String @id @default(uuid())
+  tenantId String
+
   // Identity
-  name              String
-  code              String?        // Supplier code
-  
+  name String
+  code String? // Supplier code
+
   // Contact
-  email             String?
-  phone             String?
-  website           String?
-  
+  email   String?
+  phone   String?
+  website String?
+
   // Primary contact person
-  contactName       String?
-  contactEmail      String?
-  contactPhone      String?
-  
+  contactName  String?
+  contactEmail String?
+  contactPhone String?
+
   // Address
-  addressLine1      String?
-  addressLine2      String?
-  city              String?
-  state             String?
-  postalCode        String?
-  country           String?
-  
+  addressLine1 String?
+  addressLine2 String?
+  city         String?
+  state        String?
+  postalCode   String?
+  country      String?
+
   // Payment terms
-  paymentTerms      String?        // "NET30", "NET60", etc.
-  currency          String         @default("USD")
-  
+  paymentTerms String? // "NET30", "NET60", etc.
+  currency     String  @default("USD")
+
   // Status
-  status            SupplierStatus @default(ACTIVE)
-  
+  status SupplierStatus @default(ACTIVE)
+
   // Notes
-  notes             String?        @db.Text
-  
+  notes String? @db.Text
+
   // Audit
-  createdAt         DateTime       @default(now())
-  updatedAt         DateTime       @updatedAt
-  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   @@unique([tenantId, code])
   @@index([tenantId])
   @@index([status])
@@ -1743,50 +1743,50 @@ model Supplier {
 // Customer store credit, gift card balances, loyalty points
 // ============================================================================
 enum WalletType {
-  STORE_CREDIT      // Store credit balance
-  GIFT_CARD         // Gift card
-  LOYALTY_POINTS    // Loyalty points (value conversion needed)
-  PREPAID           // Prepaid balance
+  STORE_CREDIT // Store credit balance
+  GIFT_CARD // Gift card
+  LOYALTY_POINTS // Loyalty points (value conversion needed)
+  PREPAID // Prepaid balance
 }
 
 enum WalletStatus {
   ACTIVE
-  FROZEN            // Cannot be used
+  FROZEN // Cannot be used
   EXPIRED
 }
 
 model Wallet {
-  id                String        @id @default(uuid())
-  tenantId          String
-  
+  id       String @id @default(uuid())
+  tenantId String
+
   // Owner (customer or anonymous for gift cards)
-  customerId        String?
-  customer          Customer?     @relation(fields: [customerId], references: [id], onDelete: SetNull)
-  
+  customerId String?
+  customer   Customer? @relation(fields: [customerId], references: [id], onDelete: SetNull)
+
   // Wallet identity
-  type              WalletType
-  code              String?       // Gift card code, etc.
-  
+  type WalletType
+  code String? // Gift card code, etc.
+
   // Balance
-  balance           Decimal       @default(0) @db.Decimal(12, 2)
-  currency          String        @default("USD")
-  
+  balance  Decimal @default(0) @db.Decimal(12, 2)
+  currency String  @default("USD")
+
   // For gift cards
-  initialValue      Decimal?      @db.Decimal(12, 2)
-  
+  initialValue Decimal? @db.Decimal(12, 2)
+
   // Status
-  status            WalletStatus  @default(ACTIVE)
-  
+  status WalletStatus @default(ACTIVE)
+
   // Expiry
-  expiresAt         DateTime?
-  
+  expiresAt DateTime?
+
   // Audit
-  createdAt         DateTime      @default(now())
-  updatedAt         DateTime      @updatedAt
-  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   // Relations
-  transactions      WalletTransaction[]
-  
+  transactions WalletTransaction[]
+
   @@unique([tenantId, code])
   @@index([tenantId])
   @@index([customerId])
@@ -1799,37 +1799,37 @@ model Wallet {
 // Immutable ledger of wallet balance changes
 // ============================================================================
 enum WalletTransactionType {
-  CREDIT            // Add to balance
-  DEBIT             // Subtract from balance
-  ADJUSTMENT        // Manual adjustment
-  EXPIRY            // Balance expired
+  CREDIT // Add to balance
+  DEBIT // Subtract from balance
+  ADJUSTMENT // Manual adjustment
+  EXPIRY // Balance expired
 }
 
 model WalletTransaction {
-  id                String                @id @default(uuid())
-  walletId          String
-  wallet            Wallet                @relation(fields: [walletId], references: [id], onDelete: Cascade)
-  
+  id       String @id @default(uuid())
+  walletId String
+  wallet   Wallet @relation(fields: [walletId], references: [id], onDelete: Cascade)
+
   // Transaction details
-  type              WalletTransactionType
-  amount            Decimal               @db.Decimal(12, 2)
-  balanceAfter      Decimal               @db.Decimal(12, 2)
-  
+  type         WalletTransactionType
+  amount       Decimal               @db.Decimal(12, 2)
+  balanceAfter Decimal               @db.Decimal(12, 2)
+
   // Reference to source (module event)
-  sourceModule      String?               // "POS", "SVM", etc.
-  sourceType        String?               // "SALE", "ORDER", "REFUND"
-  sourceId          String?               // Sale/Order ID
-  
+  sourceModule String? // "POS", "SVM", etc.
+  sourceType   String? // "SALE", "ORDER", "REFUND"
+  sourceId     String? // Sale/Order ID
+
   // Description
-  description       String?
-  
+  description String?
+
   // Idempotency
-  idempotencyKey    String?               @unique
-  
+  idempotencyKey String? @unique
+
   // Audit
-  createdAt         DateTime              @default(now())
-  createdBy         String?               // User/System ID
-  
+  createdAt DateTime @default(now())
+  createdBy String? // User/System ID
+
   @@index([walletId])
   @@index([sourceModule, sourceId])
   @@index([createdAt])
@@ -1840,43 +1840,43 @@ model WalletTransaction {
 // Tax configuration per jurisdiction
 // ============================================================================
 model TaxRule {
-  id                String      @id @default(uuid())
-  tenantId          String
-  
+  id       String @id @default(uuid())
+  tenantId String
+
   // Rule identity
-  name              String      // "US Sales Tax", "UK VAT"
-  code              String?     // Internal code
-  
+  name String // "US Sales Tax", "UK VAT"
+  code String? // Internal code
+
   // Jurisdiction
-  country           String
-  state             String?     // State/Province
-  postalCode        String?     // Postal code pattern
-  city              String?
-  
+  country    String
+  state      String? // State/Province
+  postalCode String? // Postal code pattern
+  city       String?
+
   // Rate
-  rate              Decimal     @db.Decimal(6, 4) // e.g., 0.0825 for 8.25%
-  isCompound        Boolean     @default(false)  // Apply on top of other taxes
-  
+  rate       Decimal @db.Decimal(6, 4) // e.g., 0.0825 for 8.25%
+  isCompound Boolean @default(false) // Apply on top of other taxes
+
   // Priority (for compound taxes)
-  priority          Int         @default(0)
-  
+  priority Int @default(0)
+
   // Applicability
-  appliesToShipping Boolean     @default(false)
-  
+  appliesToShipping Boolean @default(false)
+
   // Status
-  isActive          Boolean     @default(true)
-  
+  isActive Boolean @default(true)
+
   // Effective dates
-  validFrom         DateTime    @default(now())
-  validUntil        DateTime?
-  
+  validFrom  DateTime  @default(now())
+  validUntil DateTime?
+
   // Audit
-  createdAt         DateTime    @default(now())
-  updatedAt         DateTime    @updatedAt
-  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   // Relations
-  rates             TaxRate[]
-  
+  rates TaxRate[]
+
   @@unique([tenantId, code])
   @@index([tenantId])
   @@index([country, state])
@@ -1888,23 +1888,23 @@ model TaxRule {
 // Product category-specific tax rates
 // ============================================================================
 model TaxRate {
-  id                String    @id @default(uuid())
-  taxRuleId         String
-  taxRule           TaxRule   @relation(fields: [taxRuleId], references: [id], onDelete: Cascade)
-  
+  id        String  @id @default(uuid())
+  taxRuleId String
+  taxRule   TaxRule @relation(fields: [taxRuleId], references: [id], onDelete: Cascade)
+
   // Category this rate applies to
-  taxCategoryId     String?   // Product tax category
-  
+  taxCategoryId String? // Product tax category
+
   // Override rate (null = use parent rule rate)
-  rate              Decimal?  @db.Decimal(6, 4)
-  
+  rate Decimal? @db.Decimal(6, 4)
+
   // Special handling
-  isExempt          Boolean   @default(false) // Zero rate
-  
+  isExempt Boolean @default(false) // Zero rate
+
   // Audit
-  createdAt         DateTime  @default(now())
-  updatedAt         DateTime  @updatedAt
-  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   @@index([taxRuleId])
   @@index([taxCategoryId])
 }
@@ -1930,42 +1930,42 @@ enum PricingRuleScope {
 }
 
 model PricingRule {
-  id                String           @id @default(uuid())
-  tenantId          String
-  
+  id       String @id @default(uuid())
+  tenantId String
+
   // Rule identity
-  name              String
-  description       String?
-  
+  name        String
+  description String?
+
   // Type and value
-  type              PricingRuleType
-  value             Decimal          @db.Decimal(12, 4) // Percentage or amount
-  
+  type  PricingRuleType
+  value Decimal         @db.Decimal(12, 4) // Percentage or amount
+
   // Scope
-  scope             PricingRuleScope @default(ALL_PRODUCTS)
-  scopeIds          String[]         @default([]) // Category/Product/Customer IDs
-  
+  scope    PricingRuleScope @default(ALL_PRODUCTS)
+  scopeIds String[]         @default([]) // Category/Product/Customer IDs
+
   // Conditions
-  minQuantity       Int?             // Minimum quantity for rule to apply
-  minOrderValue     Decimal?         @db.Decimal(12, 2)
-  
+  minQuantity   Int? // Minimum quantity for rule to apply
+  minOrderValue Decimal? @db.Decimal(12, 2)
+
   // Validity
-  startsAt          DateTime?
-  endsAt            DateTime?
-  
+  startsAt DateTime?
+  endsAt   DateTime?
+
   // Priority (higher = applied first)
-  priority          Int              @default(0)
-  
+  priority Int @default(0)
+
   // Status
-  isActive          Boolean          @default(true)
-  
+  isActive Boolean @default(true)
+
   // Stacking
-  isStackable       Boolean          @default(false)
-  
+  isStackable Boolean @default(false)
+
   // Audit
-  createdAt         DateTime         @default(now())
-  updatedAt         DateTime         @updatedAt
-  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   @@index([tenantId])
   @@index([scope])
   @@index([isActive])
@@ -1992,45 +1992,45 @@ enum NotificationStatus {
 }
 
 model Notification {
-  id                String              @id @default(uuid())
-  tenantId          String?             // Null for system-wide notifications
-  
+  id       String  @id @default(uuid())
+  tenantId String? // Null for system-wide notifications
+
   // Recipient
-  userId            String?             // Specific user
-  recipientEmail    String?             // Or email for non-users
-  recipientPhone    String?             // For SMS
-  
+  userId         String? // Specific user
+  recipientEmail String? // Or email for non-users
+  recipientPhone String? // For SMS
+
   // Channel
-  channel           NotificationChannel
-  
+  channel NotificationChannel
+
   // Content
-  title             String?
-  body              String              @db.Text
-  actionUrl         String?             // Click-through URL
-  
+  title     String?
+  body      String  @db.Text
+  actionUrl String? // Click-through URL
+
   // Template reference
-  templateId        String?
-  templateData      Json?               // Template variables
-  
+  templateId   String?
+  templateData Json? // Template variables
+
   // Status
-  status            NotificationStatus  @default(PENDING)
-  
+  status NotificationStatus @default(PENDING)
+
   // Timestamps
-  scheduledAt       DateTime?
-  sentAt            DateTime?
-  deliveredAt       DateTime?
-  readAt            DateTime?
-  failedAt          DateTime?
-  failureReason     String?
-  
+  scheduledAt   DateTime?
+  sentAt        DateTime?
+  deliveredAt   DateTime?
+  readAt        DateTime?
+  failedAt      DateTime?
+  failureReason String?
+
   // Source (what triggered this)
-  sourceModule      String?             // "POS", "SVM", "CORE"
-  sourceEvent       String?             // Event type
-  sourceId          String?             // Entity ID
-  
+  sourceModule String? // "POS", "SVM", "CORE"
+  sourceEvent  String? // Event type
+  sourceId     String? // Entity ID
+
   // Audit
-  createdAt         DateTime            @default(now())
-  
+  createdAt DateTime @default(now())
+
   @@index([tenantId])
   @@index([userId])
   @@index([status])
@@ -2043,23 +2043,23 @@ model Notification {
 // User preferences for notification channels
 // ============================================================================
 model NotificationPreference {
-  id                String              @id @default(uuid())
-  userId            String
-  tenantId          String?             // Null = global preference
-  
+  id       String  @id @default(uuid())
+  userId   String
+  tenantId String? // Null = global preference
+
   // Category
-  category          String              // "ORDER_UPDATES", "MARKETING", etc.
-  
+  category String // "ORDER_UPDATES", "MARKETING", etc.
+
   // Channel preferences
-  email             Boolean             @default(true)
-  sms               Boolean             @default(false)
-  push              Boolean             @default(true)
-  inApp             Boolean             @default(true)
-  
+  email Boolean @default(true)
+  sms   Boolean @default(false)
+  push  Boolean @default(true)
+  inApp Boolean @default(true)
+
   // Audit
-  createdAt         DateTime            @default(now())
-  updatedAt         DateTime            @updatedAt
-  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   @@unique([userId, tenantId, category])
   @@index([userId])
 }
@@ -2069,27 +2069,27 @@ model NotificationPreference {
 // Shipping zone configuration for SVM module
 // ============================================================================
 model SvmShippingZone {
-  id          String   @id @default(cuid())
-  tenantId    String
-  
+  id       String @id @default(cuid())
+  tenantId String
+
   name        String
   description String?
-  
+
   // Zone definition
   countries   String[] // ISO country codes
   states      String[] // State/province codes (optional)
   postalCodes String[] // Specific postal codes (optional)
   cities      String[] // Cities (optional)
-  
-  isDefault   Boolean  @default(false)
-  isActive    Boolean  @default(true)
-  priority    Int      @default(0) // Higher = checked first
-  
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  
-  rates       SvmShippingRate[]
-  
+
+  isDefault Boolean @default(false)
+  isActive  Boolean @default(true)
+  priority  Int     @default(0) // Higher = checked first
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  rates SvmShippingRate[]
+
   @@index([tenantId])
   @@map("svm_shipping_zones")
 }
@@ -2099,58 +2099,58 @@ model SvmShippingZone {
 // Shipping rates within a zone
 // ============================================================================
 enum SvmShippingRateType {
-  FLAT            // Fixed rate
-  WEIGHT_BASED    // Based on total weight
-  PRICE_BASED     // Based on order total
-  ITEM_BASED      // Based on item count
+  FLAT // Fixed rate
+  WEIGHT_BASED // Based on total weight
+  PRICE_BASED // Based on order total
+  ITEM_BASED // Based on item count
 }
 
 model SvmShippingRate {
-  id          String              @id @default(cuid())
-  zoneId      String
-  zone        SvmShippingZone     @relation(fields: [zoneId], references: [id], onDelete: Cascade)
-  
-  name        String              // "Standard", "Express", "Overnight"
+  id     String          @id @default(cuid())
+  zoneId String
+  zone   SvmShippingZone @relation(fields: [zoneId], references: [id], onDelete: Cascade)
+
+  name        String // "Standard", "Express", "Overnight"
   description String?
-  carrier     String?             // "USPS", "FedEx", "UPS"
-  
+  carrier     String? // "USPS", "FedEx", "UPS"
+
   // Rate calculation
-  rateType    SvmShippingRateType @default(FLAT)
-  flatRate    Decimal?            @db.Decimal(10, 2)
-  
+  rateType SvmShippingRateType @default(FLAT)
+  flatRate Decimal?            @db.Decimal(10, 2)
+
   // Weight-based
-  minWeight   Decimal?            @db.Decimal(10, 2)
-  maxWeight   Decimal?            @db.Decimal(10, 2)
-  weightRate  Decimal?            @db.Decimal(10, 4) // per unit
-  baseWeightFee Decimal?          @db.Decimal(10, 2)
-  
+  minWeight     Decimal? @db.Decimal(10, 2)
+  maxWeight     Decimal? @db.Decimal(10, 2)
+  weightRate    Decimal? @db.Decimal(10, 4) // per unit
+  baseWeightFee Decimal? @db.Decimal(10, 2)
+
   // Price-based
-  minOrderTotal   Decimal?        @db.Decimal(10, 2)
-  maxOrderTotal   Decimal?        @db.Decimal(10, 2)
-  percentageRate  Decimal?        @db.Decimal(5, 4)
-  
+  minOrderTotal  Decimal? @db.Decimal(10, 2)
+  maxOrderTotal  Decimal? @db.Decimal(10, 2)
+  percentageRate Decimal? @db.Decimal(5, 4)
+
   // Item-based
-  perItemRate     Decimal?        @db.Decimal(10, 2)
-  
+  perItemRate Decimal? @db.Decimal(10, 2)
+
   // Product restrictions
   allowedProductIds   String[]
   excludedProductIds  String[]
   allowedCategoryIds  String[]
   excludedCategoryIds String[]
-  
+
   // Free shipping threshold
-  freeAbove       Decimal?        @db.Decimal(10, 2)
-  
+  freeAbove Decimal? @db.Decimal(10, 2)
+
   // Delivery estimate
-  minDays         Int?
-  maxDays         Int?
-  
-  isActive        Boolean         @default(true)
-  priority        Int             @default(0)
-  
-  createdAt       DateTime        @default(now())
-  updatedAt       DateTime        @updatedAt
-  
+  minDays Int?
+  maxDays Int?
+
+  isActive Boolean @default(true)
+  priority Int     @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   @@index([zoneId])
   @@map("svm_shipping_rates")
 }
@@ -2160,72 +2160,72 @@ model SvmShippingRate {
 // Discount codes and automatic promotions
 // ============================================================================
 enum SvmPromotionType {
-  COUPON          // Requires code entry
-  AUTOMATIC       // Applied automatically
-  FLASH_SALE      // Time-limited
+  COUPON // Requires code entry
+  AUTOMATIC // Applied automatically
+  FLASH_SALE // Time-limited
 }
 
 enum SvmDiscountType {
-  PERCENTAGE      // % off
-  FIXED_AMOUNT    // $ off order
-  FIXED_PER_ITEM  // $ off each item
-  FREE_SHIPPING   // Free shipping
-  BUY_X_GET_Y     // BOGO style
+  PERCENTAGE // % off
+  FIXED_AMOUNT // $ off order
+  FIXED_PER_ITEM // $ off each item
+  FREE_SHIPPING // Free shipping
+  BUY_X_GET_Y // BOGO style
 }
 
 model SvmPromotion {
-  id              String            @id @default(cuid())
-  tenantId        String
-  
-  name            String
-  description     String?
-  code            String?           // Nullable for automatic promotions
-  
+  id       String @id @default(cuid())
+  tenantId String
+
+  name        String
+  description String?
+  code        String? // Nullable for automatic promotions
+
   // Type
-  type            SvmPromotionType  @default(COUPON)
-  discountType    SvmDiscountType
-  
+  type         SvmPromotionType @default(COUPON)
+  discountType SvmDiscountType
+
   // Value
-  discountValue   Decimal           @db.Decimal(10, 2)
-  maxDiscount     Decimal?          @db.Decimal(10, 2) // Cap for percentage
-  
+  discountValue Decimal  @db.Decimal(10, 2)
+  maxDiscount   Decimal? @db.Decimal(10, 2) // Cap for percentage
+
   // Conditions
-  minOrderTotal   Decimal?          @db.Decimal(10, 2)
-  minQuantity     Int?
-  
+  minOrderTotal Decimal? @db.Decimal(10, 2)
+  minQuantity   Int?
+
   // Product restrictions (empty = all products)
-  productIds      String[]          // Specific products
-  categoryIds     String[]          // Product categories
-  excludeProductIds String[]        // Excluded products
-  
+  productIds        String[] // Specific products
+  categoryIds       String[] // Product categories
+  excludeProductIds String[] // Excluded products
+
   // Customer restrictions
-  customerIds     String[]          // Specific customers only
-  firstOrderOnly  Boolean           @default(false)
-  
+  customerIds    String[] // Specific customers only
+  firstOrderOnly Boolean  @default(false)
+
   // Usage limits
-  usageLimit      Int?              // Total uses allowed
-  usageCount      Int               @default(0)
-  perCustomerLimit Int?             // Uses per customer
-  
+  usageLimit       Int? // Total uses allowed
+  usageCount       Int  @default(0)
+  perCustomerLimit Int? // Uses per customer
+
   // BUY_X_GET_Y specific
-  buyQuantity     Int?
-  getQuantity     Int?
-  getDiscountPercent Int?           // 100 = free
-  
+  buyQuantity        Int?
+  getQuantity        Int?
+  getDiscountPercent Int? // 100 = free
+
   // Validity
-  startsAt        DateTime          @default(now())
-  endsAt          DateTime?
-  isActive        Boolean           @default(true)
-  
+  startsAt DateTime  @default(now())
+  endsAt   DateTime?
+  isActive Boolean   @default(true)
+
   // Stacking
-  stackable       Boolean           @default(false)
-  priority        Int               @default(0)
-  
-  createdAt       DateTime          @default(now())
-  updatedAt       DateTime          @updatedAt
-  
-  usages          SvmPromotionUsage[]
-  
+  stackable Boolean @default(false)
+  priority  Int     @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  usages SvmPromotionUsage[]
+
   @@unique([tenantId, code])
   @@index([tenantId])
   @@index([code])
@@ -2238,17 +2238,17 @@ model SvmPromotion {
 // Tracks promotion usage per order
 // ============================================================================
 model SvmPromotionUsage {
-  id              String        @id @default(cuid())
-  promotionId     String
-  promotion       SvmPromotion  @relation(fields: [promotionId], references: [id], onDelete: Cascade)
-  
-  orderId         String
-  customerId      String?       // Core reference
-  
-  discountApplied Decimal       @db.Decimal(10, 2)
-  
-  createdAt       DateTime      @default(now())
-  
+  id          String       @id @default(cuid())
+  promotionId String
+  promotion   SvmPromotion @relation(fields: [promotionId], references: [id], onDelete: Cascade)
+
+  orderId    String
+  customerId String? // Core reference
+
+  discountApplied Decimal @db.Decimal(10, 2)
+
+  createdAt DateTime @default(now())
+
   @@index([promotionId])
   @@index([customerId])
   @@map("svm_promotion_usages")
