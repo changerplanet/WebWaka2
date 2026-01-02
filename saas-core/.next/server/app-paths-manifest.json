@@ -1,3 +1,4 @@
 {
-  "/api/svm/cart/route": "app/api/svm/cart/route.js"
+  "/api/svm/cart/route": "app/api/svm/cart/route.js",
+  "/api/svm/orders/route": "app/api/svm/orders/route.js"
 }
