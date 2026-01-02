@@ -1,9 +1,43 @@
-# SaaS Core - Product Requirements Document
+# eMarketWaka - Product Requirements Document
 
 ## Overview
-Production-grade, reusable SaaS Core with Next.js App Router, PostgreSQL (Prisma ORM), and multi-tenant architecture.
+Production-grade, multi-tenant commerce platform with Next.js App Router, PostgreSQL (Prisma ORM), and white-label architecture.
 
-## Current Version: saas-core-v1.12.0 + pos-v1.0.0 + svm-v1.1.0 + mvm-v1.0.0
+## Current Version: eMarketWaka v1.0.0 (formerly SaaS Core)
+
+---
+
+## Phase D: Platform Identity & Branding ✅ COMPLETE (Jan 2, 2026)
+
+### Step D1: Application Rename ✅
+**Renamed from "SaaS Core" to "eMarketWaka"**
+
+**Changes Made:**
+- Application name: eMarketWaka
+- Package.json name updated
+- UI titles, headers, metadata
+- Login page branding
+- Homepage hero section
+- Footer copyright
+- Email templates (internal addresses)
+- Domain references (.emarketwaka.com)
+- Manifest & PWA configuration
+
+**Files Updated (22 files):**
+- `/src/app/page.tsx` - Homepage hero & branding
+- `/src/app/login/page.tsx` - Login page title
+- `/src/app/layout.tsx` - Metadata description
+- `/src/lib/branding.ts` - Default branding config
+- `/src/config/branding.ts` - NEW: Central branding configuration
+- `/src/middleware.ts` - Domain whitelist
+- `/src/components/DomainManagement.tsx` - Domain setup instructions
+- Plus 15 other files (internal email addresses, comments)
+
+**Zero Breaking Changes:**
+- ✅ Database schemas unchanged
+- ✅ API routes unchanged
+- ✅ Module logic unchanged
+- ✅ All 77 tests still pass
 
 ---
 
