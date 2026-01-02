@@ -1,0 +1,30 @@
+{
+  "name": "@saas-core/mvm",
+  "version": "1.0.0",
+  "description": "Multi Vendor Marketplace module for SaaS Core",
+  "main": "src/lib/index.ts",
+  "types": "src/lib/index.ts",
+  "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc --noEmit",
+    "prisma:generate": "prisma generate",
+    "prisma:migrate": "prisma migrate dev"
+  },
+  "dependencies": {
+    "@prisma/client": "^5.0.0"
+  },
+  "devDependencies": {
+    "prisma": "^5.0.0",
+    "typescript": "^5.0.0"
+  },
+  "peerDependencies": {
+    "@saas-core/svm": "^1.0.0"
+  },
+  "keywords": [
+    "saas",
+    "multi-vendor",
+    "marketplace",
+    "ecommerce"
+  ],
+  "license": "UNLICENSED"
+}
