@@ -442,7 +442,67 @@ CANCELLED  CANCELLED CANCELLED/REFUNDED  REFUNDED   REFUNDED
 - Promotions persistence to database
 
 ### P3 - Additional Modules
-- MVM (Multi-sided Vertical Marketplace)
+- ~~MVM (Multi-sided Vertical Marketplace)~~ ✅ IMPLEMENTED
+
+---
+
+## MVM Module (MODULE 3) — FROZEN ❄️
+
+### Version: `mvm-v1.0.0`
+
+### Implementation Status
+
+| Phase | Feature | Status |
+|-------|---------|--------|
+| 0 | Module Constitution | ✅ COMPLETE |
+| 1 | Vendor Domain Model | ✅ COMPLETE |
+| 2 | Product & Inventory Mapping | ✅ COMPLETE |
+| 3 | Order Splitting Engine | ✅ COMPLETE |
+| 4 | Commissions & Payout Logic | ✅ COMPLETE |
+| 5 | Vendor Dashboards | ✅ COMPLETE |
+| 6 | Events & Analytics | ✅ COMPLETE |
+| 7 | Entitlements & Limits | ✅ COMPLETE |
+| 8 | Offline & Degraded Mode | ✅ COMPLETE |
+| 9 | Module Freeze | ✅ FROZEN |
+
+### MVM Module Architecture
+
+Location: `/app/modules/mvm/`
+
+**MVM OWNS:**
+- Vendor / VendorStaff / VendorSettings / VendorTier
+- VendorProductMapping
+- VendorCommissionRule
+- VendorSubOrder / VendorSubOrderItem
+- VendorPayoutRecord
+
+**MVM EXTENDS (from SVM):**
+- Order flows (splits into vendor sub-orders)
+- Storefront (adds vendor attribution)
+
+**MVM DOES NOT OWN:**
+- Storefront UI (SVM)
+- Order creation (SVM)
+- Products, Inventory, Customers (Core)
+- Payments, Wallets (Core)
+- Billing, Subscriptions (Core)
+
+### Database Tables (9 total)
+`mvm_vendors`, `mvm_vendor_staff`, `mvm_vendor_settings`, `mvm_vendor_tiers`, `mvm_vendor_product_mappings`, `mvm_vendor_commission_rules`, `mvm_vendor_sub_orders`, `mvm_vendor_sub_order_items`, `mvm_vendor_payout_records`
+
+### MVM Events (25 total)
+- Vendor lifecycle: `mvm.vendor.*` (9 events)
+- Order splitting: `mvm.order.*`, `mvm.suborder.*` (8 events)
+- Commission: `mvm.commission.*` (3 events)
+- Payout: `mvm.payout.*` (5 events)
+
+### MVM Entitlement Limits (Default)
+- `max_vendors`: 10
+- `max_vendor_staff_per_vendor`: 3
+- `max_products_per_vendor`: 50
+- `max_commission_rules`: 5
+- `commission_rate_min`: 5%
+- `commission_rate_max`: 30%
 
 ---
 
