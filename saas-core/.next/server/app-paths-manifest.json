@@ -1,6 +1,1 @@
-{
-  "/api/svm/orders/route": "app/api/svm/orders/route.js",
-  "/api/svm/orders/[orderId]/route": "app/api/svm/orders/[orderId]/route.js",
-  "/api/svm/cart/route": "app/api/svm/cart/route.js",
-  "/api/health/route": "app/api/health/route.js"
-}
+{}
