@@ -231,7 +231,7 @@ export function POSProvider({ children, tenantId }: POSProviderProps) {
   const setLocation = useCallback((locationId: string, locationName: string) => {
     setState(s => ({ ...s, locationId, locationName }))
     saveToStorage(STORAGE_KEYS.SESSION, { 
-      ...loadFromStorage(STORAGE_KEYS.SESSION, {}),
+      ...loadFromStorage<POSSession>(STORAGE_KEYS.SESSION, {}),
       locationId, 
       locationName 
     })
@@ -240,7 +240,7 @@ export function POSProvider({ children, tenantId }: POSProviderProps) {
   const setStaff = useCallback((staffId: string, staffName: string) => {
     setState(s => ({ ...s, staffId, staffName }))
     saveToStorage(STORAGE_KEYS.SESSION, { 
-      ...loadFromStorage(STORAGE_KEYS.SESSION, {}),
+      ...loadFromStorage<POSSession>(STORAGE_KEYS.SESSION, {}),
       staffId, 
       staffName 
     })
