@@ -764,8 +764,7 @@ CANCELLED  CANCELLED CANCELLED/REFUNDED  REFUNDED   REFUNDED
 ## Backlog / Future Work
 
 ### Phase B - Commerce Completeness (In Progress)
-- **Step B2: Wallet System** — Customer, Vendor, Platform wallets with ledger-based accounting
-- **Step B3: Vendor Payouts** — Admin-triggered payout logic for MVM
+- **Step B3: Vendor Payouts** — Admin-triggered payout logic for MVM (integrate with Wallet system)
 
 ### Phase C - Production Readiness
 - Automated testing (unit, integration, e2e)
