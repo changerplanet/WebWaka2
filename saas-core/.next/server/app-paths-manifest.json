@@ -1,6 +1,3 @@
 {
-  "/api/pos/products/route": "app/api/pos/products/route.js",
-  "/api/pos/inventory/route": "app/api/pos/inventory/route.js",
-  "/api/pos/customers/route": "app/api/pos/customers/route.js",
-  "/api/pos/locations/route": "app/api/pos/locations/route.js"
+  "/_not-found/page": "app/_not-found/page.js"
 }
