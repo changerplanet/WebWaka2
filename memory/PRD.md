@@ -42,7 +42,7 @@ Production-grade, reusable SaaS Core with Next.js App Router, PostgreSQL (Prisma
 - **Products**: 20 demo products including coffees, teas, pastries, sandwiches, and snacks
 - **Sales**: Saved to localStorage in demo mode (key: `pos_demo_sales`)
 
-**Known Limitation**: Change amount display on success screen may show incorrect value due to cart clearing timing - cosmetic issue only, actual calculation is correct.
+**Known Limitation**: ~~Change amount display on success screen may show incorrect value due to cart clearing timing~~ **FIXED**
 
 ### Step A2: SVM Storefront UI ⏳ PENDING
 - Customer-facing e-commerce storefront
