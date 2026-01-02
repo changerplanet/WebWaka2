@@ -26,6 +26,49 @@ Production-grade, reusable SaaS Core with Next.js App Router, PostgreSQL (Prisma
 
 ---
 
+## P1: Module Integration with Core Entities ✅ (Jan 2026)
+
+### Overview
+Integrated POS, SVM, and MVM modules to consume Core shared entities as the single source of truth.
+
+### Core Services Created (`/app/saas-core/src/lib/core-services.ts`):
+- `CoreInventoryService` - Product/Inventory queries
+- `CoreCustomerService` - Customer lookup
+- `CoreLocationService` - Location data
+
+### API Routes Created:
+
+**POS Module:**
+- `/api/pos/products` - Product search with inventory
+- `/api/pos/inventory` - Inventory snapshot and checks
+- `/api/pos/customers` - Customer lookup
+- `/api/pos/locations` - Location data
+
+**SVM Module:**
+- `/api/svm/catalog` - Product catalog access
+- `/api/svm/inventory` - Inventory checks
+- `/api/svm/customers` - Customer lookup
+
+**MVM Module:**
+- `/api/mvm/catalog` - Product catalog for vendor mapping
+- `/api/mvm/inventory` - Inventory checks
+- `/api/mvm/customers` - Limited customer info for vendors
+
+### Verification:
+- [x] All modules read from Core via APIs
+- [x] No shadow tables exist
+- [x] No direct Core mutations
+- [x] Tenant isolation preserved
+- [x] Vendors are NOT treated as tenants (MVM)
+- [x] Single payment flow (MVM order splitting)
+
+### Documentation:
+- `/app/modules/pos/docs/POS_CORE_INTEGRATION_CHECKLIST.md`
+- `/app/modules/svm/docs/SVM_CORE_INTEGRATION_CHECKLIST.md`
+- `/app/modules/mvm/docs/MVM_CORE_INTEGRATION_CHECKLIST.md`
+
+---
+
 ## P0: SVM Shipping & Promotions Database Refactor ✅ (Jan 2026)
 
 ### What was changed:
