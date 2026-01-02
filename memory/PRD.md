@@ -3,7 +3,26 @@
 ## Overview
 Production-grade, reusable SaaS Core with Next.js App Router, PostgreSQL (Prisma ORM), and multi-tenant architecture.
 
-## Current Version: saas-core-v1.8.0 + pos-v1.0.0 + svm-v1.0.0 (IN PROGRESS)
+## Current Version: saas-core-v1.8.0 + pos-v1.0.0 + svm-v1.0.0 + mvm-v1.0.0
+
+---
+
+## System Verification & Remediation Status ✅
+
+| Step | Task | Status |
+|------|------|--------|
+| 1 | Implement Shared Business Entities | ✅ COMPLETE |
+| 2 | Add MVM Event Handlers | ✅ COMPLETE |
+| 3 | Add Subscription Grace Period | ✅ COMPLETE |
+| 4 | Verify PWA Manifest Placement | ✅ COMPLETE |
+| 5 | Add POS Table Prefixes (`pos_*`) | ✅ COMPLETE |
+
+### Remediation Summary (Dec 2025)
+- **Step 1**: Added 11 shared entities to `/app/saas-core/prisma/schema.prisma` (Product, Customer, Inventory, Wallet, etc.)
+- **Step 2**: Created `/app/saas-core/src/lib/mvm-event-handlers.ts` and `/api/mvm/events` route
+- **Step 3**: Enhanced subscription model with grace period and suspension logic
+- **Step 4**: Verified dynamic PWA manifest and added static fallback
+- **Step 5**: Added `@@map("pos_...")` directives to all 14 POS tables for consistent naming
 
 ---
 
