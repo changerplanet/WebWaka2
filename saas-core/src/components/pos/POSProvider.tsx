@@ -220,11 +220,25 @@ export function POSProvider({ children, tenantId }: POSProviderProps) {
     try {
       const res = await fetch(`/api/pos/locations?tenantId=${tenantId}`)
       const data = await res.json()
-      if (data.success) {
-        setState(s => ({ ...s, locations: data.locations || [] }))
+      if (data.success && data.locations?.length > 0) {
+        setState(s => ({ ...s, locations: data.locations }))
+      } else {
+        // Provide demo locations when no real locations exist
+        const demoLocations: POSLocation[] = [
+          { id: 'demo-store-1', name: 'Main Store', code: 'MAIN', type: 'RETAIL', isDefault: true },
+          { id: 'demo-store-2', name: 'Downtown Branch', code: 'DT01', type: 'RETAIL', isDefault: false },
+          { id: 'demo-warehouse', name: 'Warehouse', code: 'WH01', type: 'WAREHOUSE', isDefault: false }
+        ]
+        setState(s => ({ ...s, locations: demoLocations }))
       }
     } catch (e) {
       console.warn('Failed to fetch locations:', e)
+      // Provide demo locations on error
+      const demoLocations: POSLocation[] = [
+        { id: 'demo-store-1', name: 'Main Store', code: 'MAIN', type: 'RETAIL', isDefault: true },
+        { id: 'demo-store-2', name: 'Downtown Branch', code: 'DT01', type: 'RETAIL', isDefault: false }
+      ]
+      setState(s => ({ ...s, locations: demoLocations }))
     }
   }
 

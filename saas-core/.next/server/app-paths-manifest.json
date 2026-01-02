@@ -1,6 +1,6 @@
 {
-  "/api/pos/locations/route": "app/api/pos/locations/route.js",
   "/pos/page": "app/pos/page.js",
+  "/api/pos/locations/route": "app/api/pos/locations/route.js",
   "/page": "app/page.js",
   "/login/page": "app/login/page.js",
   "/offline/page": "app/offline/page.js",
