@@ -1,73 +1,121 @@
 /**
  * Solutions Page
- * POS, Online Store, Marketplace solutions
+ * Industry-focused solutions for Nigerian businesses
  */
 
 import Link from 'next/link'
 import { 
-  ShoppingCart, Store, Users, ArrowRight, Check,
-  Smartphone, Globe, CreditCard, BarChart3, Truck, Receipt
+  ShoppingCart, Store, UtensilsCrossed, Warehouse, Package,
+  ArrowRight, Check, Building2, Users
 } from 'lucide-react'
 
 export const metadata = {
   title: 'Solutions - eMarketWaka',
-  description: 'POS, Online Store & Marketplace solutions for every business.',
+  description: 'Business solutions for retail shops, supermarkets, restaurants, market traders, and distributors in Nigeria.',
 }
 
 const solutions = [
   {
-    id: 'pos',
+    id: 'retail',
     icon: ShoppingCart,
-    title: 'eMarketWaka POS',
-    subtitle: 'Point of Sale System',
-    description: 'A touch-first point of sale system designed for speed. Perfect for retail stores, restaurants, and service businesses.',
-    color: 'from-blue-600 to-cyan-500',
+    title: 'Retail Shops',
+    subtitle: 'For small and medium shops',
+    description: 'Whether you run a provision store, phone shop, or boutique, eMarketWaka helps you track sales, manage stock, and grow your business.',
+    color: 'bg-green-600',
     benefits: [
-      'Fast checkout with touch interface',
-      'Works offline - never miss a sale',
-      'Multiple payment methods',
-      'Real-time inventory tracking',
-      'Staff management & permissions',
-      'Daily sales reports',
+      'Track every sale automatically',
+      'Know when stock is running low',
+      'Send receipts via WhatsApp',
+      'See your profit at a glance',
+      'Works offline — no network needed',
+      'Accept card and transfer payments',
     ],
-    ideal: ['Retail Stores', 'Restaurants', 'Cafes', 'Service Businesses'],
-    image: '/pos-preview.png',
+    useCases: ['Provision stores', 'Phone shops', 'Boutiques', 'Electronics shops'],
   },
   {
-    id: 'store',
+    id: 'supermarket',
     icon: Store,
-    title: 'eMarketWaka Store',
-    subtitle: 'Online Storefront',
-    description: 'Launch your online store in minutes. Beautiful, mobile-first e-commerce that converts visitors into customers.',
-    color: 'from-purple-600 to-pink-500',
+    title: 'Supermarkets',
+    subtitle: 'For larger retail operations',
+    description: 'Manage multiple checkout points, track inventory across categories, and get detailed reports to run your supermarket efficiently.',
+    color: 'bg-amber-500',
     benefits: [
-      'Professional storefront design',
-      'Mobile-optimized checkout',
-      'Product variants & options',
-      'Flexible shipping zones',
-      'Order management dashboard',
-      'Customer accounts',
+      'Multiple checkout terminals',
+      'Barcode scanning support',
+      'Category-based inventory',
+      'Staff accounts with permissions',
+      'Daily and monthly reports',
+      'Customer loyalty features',
     ],
-    ideal: ['E-commerce Businesses', 'Brands', 'Wholesalers', 'Manufacturers'],
-    image: '/store-preview.png',
+    useCases: ['Mini marts', 'Supermarkets', 'Department stores', 'Wholesale shops'],
   },
   {
-    id: 'marketplace',
-    icon: Users,
-    title: 'eMarketWaka Marketplace',
-    subtitle: 'Multi-Vendor Platform',
-    description: 'Build your own marketplace with multiple vendors. Earn commissions while vendors handle their own products.',
-    color: 'from-orange-500 to-red-500',
+    id: 'restaurant',
+    icon: UtensilsCrossed,
+    title: 'Restaurants & Cafes',
+    subtitle: 'For food and beverage businesses',
+    description: 'Take orders, manage your kitchen, and serve customers faster. Perfect for restaurants, cafes, fast food joints, and bars.',
+    color: 'bg-orange-500',
     benefits: [
-      'Unlimited vendors',
-      'Automatic commission calculation',
-      'Vendor wallets & payouts',
-      'Vendor performance analytics',
-      'Order routing & fulfillment',
-      'Platform-level promotions',
+      'Easy order taking',
+      'Table management',
+      'Kitchen display system',
+      'Split bills and combine orders',
+      'Menu with photos and prices',
+      'Delivery order management',
     ],
-    ideal: ['Marketplace Operators', 'Shopping Malls', 'Cooperatives', 'Trade Associations'],
-    image: '/marketplace-preview.png',
+    useCases: ['Restaurants', 'Fast food', 'Cafes', 'Bars', 'Lounges'],
+  },
+  {
+    id: 'market',
+    icon: Package,
+    title: 'Market Traders',
+    subtitle: 'For market and roadside sellers',
+    description: 'Simple tools for traders who sell in markets, on the roadside, or from home. Track your sales and stock on your phone.',
+    color: 'bg-blue-600',
+    benefits: [
+      'Works on basic smartphones',
+      'Simple one-screen interface',
+      'Track daily sales easily',
+      'Calculate profit automatically',
+      'WhatsApp receipt sharing',
+      'No internet required',
+    ],
+    useCases: ['Market stalls', 'Roadside shops', 'Home businesses', 'Hawkers'],
+  },
+  {
+    id: 'distributor',
+    icon: Warehouse,
+    title: 'Distributors',
+    subtitle: 'For wholesale and distribution',
+    description: 'Manage your customers, track credit sales, and keep your distribution business organized with powerful B2B features.',
+    color: 'bg-purple-600',
+    benefits: [
+      'Customer account management',
+      'Credit sales and tracking',
+      'Bulk order processing',
+      'Delivery route planning',
+      'Invoice generation',
+      'Outstanding payment alerts',
+    ],
+    useCases: ['Wholesalers', 'Distributors', 'Suppliers', 'Agents'],
+  },
+  {
+    id: 'plaza',
+    icon: Building2,
+    title: 'Malls & Plazas',
+    subtitle: 'For multi-vendor locations',
+    description: 'Run a marketplace for all the shops in your mall or plaza. Each vendor gets their own account while you manage the platform.',
+    color: 'bg-gray-800',
+    benefits: [
+      'Multiple vendor accounts',
+      'Commission on every sale',
+      'Centralized reporting',
+      'Vendor performance tracking',
+      'Shared customer base',
+      'Your brand, your platform',
+    ],
+    useCases: ['Shopping malls', 'Plazas', 'Trade associations', 'Cooperatives'],
   },
 ]
 
@@ -75,64 +123,62 @@ export default function SolutionsPage() {
   return (
     <div>
       {/* Hero */}
-      <section className="relative bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 py-24 overflow-hidden">
-        <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-10" />
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <section className="bg-gradient-to-br from-gray-900 to-gray-800 py-16 md:py-24">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h1 className="text-4xl md:text-5xl font-bold text-white mb-6">
-            One Platform,
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-400"> Three Solutions</span>
+            Solutions for
+            <br />
+            <span className="text-green-400">Every Business</span>
           </h1>
-          <p className="text-xl text-slate-300 max-w-2xl mx-auto">
-            Whether you sell in-store, online, or want to build a marketplace — we've got you covered.
+          <p className="text-lg md:text-xl text-gray-300 max-w-2xl mx-auto">
+            From small shops to large supermarkets, find the right solution for your business.
           </p>
         </div>
       </section>
 
-      {/* Solutions */}
-      <section className="py-24">
+      {/* Solutions Grid */}
+      <section className="py-16 md:py-24">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          {solutions.map((solution, idx) => (
-            <div 
-              key={solution.id}
-              id={solution.id}
-              className={`${idx > 0 ? 'mt-32 pt-16 border-t border-slate-200' : ''}`}
-            >
-              <div className={`grid lg:grid-cols-2 gap-12 items-center ${idx % 2 === 1 ? 'lg:flex-row-reverse' : ''}`}>
+          <div className="space-y-16 md:space-y-24">
+            {solutions.map((solution, idx) => (
+              <div 
+                key={solution.id}
+                id={solution.id}
+                className={`grid lg:grid-cols-2 gap-8 lg:gap-12 items-center ${idx % 2 === 1 ? 'lg:flex-row-reverse' : ''}`}
+              >
                 {/* Content */}
                 <div className={idx % 2 === 1 ? 'lg:order-2' : ''}>
-                  <div className={`inline-flex items-center gap-3 px-4 py-2 rounded-full bg-gradient-to-r ${solution.color} bg-opacity-10 mb-6`}>
-                    <solution.icon className="w-5 h-5 text-slate-700" />
-                    <span className="text-sm font-medium text-slate-700">{solution.subtitle}</span>
+                  <div className={`inline-flex items-center gap-2 px-4 py-2 ${solution.color} bg-opacity-10 rounded-full mb-6`}>
+                    <solution.icon className={`w-5 h-5 ${solution.color.replace('bg-', 'text-')}`} />
+                    <span className={`text-sm font-medium ${solution.color.replace('bg-', 'text-')}`}>{solution.subtitle}</span>
                   </div>
                   
-                  <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">
+                  <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
                     {solution.title}
                   </h2>
                   
-                  <p className="text-lg text-slate-600 mb-8">
+                  <p className="text-lg text-gray-600 mb-6">
                     {solution.description}
                   </p>
 
-                  <div className="grid sm:grid-cols-2 gap-4 mb-8">
+                  <div className="grid sm:grid-cols-2 gap-3 mb-6">
                     {solution.benefits.map((benefit) => (
-                      <div key={benefit} className="flex items-start gap-3">
-                        <div className={`w-5 h-5 rounded-full bg-gradient-to-br ${solution.color} flex items-center justify-center flex-shrink-0 mt-0.5`}>
-                          <Check className="w-3 h-3 text-white" />
-                        </div>
-                        <span className="text-slate-600">{benefit}</span>
+                      <div key={benefit} className="flex items-start gap-2">
+                        <Check className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+                        <span className="text-gray-700 text-sm">{benefit}</span>
                       </div>
                     ))}
                   </div>
 
-                  <div className="mb-8">
-                    <p className="text-sm font-medium text-slate-500 mb-3">IDEAL FOR</p>
+                  <div className="mb-6">
+                    <p className="text-sm font-medium text-gray-500 mb-2">PERFECT FOR</p>
                     <div className="flex flex-wrap gap-2">
-                      {solution.ideal.map((item) => (
+                      {solution.useCases.map((useCase) => (
                         <span 
-                          key={item}
-                          className="px-3 py-1 bg-slate-100 text-slate-700 rounded-full text-sm"
+                          key={useCase}
+                          className="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm"
                         >
-                          {item}
+                          {useCase}
                         </span>
                       ))}
                     </div>
@@ -140,94 +186,47 @@ export default function SolutionsPage() {
 
                   <Link
                     href="/login?signup=true"
-                    className={`inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r ${solution.color} text-white font-semibold rounded-xl hover:shadow-lg transition-all`}
+                    className={`inline-flex items-center gap-2 px-6 py-3 ${solution.color} text-white font-semibold rounded-lg hover:opacity-90 transition-all`}
                     data-testid={`${solution.id}-cta`}
                   >
-                    Get Started with {solution.subtitle}
+                    Get Started
                     <ArrowRight className="w-5 h-5" />
                   </Link>
                 </div>
 
                 {/* Visual */}
-                <div className={`relative ${idx % 2 === 1 ? 'lg:order-1' : ''}`}>
-                  <div className={`aspect-[4/3] rounded-2xl bg-gradient-to-br ${solution.color} p-1`}>
-                    <div className="w-full h-full bg-slate-100 rounded-xl flex items-center justify-center">
-                      <solution.icon className="w-24 h-24 text-slate-300" />
+                <div className={idx % 2 === 1 ? 'lg:order-1' : ''}>
+                  <div className={`aspect-[4/3] rounded-2xl ${solution.color} p-1`}>
+                    <div className="w-full h-full bg-white rounded-xl flex items-center justify-center">
+                      <solution.icon className="w-24 h-24 text-gray-200" />
                     </div>
                   </div>
                 </div>
               </div>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* Comparison */}
-      <section className="py-24 bg-slate-50">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl font-bold text-slate-900 text-center mb-12">
-            Choose the Right Solution
-          </h2>
-          
-          <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
-            <table className="w-full">
-              <thead>
-                <tr className="border-b border-slate-200">
-                  <th className="px-6 py-4 text-left text-sm font-medium text-slate-500">Feature</th>
-                  <th className="px-6 py-4 text-center text-sm font-medium text-slate-500">POS</th>
-                  <th className="px-6 py-4 text-center text-sm font-medium text-slate-500">Store</th>
-                  <th className="px-6 py-4 text-center text-sm font-medium text-slate-500">Marketplace</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100">
-                {[
-                  { feature: 'In-Store Sales', pos: true, store: false, marketplace: false },
-                  { feature: 'Online Sales', pos: false, store: true, marketplace: true },
-                  { feature: 'Product Management', pos: true, store: true, marketplace: true },
-                  { feature: 'Inventory Tracking', pos: true, store: true, marketplace: true },
-                  { feature: 'Multiple Vendors', pos: false, store: false, marketplace: true },
-                  { feature: 'Vendor Payouts', pos: false, store: false, marketplace: true },
-                  { feature: 'Commission System', pos: false, store: false, marketplace: true },
-                  { feature: 'Offline Mode', pos: true, store: false, marketplace: false },
-                ].map((row) => (
-                  <tr key={row.feature}>
-                    <td className="px-6 py-4 text-sm text-slate-700">{row.feature}</td>
-                    <td className="px-6 py-4 text-center">
-                      {row.pos ? <Check className="w-5 h-5 text-green-500 mx-auto" /> : <span className="text-slate-300">—</span>}
-                    </td>
-                    <td className="px-6 py-4 text-center">
-                      {row.store ? <Check className="w-5 h-5 text-green-500 mx-auto" /> : <span className="text-slate-300">—</span>}
-                    </td>
-                    <td className="px-6 py-4 text-center">
-                      {row.marketplace ? <Check className="w-5 h-5 text-green-500 mx-auto" /> : <span className="text-slate-300">—</span>}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+            ))}
           </div>
         </div>
       </section>
 
       {/* CTA */}
-      <section className="py-24 bg-gradient-to-br from-indigo-600 to-purple-600">
+      <section className="py-16 md:py-24 bg-green-600">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">
-            Not Sure Which Solution is Right?
+            Not Sure Which Solution is Right for You?
           </h2>
-          <p className="text-xl text-indigo-100 mb-10">
-            Talk to our team. We'll help you find the perfect fit for your business.
+          <p className="text-lg md:text-xl text-green-100 mb-8">
+            Talk to us. We'll help you find the best fit for your business.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link 
               href="/contact"
-              className="px-8 py-4 bg-white text-indigo-600 font-semibold rounded-xl hover:shadow-lg transition-all"
+              className="w-full sm:w-auto px-8 py-4 bg-white text-green-600 font-bold rounded-lg text-lg hover:bg-gray-50 transition-all"
             >
-              Contact Sales
+              Talk to Sales
             </Link>
             <Link 
               href="/login?signup=true"
-              className="px-8 py-4 bg-indigo-500 text-white font-semibold rounded-xl hover:bg-indigo-400 transition-all"
+              className="w-full sm:w-auto px-8 py-4 bg-amber-500 hover:bg-amber-600 text-white font-semibold rounded-lg text-lg transition-all"
             >
               Start Free Trial
             </Link>
