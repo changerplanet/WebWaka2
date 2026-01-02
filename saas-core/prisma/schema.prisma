@@ -2521,3 +2521,232 @@ model SvmPromotionUsage {
   @@index([customerId])
   @@map("svm_promotion_usages")
 }
+
+// ============================================================================
+// ============================================================================
+// COMMERCE WALLET SYSTEM (Phase B2)
+// Ledger-based wallets for Customer, Vendor, and Platform
+// ============================================================================
+// ============================================================================
+
+// ============================================================================
+// COMMERCE WALLET TYPE
+// Different wallet owners in the commerce system
+// ============================================================================
+enum CommerceWalletType {
+  CUSTOMER // Customer wallet for refunds, store credit
+  VENDOR   // Vendor wallet for earnings from MVM sales
+  PLATFORM // Platform wallet for fees and commissions
+}
+
+// ============================================================================
+// COMMERCE WALLET STATUS
+// Wallet lifecycle status
+// ============================================================================
+enum CommerceWalletStatus {
+  ACTIVE   // Normal operation
+  FROZEN   // Temporarily frozen (disputes, fraud)
+  SUSPENDED // Long-term suspension
+  CLOSED   // Permanently closed
+}
+
+// ============================================================================
+// COMMERCE WALLET
+// Holds balance for customers, vendors, or platform
+// ============================================================================
+model CommerceWallet {
+  id       String @id @default(cuid())
+  tenantId String
+
+  // Wallet type
+  type CommerceWalletType
+
+  // Owner reference (mutually exclusive based on type)
+  customerId String? // For CUSTOMER type
+  vendorId   String? // For VENDOR type (MVM vendor ID)
+  // PLATFORM type has no owner - one per tenant
+
+  // Balance (calculated from ledger, cached here for performance)
+  balance         Decimal @default(0) @db.Decimal(12, 2)
+  pendingBalance  Decimal @default(0) @db.Decimal(12, 2) // Holds, pending clearance
+  availableBalance Decimal @default(0) @db.Decimal(12, 2) // balance - pendingBalance
+  currency        String  @default("USD")
+
+  // Status
+  status CommerceWalletStatus @default(ACTIVE)
+
+  // Metadata
+  metadata Json?
+
+  // Audit
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  ledgerEntries CommerceWalletLedger[]
+
+  @@unique([tenantId, type, customerId, vendorId]) // One wallet per owner per type
+  @@index([tenantId])
+  @@index([type])
+  @@index([customerId])
+  @@index([vendorId])
+  @@index([status])
+  @@map("commerce_wallets")
+}
+
+// ============================================================================
+// COMMERCE WALLET LEDGER ENTRY TYPE
+// Types of ledger entries
+// ============================================================================
+enum LedgerEntryType {
+  // Credits (increase balance)
+  CREDIT_ORDER_PAYMENT    // Customer paid for order
+  CREDIT_REFUND           // Refund credited to customer
+  CREDIT_SALE_PROCEEDS    // Vendor earned from sale
+  CREDIT_PLATFORM_FEE     // Platform earned fee
+  CREDIT_ADJUSTMENT       // Manual credit adjustment
+  CREDIT_TRANSFER_IN      // Transfer from another wallet
+  CREDIT_PAYOUT_REVERSAL  // Payout failed/reversed
+
+  // Debits (decrease balance)
+  DEBIT_ORDER_PAYMENT     // Payment deducted (for platform flow)
+  DEBIT_VENDOR_COMMISSION // Commission deducted from vendor
+  DEBIT_PLATFORM_FEE      // Fee paid to platform
+  DEBIT_PAYOUT            // Payout to external account
+  DEBIT_ADJUSTMENT        // Manual debit adjustment
+  DEBIT_TRANSFER_OUT      // Transfer to another wallet
+  DEBIT_CHARGEBACK        // Chargeback deduction
+
+  // Holds
+  HOLD_CREATED            // Funds put on hold
+  HOLD_RELEASED           // Hold released back to available
+  HOLD_CAPTURED           // Hold converted to actual debit
+}
+
+// ============================================================================
+// COMMERCE WALLET LEDGER STATUS
+// Status of individual ledger entries
+// ============================================================================
+enum LedgerEntryStatus {
+  PENDING   // Entry created, awaiting processing
+  COMPLETED // Entry processed successfully
+  FAILED    // Entry failed
+  REVERSED  // Entry was reversed
+}
+
+// ============================================================================
+// COMMERCE WALLET LEDGER
+// IMMUTABLE, APPEND-ONLY ledger of all wallet transactions
+// This is the source of truth - wallet.balance is just a cache
+// ============================================================================
+model CommerceWalletLedger {
+  id       String          @id @default(cuid())
+  walletId String
+  wallet   CommerceWallet @relation(fields: [walletId], references: [id], onDelete: Restrict)
+
+  // Entry type and status
+  entryType LedgerEntryType
+  status    LedgerEntryStatus @default(COMPLETED)
+
+  // Amount (positive for credits, negative for debits)
+  amount       Decimal @db.Decimal(12, 2)
+  currency     String  @default("USD")
+
+  // Balance snapshot AFTER this entry (for audit trail)
+  balanceAfter         Decimal @db.Decimal(12, 2)
+  pendingBalanceAfter  Decimal @default(0) @db.Decimal(12, 2)
+  availableBalanceAfter Decimal @db.Decimal(12, 2)
+
+  // Reference to source transaction
+  referenceType String? // "ORDER", "REFUND", "PAYOUT", "TRANSFER", "ADJUSTMENT"
+  referenceId   String? // Order ID, Payout ID, etc.
+
+  // For transfers between wallets
+  counterpartyWalletId String?
+
+  // For holds
+  holdId String? // Links HOLD_CREATED with HOLD_RELEASED/HOLD_CAPTURED
+
+  // Idempotency key (prevents duplicate entries)
+  idempotencyKey String @unique
+
+  // Description
+  description String?
+
+  // Metadata for additional context
+  metadata Json?
+
+  // Audit (IMMUTABLE - no updatedAt)
+  createdAt DateTime @default(now())
+  createdBy String?  // User or system that created this entry
+
+  @@index([walletId])
+  @@index([entryType])
+  @@index([status])
+  @@index([referenceType, referenceId])
+  @@index([holdId])
+  @@index([createdAt])
+  @@map("commerce_wallet_ledger")
+}
+
+// ============================================================================
+// COMMERCE PAYOUT
+// Track payouts from vendor/platform wallets to external accounts
+// ============================================================================
+enum PayoutStatus {
+  PENDING    // Created, awaiting processing
+  PROCESSING // Being processed
+  COMPLETED  // Successfully paid out
+  FAILED     // Payout failed
+  CANCELLED  // Cancelled before processing
+}
+
+model CommercePayout {
+  id       String @id @default(cuid())
+  tenantId String
+
+  // Source wallet
+  walletId String
+  walletType CommerceWalletType
+
+  // Payout details
+  amount   Decimal @db.Decimal(12, 2)
+  currency String  @default("USD")
+
+  // Fees
+  processingFee Decimal @default(0) @db.Decimal(12, 2)
+  netAmount     Decimal @db.Decimal(12, 2) // amount - processingFee
+
+  // Status
+  status PayoutStatus @default(PENDING)
+
+  // External payment reference
+  paymentMethod  String?  // "BANK_TRANSFER", "PAYPAL", etc.
+  paymentDetails Json?    // Masked account details
+  externalRef    String?  // External payment provider reference
+
+  // Processing timestamps
+  processedAt DateTime?
+  completedAt DateTime?
+  failedAt    DateTime?
+
+  // Failure details
+  failureReason String?
+  failureCode   String?
+
+  // Admin who triggered payout
+  triggeredBy String?
+
+  // Linked ledger entry
+  ledgerEntryId String?
+
+  // Audit
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([tenantId])
+  @@index([walletId])
+  @@index([status])
+  @@index([createdAt])
+  @@map("commerce_payouts")
+}
