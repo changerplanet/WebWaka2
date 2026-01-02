@@ -1034,6 +1034,9 @@ video {
 .touch-manipulation {
   touch-action: manipulation;
 }
+.resize-none {
+  resize: none;
+}
 .grid-cols-1 {
   grid-template-columns: repeat(1, minmax(0, 1fr));
 }
@@ -1329,6 +1332,10 @@ video {
 .border-slate-800 {
   --tw-border-opacity: 1;
   border-color: rgb(30 41 59 / var(--tw-border-opacity, 1));
+}
+.border-emerald-200 {
+  --tw-border-opacity: 1;
+  border-color: rgb(167 243 208 / var(--tw-border-opacity, 1));
 }
 .border-t-transparent {
   border-top-color: transparent;
