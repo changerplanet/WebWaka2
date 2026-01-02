@@ -29,7 +29,7 @@ export async function POST(request: NextRequest) {
     
     // Resolve tenant if slug provided
     let tenantId: string | undefined
-    let tenantName = 'SaaS Core'
+    let tenantName = 'eMarketWaka'
     
     if (tenantSlug) {
       const tenant = await resolveTenantBySlug(tenantSlug)

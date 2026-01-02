@@ -23,11 +23,11 @@ export async function GET(request: NextRequest) {
     // Default branding
     let branding = {
       id: 'default',
-      name: 'SaaS Core',
+      name: 'eMarketWaka',
       slug: 'default',
-      appName: 'SaaS Core',
-      shortName: 'SaaS',
-      description: 'Multi-Tenant SaaS Platform',
+      appName: 'eMarketWaka',
+      shortName: 'eMarketWaka',
+      description: 'eMarketWaka Commerce Platform',
       primaryColor: '#6366f1',
       secondaryColor: '#8b5cf6',
       backgroundColor: '#ffffff',
@@ -52,7 +52,7 @@ export async function GET(request: NextRequest) {
         slug: tenant.slug,
         appName: tenant.appName,
         shortName: tenant.appName.substring(0, 12), // PWA short name limit
-        description: `${tenant.appName} - Powered by SaaS Core`,
+        description: `${tenant.appName} - Powered by eMarketWaka`,
         primaryColor: tenant.primaryColor,
         secondaryColor: tenant.secondaryColor,
         backgroundColor: '#ffffff',
@@ -182,8 +182,8 @@ export async function GET(request: NextRequest) {
     
     // Return minimal valid manifest on error
     return NextResponse.json({
-      name: 'SaaS Core',
-      short_name: 'SaaS',
+      name: 'eMarketWaka',
+      short_name: 'eMarketWaka',
       start_url: '/',
       display: 'standalone',
       theme_color: '#6366f1',
