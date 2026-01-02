@@ -168,3 +168,49 @@ export {
   type OfflineCart,
   type ConnectivityCallback
 } from './offline-behavior'
+
+// Event Bus
+export {
+  SVM_EVENT_TYPES,
+  SVMEventEmitter,
+  initEventEmitter,
+  getEventEmitter,
+  emitEvent,
+  generateIdempotencyKey,
+  generateUniqueIdempotencyKey,
+  createOrderPlacedEvent,
+  createOrderPaidEvent,
+  createOrderFulfilledEvent,
+  createOrderCancelledEvent,
+  createCartItemAddedEvent,
+  createProductViewedEvent,
+  type SVMEventType,
+  type SVMEventBase,
+  type SVMEventEmitterConfig,
+  type OrderPlacedPayload,
+  type OrderPaidPayload,
+  type OrderFulfilledPayload,
+  type OrderCancelledPayload,
+  type CartItemAddedPayload,
+  type CartAbandonedPayload,
+  type ProductViewedPayload,
+  type PromotionAppliedPayload,
+  type ReviewSubmittedPayload
+} from './event-bus'
+
+// Entitlements
+export {
+  SVMEntitlementService,
+  initEntitlementService,
+  getEntitlementService,
+  checkEntitlement,
+  SVM_ENTITLEMENT_FEATURES,
+  SVM_ENTITLEMENT_LIMITS,
+  type SVMEntitlements,
+  type SVMFeature,
+  type SVMLimitKey,
+  type EntitlementCheckResult,
+  type LimitCheckResult,
+  type FeatureCheckResult,
+  type SVMEntitlementServiceConfig
+} from './entitlements'
