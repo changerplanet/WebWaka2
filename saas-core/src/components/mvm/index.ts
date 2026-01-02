@@ -2,7 +2,7 @@ export { MVMProvider, useMVM } from './MVMProvider'
 export type { 
   Vendor, 
   VendorStatus, 
-  VendorDashboard, 
+  VendorDashboard as VendorDashboardData, 
   VendorOrder, 
   OrderStatus,
   ProductMapping,
