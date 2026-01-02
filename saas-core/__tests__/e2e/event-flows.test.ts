@@ -7,27 +7,28 @@ const API_URL = process.env.API_URL || 'http://localhost:3000'
 const TEST_TENANT = 'test-tenant-e2e-flow'
 
 describe('E2E: Cart to Order to Wallet Flow', () => {
-  const sessionId = `e2e-session-${Date.now()}`
+  const testRun = Date.now()
+  const sessionId = `e2e-session-${testRun}`
   let cartId: string
   let orderId: string
   let vendorWalletId: string
   let platformWalletId: string
 
   beforeAll(async () => {
-    // Create vendor wallet
+    // Create vendor wallet (unique per test run)
     const vendorRes = await fetch(`${API_URL}/api/wallets`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         tenantId: TEST_TENANT,
         type: 'VENDOR',
-        vendorId: 'e2e-vendor'
+        vendorId: `e2e-vendor-${testRun}`
       })
     })
     const vendorData = await vendorRes.json()
     vendorWalletId = vendorData.wallet.id
 
-    // Create platform wallet
+    // Create platform wallet (unique per test run)
     const platformRes = await fetch(`${API_URL}/api/wallets`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
