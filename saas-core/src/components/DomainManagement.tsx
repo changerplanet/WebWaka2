@@ -230,7 +230,7 @@ export function DomainManagement({ tenantSlug }: DomainManagementProps) {
                   </div>
                   <div>
                     <div className="font-medium text-slate-900 flex items-center gap-2">
-                      {subdomain.domain}.saascore.com
+                      {subdomain.domain}.emarketwaka.com
                       {subdomain.isPrimary && (
                         <span className="text-xs px-2 py-0.5 bg-amber-100 text-amber-700 rounded-full flex items-center gap-1">
                           <Star className="w-3 h-3" /> Primary
@@ -334,7 +334,7 @@ export function DomainManagement({ tenantSlug }: DomainManagementProps) {
                   <div className="bg-white rounded-lg p-3 font-mono text-sm space-y-2">
                     <div className="flex justify-between items-center">
                       <span className="text-slate-500">Name:</span>
-                      <span className="text-slate-900">_saascore-verify</span>
+                      <span className="text-slate-900">_emarketwaka-verify</span>
                     </div>
                     <div className="flex justify-between items-center">
                       <span className="text-slate-500">Type:</span>
@@ -378,9 +378,9 @@ export function DomainManagement({ tenantSlug }: DomainManagementProps) {
       <div className="bg-slate-50 rounded-xl p-6">
         <h3 className="font-medium text-slate-900 mb-3">Domain Configuration Help</h3>
         <div className="text-sm text-slate-600 space-y-2">
-          <p><strong>Subdomain:</strong> Your default address at {tenantSlug}.saascore.com</p>
+          <p><strong>Subdomain:</strong> Your default address at {tenantSlug}.emarketwaka.com</p>
           <p><strong>Custom Domain:</strong> Use your own domain like app.yourdomain.com</p>
-          <p><strong>DNS Setup:</strong> Add a CNAME record pointing to cname.saascore.com</p>
+          <p><strong>DNS Setup:</strong> Add a CNAME record pointing to cname.emarketwaka.com</p>
         </div>
       </div>
     </div>
