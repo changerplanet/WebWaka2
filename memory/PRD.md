@@ -810,13 +810,9 @@ CANCELLED  CANCELLED CANCELLED/REFUNDED  REFUNDED   REFUNDED
 
 ## Backlog / Future Work
 
-### Phase B - Commerce Completeness (In Progress)
-- **Step B3: Vendor Payouts** — Admin-triggered payout logic for MVM (integrate with Wallet system)
-
-### Phase C - Production Readiness
-- Automated testing (unit, integration, e2e)
-- Performance and load testing
-- Security hardening and observability
+### Phase C - Production Readiness (In Progress)
+- **Step C2: Performance & Load Testing** — POS concurrency, marketplace traffic, event throughput
+- **Step C3: Security & Observability** — Auth hardening, rate limiting, audit logs, metrics
 
 ### P1 - Core Entities
 - ~~Add `Product`, `Customer`, `InventoryLevel` models to SaaS Core schema~~ ✅ DONE (Step 1 Remediation)
