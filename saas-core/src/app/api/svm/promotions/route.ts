@@ -60,7 +60,7 @@ export async function POST(request: NextRequest) {
           )
         }
         
-        const promotion = findByCode(tenantId, code)
+        const promotion = await findByCode(tenantId, code)
         
         if (!promotion) {
           return NextResponse.json({
@@ -75,7 +75,7 @@ export async function POST(request: NextRequest) {
           (sum: number, item: PromotionCartItem) => sum + item.quantity, 0
         )
         
-        const validation = validatePromotion(
+        const validation = await validatePromotion(
           promotion,
           subtotal || 0,
           totalQuantity,
@@ -131,12 +131,12 @@ export async function POST(request: NextRequest) {
         const totalQuantity = cartItems.reduce((sum, item) => sum + item.quantity, 0)
         
         // Get automatic promotions
-        const autoPromotions = getAutomaticPromotions(tenantId)
+        const autoPromotions = await getAutomaticPromotions(tenantId)
         
         // Get coupon promotions
-        const couponPromotions: Promotion[] = (couponCodes || [])
-          .map((code: string) => findByCode(tenantId, code))
-          .filter((p: Promotion | null): p is Promotion => p !== null)
+        const couponPromotionPromises = (couponCodes || []).map((code: string) => findByCode(tenantId, code))
+        const couponPromotionsResults = await Promise.all(couponPromotionPromises)
+        const couponPromotions: Promotion[] = couponPromotionsResults.filter((p): p is Promotion => p !== null)
         
         // Combine and sort by priority
         const allPromotions = [...autoPromotions, ...couponPromotions]
@@ -151,7 +151,7 @@ export async function POST(request: NextRequest) {
         let shippingDiscount = new Decimal(0)
         
         for (const promotion of allPromotions) {
-          const validation = validatePromotion(
+          const validation = await validatePromotion(
             promotion,
             subtotal,
             totalQuantity,
@@ -234,7 +234,7 @@ export async function POST(request: NextRequest) {
         
         // Check for duplicate code
         if (code) {
-          const existing = findByCode(tenantId, code)
+          const existing = await findByCode(tenantId, code)
           if (existing) {
             return NextResponse.json(
               { success: false, error: 'A promotion with this code already exists' },
@@ -275,7 +275,7 @@ export async function POST(request: NextRequest) {
           updatedAt: new Date().toISOString()
         }
         
-        addPromotion(newPromotion)
+        await addPromotion(newPromotion)
         
         return NextResponse.json({
           success: true,
@@ -310,7 +310,7 @@ export async function GET(request: NextRequest) {
       )
     }
     
-    let promotions = activeOnly ? getActivePromotions(tenantId) : getPromotions(tenantId)
+    let promotions = activeOnly ? await getActivePromotions(tenantId) : await getPromotions(tenantId)
     
     if (type) {
       promotions = promotions.filter(p => p.type === type)
