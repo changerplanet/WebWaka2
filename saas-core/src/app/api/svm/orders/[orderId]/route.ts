@@ -236,6 +236,8 @@ export async function PUT(
       } else if (status === 'REFUNDED') {
         updateData.refundedAt = now
         if (refundReason) updateData.refundReason = refundReason
+      } else if (status === 'DELIVERED') {
+        updateData.deliveredAt = now
       }
     }
 
