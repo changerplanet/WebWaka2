@@ -30,73 +30,73 @@ datasource db {
 
 // Sale status lifecycle
 enum SaleStatus {
-  DRAFT           // In progress, cart not yet submitted
-  SUSPENDED       // Parked for later (customer stepped away)
+  DRAFT // In progress, cart not yet submitted
+  SUSPENDED // Parked for later (customer stepped away)
   PENDING_PAYMENT // Submitted, awaiting payment
-  PARTIALLY_PAID  // Some payment received
-  COMPLETED       // Fully paid
-  VOIDED          // Cancelled before completion
-  REFUNDED        // Fully refunded after completion
+  PARTIALLY_PAID // Some payment received
+  COMPLETED // Fully paid
+  VOIDED // Cancelled before completion
+  REFUNDED // Fully refunded after completion
 }
 
 // Payment status for POS payment intents
 enum POSPaymentStatus {
-  PENDING         // Payment initiated
-  PROCESSING      // Being processed
-  COMPLETED       // Successfully completed
-  FAILED          // Payment failed
-  CANCELLED       // Payment cancelled
-  REFUNDED        // Payment refunded
+  PENDING // Payment initiated
+  PROCESSING // Being processed
+  COMPLETED // Successfully completed
+  FAILED // Payment failed
+  CANCELLED // Payment cancelled
+  REFUNDED // Payment refunded
 }
 
 // Payment method types
 enum PaymentMethod {
   CASH
   CARD
-  MOBILE_PAYMENT  // Apple Pay, Google Pay, etc.
+  MOBILE_PAYMENT // Apple Pay, Google Pay, etc.
   STORE_CREDIT
   GIFT_CARD
   LAYAWAY_PAYMENT
-  SPLIT           // Multiple payment methods
+  SPLIT // Multiple payment methods
   OTHER
 }
 
 // Discount types
 enum DiscountType {
-  PERCENTAGE      // e.g., 10% off
-  FIXED_AMOUNT    // e.g., $5 off
-  BUY_X_GET_Y     // e.g., Buy 2 Get 1 Free
-  BUNDLE          // Bundle pricing
+  PERCENTAGE // e.g., 10% off
+  FIXED_AMOUNT // e.g., $5 off
+  BUY_X_GET_Y // e.g., Buy 2 Get 1 Free
+  BUNDLE // Bundle pricing
 }
 
 // Discount scope
 enum DiscountScope {
-  SALE            // Applies to entire sale
-  LINE_ITEM       // Applies to specific item
-  CATEGORY        // Applies to product category
+  SALE // Applies to entire sale
+  LINE_ITEM // Applies to specific item
+  CATEGORY // Applies to product category
 }
 
 // Layaway status
 enum LayawayStatus {
-  ACTIVE          // Payments in progress
-  COMPLETED       // Fully paid, ready for pickup
-  PICKED_UP       // Customer received items
-  CANCELLED       // Cancelled, refund processed
-  DEFAULTED       // Missed payments, forfeited
+  ACTIVE // Payments in progress
+  COMPLETED // Fully paid, ready for pickup
+  PICKED_UP // Customer received items
+  CANCELLED // Cancelled, refund processed
+  DEFAULTED // Missed payments, forfeited
 }
 
 // Register session status
 enum RegisterSessionStatus {
-  OPEN            // Currently active
-  CLOSED          // Properly closed out
-  SUSPENDED       // Temporarily paused
+  OPEN // Currently active
+  CLOSED // Properly closed out
+  SUSPENDED // Temporarily paused
 }
 
 // Shift status
 enum ShiftStatus {
-  ACTIVE          // Currently working
-  BREAK           // On break
-  ENDED           // Shift completed
+  ACTIVE // Currently working
+  BREAK // On break
+  ENDED // Shift completed
 }
 
 // ============================================================================
@@ -106,24 +106,24 @@ enum ShiftStatus {
 
 // Register configuration (POS owns this)
 model POSRegister {
-  id              String    @id @default(uuid())
-  tenantId        String    // FK to Core.Tenant (by ID only)
-  
-  name            String    // "Register 1", "Front Counter"
-  code            String    // Short code "R1", "FC1"
-  isActive        Boolean   @default(true)
-  
+  id       String @id @default(uuid())
+  tenantId String // FK to Core.Tenant (by ID only)
+
+  name     String // "Register 1", "Front Counter"
+  code     String // Short code "R1", "FC1"
+  isActive Boolean @default(true)
+
   // Configuration
-  defaultTaxRate  Decimal?  @db.Decimal(5, 4)  // e.g., 0.0825 = 8.25%
-  receiptHeader   String?   // Custom header for receipts
-  receiptFooter   String?   // Custom footer for receipts
-  
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
-  
+  defaultTaxRate Decimal? @db.Decimal(5, 4) // e.g., 0.0825 = 8.25%
+  receiptHeader  String? // Custom header for receipts
+  receiptFooter  String? // Custom footer for receipts
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   // Relations (POS-internal)
-  sessions        RegisterSession[]
-  
+  sessions RegisterSession[]
+
   @@unique([tenantId, code])
   @@index([tenantId])
   @@map("pos_registers")
@@ -131,36 +131,36 @@ model POSRegister {
 
 // Register session (cash drawer open/close)
 model RegisterSession {
-  id              String                @id @default(uuid())
-  tenantId        String                // FK to Core.Tenant
-  registerId      String
-  staffId         String                // FK to Core.User (who opened)
-  
-  status          RegisterSessionStatus @default(OPEN)
-  
+  id         String @id @default(uuid())
+  tenantId   String // FK to Core.Tenant
+  registerId String
+  staffId    String // FK to Core.User (who opened)
+
+  status RegisterSessionStatus @default(OPEN)
+
   // Cash tracking
-  openingCash     Decimal               @db.Decimal(12, 2)
-  closingCash     Decimal?              @db.Decimal(12, 2)
-  expectedCash    Decimal?              @db.Decimal(12, 2)  // Calculated
-  cashDifference  Decimal?              @db.Decimal(12, 2)  // Variance
-  
+  openingCash    Decimal  @db.Decimal(12, 2)
+  closingCash    Decimal? @db.Decimal(12, 2)
+  expectedCash   Decimal? @db.Decimal(12, 2) // Calculated
+  cashDifference Decimal? @db.Decimal(12, 2) // Variance
+
   // Timestamps
-  openedAt        DateTime              @default(now())
+  openedAt        DateTime  @default(now())
   closedAt        DateTime?
-  closedByStaffId String?               // FK to Core.User (who closed)
-  
+  closedByStaffId String? // FK to Core.User (who closed)
+
   // Notes
-  openingNotes    String?
-  closingNotes    String?
-  
-  createdAt       DateTime              @default(now())
-  updatedAt       DateTime              @updatedAt
-  
+  openingNotes String?
+  closingNotes String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   // Relations
-  register        POSRegister           @relation(fields: [registerId], references: [id])
-  sales           Sale[]
-  shifts          Shift[]
-  
+  register POSRegister @relation(fields: [registerId], references: [id])
+  sales    Sale[]
+  shifts   Shift[]
+
   @@index([tenantId])
   @@index([registerId])
   @@index([staffId])
@@ -170,33 +170,33 @@ model RegisterSession {
 
 // Staff shift tracking
 model Shift {
-  id              String      @id @default(uuid())
-  tenantId        String      // FK to Core.Tenant
-  staffId         String      // FK to Core.User
-  sessionId       String?     // Optional link to register session
-  
-  status          ShiftStatus @default(ACTIVE)
-  
+  id        String  @id @default(uuid())
+  tenantId  String // FK to Core.Tenant
+  staffId   String // FK to Core.User
+  sessionId String? // Optional link to register session
+
+  status ShiftStatus @default(ACTIVE)
+
   // Time tracking
-  startedAt       DateTime    @default(now())
-  endedAt         DateTime?
-  
+  startedAt DateTime  @default(now())
+  endedAt   DateTime?
+
   // Break tracking
-  totalBreakMinutes Int       @default(0)
-  
+  totalBreakMinutes Int @default(0)
+
   // Performance (denormalized for quick access)
-  totalSales      Int         @default(0)
-  totalRevenue    Decimal     @default(0) @db.Decimal(12, 2)
-  
-  notes           String?
-  
-  createdAt       DateTime    @default(now())
-  updatedAt       DateTime    @updatedAt
-  
+  totalSales   Int     @default(0)
+  totalRevenue Decimal @default(0) @db.Decimal(12, 2)
+
+  notes String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   // Relations
-  session         RegisterSession? @relation(fields: [sessionId], references: [id])
-  sales           Sale[]
-  
+  session RegisterSession? @relation(fields: [sessionId], references: [id])
+  sales   Sale[]
+
   @@index([tenantId])
   @@index([staffId])
   @@index([startedAt])
@@ -209,65 +209,65 @@ model Shift {
 // ============================================================================
 
 model Sale {
-  id              String      @id @default(uuid())
-  tenantId        String      // FK to Core.Tenant
-  
+  id       String @id @default(uuid())
+  tenantId String // FK to Core.Tenant
+
   // Transaction reference
-  saleNumber      String      // Human-readable: "S-20260101-0001"
-  
+  saleNumber String // Human-readable: "S-20260101-0001"
+
   // Status
-  status          SaleStatus  @default(DRAFT)
-  
+  status SaleStatus @default(DRAFT)
+
   // Context (FK references to Core entities by ID)
-  customerId      String?     // FK to Core.Customer (optional)
-  staffId         String      // FK to Core.User (cashier)
-  registerId      String?     // FK to POSRegister
-  sessionId       String?     // FK to RegisterSession
-  shiftId         String?     // FK to Shift
-  
+  customerId String? // FK to Core.Customer (optional)
+  staffId    String // FK to Core.User (cashier)
+  registerId String? // FK to POSRegister
+  sessionId  String? // FK to RegisterSession
+  shiftId    String? // FK to Shift
+
   // Amounts (all in tenant's base currency)
-  subtotal        Decimal     @db.Decimal(12, 2)  // Before discounts/tax
-  discountTotal   Decimal     @default(0) @db.Decimal(12, 2)
-  taxTotal        Decimal     @default(0) @db.Decimal(12, 2)
-  grandTotal      Decimal     @db.Decimal(12, 2)  // Final amount
-  
+  subtotal      Decimal @db.Decimal(12, 2) // Before discounts/tax
+  discountTotal Decimal @default(0) @db.Decimal(12, 2)
+  taxTotal      Decimal @default(0) @db.Decimal(12, 2)
+  grandTotal    Decimal @db.Decimal(12, 2) // Final amount
+
   // Payment tracking
-  amountPaid      Decimal     @default(0) @db.Decimal(12, 2)
-  amountDue       Decimal     @db.Decimal(12, 2)  // grandTotal - amountPaid
-  changeGiven     Decimal     @default(0) @db.Decimal(12, 2)
-  
+  amountPaid  Decimal @default(0) @db.Decimal(12, 2)
+  amountDue   Decimal @db.Decimal(12, 2) // grandTotal - amountPaid
+  changeGiven Decimal @default(0) @db.Decimal(12, 2)
+
   // Tax details (JSON for flexibility)
-  taxBreakdown    Json?       // { "state": 5.00, "local": 2.50 }
-  
+  taxBreakdown Json? // { "state": 5.00, "local": 2.50 }
+
   // Metadata
-  notes           String?
-  internalNotes   String?     // Staff-only notes
-  
+  notes         String?
+  internalNotes String? // Staff-only notes
+
   // Suspension tracking
-  suspendedAt     DateTime?
-  suspendReason   String?
-  
+  suspendedAt   DateTime?
+  suspendReason String?
+
   // Completion
   completedAt     DateTime?
   voidedAt        DateTime?
   voidReason      String?
-  voidedByStaffId String?     // FK to Core.User
-  
+  voidedByStaffId String? // FK to Core.User
+
   // Offline support
-  offlineId       String?     // Client-generated ID for offline sales
-  syncedAt        DateTime?   // When synced from offline
-  
-  createdAt       DateTime    @default(now())
-  updatedAt       DateTime    @updatedAt
-  
+  offlineId String? // Client-generated ID for offline sales
+  syncedAt  DateTime? // When synced from offline
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   // Relations
-  lineItems       SaleLineItem[]
-  discounts       SaleDiscount[]
-  payments        POSPayment[]
-  refunds         Refund[]
-  session         RegisterSession? @relation(fields: [sessionId], references: [id])
-  shift           Shift?           @relation(fields: [shiftId], references: [id])
-  
+  lineItems SaleLineItem[]
+  discounts SaleDiscount[]
+  payments  POSPayment[]
+  refunds   Refund[]
+  session   RegisterSession? @relation(fields: [sessionId], references: [id])
+  shift     Shift?           @relation(fields: [shiftId], references: [id])
+
   @@unique([tenantId, saleNumber])
   @@index([tenantId])
   @@index([customerId])
@@ -284,52 +284,52 @@ model Sale {
 // ============================================================================
 
 model SaleLineItem {
-  id              String    @id @default(uuid())
-  saleId          String
-  
+  id     String @id @default(uuid())
+  saleId String
+
   // Product reference (FK to Core.Product by ID only)
-  productId       String    // FK to Core.Product
-  variantId       String?   // FK to Core.ProductVariant (if applicable)
-  
+  productId String // FK to Core.Product
+  variantId String? // FK to Core.ProductVariant (if applicable)
+
   // Snapshot at time of sale (products can change, sale record is immutable)
-  productName     String
-  productSku      String?
-  variantName     String?
-  
+  productName String
+  productSku  String?
+  variantName String?
+
   // Pricing
-  unitPrice       Decimal   @db.Decimal(12, 2)
-  quantity        Decimal   @db.Decimal(10, 3)  // Supports fractional (weight-based)
-  
+  unitPrice Decimal @db.Decimal(12, 2)
+  quantity  Decimal @db.Decimal(10, 3) // Supports fractional (weight-based)
+
   // Calculated
-  lineSubtotal    Decimal   @db.Decimal(12, 2)  // unitPrice * quantity
-  discountAmount  Decimal   @default(0) @db.Decimal(12, 2)
-  taxAmount       Decimal   @default(0) @db.Decimal(12, 2)
-  lineTotal       Decimal   @db.Decimal(12, 2)  // After discount, before tax
-  
+  lineSubtotal   Decimal @db.Decimal(12, 2) // unitPrice * quantity
+  discountAmount Decimal @default(0) @db.Decimal(12, 2)
+  taxAmount      Decimal @default(0) @db.Decimal(12, 2)
+  lineTotal      Decimal @db.Decimal(12, 2) // After discount, before tax
+
   // Tax configuration at time of sale
-  taxRate         Decimal?  @db.Decimal(5, 4)
-  taxExempt       Boolean   @default(false)
-  
+  taxRate   Decimal? @db.Decimal(5, 4)
+  taxExempt Boolean  @default(false)
+
   // Inventory tracking
-  inventoryDeducted Boolean @default(false)  // Event emitted for Core
-  
+  inventoryDeducted Boolean @default(false) // Event emitted for Core
+
   // Serial/batch tracking (if applicable)
-  serialNumber    String?
-  batchNumber     String?
-  
-  notes           String?
-  
+  serialNumber String?
+  batchNumber  String?
+
+  notes String?
+
   // Ordering
-  sortOrder       Int       @default(0)
-  
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
-  
+  sortOrder Int @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   // Relations
-  sale            Sale      @relation(fields: [saleId], references: [id], onDelete: Cascade)
-  itemDiscounts   SaleDiscount[]
-  refundItems     RefundItem[]
-  
+  sale          Sale           @relation(fields: [saleId], references: [id], onDelete: Cascade)
+  itemDiscounts SaleDiscount[]
+  refundItems   RefundItem[]
+
   @@index([saleId])
   @@index([productId])
   @@map("pos_sale_line_items")
@@ -341,38 +341,38 @@ model SaleLineItem {
 // ============================================================================
 
 model SaleDiscount {
-  id              String        @id @default(uuid())
-  saleId          String
-  lineItemId      String?       // If applied to specific item
-  
+  id         String  @id @default(uuid())
+  saleId     String
+  lineItemId String? // If applied to specific item
+
   // Discount details
-  name            String        // "Summer Sale 10%", "Employee Discount"
-  code            String?       // Promo code if applicable
-  
-  type            DiscountType
-  scope           DiscountScope
-  
+  name String // "Summer Sale 10%", "Employee Discount"
+  code String? // Promo code if applicable
+
+  type  DiscountType
+  scope DiscountScope
+
   // Value
-  value           Decimal       @db.Decimal(12, 4)  // Percentage or fixed amount
-  calculatedAmount Decimal      @db.Decimal(12, 2)  // Actual discount applied
-  
+  value            Decimal @db.Decimal(12, 4) // Percentage or fixed amount
+  calculatedAmount Decimal @db.Decimal(12, 2) // Actual discount applied
+
   // Reference to discount rule (if from a configured discount)
-  discountRuleId  String?       // FK to POS discount configuration
-  
+  discountRuleId String? // FK to POS discount configuration
+
   // Approval (for manager-only discounts)
-  requiresApproval Boolean      @default(false)
-  approvedByStaffId String?     // FK to Core.User
-  approvedAt      DateTime?
-  
+  requiresApproval  Boolean   @default(false)
+  approvedByStaffId String? // FK to Core.User
+  approvedAt        DateTime?
+
   // Reason (for manual discounts)
-  reason          String?
-  
-  createdAt       DateTime      @default(now())
-  
+  reason String?
+
+  createdAt DateTime @default(now())
+
   // Relations
-  sale            Sale          @relation(fields: [saleId], references: [id], onDelete: Cascade)
-  lineItem        SaleLineItem? @relation(fields: [lineItemId], references: [id])
-  
+  sale     Sale          @relation(fields: [saleId], references: [id], onDelete: Cascade)
+  lineItem SaleLineItem? @relation(fields: [lineItemId], references: [id])
+
   @@index([saleId])
   @@index([lineItemId])
   @@map("pos_sale_discounts")
@@ -384,49 +384,49 @@ model SaleDiscount {
 // ============================================================================
 
 model POSPayment {
-  id              String            @id @default(uuid())
-  saleId          String
-  
+  id     String @id @default(uuid())
+  saleId String
+
   // Payment details
-  method          PaymentMethod
-  status          POSPaymentStatus  @default(PENDING)
-  
+  method PaymentMethod
+  status POSPaymentStatus @default(PENDING)
+
   // Amounts
-  amount          Decimal           @db.Decimal(12, 2)
-  tipAmount       Decimal           @default(0) @db.Decimal(12, 2)
-  totalAmount     Decimal           @db.Decimal(12, 2)  // amount + tipAmount
-  
+  amount      Decimal @db.Decimal(12, 2)
+  tipAmount   Decimal @default(0) @db.Decimal(12, 2)
+  totalAmount Decimal @db.Decimal(12, 2) // amount + tipAmount
+
   // For CASH payments
-  cashReceived    Decimal?          @db.Decimal(12, 2)
-  changeGiven     Decimal?          @db.Decimal(12, 2)
-  
+  cashReceived Decimal? @db.Decimal(12, 2)
+  changeGiven  Decimal? @db.Decimal(12, 2)
+
   // For CARD payments (reference to Core payment processor)
-  corePaymentId   String?           // FK to Core.Payment (if processed via Core)
-  cardLastFour    String?
-  cardBrand       String?           // Visa, Mastercard, etc.
-  authCode        String?
-  
+  corePaymentId String? // FK to Core.Payment (if processed via Core)
+  cardLastFour  String?
+  cardBrand     String? // Visa, Mastercard, etc.
+  authCode      String?
+
   // For GIFT_CARD / STORE_CREDIT
-  giftCardNumber  String?
-  storeCreditId   String?           // FK to Core.StoreCredit
-  
+  giftCardNumber String?
+  storeCreditId  String? // FK to Core.StoreCredit
+
   // Processing
-  processedAt     DateTime?
-  processedByStaffId String?        // FK to Core.User
-  
+  processedAt        DateTime?
+  processedByStaffId String? // FK to Core.User
+
   // Failure handling
-  failureReason   String?
-  
+  failureReason String?
+
   // Offline support
-  offlineId       String?
-  syncedAt        DateTime?
-  
-  createdAt       DateTime          @default(now())
-  updatedAt       DateTime          @updatedAt
-  
+  offlineId String?
+  syncedAt  DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   // Relations
-  sale            Sale              @relation(fields: [saleId], references: [id], onDelete: Cascade)
-  
+  sale Sale @relation(fields: [saleId], references: [id], onDelete: Cascade)
+
   @@index([saleId])
   @@index([status])
   @@index([corePaymentId])
@@ -439,46 +439,46 @@ model POSPayment {
 // ============================================================================
 
 model Refund {
-  id              String      @id @default(uuid())
-  tenantId        String      // FK to Core.Tenant
-  
+  id       String @id @default(uuid())
+  tenantId String // FK to Core.Tenant
+
   // Reference
-  refundNumber    String      // "R-20260101-0001"
-  originalSaleId  String
-  
+  refundNumber   String // "R-20260101-0001"
+  originalSaleId String
+
   // Staff
-  staffId         String      // FK to Core.User (who processed)
-  approvedByStaffId String?   // FK to Core.User (manager approval if needed)
-  
+  staffId           String // FK to Core.User (who processed)
+  approvedByStaffId String? // FK to Core.User (manager approval if needed)
+
   // Amounts
-  subtotal        Decimal     @db.Decimal(12, 2)
-  taxRefunded     Decimal     @default(0) @db.Decimal(12, 2)
-  totalRefunded   Decimal     @db.Decimal(12, 2)
-  
+  subtotal      Decimal @db.Decimal(12, 2)
+  taxRefunded   Decimal @default(0) @db.Decimal(12, 2)
+  totalRefunded Decimal @db.Decimal(12, 2)
+
   // Refund method
-  refundMethod    PaymentMethod
-  
+  refundMethod PaymentMethod
+
   // For card refunds
-  coreRefundId    String?     // FK to Core.Refund (if processed via Core)
-  
+  coreRefundId String? // FK to Core.Refund (if processed via Core)
+
   // Reason
-  reason          String
-  notes           String?
-  
+  reason String
+  notes  String?
+
   // Inventory
-  restockItems    Boolean     @default(true)  // Whether to restock
-  
+  restockItems Boolean @default(true) // Whether to restock
+
   // Offline
-  offlineId       String?
-  syncedAt        DateTime?
-  
-  processedAt     DateTime    @default(now())
-  createdAt       DateTime    @default(now())
-  
+  offlineId String?
+  syncedAt  DateTime?
+
+  processedAt DateTime @default(now())
+  createdAt   DateTime @default(now())
+
   // Relations
-  originalSale    Sale        @relation(fields: [originalSaleId], references: [id])
-  items           RefundItem[]
-  
+  originalSale Sale         @relation(fields: [originalSaleId], references: [id])
+  items        RefundItem[]
+
   @@unique([tenantId, refundNumber])
   @@index([tenantId])
   @@index([originalSaleId])
@@ -486,26 +486,26 @@ model Refund {
 }
 
 model RefundItem {
-  id              String      @id @default(uuid())
-  refundId        String
-  lineItemId      String      // FK to original SaleLineItem
-  
-  quantity        Decimal     @db.Decimal(10, 3)
-  unitPrice       Decimal     @db.Decimal(12, 2)
-  refundAmount    Decimal     @db.Decimal(12, 2)
-  
+  id         String @id @default(uuid())
+  refundId   String
+  lineItemId String // FK to original SaleLineItem
+
+  quantity     Decimal @db.Decimal(10, 3)
+  unitPrice    Decimal @db.Decimal(12, 2)
+  refundAmount Decimal @db.Decimal(12, 2)
+
   // Restock tracking
-  restocked       Boolean     @default(false)
-  restockedAt     DateTime?
-  
-  reason          String?
-  
-  createdAt       DateTime    @default(now())
-  
+  restocked   Boolean   @default(false)
+  restockedAt DateTime?
+
+  reason String?
+
+  createdAt DateTime @default(now())
+
   // Relations
-  refund          Refund      @relation(fields: [refundId], references: [id], onDelete: Cascade)
-  lineItem        SaleLineItem @relation(fields: [lineItemId], references: [id])
-  
+  refund   Refund       @relation(fields: [refundId], references: [id], onDelete: Cascade)
+  lineItem SaleLineItem @relation(fields: [lineItemId], references: [id])
+
   @@index([refundId])
   @@index([lineItemId])
   @@map("pos_refund_items")
@@ -517,53 +517,53 @@ model RefundItem {
 // ============================================================================
 
 model Layaway {
-  id              String        @id @default(uuid())
-  tenantId        String        // FK to Core.Tenant
-  
+  id       String @id @default(uuid())
+  tenantId String // FK to Core.Tenant
+
   // Reference
-  layawayNumber   String        // "L-20260101-0001"
-  
+  layawayNumber String // "L-20260101-0001"
+
   // Customer (required for layaway)
-  customerId      String        // FK to Core.Customer
-  staffId         String        // FK to Core.User (who created)
-  
-  status          LayawayStatus @default(ACTIVE)
-  
+  customerId String // FK to Core.Customer
+  staffId    String // FK to Core.User (who created)
+
+  status LayawayStatus @default(ACTIVE)
+
   // Original sale reference (converted from draft/suspended)
-  originalSaleId  String?       // FK to Sale (if converted from sale)
-  
+  originalSaleId String? // FK to Sale (if converted from sale)
+
   // Terms
-  totalAmount     Decimal       @db.Decimal(12, 2)
-  depositAmount   Decimal       @db.Decimal(12, 2)  // Initial payment
-  minimumPayment  Decimal       @db.Decimal(12, 2)  // Per period
-  
+  totalAmount    Decimal @db.Decimal(12, 2)
+  depositAmount  Decimal @db.Decimal(12, 2) // Initial payment
+  minimumPayment Decimal @db.Decimal(12, 2) // Per period
+
   // Payment tracking
-  amountPaid      Decimal       @default(0) @db.Decimal(12, 2)
-  amountRemaining Decimal       @db.Decimal(12, 2)
-  
+  amountPaid      Decimal @default(0) @db.Decimal(12, 2)
+  amountRemaining Decimal @db.Decimal(12, 2)
+
   // Schedule
-  paymentFrequency String       @default("MONTHLY")  // WEEKLY, BIWEEKLY, MONTHLY
-  nextPaymentDue  DateTime
-  finalPaymentDue DateTime      // Layaway expires
-  
+  paymentFrequency String   @default("MONTHLY") // WEEKLY, BIWEEKLY, MONTHLY
+  nextPaymentDue   DateTime
+  finalPaymentDue  DateTime // Layaway expires
+
   // Completion
-  completedAt     DateTime?
-  pickedUpAt      DateTime?
-  
+  completedAt DateTime?
+  pickedUpAt  DateTime?
+
   // Cancellation
-  cancelledAt     DateTime?
-  cancelReason    String?
-  forfeitAmount   Decimal?      @db.Decimal(12, 2)  // Non-refundable portion
-  
-  notes           String?
-  
-  createdAt       DateTime      @default(now())
-  updatedAt       DateTime      @updatedAt
-  
+  cancelledAt   DateTime?
+  cancelReason  String?
+  forfeitAmount Decimal?  @db.Decimal(12, 2) // Non-refundable portion
+
+  notes String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   // Relations
-  items           LayawayItem[]
-  payments        LayawayPayment[]
-  
+  items    LayawayItem[]
+  payments LayawayPayment[]
+
   @@unique([tenantId, layawayNumber])
   @@index([tenantId])
   @@index([customerId])
@@ -573,56 +573,56 @@ model Layaway {
 }
 
 model LayawayItem {
-  id              String    @id @default(uuid())
-  layawayId       String
-  
+  id        String @id @default(uuid())
+  layawayId String
+
   // Product reference (FK to Core.Product by ID only)
-  productId       String    // FK to Core.Product
-  variantId       String?   // FK to Core.ProductVariant
-  
+  productId String // FK to Core.Product
+  variantId String? // FK to Core.ProductVariant
+
   // Snapshot
-  productName     String
-  productSku      String?
-  variantName     String?
-  
+  productName String
+  productSku  String?
+  variantName String?
+
   // Pricing
-  unitPrice       Decimal   @db.Decimal(12, 2)
-  quantity        Decimal   @db.Decimal(10, 3)
-  lineTotal       Decimal   @db.Decimal(12, 2)
-  
+  unitPrice Decimal @db.Decimal(12, 2)
+  quantity  Decimal @db.Decimal(10, 3)
+  lineTotal Decimal @db.Decimal(12, 2)
+
   // Inventory reserved
-  inventoryReserved Boolean @default(true)  // Inventory held for layaway
-  
-  createdAt       DateTime  @default(now())
-  
+  inventoryReserved Boolean @default(true) // Inventory held for layaway
+
+  createdAt DateTime @default(now())
+
   // Relations
-  layaway         Layaway   @relation(fields: [layawayId], references: [id], onDelete: Cascade)
-  
+  layaway Layaway @relation(fields: [layawayId], references: [id], onDelete: Cascade)
+
   @@index([layawayId])
   @@index([productId])
   @@map("pos_layaway_items")
 }
 
 model LayawayPayment {
-  id              String      @id @default(uuid())
-  layawayId       String
-  
+  id        String @id @default(uuid())
+  layawayId String
+
   // Payment details
-  amount          Decimal     @db.Decimal(12, 2)
-  method          PaymentMethod
-  
+  amount Decimal       @db.Decimal(12, 2)
+  method PaymentMethod
+
   // Reference
-  staffId         String      // FK to Core.User
-  posPaymentId    String?     // FK to POSPayment (if paid at register)
-  
-  notes           String?
-  
-  paidAt          DateTime    @default(now())
-  createdAt       DateTime    @default(now())
-  
+  staffId      String // FK to Core.User
+  posPaymentId String? // FK to POSPayment (if paid at register)
+
+  notes String?
+
+  paidAt    DateTime @default(now())
+  createdAt DateTime @default(now())
+
   // Relations
-  layaway         Layaway     @relation(fields: [layawayId], references: [id], onDelete: Cascade)
-  
+  layaway Layaway @relation(fields: [layawayId], references: [id], onDelete: Cascade)
+
   @@index([layawayId])
   @@map("pos_layaway_payments")
 }
@@ -633,39 +633,39 @@ model LayawayPayment {
 // ============================================================================
 
 model POSSettings {
-  id              String    @id @default(uuid())
-  tenantId        String    @unique  // One settings record per tenant
-  
+  id       String @id @default(uuid())
+  tenantId String @unique // One settings record per tenant
+
   // Tax settings
-  defaultTaxRate  Decimal?  @db.Decimal(5, 4)
-  taxInclusive    Boolean   @default(false)  // Prices include tax
-  
+  defaultTaxRate Decimal? @db.Decimal(5, 4)
+  taxInclusive   Boolean  @default(false) // Prices include tax
+
   // Receipt settings
-  receiptHeader   String?
-  receiptFooter   String?
-  showTaxBreakdown Boolean  @default(true)
-  
+  receiptHeader    String?
+  receiptFooter    String?
+  showTaxBreakdown Boolean @default(true)
+
   // Sale settings
-  allowNegativeInventory Boolean @default(false)
-  requireCustomerForSale Boolean @default(false)
+  allowNegativeInventory    Boolean @default(false)
+  requireCustomerForSale    Boolean @default(false)
   autoCompleteOnFullPayment Boolean @default(true)
-  
+
   // Discount settings
-  maxDiscountPercent Decimal? @db.Decimal(5, 2)  // e.g., 50.00 = 50%
+  maxDiscountPercent          Decimal? @db.Decimal(5, 2) // e.g., 50.00 = 50%
   requireManagerApprovalAbove Decimal? @db.Decimal(12, 2)
-  
+
   // Layaway settings
-  layawayEnabled  Boolean   @default(false)
-  layawayMinDeposit Decimal? @db.Decimal(5, 2)  // Percentage
-  layawayMaxDays  Int?      // Maximum layaway period
-  
+  layawayEnabled    Boolean  @default(false)
+  layawayMinDeposit Decimal? @db.Decimal(5, 2) // Percentage
+  layawayMaxDays    Int? // Maximum layaway period
+
   // Offline settings
-  offlineEnabled  Boolean   @default(true)
-  offlineMaxTransactions Int @default(100)
-  
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
-  
+  offlineEnabled         Boolean @default(true)
+  offlineMaxTransactions Int     @default(100)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   @@index([tenantId])
   @@map("pos_settings")
 }
@@ -676,45 +676,45 @@ model POSSettings {
 // ============================================================================
 
 model DiscountRule {
-  id              String        @id @default(uuid())
-  tenantId        String        // FK to Core.Tenant
-  
-  name            String
-  code            String?       // Promo code
-  description     String?
-  
-  type            DiscountType
-  scope           DiscountScope
-  value           Decimal       @db.Decimal(12, 4)
-  
+  id       String @id @default(uuid())
+  tenantId String // FK to Core.Tenant
+
+  name        String
+  code        String? // Promo code
+  description String?
+
+  type  DiscountType
+  scope DiscountScope
+  value Decimal       @db.Decimal(12, 4)
+
   // Conditions
-  minimumPurchase Decimal?      @db.Decimal(12, 2)
-  maximumDiscount Decimal?      @db.Decimal(12, 2)  // Cap on discount amount
-  
+  minimumPurchase Decimal? @db.Decimal(12, 2)
+  maximumDiscount Decimal? @db.Decimal(12, 2) // Cap on discount amount
+
   // Product/Category targeting (JSON for flexibility)
   // e.g., { "productIds": ["..."], "categoryIds": ["..."] }
-  targetRules     Json?
-  
+  targetRules Json?
+
   // Validity
-  isActive        Boolean       @default(true)
-  validFrom       DateTime?
-  validUntil      DateTime?
-  
+  isActive   Boolean   @default(true)
+  validFrom  DateTime?
+  validUntil DateTime?
+
   // Usage limits
-  maxUsesTotal    Int?          // Total times this can be used
-  maxUsesPerCustomer Int?       // Per customer limit
-  currentUses     Int           @default(0)
-  
+  maxUsesTotal       Int? // Total times this can be used
+  maxUsesPerCustomer Int? // Per customer limit
+  currentUses        Int  @default(0)
+
   // Approval
-  requiresApproval Boolean      @default(false)
-  
+  requiresApproval Boolean @default(false)
+
   // Stacking
-  canStack        Boolean       @default(false)  // Can combine with other discounts
-  priority        Int           @default(0)      // Higher = applied first
-  
-  createdAt       DateTime      @default(now())
-  updatedAt       DateTime      @updatedAt
-  
+  canStack Boolean @default(false) // Can combine with other discounts
+  priority Int     @default(0) // Higher = applied first
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   @@unique([tenantId, code])
   @@index([tenantId])
   @@index([isActive])
