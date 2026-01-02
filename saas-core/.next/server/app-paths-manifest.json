@@ -7,7 +7,9 @@
   "/offline/page": "app/offline/page.js",
   "/login/page": "app/login/page.js",
   "/manifest.json/route": "app/manifest.json/route.js",
-  "/api/svm/promotions/route": "app/api/svm/promotions/route.js",
   "/api/svm/shipping/route": "app/api/svm/shipping/route.js",
-  "/api/svm/orders/route": "app/api/svm/orders/route.js"
+  "/api/svm/orders/route": "app/api/svm/orders/route.js",
+  "/api/mvm/vendors/[vendorId]/dashboard/route": "app/api/mvm/vendors/[vendorId]/dashboard/route.js",
+  "/api/mvm/vendors/[vendorId]/route": "app/api/mvm/vendors/[vendorId]/route.js",
+  "/api/mvm/vendors/[vendorId]/orders/route": "app/api/mvm/vendors/[vendorId]/orders/route.js"
 }
