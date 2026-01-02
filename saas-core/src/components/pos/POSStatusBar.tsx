@@ -15,7 +15,7 @@ export function POSStatusBar() {
   } = usePOS()
 
   return (
-    <div className="bg-slate-900 text-white px-4 py-2 flex items-center justify-between text-sm">
+    <div className="bg-slate-900 text-white px-4 py-2 flex items-center justify-between text-sm" data-testid="pos-status-bar">
       {/* Left: Location & Staff */}
       <div className="flex items-center gap-4">
         {locationName && (
