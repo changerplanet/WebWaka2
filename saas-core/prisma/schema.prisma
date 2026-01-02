@@ -2063,3 +2063,193 @@ model NotificationPreference {
   @@unique([userId, tenantId, category])
   @@index([userId])
 }
+
+// ============================================================================
+// SVM SHIPPING ZONE
+// Shipping zone configuration for SVM module
+// ============================================================================
+model SvmShippingZone {
+  id          String   @id @default(cuid())
+  tenantId    String
+  
+  name        String
+  description String?
+  
+  // Zone definition
+  countries   String[] // ISO country codes
+  states      String[] // State/province codes (optional)
+  postalCodes String[] // Specific postal codes (optional)
+  cities      String[] // Cities (optional)
+  
+  isDefault   Boolean  @default(false)
+  isActive    Boolean  @default(true)
+  priority    Int      @default(0) // Higher = checked first
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  rates       SvmShippingRate[]
+  
+  @@index([tenantId])
+  @@map("svm_shipping_zones")
+}
+
+// ============================================================================
+// SVM SHIPPING RATE
+// Shipping rates within a zone
+// ============================================================================
+enum SvmShippingRateType {
+  FLAT            // Fixed rate
+  WEIGHT_BASED    // Based on total weight
+  PRICE_BASED     // Based on order total
+  ITEM_BASED      // Based on item count
+}
+
+model SvmShippingRate {
+  id          String              @id @default(cuid())
+  zoneId      String
+  zone        SvmShippingZone     @relation(fields: [zoneId], references: [id], onDelete: Cascade)
+  
+  name        String              // "Standard", "Express", "Overnight"
+  description String?
+  carrier     String?             // "USPS", "FedEx", "UPS"
+  
+  // Rate calculation
+  rateType    SvmShippingRateType @default(FLAT)
+  flatRate    Decimal?            @db.Decimal(10, 2)
+  
+  // Weight-based
+  minWeight   Decimal?            @db.Decimal(10, 2)
+  maxWeight   Decimal?            @db.Decimal(10, 2)
+  weightRate  Decimal?            @db.Decimal(10, 4) // per unit
+  baseWeightFee Decimal?          @db.Decimal(10, 2)
+  
+  // Price-based
+  minOrderTotal   Decimal?        @db.Decimal(10, 2)
+  maxOrderTotal   Decimal?        @db.Decimal(10, 2)
+  percentageRate  Decimal?        @db.Decimal(5, 4)
+  
+  // Item-based
+  perItemRate     Decimal?        @db.Decimal(10, 2)
+  
+  // Product restrictions
+  allowedProductIds   String[]
+  excludedProductIds  String[]
+  allowedCategoryIds  String[]
+  excludedCategoryIds String[]
+  
+  // Free shipping threshold
+  freeAbove       Decimal?        @db.Decimal(10, 2)
+  
+  // Delivery estimate
+  minDays         Int?
+  maxDays         Int?
+  
+  isActive        Boolean         @default(true)
+  priority        Int             @default(0)
+  
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+  
+  @@index([zoneId])
+  @@map("svm_shipping_rates")
+}
+
+// ============================================================================
+// SVM PROMOTION
+// Discount codes and automatic promotions
+// ============================================================================
+enum SvmPromotionType {
+  COUPON          // Requires code entry
+  AUTOMATIC       // Applied automatically
+  FLASH_SALE      // Time-limited
+}
+
+enum SvmDiscountType {
+  PERCENTAGE      // % off
+  FIXED_AMOUNT    // $ off order
+  FIXED_PER_ITEM  // $ off each item
+  FREE_SHIPPING   // Free shipping
+  BUY_X_GET_Y     // BOGO style
+}
+
+model SvmPromotion {
+  id              String            @id @default(cuid())
+  tenantId        String
+  
+  name            String
+  description     String?
+  code            String?           // Nullable for automatic promotions
+  
+  // Type
+  type            SvmPromotionType  @default(COUPON)
+  discountType    SvmDiscountType
+  
+  // Value
+  discountValue   Decimal           @db.Decimal(10, 2)
+  maxDiscount     Decimal?          @db.Decimal(10, 2) // Cap for percentage
+  
+  // Conditions
+  minOrderTotal   Decimal?          @db.Decimal(10, 2)
+  minQuantity     Int?
+  
+  // Product restrictions (empty = all products)
+  productIds      String[]          // Specific products
+  categoryIds     String[]          // Product categories
+  excludeProductIds String[]        // Excluded products
+  
+  // Customer restrictions
+  customerIds     String[]          // Specific customers only
+  firstOrderOnly  Boolean           @default(false)
+  
+  // Usage limits
+  usageLimit      Int?              // Total uses allowed
+  usageCount      Int               @default(0)
+  perCustomerLimit Int?             // Uses per customer
+  
+  // BUY_X_GET_Y specific
+  buyQuantity     Int?
+  getQuantity     Int?
+  getDiscountPercent Int?           // 100 = free
+  
+  // Validity
+  startsAt        DateTime          @default(now())
+  endsAt          DateTime?
+  isActive        Boolean           @default(true)
+  
+  // Stacking
+  stackable       Boolean           @default(false)
+  priority        Int               @default(0)
+  
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+  
+  usages          SvmPromotionUsage[]
+  
+  @@unique([tenantId, code])
+  @@index([tenantId])
+  @@index([code])
+  @@index([isActive, startsAt, endsAt])
+  @@map("svm_promotions")
+}
+
+// ============================================================================
+// SVM PROMOTION USAGE
+// Tracks promotion usage per order
+// ============================================================================
+model SvmPromotionUsage {
+  id              String        @id @default(cuid())
+  promotionId     String
+  promotion       SvmPromotion  @relation(fields: [promotionId], references: [id], onDelete: Cascade)
+  
+  orderId         String
+  customerId      String?       // Core reference
+  
+  discountApplied Decimal       @db.Decimal(10, 2)
+  
+  createdAt       DateTime      @default(now())
+  
+  @@index([promotionId])
+  @@index([customerId])
+  @@map("svm_promotion_usages")
+}
