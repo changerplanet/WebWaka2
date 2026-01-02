@@ -54,7 +54,7 @@ class TestEntitlementsAPI:
         
         data = response.json()
         assert data["success"] is False
-        assert "tenantId" in data["error"].lower()
+        assert "tenantid" in data["error"].lower()  # Case-insensitive check
         print("✓ Missing tenantId returns 400")
     
     def test_get_entitlements_default_limits(self):
