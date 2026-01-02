@@ -1,4 +1,8 @@
 {
   "/pos/page": "app/pos/page.js",
-  "/page": "app/page.js"
+  "/page": "app/page.js",
+  "/api/pos/locations/route": "app/api/pos/locations/route.js",
+  "/offline/page": "app/offline/page.js",
+  "/login/page": "app/login/page.js",
+  "/manifest.json/route": "app/manifest.json/route.js"
 }
