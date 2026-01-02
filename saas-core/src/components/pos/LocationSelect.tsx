@@ -32,7 +32,7 @@ export function LocationSelect({ onComplete }: LocationSelectProps) {
 
   if (step === 'staff') {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-indigo-600 to-purple-700 flex items-center justify-center p-6">
+      <div className="min-h-screen bg-gradient-to-br from-indigo-600 to-purple-700 flex items-center justify-center p-6" data-testid="pos-staff-login">
         <div className="w-full max-w-md">
           <div className="bg-white rounded-2xl shadow-2xl p-8">
             <div className="text-center mb-8">
@@ -55,6 +55,7 @@ export function LocationSelect({ onComplete }: LocationSelectProps) {
                   placeholder="Enter your name"
                   className="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none text-lg"
                   autoFocus
+                  data-testid="staff-name-input"
                 />
               </div>
 
@@ -69,11 +70,12 @@ export function LocationSelect({ onComplete }: LocationSelectProps) {
                   placeholder="••••"
                   className="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none text-2xl text-center tracking-widest"
                   maxLength={6}
+                  data-testid="staff-pin-input"
                 />
               </div>
 
               {/* Quick PIN pad */}
-              <div className="grid grid-cols-3 gap-2 mt-4">
+              <div className="grid grid-cols-3 gap-2 mt-4" data-testid="pin-pad">
                 {[1, 2, 3, 4, 5, 6, 7, 8, 9, null, 0, 'del'].map((num, i) => (
                   <button
                     key={i}
@@ -90,6 +92,7 @@ export function LocationSelect({ onComplete }: LocationSelectProps) {
                         ? 'invisible' 
                         : 'bg-slate-100 hover:bg-slate-200 active:bg-slate-300'
                     }`}
+                    data-testid={num !== null ? `pin-btn-${num}` : undefined}
                   >
                     {num === 'del' ? '⌫' : num}
                   </button>
@@ -100,6 +103,7 @@ export function LocationSelect({ onComplete }: LocationSelectProps) {
                 onClick={handleStaffLogin}
                 disabled={staffPin.length < 4 || staffName.length < 2}
                 className="w-full mt-6 py-4 bg-indigo-600 hover:bg-indigo-700 disabled:bg-slate-300 disabled:cursor-not-allowed text-white rounded-xl font-semibold text-lg transition-colors flex items-center justify-center gap-2 touch-manipulation"
+                data-testid="start-shift-btn"
               >
                 <LogIn className="w-5 h-5" />
                 Start Shift
@@ -108,6 +112,7 @@ export function LocationSelect({ onComplete }: LocationSelectProps) {
               <button
                 onClick={() => setStep('location')}
                 className="w-full py-3 text-slate-500 hover:text-slate-700 transition-colors"
+                data-testid="change-location-btn"
               >
                 ← Change Location
               </button>
@@ -119,7 +124,7 @@ export function LocationSelect({ onComplete }: LocationSelectProps) {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-600 to-purple-700 flex items-center justify-center p-6">
+    <div className="min-h-screen bg-gradient-to-br from-indigo-600 to-purple-700 flex items-center justify-center p-6" data-testid="pos-location-select">
       <div className="w-full max-w-lg">
         <div className="bg-white rounded-2xl shadow-2xl p-8">
           <div className="text-center mb-8">
@@ -131,7 +136,7 @@ export function LocationSelect({ onComplete }: LocationSelectProps) {
           </div>
 
           {locations.length === 0 ? (
-            <div className="text-center py-8">
+            <div className="text-center py-8" data-testid="no-locations-message">
               <MapPin className="w-12 h-12 text-slate-300 mx-auto mb-3" />
               <p className="text-slate-500">No locations available</p>
               <p className="text-sm text-slate-400 mt-1">
@@ -139,12 +144,13 @@ export function LocationSelect({ onComplete }: LocationSelectProps) {
               </p>
             </div>
           ) : (
-            <div className="space-y-3">
+            <div className="space-y-3" data-testid="locations-list">
               {locations.map((location) => (
                 <button
                   key={location.id}
                   onClick={() => handleLocationSelect(location)}
                   className="w-full p-4 bg-slate-50 hover:bg-indigo-50 border-2 border-slate-200 hover:border-indigo-300 rounded-xl flex items-center gap-4 transition-all touch-manipulation"
+                  data-testid={`location-btn-${location.id}`}
                 >
                   <div className="w-12 h-12 bg-indigo-100 rounded-lg flex items-center justify-center">
                     <MapPin className="w-6 h-6 text-indigo-600" />
