@@ -1,10 +1,4 @@
 {
   "/page": "app/page.js",
-  "/api/wallets/route": "app/api/wallets/route.js",
-  "/api/svm/cart/route": "app/api/svm/cart/route.js",
-  "/api/wallets/[walletId]/route": "app/api/wallets/[walletId]/route.js",
-  "/api/wallets/transfer/route": "app/api/wallets/transfer/route.js",
-  "/api/wallets/[walletId]/ledger/route": "app/api/wallets/[walletId]/ledger/route.js",
-  "/api/svm/orders/route": "app/api/svm/orders/route.js",
-  "/api/svm/orders/[orderId]/route": "app/api/svm/orders/[orderId]/route.js"
+  "/api/tenants/route": "app/api/tenants/route.js"
 }
