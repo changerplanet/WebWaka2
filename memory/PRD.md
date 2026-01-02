@@ -3,7 +3,69 @@
 ## Overview
 Production-grade, reusable SaaS Core with Next.js App Router, PostgreSQL (Prisma ORM), and multi-tenant architecture.
 
-## Current Version: saas-core-v1.8.0 + pos-v1.0.0 + svm-v1.0.0 + mvm-v1.0.0
+## Current Version: saas-core-v1.9.0 + pos-v1.0.0 + svm-v1.1.0 + mvm-v1.0.0
+
+---
+
+## Phase B: Commerce Completeness (Jan 2026)
+
+### Step B1: SVM Cart & Order Persistence ✅ COMPLETE (Jan 2, 2026)
+
+**Scope:**
+- Persistent carts per customer (sessionId or customerId)
+- Persistent orders with full lifecycle management
+- Recovery after session loss
+- Uses Core Customers and Products (reference only)
+
+**Database Models Added (Prisma):**
+- `SvmCart` - Customer shopping carts with status tracking
+- `SvmCartItem` - Line items in carts
+- `SvmOrder` - Orders with status, payment, and fulfillment tracking
+- `SvmOrderItem` - Line items in orders with fulfillment tracking
+
+**API Endpoints:**
+
+| Endpoint | Methods | Description |
+|----------|---------|-------------|
+| `/api/svm/cart` | GET, POST, DELETE | Cart CRUD with actions (ADD_ITEM, UPDATE_QUANTITY, REMOVE_ITEM, SET_SHIPPING, SET_EMAIL, APPLY_PROMO) |
+| `/api/svm/orders` | GET, POST | Create orders from cart or direct items, list with filters |
+| `/api/svm/orders/[orderId]` | GET, PUT, DELETE | Order details, status updates, cancellation |
+
+**Order Status Flow:**
+```
+PENDING → CONFIRMED → PROCESSING → SHIPPED → DELIVERED
+    ↓         ↓           ↓           ↓
+ CANCELLED  CANCELLED  CANCELLED  CANCELLED  → REFUNDED
+```
+
+**Payment Status Flow:**
+```
+PENDING → AUTHORIZED → CAPTURED → PARTIALLY_REFUNDED → REFUNDED
+    ↓         ↓
+  FAILED   CANCELLED
+```
+
+**Fulfillment Status Flow:**
+```
+UNFULFILLED → PARTIALLY_FULFILLED → FULFILLED
+```
+
+**Key Features:**
+- Cart merging (same product increases quantity)
+- Cart expiration and abandonment tracking
+- Order creation from cart (converts cart to CONVERTED status)
+- Order creation with direct items
+- Status transition validation with clear error messages
+- Tracking info with automatic shipped timestamp
+- Complete audit trail (timestamps for all state changes)
+
+**Testing:** 100% pass rate (43/43 tests) - `/app/test_reports/iteration_12.json`
+
+**Files Created/Modified:**
+- `/app/saas-core/src/app/api/svm/cart/route.ts` - Rewritten for DB persistence
+- `/app/saas-core/src/app/api/svm/orders/route.ts` - Rewritten for DB persistence
+- `/app/saas-core/src/app/api/svm/orders/[orderId]/route.ts` - New: Order operations
+- `/app/saas-core/prisma/schema.prisma` - Added SvmCart, SvmOrder models
 
 ---
 
