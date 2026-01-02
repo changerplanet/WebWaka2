@@ -341,15 +341,15 @@ export default function HomePage() {
               </ul>
             </div>
             <div>
-              <h3 className="text-2xl font-bold text-white mb-4">Tenant Resolution</h3>
+              <h3 className="text-2xl font-bold text-white mb-4">Tenant Access</h3>
               <div className="space-y-4">
                 <div className="bg-slate-800 rounded-xl p-4">
                   <p className="text-slate-400 text-sm mb-1">Subdomain</p>
-                  <code className="text-green-400">acme.saascore.com → tenant: acme</code>
+                  <code className="text-green-400">acme.emarketwaka.com → tenant: acme</code>
                 </div>
                 <div className="bg-slate-800 rounded-xl p-4">
                   <p className="text-slate-400 text-sm mb-1">Custom Domain</p>
-                  <code className="text-green-400">app.acme.com → tenant: acme</code>
+                  <code className="text-green-400">shop.acme.com → tenant: acme</code>
                 </div>
                 <div className="bg-slate-800 rounded-xl p-4">
                   <p className="text-slate-400 text-sm mb-1">Query Param (Testing)</p>
@@ -524,7 +524,7 @@ export default function HomePage() {
       {/* Footer */}
       <footer className="border-t border-slate-200 py-8">
         <div className="container mx-auto px-6 text-center text-slate-500 text-sm">
-          <p>SaaS Core — Production-grade multi-tenant platform</p>
+          <p>eMarketWaka — Complete commerce platform for African businesses</p>
         </div>
       </footer>
     </div>
