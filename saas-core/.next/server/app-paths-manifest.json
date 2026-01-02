@@ -1,5 +1,6 @@
 {
   "/page": "app/page.js",
   "/api/health/route": "app/api/health/route.js",
-  "/api/svm/cart/route": "app/api/svm/cart/route.js"
+  "/api/svm/cart/route": "app/api/svm/cart/route.js",
+  "/api/metrics/route": "app/api/metrics/route.js"
 }
