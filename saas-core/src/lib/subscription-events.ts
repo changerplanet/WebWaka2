@@ -133,6 +133,21 @@ export const EVENT_SCHEMAS: Record<SubscriptionEventType, {
     description: 'Trial period ended',
     requiredFields: ['tenantId', 'modules'],
     optionalFields: ['partnerId', 'metadata']
+  },
+  SUBSCRIPTION_SUSPENDED: {
+    description: 'Subscription suspended due to payment failure',
+    requiredFields: ['tenantId', 'modules'],
+    optionalFields: ['partnerId', 'metadata']
+  },
+  SUBSCRIPTION_GRACE_PERIOD_STARTED: {
+    description: 'Subscription entered grace period after payment failure',
+    requiredFields: ['tenantId', 'modules'],
+    optionalFields: ['partnerId', 'metadata', 'periodEnd']
+  },
+  SUBSCRIPTION_RECOVERED: {
+    description: 'Subscription recovered after successful payment during grace period',
+    requiredFields: ['tenantId', 'modules'],
+    optionalFields: ['partnerId', 'billingAmount', 'metadata']
   }
 }
 
