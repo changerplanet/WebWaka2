@@ -3,11 +3,58 @@
 ## Overview
 Production-grade, reusable SaaS Core with Next.js App Router, PostgreSQL (Prisma ORM), and multi-tenant architecture.
 
-## Current Version: saas-core-v1.9.0 + pos-v1.0.0 + svm-v1.1.0 + mvm-v1.0.0
+## Current Version: saas-core-v1.10.0 + pos-v1.0.0 + svm-v1.1.0 + mvm-v1.0.0
 
 ---
 
 ## Phase B: Commerce Completeness (Jan 2026)
+
+### Step B2: Wallet System ✅ COMPLETE (Jan 2, 2026)
+
+**Scope:**
+- Customer wallets (for refunds, store credit)
+- Vendor wallets (for MVM earnings)
+- Platform wallet (for fees/commissions)
+- Ledger-based accounting (append-only, immutable)
+
+**Database Models Added (Prisma):**
+- `CommerceWallet` - Customer, Vendor, or Platform wallets with balance tracking
+- `CommerceWalletLedger` - Immutable, append-only ledger entries (source of truth)
+- `CommercePayout` - Payout tracking for Step B3
+
+**API Endpoints:**
+
+| Endpoint | Methods | Description |
+|----------|---------|-------------|
+| `/api/wallets` | GET, POST | List wallets, create wallet (CUSTOMER/VENDOR/PLATFORM) |
+| `/api/wallets/[walletId]` | GET, PUT, POST | Get wallet details, update status, perform operations (credit/debit/hold) |
+| `/api/wallets/[walletId]/ledger` | GET | Get ledger entries with filters |
+| `/api/wallets/transfer` | POST | Transfer funds between wallets |
+
+**Ledger Entry Types:**
+- **Credits**: CREDIT_ORDER_PAYMENT, CREDIT_REFUND, CREDIT_SALE_PROCEEDS, CREDIT_PLATFORM_FEE, CREDIT_ADJUSTMENT, CREDIT_TRANSFER_IN
+- **Debits**: DEBIT_ORDER_PAYMENT, DEBIT_VENDOR_COMMISSION, DEBIT_PLATFORM_FEE, DEBIT_PAYOUT, DEBIT_ADJUSTMENT, DEBIT_TRANSFER_OUT
+- **Holds**: HOLD_CREATED, HOLD_RELEASED, HOLD_CAPTURED
+
+**Key Features:**
+- Ledger-based accounting (wallet.balance is just a cache)
+- Idempotency via idempotencyKey prevents duplicate entries
+- Holds reduce availableBalance without affecting total balance
+- Atomic transfers between wallets
+- Balance recalculation from ledger for reconciliation
+- Wallet status management (ACTIVE, FROZEN, SUSPENDED, CLOSED)
+
+**Testing:** 100% pass rate (48/48 tests) - `/app/test_reports/iteration_13.json`
+
+**Files Created:**
+- `/app/saas-core/src/lib/commerce-wallet-service.ts` - Core wallet service
+- `/app/saas-core/src/app/api/wallets/route.ts` - List/create wallets
+- `/app/saas-core/src/app/api/wallets/[walletId]/route.ts` - Wallet operations
+- `/app/saas-core/src/app/api/wallets/[walletId]/ledger/route.ts` - Ledger API
+- `/app/saas-core/src/app/api/wallets/transfer/route.ts` - Transfer API
+- `/app/saas-core/prisma/schema.prisma` - Added CommerceWallet, CommerceWalletLedger, CommercePayout models
+
+---
 
 ### Step B1: SVM Cart & Order Persistence ✅ COMPLETE (Jan 2, 2026)
 
