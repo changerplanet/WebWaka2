@@ -120,6 +120,9 @@ model Tenant {
   subscription  Subscription?
   entitlements  Entitlement[]
   invoices      Invoice[]
+  
+  // Business profile
+  businessProfile BusinessProfile?
 
   @@index([slug])
   @@index([status])
