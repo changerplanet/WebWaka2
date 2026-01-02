@@ -14,7 +14,7 @@ export function POSCart() {
 
   if (cart.items.length === 0) {
     return (
-      <div className="h-full flex flex-col items-center justify-center text-slate-400 p-8">
+      <div className="h-full flex flex-col items-center justify-center text-slate-400 p-8" data-testid="cart-empty">
         <ShoppingCart className="w-16 h-16 mb-4 opacity-50" />
         <p className="text-lg font-medium">Cart is empty</p>
         <p className="text-sm mt-1">Search for products to add</p>
@@ -23,7 +23,7 @@ export function POSCart() {
   }
 
   return (
-    <div className="h-full flex flex-col">
+    <div className="h-full flex flex-col" data-testid="cart-content">
       {/* Customer badge */}
       {cart.customerName && (
         <div className="px-4 py-2 bg-indigo-50 border-b border-indigo-100 flex items-center gap-2">
