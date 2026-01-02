@@ -11,7 +11,7 @@ export async function generateMetadata(): Promise<Metadata> {
   
   return {
     title: branding.appName,
-    description: `${branding.appName} - Multi-Tenant SaaS Platform`,
+    description: `${branding.appName} - eMarketWaka Commerce Platform`,
     manifest: `/manifest.json?tenant=${branding.slug}`,
     icons: {
       icon: branding.faviconUrl || '/favicon.ico',
