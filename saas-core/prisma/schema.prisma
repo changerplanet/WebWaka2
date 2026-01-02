@@ -244,10 +244,12 @@ enum SubscriptionStatus {
   PENDING        // Created but not yet active
   TRIALING       // In trial period
   ACTIVE         // Paid and active
-  PAST_DUE       // Payment failed, grace period
+  PAST_DUE       // Payment failed, retry in progress
+  GRACE_PERIOD   // Payment failed, in grace period (limited access)
   CANCELLED      // Cancelled, access until period end
   EXPIRED        // Period ended, no access
-  PAUSED         // Temporarily paused
+  SUSPENDED      // Suspended due to payment failure (no access)
+  PAUSED         // Temporarily paused by user
 }
 
 // Billing interval
