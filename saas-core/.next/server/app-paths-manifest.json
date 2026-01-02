@@ -1,1 +1,7 @@
-{}
+{
+  "/api/mvm/catalog/route": "app/api/mvm/catalog/route.js",
+  "/api/mvm/inventory/route": "app/api/mvm/inventory/route.js",
+  "/api/mvm/customers/route": "app/api/mvm/customers/route.js",
+  "/api/mvm/events/route": "app/api/mvm/events/route.js",
+  "/api/mvm/entitlements/route": "app/api/mvm/entitlements/route.js"
+}
