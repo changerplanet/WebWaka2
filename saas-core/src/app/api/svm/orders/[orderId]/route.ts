@@ -254,7 +254,7 @@ export async function PUT(
       events.push({ type: 'paymentStatus', from: order.paymentStatus, to: paymentStatus })
 
       // Set paid timestamp
-      if (paymentStatus === 'PAID') {
+      if (paymentStatus === 'CAPTURED') {
         updateData.paidAt = now
       }
     }
