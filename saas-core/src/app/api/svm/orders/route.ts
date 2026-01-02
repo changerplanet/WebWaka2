@@ -212,7 +212,8 @@ export async function POST(request: NextRequest) {
           where: { id: sourceCartId },
           data: { 
             status: 'CONVERTED',
-            convertedOrderId: newOrder.id
+            convertedToOrderId: newOrder.id,
+            convertedAt: new Date()
           }
         })
       }
