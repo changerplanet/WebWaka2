@@ -31,9 +31,15 @@ export function PaymentScreen({ onComplete, onCancel }: PaymentScreenProps) {
   const [isProcessing, setIsProcessing] = useState(false)
   const [result, setResult] = useState<{ success: boolean; saleId?: string; error?: string } | null>(null)
   const [cashReceived, setCashReceived] = useState('')
+  const [finalChangeAmount, setFinalChangeAmount] = useState<number>(0)
 
   const handlePayment = async () => {
     if (!selectedMethod) return
+    
+    // Store the change amount before checkout clears the cart
+    if (selectedMethod === 'CASH' && cashReceived) {
+      setFinalChangeAmount(parseFloat(cashReceived) - cart.grandTotal)
+    }
     
     setIsProcessing(true)
     const paymentResult = await checkout(selectedMethod)
