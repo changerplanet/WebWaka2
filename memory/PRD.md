@@ -3,7 +3,54 @@
 ## Overview
 Production-grade, reusable SaaS Core with Next.js App Router, PostgreSQL (Prisma ORM), and multi-tenant architecture.
 
-## Current Version: saas-core-v1.10.0 + pos-v1.0.0 + svm-v1.1.0 + mvm-v1.0.0
+## Current Version: saas-core-v1.11.0 + pos-v1.0.0 + svm-v1.1.0 + mvm-v1.0.0
+
+---
+
+## Phase C: Production Readiness (Jan 2026)
+
+### Step C1: Testing ✅ COMPLETE (Jan 2, 2026)
+
+**Scope:**
+- Unit tests for core services
+- Integration tests for API endpoints
+- E2E flow tests
+- Tenant isolation tests
+
+**Test Coverage:**
+- **Total Tests**: 77
+- **Pass Rate**: 100% (77/77)
+- **Unit Tests**: 20 (Commerce Wallet Service)
+- **Integration Tests**: 44 (SVM Cart, Orders, Wallet APIs, Tenant Isolation)
+- **E2E Tests**: 13 (Cart→Order→Wallet, Refund, Payout flows)
+
+**Test Files Created:**
+```
+__tests__/
+├── setup.ts                              # Jest configuration
+├── unit/
+│   └── commerce-wallet-service.test.ts   # 20 tests
+├── integration/
+│   ├── svm-cart-orders.test.ts           # 21 tests
+│   └── wallet-api.test.ts                # 23 tests
+└── e2e/
+    └── event-flows.test.ts               # 13 tests
+```
+
+**Key Validations:**
+- ✅ Tenant Isolation (cross-tenant access blocked)
+- ✅ Event Flows (order lifecycle, wallet transactions)
+- ✅ Idempotency (duplicate operations handled)
+- ✅ Data Integrity (ledger matches wallet balance)
+
+**Test Commands:**
+```bash
+yarn test          # All tests
+yarn test:unit     # Unit tests
+yarn test:integration  # Integration tests
+yarn test:e2e      # E2E tests
+yarn test:coverage # With coverage report
+```
 
 ---
 
