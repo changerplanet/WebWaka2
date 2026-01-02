@@ -116,6 +116,13 @@ const STORAGE_KEYS = {
   SESSION: 'pos_session'
 }
 
+interface POSSession {
+  locationId?: string | null
+  locationName?: string | null
+  staffId?: string | null
+  staffName?: string | null
+}
+
 function saveToStorage(key: string, data: any) {
   try {
     localStorage.setItem(key, JSON.stringify(data))
