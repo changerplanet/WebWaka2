@@ -1,54 +1,46 @@
 /**
- * SVM Cart API - Core Proxy
+ * SVM Cart API - Persistent Storage
  * 
  * POST /api/svm/cart - Create or update cart
  * GET /api/svm/cart - Get cart contents
  * DELETE /api/svm/cart - Clear cart
+ * 
+ * Uses Prisma for persistent cart storage with session recovery support.
  */
 
 import { NextRequest, NextResponse } from 'next/server'
+import { PrismaClient, SvmCartStatus } from '@prisma/client'
 
-// In-memory cart storage (in production, use database)
-interface CartItem {
-  productId: string
-  variantId?: string
-  productName: string
-  unitPrice: number
-  quantity: number
-}
+const prisma = new PrismaClient()
 
-interface Cart {
-  id: string
-  tenantId: string
-  customerId?: string
-  sessionId?: string
-  items: CartItem[]
-  promotionCode?: string
-  subtotal: number
-  discountTotal: number
-  createdAt: Date
-  updatedAt: Date
-}
-
-const cartStorage = new Map<string, Cart>()
-
-function getCartKey(tenantId: string, customerId?: string, sessionId?: string): string {
-  if (customerId) return `${tenantId}:customer:${customerId}`
-  if (sessionId) return `${tenantId}:session:${sessionId}`
-  throw new Error('Either customerId or sessionId is required')
-}
-
-function generateId(): string {
+function generateCartId(): string {
   return `cart_${Date.now().toString(36)}${Math.random().toString(36).substring(2, 9)}`
+}
+
+function calculateCartTotals(items: any[], discountRate: number = 0) {
+  const itemCount = items.reduce((sum, item) => sum + item.quantity, 0)
+  const subtotal = items.reduce((sum, item) => sum + Number(item.lineTotal), 0)
+  const discountTotal = subtotal * discountRate
+  const taxTotal = (subtotal - discountTotal) * 0.08 // 8% tax
+  const grandTotal = subtotal - discountTotal + taxTotal
+
+  return {
+    itemCount,
+    subtotal,
+    discountTotal,
+    taxTotal,
+    grandTotal
+  }
 }
 
 /**
  * POST /api/svm/cart
+ * Actions: ADD_ITEM, UPDATE_QUANTITY, REMOVE_ITEM, APPLY_PROMO, REMOVE_PROMO, SET_SHIPPING, MERGE_CART
  */
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    const { tenantId, customerId, sessionId, action } = body
+    const { tenantId, customerId, sessionId, action, email } = body
 
     if (!tenantId) {
       return NextResponse.json(
@@ -64,42 +56,97 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const cartKey = getCartKey(tenantId, customerId, sessionId)
-    let cart = cartStorage.get(cartKey)
-
-    if (!cart) {
-      cart = {
-        id: generateId(),
+    // Find or create cart
+    let cart = await prisma.svmCart.findFirst({
+      where: {
         tenantId,
-        customerId,
-        sessionId,
-        items: [],
-        subtotal: 0,
-        discountTotal: 0,
-        createdAt: new Date(),
-        updatedAt: new Date()
+        status: 'ACTIVE',
+        OR: [
+          { customerId: customerId || undefined },
+          { sessionId: sessionId || undefined }
+        ].filter(Boolean)
+      },
+      include: { items: true }
+    })
+
+    // If customer has no cart but session does, try to find session cart
+    if (!cart && customerId && sessionId) {
+      const sessionCart = await prisma.svmCart.findFirst({
+        where: { tenantId, sessionId, status: 'ACTIVE' },
+        include: { items: true }
+      })
+      
+      if (sessionCart) {
+        // Merge session cart to customer
+        cart = await prisma.svmCart.update({
+          where: { id: sessionCart.id },
+          data: { customerId, sessionId: null },
+          include: { items: true }
+        })
       }
     }
 
+    // Create new cart if none exists
+    if (!cart) {
+      cart = await prisma.svmCart.create({
+        data: {
+          tenantId,
+          customerId: customerId || null,
+          sessionId: customerId ? null : sessionId,
+          email: email || null,
+          status: 'ACTIVE',
+          expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) // 7 days
+        },
+        include: { items: true }
+      })
+    }
+
+    // Handle actions
     switch (action) {
       case 'ADD_ITEM': {
-        const { productId, variantId, productName, unitPrice, quantity } = body
+        const { productId, variantId, productName, variantName, sku, imageUrl, unitPrice, quantity = 1 } = body
         
-        if (!productId || !productName || unitPrice === undefined || !quantity) {
+        if (!productId || !productName || unitPrice === undefined) {
           return NextResponse.json(
-            { success: false, error: 'productId, productName, unitPrice, and quantity are required' },
+            { success: false, error: 'productId, productName, and unitPrice are required' },
             { status: 400 }
           )
         }
 
-        const existingIndex = cart.items.findIndex(
-          item => item.productId === productId && item.variantId === variantId
-        )
+        // Check if item already exists
+        const existingItem = await prisma.svmCartItem.findFirst({
+          where: {
+            cartId: cart.id,
+            productId,
+            variantId: variantId || null
+          }
+        })
 
-        if (existingIndex >= 0) {
-          cart.items[existingIndex].quantity += quantity
+        if (existingItem) {
+          // Update quantity
+          await prisma.svmCartItem.update({
+            where: { id: existingItem.id },
+            data: {
+              quantity: existingItem.quantity + quantity,
+              lineTotal: (existingItem.quantity + quantity) * Number(existingItem.unitPrice)
+            }
+          })
         } else {
-          cart.items.push({ productId, variantId, productName, unitPrice, quantity })
+          // Add new item
+          await prisma.svmCartItem.create({
+            data: {
+              cartId: cart.id,
+              productId,
+              variantId: variantId || null,
+              productName,
+              variantName: variantName || null,
+              sku: sku || null,
+              imageUrl: imageUrl || null,
+              unitPrice,
+              quantity,
+              lineTotal: unitPrice * quantity
+            }
+          })
         }
         break
       }
@@ -107,11 +154,15 @@ export async function POST(request: NextRequest) {
       case 'UPDATE_QUANTITY': {
         const { productId, variantId, quantity } = body
         
-        const itemIndex = cart.items.findIndex(
-          item => item.productId === productId && item.variantId === variantId
-        )
+        const item = await prisma.svmCartItem.findFirst({
+          where: {
+            cartId: cart.id,
+            productId,
+            variantId: variantId || null
+          }
+        })
 
-        if (itemIndex < 0) {
+        if (!item) {
           return NextResponse.json(
             { success: false, error: 'Item not found in cart' },
             { status: 404 }
@@ -119,31 +170,108 @@ export async function POST(request: NextRequest) {
         }
 
         if (quantity <= 0) {
-          cart.items.splice(itemIndex, 1)
+          await prisma.svmCartItem.delete({ where: { id: item.id } })
         } else {
-          cart.items[itemIndex].quantity = quantity
+          await prisma.svmCartItem.update({
+            where: { id: item.id },
+            data: {
+              quantity,
+              lineTotal: quantity * Number(item.unitPrice)
+            }
+          })
         }
         break
       }
 
       case 'REMOVE_ITEM': {
         const { productId, variantId } = body
-        cart.items = cart.items.filter(
-          item => !(item.productId === productId && item.variantId === variantId)
-        )
+        
+        await prisma.svmCartItem.deleteMany({
+          where: {
+            cartId: cart.id,
+            productId,
+            variantId: variantId || null
+          }
+        })
         break
       }
 
       case 'APPLY_PROMO': {
         const { promotionCode } = body
-        cart.promotionCode = promotionCode
-        cart.discountTotal = cart.subtotal * 0.1 // Mock 10% discount
+        
+        if (!promotionCode) {
+          return NextResponse.json(
+            { success: false, error: 'promotionCode is required' },
+            { status: 400 }
+          )
+        }
+
+        // Validate promotion code
+        const promotion = await prisma.svmPromotion.findFirst({
+          where: {
+            tenantId,
+            code: promotionCode.toUpperCase(),
+            isActive: true,
+            startsAt: { lte: new Date() },
+            OR: [
+              { endsAt: null },
+              { endsAt: { gte: new Date() } }
+            ]
+          }
+        })
+
+        if (!promotion) {
+          return NextResponse.json(
+            { success: false, error: 'Invalid or expired promotion code' },
+            { status: 400 }
+          )
+        }
+
+        await prisma.svmCart.update({
+          where: { id: cart.id },
+          data: {
+            promotionCode: promotionCode.toUpperCase(),
+            promotionId: promotion.id
+          }
+        })
         break
       }
 
       case 'REMOVE_PROMO': {
-        cart.promotionCode = undefined
-        cart.discountTotal = 0
+        await prisma.svmCart.update({
+          where: { id: cart.id },
+          data: {
+            promotionCode: null,
+            promotionId: null,
+            discountTotal: 0
+          }
+        })
+        break
+      }
+
+      case 'SET_SHIPPING': {
+        const { shippingAddress, shippingZoneId, shippingRateId, shippingMethod, shippingTotal } = body
+        
+        await prisma.svmCart.update({
+          where: { id: cart.id },
+          data: {
+            shippingAddress: shippingAddress || undefined,
+            shippingZoneId: shippingZoneId || null,
+            shippingRateId: shippingRateId || null,
+            shippingMethod: shippingMethod || null,
+            shippingTotal: shippingTotal ?? 0
+          }
+        })
+        break
+      }
+
+      case 'SET_EMAIL': {
+        const { email: cartEmail } = body
+        
+        await prisma.svmCart.update({
+          where: { id: cart.id },
+          data: { email: cartEmail }
+        })
         break
       }
 
@@ -154,30 +282,71 @@ export async function POST(request: NextRequest) {
         )
     }
 
-    cart.subtotal = cart.items.reduce((sum, item) => sum + (item.unitPrice * item.quantity), 0)
-    cart.updatedAt = new Date()
-    cartStorage.set(cartKey, cart)
+    // Reload cart with updated items
+    const updatedCart = await prisma.svmCart.findUnique({
+      where: { id: cart.id },
+      include: { items: true }
+    })
+
+    if (!updatedCart) {
+      return NextResponse.json(
+        { success: false, error: 'Cart not found after update' },
+        { status: 500 }
+      )
+    }
+
+    // Calculate totals
+    const discountRate = updatedCart.promotionCode ? 0.1 : 0 // 10% for promo codes
+    const totals = calculateCartTotals(updatedCart.items, discountRate)
+
+    // Update cart totals
+    await prisma.svmCart.update({
+      where: { id: updatedCart.id },
+      data: {
+        itemCount: totals.itemCount,
+        subtotal: totals.subtotal,
+        discountTotal: totals.discountTotal,
+        taxTotal: totals.taxTotal,
+        grandTotal: totals.grandTotal + Number(updatedCart.shippingTotal)
+      }
+    })
 
     return NextResponse.json({
       success: true,
       cart: {
-        id: cart.id,
-        tenantId: cart.tenantId,
-        customerId: cart.customerId,
-        sessionId: cart.sessionId,
-        items: cart.items,
-        itemCount: cart.items.reduce((sum, item) => sum + item.quantity, 0),
-        subtotal: cart.subtotal,
-        promotionCode: cart.promotionCode,
-        discountTotal: cart.discountTotal,
-        total: cart.subtotal - cart.discountTotal,
-        createdAt: cart.createdAt.toISOString(),
-        updatedAt: cart.updatedAt.toISOString()
+        id: updatedCart.id,
+        tenantId: updatedCart.tenantId,
+        customerId: updatedCart.customerId,
+        sessionId: updatedCart.sessionId,
+        email: updatedCart.email,
+        items: updatedCart.items.map(item => ({
+          productId: item.productId,
+          variantId: item.variantId,
+          productName: item.productName,
+          variantName: item.variantName,
+          sku: item.sku,
+          imageUrl: item.imageUrl,
+          unitPrice: Number(item.unitPrice),
+          quantity: item.quantity,
+          lineTotal: Number(item.lineTotal),
+          discountAmount: Number(item.discountAmount)
+        })),
+        itemCount: totals.itemCount,
+        subtotal: totals.subtotal,
+        promotionCode: updatedCart.promotionCode,
+        discountTotal: totals.discountTotal,
+        shippingTotal: Number(updatedCart.shippingTotal),
+        shippingMethod: updatedCart.shippingMethod,
+        taxTotal: totals.taxTotal,
+        grandTotal: totals.grandTotal + Number(updatedCart.shippingTotal),
+        shippingAddress: updatedCart.shippingAddress,
+        createdAt: updatedCart.createdAt.toISOString(),
+        updatedAt: updatedCart.updatedAt.toISOString()
       }
     })
 
   } catch (error) {
-    console.error('[SVM] Error updating cart:', error)
+    console.error('[SVM Cart] Error updating cart:', error)
     return NextResponse.json(
       { success: false, error: error instanceof Error ? error.message : 'Internal server error' },
       { status: 500 }
@@ -187,6 +356,7 @@ export async function POST(request: NextRequest) {
 
 /**
  * GET /api/svm/cart
+ * Retrieve cart by customerId or sessionId
  */
 export async function GET(request: NextRequest) {
   try {
@@ -209,8 +379,18 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    const cartKey = getCartKey(tenantId, customerId || undefined, sessionId || undefined)
-    const cart = cartStorage.get(cartKey)
+    // Find active cart
+    const cart = await prisma.svmCart.findFirst({
+      where: {
+        tenantId,
+        status: 'ACTIVE',
+        OR: [
+          customerId ? { customerId } : {},
+          sessionId ? { sessionId } : {}
+        ].filter(o => Object.keys(o).length > 0)
+      },
+      include: { items: true }
+    })
 
     if (!cart) {
       return NextResponse.json({
@@ -220,12 +400,17 @@ export async function GET(request: NextRequest) {
           tenantId,
           customerId,
           sessionId,
+          email: null,
           items: [],
           itemCount: 0,
           subtotal: 0,
           promotionCode: null,
           discountTotal: 0,
-          total: 0
+          shippingTotal: 0,
+          shippingMethod: null,
+          taxTotal: 0,
+          grandTotal: 0,
+          shippingAddress: null
         }
       })
     }
@@ -237,22 +422,35 @@ export async function GET(request: NextRequest) {
         tenantId: cart.tenantId,
         customerId: cart.customerId,
         sessionId: cart.sessionId,
+        email: cart.email,
         items: cart.items.map(item => ({
-          ...item,
-          lineTotal: item.unitPrice * item.quantity
+          productId: item.productId,
+          variantId: item.variantId,
+          productName: item.productName,
+          variantName: item.variantName,
+          sku: item.sku,
+          imageUrl: item.imageUrl,
+          unitPrice: Number(item.unitPrice),
+          quantity: item.quantity,
+          lineTotal: Number(item.lineTotal),
+          discountAmount: Number(item.discountAmount)
         })),
-        itemCount: cart.items.reduce((sum, item) => sum + item.quantity, 0),
-        subtotal: cart.subtotal,
+        itemCount: Number(cart.itemCount),
+        subtotal: Number(cart.subtotal),
         promotionCode: cart.promotionCode,
-        discountTotal: cart.discountTotal,
-        total: cart.subtotal - cart.discountTotal,
+        discountTotal: Number(cart.discountTotal),
+        shippingTotal: Number(cart.shippingTotal),
+        shippingMethod: cart.shippingMethod,
+        taxTotal: Number(cart.taxTotal),
+        grandTotal: Number(cart.grandTotal),
+        shippingAddress: cart.shippingAddress,
         createdAt: cart.createdAt.toISOString(),
         updatedAt: cart.updatedAt.toISOString()
       }
     })
 
   } catch (error) {
-    console.error('[SVM] Error fetching cart:', error)
+    console.error('[SVM Cart] Error fetching cart:', error)
     return NextResponse.json(
       { success: false, error: 'Internal server error' },
       { status: 500 }
@@ -262,15 +460,15 @@ export async function GET(request: NextRequest) {
 
 /**
  * DELETE /api/svm/cart
- * Supports both query params and JSON body for flexibility
+ * Clear cart contents or mark as abandoned
  */
 export async function DELETE(request: NextRequest) {
   try {
-    // Try to get params from query string first, then body
     const { searchParams } = new URL(request.url)
     let tenantId = searchParams.get('tenantId')
     let customerId = searchParams.get('customerId')
     let sessionId = searchParams.get('sessionId')
+    let markAbandoned = searchParams.get('markAbandoned') === 'true'
 
     // If not in query params, try body
     if (!tenantId) {
@@ -279,8 +477,9 @@ export async function DELETE(request: NextRequest) {
         tenantId = body.tenantId
         customerId = body.customerId
         sessionId = body.sessionId
+        markAbandoned = body.markAbandoned || false
       } catch {
-        // Body parse failed, use query params only
+        // Body parse failed
       }
     }
 
@@ -291,16 +490,38 @@ export async function DELETE(request: NextRequest) {
       )
     }
 
-    const cartKey = getCartKey(tenantId, customerId || undefined, sessionId || undefined)
-    cartStorage.delete(cartKey)
+    const cart = await prisma.svmCart.findFirst({
+      where: {
+        tenantId,
+        status: 'ACTIVE',
+        OR: [
+          customerId ? { customerId } : {},
+          sessionId ? { sessionId } : {}
+        ].filter(o => Object.keys(o).length > 0)
+      }
+    })
+
+    if (cart) {
+      if (markAbandoned) {
+        // Mark as abandoned for potential recovery
+        await prisma.svmCart.update({
+          where: { id: cart.id },
+          data: { status: 'ABANDONED' }
+        })
+      } else {
+        // Delete cart and items
+        await prisma.svmCartItem.deleteMany({ where: { cartId: cart.id } })
+        await prisma.svmCart.delete({ where: { id: cart.id } })
+      }
+    }
 
     return NextResponse.json({
       success: true,
-      message: 'Cart cleared'
+      message: markAbandoned ? 'Cart marked as abandoned' : 'Cart cleared'
     })
 
   } catch (error) {
-    console.error('[SVM] Error clearing cart:', error)
+    console.error('[SVM Cart] Error clearing cart:', error)
     return NextResponse.json(
       { success: false, error: error instanceof Error ? error.message : 'Internal server error' },
       { status: 500 }
