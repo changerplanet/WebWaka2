@@ -10,7 +10,7 @@ export type VerificationMethod = 'TXT' | 'CNAME'
 export interface DomainVerificationInfo {
   domain: string
   method: VerificationMethod
-  recordName: string  // e.g., "_saascore-verify.example.com"
+  recordName: string  // e.g., "_emarketwaka-verify.example.com"
   recordValue: string // The verification token value
   status: DomainStatus
   instructions: string
@@ -23,10 +23,10 @@ export function getVerificationInfo(domain: string, token: string): DomainVerifi
   return {
     domain,
     method: 'TXT',
-    recordName: `_saascore-verify.${domain}`,
+    recordName: `_emarketwaka-verify.${domain}`,
     recordValue: token,
     status: 'PENDING',
-    instructions: `Add a TXT record to your DNS with:\n\nName: _saascore-verify\nValue: ${token}\n\nNote: DNS changes may take up to 48 hours to propagate.`
+    instructions: `Add a TXT record to your DNS with:\n\nName: _emarketwaka-verify\nValue: ${token}\n\nNote: DNS changes may take up to 48 hours to propagate.`
   }
 }
 
@@ -39,7 +39,7 @@ export async function verifyDomain(domain: string, expectedToken: string): Promi
   records?: string[]
 }> {
   try {
-    const recordName = `_saascore-verify.${domain}`
+    const recordName = `_emarketwaka-verify.${domain}`
     
     // Look up TXT records
     const records = await dns.resolveTxt(recordName).catch(() => [])

@@ -95,7 +95,7 @@ export async function middleware(request: NextRequest) {
   const parts = host.split('.')
   
   // Check if this could be a custom domain (doesn't match our platform domain pattern)
-  const platformDomains = ['localhost', 'emergentagent.com', 'saascore.com', 'vercel.app']
+  const platformDomains = ['localhost', 'emergentagent.com', 'emarketwaka.com', 'vercel.app']
   const isPlatformDomain = platformDomains.some(d => host.endsWith(d))
   
   if (!isPlatformDomain) {
