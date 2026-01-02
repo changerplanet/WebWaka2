@@ -175,9 +175,9 @@ export default function HomePage() {
       <section className="container mx-auto px-6 -mt-10 relative z-20">
         <div className="grid md:grid-cols-3 gap-6">
           {[
-            { icon: Globe, title: 'Domain Resolution', desc: 'Subdomain & custom domain tenant routing' },
-            { icon: Palette, title: 'White-Label', desc: 'Full branding customization per tenant' },
-            { icon: Shield, title: 'Strict Isolation', desc: 'No cross-tenant data access' },
+            { icon: Globe, title: 'POS System', desc: 'Touch-first point of sale for retail & restaurants' },
+            { icon: Palette, title: 'Online Store', desc: 'Single-vendor e-commerce storefront' },
+            { icon: Shield, title: 'Marketplace', desc: 'Multi-vendor marketplace platform' },
           ].map((feature, i) => (
             <div key={i} className="bg-white rounded-2xl p-6 shadow-xl shadow-slate-200/50">
               <div className="w-12 h-12 rounded-xl bg-indigo-100 flex items-center justify-center mb-4">
@@ -273,7 +273,7 @@ export default function HomePage() {
                   {tenant.domains?.filter(d => d.type === 'SUBDOMAIN').map(d => (
                     <div key={d.id} className="flex items-center gap-2 text-sm">
                       <Globe className="w-4 h-4 text-slate-400" />
-                      <span className="text-slate-600">{d.domain}.saascore.com</span>
+                      <span className="text-slate-600">{d.domain}.emarketwaka.com</span>
                     </div>
                   ))}
                   {tenant.domains?.filter(d => d.type === 'CUSTOM').map(d => (
