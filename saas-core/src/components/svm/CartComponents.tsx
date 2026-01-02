@@ -273,5 +273,3 @@ export function MiniCart() {
     </button>
   )
 }
-
-export { CartDrawer, MiniCart }
