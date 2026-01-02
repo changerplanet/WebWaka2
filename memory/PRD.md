@@ -26,6 +26,29 @@ Production-grade, reusable SaaS Core with Next.js App Router, PostgreSQL (Prisma
 
 ---
 
+## P0: SVM Shipping & Promotions Database Refactor ✅ (Jan 2026)
+
+### What was changed:
+- Replaced in-memory `globalThis` storage with Prisma database persistence
+- Added 4 new models to SaaS Core schema: `SvmShippingZone`, `SvmShippingRate`, `SvmPromotion`, `SvmPromotionUsage`
+- Refactored `/app/saas-core/src/lib/shipping-storage.ts` to use async Prisma operations
+- Refactored `/app/saas-core/src/lib/promotions-storage.ts` to use async Prisma operations
+- Updated all API routes to use async storage functions
+
+### Verification Checklist:
+- [x] Shipping zones persist across server restarts
+- [x] Promotions persist across server restarts
+- [x] No cross-tenant data leakage (tenant isolation verified)
+- [x] Zone CRUD operations work (create, read, update, delete)
+- [x] Promotion CRUD operations work (create, read, update, delete)
+- [x] Shipping calculation returns correct rates
+- [x] Promotion validation and calculation work correctly
+- [x] Automatic promotions applied correctly
+- [x] Free shipping threshold logic works
+- [x] Compatible with multi-instance deployment (uses database, not memory)
+
+---
+
 ## Implementation Status: COMPLETE ✅
 
 ### Core Infrastructure ✅
