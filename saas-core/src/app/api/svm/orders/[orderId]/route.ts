@@ -37,9 +37,8 @@ const validPaymentTransitions: Record<string, string[]> = {
 
 const validFulfillmentTransitions: Record<string, string[]> = {
   'UNFULFILLED': ['PARTIALLY_FULFILLED', 'FULFILLED'],
-  'PARTIALLY_FULFILLED': ['FULFILLED', 'RETURNED'],
-  'FULFILLED': ['RETURNED'],
-  'RETURNED': []
+  'PARTIALLY_FULFILLED': ['FULFILLED'],
+  'FULFILLED': []
 }
 
 interface RouteParams {
