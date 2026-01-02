@@ -467,6 +467,20 @@ export function POSProvider({ children, tenantId }: POSProviderProps) {
       timestamp: new Date().toISOString()
     }
 
+    // Check if we're using demo products (demo mode)
+    const isDemo = state.locationId?.startsWith('demo-')
+    
+    // If demo mode, skip API call and treat as successful
+    if (isDemo) {
+      const saleId = `demo_${Date.now()}`
+      // Save to localStorage for demo purposes
+      const demoSales = loadFromStorage<any[]>('pos_demo_sales', [])
+      demoSales.push({ ...saleData, saleId, status: 'completed' })
+      saveToStorage('pos_demo_sales', demoSales)
+      clearCart()
+      return { success: true, saleId }
+    }
+
     // If online, submit immediately
     if (state.isOnline) {
       try {
@@ -484,7 +498,7 @@ export function POSProvider({ children, tenantId }: POSProviderProps) {
           clearCart()
           return { success: true, saleId: data.saleId || `sale_${Date.now()}` }
         }
-        return { success: false, error: data.error || 'Sale failed' }
+        // If API fails, fall through to offline handling
       } catch (e) {
         // Fall through to offline handling
       }
