@@ -349,6 +349,15 @@ model Subscription {
   trialStart      DateTime?
   trialEnd        DateTime?
   
+  // Grace Period
+  // When payment fails, subscription enters GRACE_PERIOD status
+  // gracePeriodEnd defines when access is fully revoked
+  gracePeriodDays Int                @default(7)   // Days of grace after payment failure
+  gracePeriodStart DateTime?         // When grace period began
+  gracePeriodEnd   DateTime?         // When grace period ends (full revocation)
+  paymentFailedAt  DateTime?         // When payment first failed
+  paymentRetryCount Int              @default(0)   // Number of retry attempts
+  
   // Cancellation
   cancelledAt     DateTime?
   cancelReason    String?
