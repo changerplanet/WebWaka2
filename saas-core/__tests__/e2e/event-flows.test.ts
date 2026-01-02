@@ -406,16 +406,17 @@ describe('E2E: Order Cancellation and Refund Flow', () => {
 
 describe('E2E: Wallet Hold and Payout Flow', () => {
   let vendorWalletId: string
+  const testRun = Date.now()
 
   beforeAll(async () => {
-    // Create vendor wallet with balance
+    // Create vendor wallet with balance (unique per test run)
     const res = await fetch(`${API_URL}/api/wallets`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         tenantId: TEST_TENANT,
         type: 'VENDOR',
-        vendorId: 'e2e-payout-vendor'
+        vendorId: `e2e-payout-vendor-${testRun}`
       })
     })
     const data = await res.json()
@@ -430,14 +431,21 @@ describe('E2E: Wallet Hold and Payout Flow', () => {
         action: 'credit',
         amount: 1000,
         entryType: 'CREDIT_SALE_PROCEEDS',
-        idempotencyKey: `payout-vendor-credit-${Date.now()}`
+        idempotencyKey: `payout-vendor-credit-${testRun}`
       })
     })
   })
 
   test('Hold, then capture for payout', async () => {
-    const holdId = `payout-hold-${Date.now()}`
+    const holdId = `payout-hold-${testRun}`
     const payoutAmount = 500
+
+    // Get initial balance
+    const initialRes = await fetch(
+      `${API_URL}/api/wallets/${vendorWalletId}?tenantId=${TEST_TENANT}`
+    )
+    const initialData = await initialRes.json()
+    const initialBalance = initialData.wallet.balance
 
     // Create hold for pending payout
     const holdRes = await fetch(`${API_URL}/api/wallets/${vendorWalletId}`, {
@@ -453,8 +461,8 @@ describe('E2E: Wallet Hold and Payout Flow', () => {
     })
     const holdData = await holdRes.json()
     expect(holdData.success).toBe(true)
-    expect(holdData.wallet.balance).toBe(1000) // Balance unchanged
-    expect(holdData.wallet.availableBalance).toBe(500) // Available reduced
+    expect(holdData.wallet.balance).toBe(initialBalance) // Balance unchanged
+    expect(holdData.wallet.availableBalance).toBe(initialBalance - payoutAmount) // Available reduced
 
     // Capture hold (payout processed)
     const captureRes = await fetch(`${API_URL}/api/wallets/${vendorWalletId}`, {
@@ -466,18 +474,26 @@ describe('E2E: Wallet Hold and Payout Flow', () => {
         amount: payoutAmount,
         holdId,
         referenceType: 'PAYOUT',
-        referenceId: `payout-${Date.now()}`
+        referenceId: `payout-${testRun}`
       })
     })
     const captureData = await captureRes.json()
     expect(captureData.success).toBe(true)
-    expect(captureData.wallet.balance).toBe(500) // Balance reduced
+    expect(captureData.wallet.balance).toBe(initialBalance - payoutAmount) // Balance reduced
     expect(captureData.wallet.pendingBalance).toBe(0) // No pending
-    expect(captureData.wallet.availableBalance).toBe(500) // Available = Balance
+    expect(captureData.wallet.availableBalance).toBe(initialBalance - payoutAmount) // Available = Balance
   })
 
   test('Hold, then release (payout cancelled)', async () => {
-    const holdId = `cancelled-payout-${Date.now()}`
+    const holdId = `cancelled-payout-${testRun}`
+    const holdAmount = 200
+
+    // Get current balance before hold
+    const beforeHold = await fetch(
+      `${API_URL}/api/wallets/${vendorWalletId}?tenantId=${TEST_TENANT}`
+    )
+    const beforeHoldData = await beforeHold.json()
+    const balanceBeforeHold = beforeHoldData.wallet.balance
 
     // Create hold
     await fetch(`${API_URL}/api/wallets/${vendorWalletId}`, {
@@ -486,7 +502,7 @@ describe('E2E: Wallet Hold and Payout Flow', () => {
       body: JSON.stringify({
         tenantId: TEST_TENANT,
         action: 'hold',
-        amount: 200,
+        amount: holdAmount,
         holdId
       })
     })
@@ -496,7 +512,7 @@ describe('E2E: Wallet Hold and Payout Flow', () => {
       `${API_URL}/api/wallets/${vendorWalletId}?tenantId=${TEST_TENANT}`
     )
     const beforeData = await beforeRelease.json()
-    expect(beforeData.wallet.availableBalance).toBe(300) // 500 - 200
+    expect(beforeData.wallet.availableBalance).toBe(balanceBeforeHold - holdAmount)
 
     // Release hold (payout cancelled)
     const releaseRes = await fetch(`${API_URL}/api/wallets/${vendorWalletId}`, {
@@ -505,12 +521,12 @@ describe('E2E: Wallet Hold and Payout Flow', () => {
       body: JSON.stringify({
         tenantId: TEST_TENANT,
         action: 'release',
-        amount: 200,
+        amount: holdAmount,
         holdId
       })
     })
     const releaseData = await releaseRes.json()
     expect(releaseData.success).toBe(true)
-    expect(releaseData.wallet.availableBalance).toBe(500) // Available restored
+    expect(releaseData.wallet.availableBalance).toBe(balanceBeforeHold) // Available restored
   })
 })
