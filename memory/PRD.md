@@ -381,6 +381,20 @@ CANCELLED  CANCELLED CANCELLED/REFUNDED  REFUNDED   REFUNDED
 - `/modules/svm/public/manifest.json` - PWA manifest
 - `/modules/svm/docs/SVM_OFFLINE.md` - Documentation
 
+### Files Created (Phase 7 - Events & Analytics)
+**SVM Module:**
+- `/modules/svm/src/lib/event-bus.ts` - Event emitter and payload schemas
+- `/modules/svm/docs/SVM_EVENTS.md` - Event documentation
+
+### Files Created (Phase 8 - Entitlements)
+**SVM Module:**
+- `/modules/svm/src/lib/entitlements.ts` - Entitlement service and checks
+- `/modules/svm/docs/SVM_ENTITLEMENTS.md` - Entitlement documentation
+
+### Files Created (Phase 9 - Module Freeze)
+**SVM Module:**
+- `/modules/svm/docs/SVM_VALIDATION_CHECKLIST.md` - Architecture validation
+
 ### Current Mocked Components
 | Component | Status | Notes |
 |-----------|--------|-------|
