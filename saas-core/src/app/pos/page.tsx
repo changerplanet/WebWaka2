@@ -60,7 +60,7 @@ function POSMainScreen() {
   }
 
   return (
-    <div className="h-screen flex flex-col bg-slate-100">
+    <div className="h-screen flex flex-col bg-slate-100" data-testid="pos-main-screen">
       {/* Status bar */}
       <POSStatusBar />
 
@@ -82,6 +82,7 @@ function POSMainScreen() {
                   ? 'bg-indigo-100 text-indigo-700' 
                   : 'bg-white text-slate-600 hover:bg-slate-50'
               }`}
+              data-testid="toggle-quick-items-btn"
             >
               <Grid3X3 className="w-4 h-4" />
               Quick Items
@@ -91,12 +92,16 @@ function POSMainScreen() {
               onClick={refreshProducts}
               disabled={isLoadingProducts || !isOnline}
               className="px-4 py-2 bg-white text-slate-600 hover:bg-slate-50 rounded-lg flex items-center gap-2 transition-colors disabled:opacity-50"
+              data-testid="sync-products-btn"
             >
               <RefreshCw className={`w-4 h-4 ${isLoadingProducts ? 'animate-spin' : ''}`} />
               Sync Products
             </button>
 
-            <button className="px-4 py-2 bg-white text-slate-600 hover:bg-slate-50 rounded-lg flex items-center gap-2 transition-colors">
+            <button 
+              className="px-4 py-2 bg-white text-slate-600 hover:bg-slate-50 rounded-lg flex items-center gap-2 transition-colors"
+              data-testid="customer-btn"
+            >
               <Users className="w-4 h-4" />
               Customer
             </button>
@@ -104,16 +109,16 @@ function POSMainScreen() {
 
           {/* Quick product grid */}
           {showQuickGrid && (
-            <div className="flex-1 overflow-y-auto">
+            <div className="flex-1 overflow-y-auto" data-testid="product-grid">
               {isLoadingProducts ? (
-                <div className="flex items-center justify-center h-full">
+                <div className="flex items-center justify-center h-full" data-testid="products-loading">
                   <div className="text-center">
                     <RefreshCw className="w-8 h-8 text-indigo-500 animate-spin mx-auto mb-3" />
                     <p className="text-slate-500">Loading products...</p>
                   </div>
                 </div>
               ) : products.length === 0 ? (
-                <div className="flex items-center justify-center h-full">
+                <div className="flex items-center justify-center h-full" data-testid="no-products">
                   <div className="text-center">
                     <Package className="w-12 h-12 text-slate-300 mx-auto mb-3" />
                     <p className="text-slate-500">No products available</p>
@@ -136,7 +141,7 @@ function POSMainScreen() {
         </div>
 
         {/* Right: Cart */}
-        <div className="w-96 bg-white border-l border-slate-200 flex flex-col">
+        <div className="w-96 bg-white border-l border-slate-200 flex flex-col" data-testid="cart-panel">
           <div className="flex-1 overflow-hidden">
             <POSCart />
           </div>
@@ -147,6 +152,7 @@ function POSMainScreen() {
               onClick={() => setView('payment')}
               disabled={cart.items.length === 0}
               className="w-full py-4 bg-indigo-600 hover:bg-indigo-700 disabled:bg-slate-300 disabled:cursor-not-allowed text-white rounded-xl font-semibold text-lg transition-colors flex items-center justify-center gap-3 touch-manipulation"
+              data-testid="checkout-btn"
             >
               <CreditCard className="w-6 h-6" />
               Checkout ${cart.grandTotal.toFixed(2)}
