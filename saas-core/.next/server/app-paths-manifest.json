@@ -4,5 +4,6 @@
   "/login/page": "app/login/page.js",
   "/offline/page": "app/offline/page.js",
   "/page": "app/page.js",
-  "/manifest.json/route": "app/manifest.json/route.js"
+  "/manifest.json/route": "app/manifest.json/route.js",
+  "/api/pos/inventory/route": "app/api/pos/inventory/route.js"
 }
