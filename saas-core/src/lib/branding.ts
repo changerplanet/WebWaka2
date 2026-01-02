@@ -15,9 +15,9 @@ export interface TenantBranding {
 
 const DEFAULT_BRANDING: TenantBranding = {
   id: 'default',
-  name: 'SaaS Core',
+  name: 'eMarketWaka',
   slug: 'default',
-  appName: 'SaaS Core',
+  appName: 'eMarketWaka',
   logoUrl: null,
   faviconUrl: null,
   primaryColor: '#6366f1',
@@ -131,7 +131,7 @@ export function generateManifest(branding: TenantBranding): object {
   return {
     name: branding.appName,
     short_name: branding.appName,
-    description: `${branding.appName} - Powered by SaaS Core`,
+    description: `${branding.appName} - Powered by eMarketWaka`,
     start_url: '/',
     display: 'standalone',
     background_color: '#ffffff',
