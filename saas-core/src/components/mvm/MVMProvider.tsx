@@ -352,14 +352,18 @@ export function MVMProvider({ children, tenantId = 'demo-tenant', initialVendorI
       const data = await res.json()
       
       if (data.success && data.dashboard) {
-        // Merge with demo data for display
+        // Check if API returned meaningful metrics, otherwise use demo
+        const apiMetrics = data.dashboard.metrics
+        const hasRealData = apiMetrics && (apiMetrics.totalSales > 0 || apiMetrics.totalOrders > 0)
+        
         setDashboard({
           ...DEMO_DASHBOARD,
-          ...data.dashboard,
-          recentOrders: DEMO_ORDERS.slice(0, 5),
-          topProducts: DEMO_PRODUCT_MAPPINGS.slice(0, 4)
+          ...(hasRealData ? data.dashboard : {}),
+          recentOrders: data.dashboard.recentOrders?.length > 0 ? data.dashboard.recentOrders : DEMO_ORDERS.slice(0, 5),
+          topProducts: data.dashboard.topProducts?.length > 0 ? data.dashboard.topProducts : DEMO_PRODUCT_MAPPINGS.slice(0, 4)
         })
       } else {
+        // Use full demo data
         setDashboard({
           ...DEMO_DASHBOARD,
           recentOrders: DEMO_ORDERS.slice(0, 5),
