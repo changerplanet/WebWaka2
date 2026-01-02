@@ -26,13 +26,12 @@ const validOrderTransitions: Record<string, string[]> = {
 }
 
 const validPaymentTransitions: Record<string, string[]> = {
-  'PENDING': ['AUTHORIZED', 'PAID', 'FAILED', 'CANCELLED'],
-  'AUTHORIZED': ['PAID', 'CANCELLED'],
-  'PAID': ['PARTIALLY_REFUNDED', 'REFUNDED'],
+  'PENDING': ['AUTHORIZED', 'CAPTURED', 'FAILED'],
+  'AUTHORIZED': ['CAPTURED', 'FAILED'],
+  'CAPTURED': ['PARTIALLY_REFUNDED', 'REFUNDED'],
   'PARTIALLY_REFUNDED': ['REFUNDED'],
   'REFUNDED': [],
-  'FAILED': ['PENDING'],
-  'CANCELLED': []
+  'FAILED': ['PENDING']
 }
 
 const validFulfillmentTransitions: Record<string, string[]> = {
