@@ -4,8 +4,9 @@
  */
 
 const API_URL = process.env.API_URL || 'http://localhost:3000'
-const TEST_TENANT = 'test-tenant-wallet-integration'
-const OTHER_TENANT = 'other-tenant-isolation-test'
+const TEST_RUN = Date.now()
+const TEST_TENANT = `test-tenant-wallet-integration-${TEST_RUN}`
+const OTHER_TENANT = `other-tenant-isolation-test-${TEST_RUN}`
 
 describe('Commerce Wallet API Integration', () => {
   let customerWalletId: string
