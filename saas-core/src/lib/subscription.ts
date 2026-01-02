@@ -151,7 +151,7 @@ export async function createSubscription(
       data: {
         action: 'SUBSCRIPTION_CREATED',
         actorId: 'system',
-        actorEmail: 'subscription@saascore.internal',
+        actorEmail: 'subscription@emarketwaka.internal',
         tenantId: input.tenantId,
         targetType: 'Subscription',
         targetId: sub.id,
@@ -248,7 +248,7 @@ export async function activateSubscription(
       data: {
         action: 'SUBSCRIPTION_ACTIVATED',
         actorId: 'system',
-        actorEmail: 'subscription@saascore.internal',
+        actorEmail: 'subscription@emarketwaka.internal',
         tenantId: subscription.tenantId,
         targetType: 'Subscription',
         targetId: sub.id,
@@ -340,7 +340,7 @@ export async function renewSubscription(
       data: {
         action: 'SUBSCRIPTION_RENEWED',
         actorId: 'system',
-        actorEmail: 'subscription@saascore.internal',
+        actorEmail: 'subscription@emarketwaka.internal',
         tenantId: subscription.tenantId,
         targetType: 'Subscription',
         targetId: sub.id,
@@ -431,7 +431,7 @@ export async function cancelSubscription(
       data: {
         action: 'SUBSCRIPTION_CANCELLED',
         actorId: options?.actorId || 'system',
-        actorEmail: options?.actorEmail || 'subscription@saascore.internal',
+        actorEmail: options?.actorEmail || 'subscription@emarketwaka.internal',
         tenantId: subscription.tenantId,
         targetType: 'Subscription',
         targetId: sub.id,
@@ -607,7 +607,7 @@ export async function enterGracePeriod(
       data: {
         action: 'SUBSCRIPTION_UPDATED',
         actorId: 'system',
-        actorEmail: 'subscription@saascore.internal',
+        actorEmail: 'subscription@emarketwaka.internal',
         tenantId: subscription.tenantId,
         targetType: 'Subscription',
         targetId: sub.id,
@@ -693,7 +693,7 @@ export async function suspendSubscription(
       data: {
         action: 'SUBSCRIPTION_SUSPENDED',
         actorId: 'system',
-        actorEmail: 'subscription@saascore.internal',
+        actorEmail: 'subscription@emarketwaka.internal',
         tenantId: subscription.tenantId,
         targetType: 'Subscription',
         targetId: sub.id,
@@ -789,7 +789,7 @@ export async function recoverSubscription(
       data: {
         action: 'SUBSCRIPTION_ACTIVATED',
         actorId: 'system',
-        actorEmail: 'subscription@saascore.internal',
+        actorEmail: 'subscription@emarketwaka.internal',
         tenantId: subscription.tenantId,
         targetType: 'Subscription',
         targetId: sub.id,

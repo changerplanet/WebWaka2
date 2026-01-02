@@ -218,7 +218,7 @@ export async function createAttribution(input: AttributionInput): Promise<Attrib
       data: {
         action: 'ATTRIBUTION_CREATED',
         actorId: session?.user?.id || 'system',
-        actorEmail: session?.user?.email || 'system@saascore.internal',
+        actorEmail: session?.user?.email || 'system@emarketwaka.internal',
         tenantId: input.tenantId,
         targetType: 'PartnerReferral',
         targetId: newReferral.id,
@@ -324,7 +324,7 @@ export async function lockAttribution(tenantId: string): Promise<AttributionResu
       data: {
         action: 'ATTRIBUTION_LOCKED',
         actorId: session?.user?.id || 'billing-system',
-        actorEmail: session?.user?.email || 'billing@saascore.internal',
+        actorEmail: session?.user?.email || 'billing@emarketwaka.internal',
         tenantId,
         targetType: 'PartnerReferral',
         targetId: updated.id,

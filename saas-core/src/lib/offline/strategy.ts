@@ -1,5 +1,5 @@
 /**
- * Offline-First Data Strategy for Multi-Tenant SaaS
+ * Offline-First Data Strategy for eMarketWaka Commerce
  * 
  * ============================================================================
  * WHAT DATA IS SAFE OFFLINE (Read-Only Cache)

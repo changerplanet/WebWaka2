@@ -1,5 +1,5 @@
 /**
- * SaaS Core Module
+ * eMarketWaka Module
  * 
  * A reusable, production-grade multi-tenant SaaS foundation.
  * 

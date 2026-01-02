@@ -168,7 +168,7 @@ export async function createEarning(input: CreateEarningInput): Promise<EarningR
       data: {
         action: 'EARNING_CREATED',
         actorId: input.createdByUserId || 'system',
-        actorEmail: 'commission@saascore.internal',
+        actorEmail: 'commission@emarketwaka.internal',
         targetType: 'PartnerEarning',
         targetId: entry.id,
         metadata: {
@@ -261,7 +261,7 @@ export async function createReversalEntry(
       data: {
         action: 'EARNING_REVERSED',
         actorId: userId || 'system',
-        actorEmail: 'commission@saascore.internal',
+        actorEmail: 'commission@emarketwaka.internal',
         targetType: 'PartnerEarning',
         targetId: originalEarningId,
         metadata: {
@@ -318,7 +318,7 @@ export async function clearEarning(earningId: string): Promise<EarningResult> {
       data: {
         action: 'EARNING_CLEARED',
         actorId: 'system',
-        actorEmail: 'commission@saascore.internal',
+        actorEmail: 'commission@emarketwaka.internal',
         targetType: 'PartnerEarning',
         targetId: earningId,
         metadata: {
@@ -430,7 +430,7 @@ export async function markEarningPaid(
       data: {
         action: 'EARNING_PAID',
         actorId: 'payout-system',
-        actorEmail: 'payout@saascore.internal',
+        actorEmail: 'payout@emarketwaka.internal',
         targetType: 'PartnerEarning',
         targetId: earningId,
         metadata: {

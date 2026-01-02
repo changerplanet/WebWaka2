@@ -371,7 +371,7 @@ export async function activateTenant(
         data: {
           action: 'ATTRIBUTION_LOCKED',
           actorId: 'subscription-system',
-          actorEmail: 'billing@saascore.internal',
+          actorEmail: 'billing@emarketwaka.internal',
           tenantId: input.tenantId,
           targetType: 'PartnerReferral',
           targetId: tenant.partnerReferral.id,

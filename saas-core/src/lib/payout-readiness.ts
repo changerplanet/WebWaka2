@@ -537,7 +537,7 @@ export async function checkPayoutReadiness(
     data: {
       action: 'PAYOUT_READINESS_CHECKED',
       actorId: 'system',
-      actorEmail: 'payout@saascore.internal',
+      actorEmail: 'payout@emarketwaka.internal',
       targetType: 'Partner',
       targetId: partnerId,
       metadata: {
@@ -618,7 +618,7 @@ export async function updateTaxDocumentStatus(
       data: {
         action,
         actorId: updatedBy || 'system',
-        actorEmail: 'tax@saascore.internal',
+        actorEmail: 'tax@emarketwaka.internal',
         targetType: 'PartnerPayoutSettings',
         targetId: partnerId,
         metadata: { status, documentType }
@@ -815,7 +815,7 @@ export async function createPayoutBatch(
       data: {
         action: 'PAYOUT_BATCH_CREATED',
         actorId: 'system',
-        actorEmail: 'payout@saascore.internal',
+        actorEmail: 'payout@emarketwaka.internal',
         targetType: 'PayoutBatch',
         targetId: newBatch.id,
         metadata: {

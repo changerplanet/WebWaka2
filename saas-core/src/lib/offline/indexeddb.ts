@@ -1,5 +1,5 @@
 /**
- * IndexedDB Storage for Offline-First Multi-Tenant SaaS
+ * IndexedDB Storage for Offline-First eMarketWaka Commerce
  * 
  * Database Structure:
  * - offlineActions: Queued mutations waiting to sync

@@ -266,7 +266,7 @@ function GeneralSettings({ settings, tenantSlug, onUpdate }: {
               disabled
               className="flex-1 px-4 py-2 border border-slate-200 rounded-lg bg-slate-50 text-slate-500"
             />
-            <span className="text-slate-500">.saascore.com</span>
+            <span className="text-slate-500">.emarketwaka.com</span>
           </div>
           <p className="text-xs text-slate-500 mt-1">Subdomain cannot be changed after creation</p>
         </div>

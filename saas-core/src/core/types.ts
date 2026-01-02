@@ -1,7 +1,7 @@
 /**
- * SaaS Core Types
+ * eMarketWaka Types
  * 
- * Core type definitions for the SaaS platform.
+ * Core type definitions for the eMarketWaka platform.
  */
 
 import { Prisma } from '@prisma/client'
