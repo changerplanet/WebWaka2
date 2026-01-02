@@ -1,1 +1,3 @@
-{}
+{
+  "/api/svm/shipping/route": "app/api/svm/shipping/route.js"
+}
