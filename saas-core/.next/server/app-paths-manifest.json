@@ -8,5 +8,6 @@
   "/login/page": "app/login/page.js",
   "/manifest.json/route": "app/manifest.json/route.js",
   "/api/svm/promotions/route": "app/api/svm/promotions/route.js",
-  "/api/svm/shipping/route": "app/api/svm/shipping/route.js"
+  "/api/svm/shipping/route": "app/api/svm/shipping/route.js",
+  "/api/svm/orders/route": "app/api/svm/orders/route.js"
 }
