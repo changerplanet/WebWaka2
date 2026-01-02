@@ -76,7 +76,7 @@ export default function LoginPage() {
           <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 mb-4">
             <Building2 className="w-8 h-8 text-white" />
           </div>
-          <h1 className="text-2xl font-bold text-slate-900">SaaS Core</h1>
+          <h1 className="text-2xl font-bold text-slate-900">eMarketWaka</h1>
           {tenantSlug && (
             <p className="text-slate-500 mt-1">Signing in to {tenantSlug}</p>
           )}

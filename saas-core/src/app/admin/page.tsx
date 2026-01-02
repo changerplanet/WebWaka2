@@ -479,7 +479,7 @@ function CreateTenantModal({ onClose, onCreated }: { onClose: () => void; onCrea
                 className="flex-1 px-4 py-3 bg-slate-900 border border-slate-700 rounded-l-xl text-white focus:ring-2 focus:ring-indigo-500 outline-none"
                 placeholder="acme"
               />
-              <span className="px-4 py-3 bg-slate-700 border border-l-0 border-slate-700 rounded-r-xl text-slate-400">.saascore.com</span>
+              <span className="px-4 py-3 bg-slate-700 border border-l-0 border-slate-700 rounded-r-xl text-slate-400">.emarketwaka.com</span>
             </div>
           </div>
 

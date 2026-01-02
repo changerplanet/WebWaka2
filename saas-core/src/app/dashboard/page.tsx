@@ -124,7 +124,7 @@ export default function TenantDashboard() {
             </div>
             <div>
               <h1 className="font-bold text-lg">{branding.appName}</h1>
-              <p className="text-xs text-white/70">{tenant.slug}.saascore.com</p>
+              <p className="text-xs text-white/70">{tenant.slug}.emarketwaka.com</p>
             </div>
           </div>
         </div>
@@ -296,7 +296,7 @@ export default function TenantDashboard() {
               <p className="text-white/80 text-sm">This is your white-labeled workspace</p>
             </div>
             <div className="text-right text-sm">
-              <p><span className="text-white/60">Subdomain:</span> {tenant.slug}.saascore.com</p>
+              <p><span className="text-white/60">Subdomain:</span> {tenant.slug}.emarketwaka.com</p>
               {tenant.customDomain && (
                 <p><span className="text-white/60">Custom Domain:</span> {tenant.customDomain}</p>
               )}
