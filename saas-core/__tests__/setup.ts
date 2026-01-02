@@ -6,10 +6,9 @@
 // Extend Jest matchers
 import '@testing-library/jest-dom'
 
-// Mock environment variables
-process.env.DATABASE_URL = process.env.DATABASE_URL || 'postgresql://test:test@localhost:5432/test'
-process.env.NEXTAUTH_SECRET = 'test-secret-for-jest'
-process.env.NEXTAUTH_URL = 'http://localhost:3000'
+// Load environment from .env file for database connection
+import { config } from 'dotenv'
+config({ path: '.env' })
 
 // Global test utilities
 global.testTenantId = 'test-tenant-jest'
