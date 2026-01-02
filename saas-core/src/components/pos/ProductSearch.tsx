@@ -64,7 +64,7 @@ export function ProductSearch({ onSelect }: ProductSearchProps) {
   }
 
   return (
-    <div className="relative">
+    <div className="relative" data-testid="product-search">
       {/* Search input */}
       <div className="relative">
         <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
@@ -78,6 +78,7 @@ export function ProductSearch({ onSelect }: ProductSearchProps) {
           placeholder="Search products, scan barcode..."
           className="w-full pl-12 pr-12 py-4 text-lg bg-white border-2 border-slate-200 rounded-xl focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition-all"
           autoComplete="off"
+          data-testid="product-search-input"
         />
         {query && (
           <button
