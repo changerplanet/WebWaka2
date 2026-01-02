@@ -9,17 +9,37 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 
+// Status enums from schema
+type SvmOrderStatus = 'PENDING' | 'CONFIRMED' | 'PROCESSING' | 'ON_HOLD' | 'COMPLETED' | 'CANCELLED' | 'REFUNDED'
+type SvmPaymentStatus = 'PENDING' | 'AUTHORIZED' | 'PAID' | 'PARTIALLY_REFUNDED' | 'REFUNDED' | 'FAILED' | 'CANCELLED'
+type SvmFulfillmentStatus = 'UNFULFILLED' | 'PARTIALLY_FULFILLED' | 'FULFILLED' | 'RETURNED'
+
 // Valid status transitions
-const validTransitions: Record<string, string[]> = {
-  'DRAFT': ['PLACED', 'CANCELLED'],
-  'PLACED': ['PAID', 'CANCELLED'],
-  'PAID': ['PROCESSING', 'CANCELLED', 'REFUNDED'],
-  'PROCESSING': ['SHIPPED', 'CANCELLED', 'REFUNDED'],
-  'SHIPPED': ['DELIVERED', 'REFUNDED'],
-  'DELIVERED': ['FULFILLED', 'REFUNDED'],
-  'FULFILLED': ['REFUNDED'],
+const validOrderTransitions: Record<string, string[]> = {
+  'PENDING': ['CONFIRMED', 'CANCELLED'],
+  'CONFIRMED': ['PROCESSING', 'ON_HOLD', 'CANCELLED'],
+  'PROCESSING': ['COMPLETED', 'ON_HOLD', 'CANCELLED'],
+  'ON_HOLD': ['PROCESSING', 'CANCELLED'],
+  'COMPLETED': ['REFUNDED'],
   'CANCELLED': [],
   'REFUNDED': []
+}
+
+const validPaymentTransitions: Record<string, string[]> = {
+  'PENDING': ['AUTHORIZED', 'PAID', 'FAILED', 'CANCELLED'],
+  'AUTHORIZED': ['PAID', 'CANCELLED'],
+  'PAID': ['PARTIALLY_REFUNDED', 'REFUNDED'],
+  'PARTIALLY_REFUNDED': ['REFUNDED'],
+  'REFUNDED': [],
+  'FAILED': ['PENDING'],
+  'CANCELLED': []
+}
+
+const validFulfillmentTransitions: Record<string, string[]> = {
+  'UNFULFILLED': ['PARTIALLY_FULFILLED', 'FULFILLED'],
+  'PARTIALLY_FULFILLED': ['FULFILLED', 'RETURNED'],
+  'FULFILLED': ['RETURNED'],
+  'RETURNED': []
 }
 
 interface RouteParams {
@@ -71,10 +91,14 @@ export async function GET(
         id: order.id,
         orderNumber: order.orderNumber,
         status: order.status,
+        paymentStatus: order.paymentStatus,
+        fulfillmentStatus: order.fulfillmentStatus,
         tenantId: order.tenantId,
         customerId: order.customerId,
-        sessionId: order.sessionId,
-        guestEmail: order.guestEmail,
+        customerEmail: order.customerEmail,
+        customerPhone: order.customerPhone,
+        customerName: order.customerName,
+        channel: order.channel,
         items: order.items.map(item => ({
           id: item.id,
           productId: item.productId,
@@ -87,25 +111,31 @@ export async function GET(
           quantity: item.quantity,
           lineTotal: Number(item.lineTotal),
           discountAmount: Number(item.discountAmount),
-          taxAmount: Number(item.taxAmount)
+          taxAmount: Number(item.taxAmount),
+          fulfilledQuantity: item.fulfilledQuantity,
+          refundedQuantity: item.refundedQuantity,
+          customizations: item.customizations
         })),
-        itemCount: order.itemCount,
         subtotal: Number(order.subtotal),
         shippingTotal: Number(order.shippingTotal),
         taxTotal: Number(order.taxTotal),
         discountTotal: Number(order.discountTotal),
         grandTotal: Number(order.grandTotal),
+        refundedAmount: Number(order.refundedAmount),
         promotionCode: order.promotionCode,
+        promotionId: order.promotionId,
         currency: order.currency,
         shippingAddress: order.shippingAddress,
         billingAddress: order.billingAddress,
         shippingMethod: order.shippingMethod,
-        shippingZoneId: order.shippingZoneId,
-        shippingRateId: order.shippingRateId,
+        shippingCarrier: order.shippingCarrier,
         trackingNumber: order.trackingNumber,
         trackingUrl: order.trackingUrl,
-        notes: order.notes,
-        cancelReason: order.cancelReason,
+        estimatedDelivery: order.estimatedDelivery?.toISOString() || null,
+        paymentMethod: order.paymentMethod,
+        paymentRef: order.paymentRef,
+        customerNotes: order.customerNotes,
+        internalNotes: order.internalNotes,
         refundReason: order.refundReason,
         paidAt: order.paidAt?.toISOString() || null,
         shippedAt: order.shippedAt?.toISOString() || null,
@@ -140,11 +170,17 @@ export async function PUT(
     const { 
       tenantId, 
       status, 
+      paymentStatus,
+      fulfillmentStatus,
       trackingNumber, 
       trackingUrl, 
-      notes,
-      cancelReason,
+      shippingCarrier,
+      estimatedDelivery,
+      paymentMethod,
+      paymentRef,
+      internalNotes,
       refundReason,
+      refundedAmount,
       shippingAddress,
       billingAddress
     } = body
@@ -177,10 +213,11 @@ export async function PUT(
     // Build update data
     const updateData: Record<string, unknown> = {}
     const now = new Date()
+    const events: { type: string; from: string; to: string }[] = []
 
-    // Handle status transition
+    // Handle order status transition
     if (status && status !== order.status) {
-      const allowed = validTransitions[order.status] || []
+      const allowed = validOrderTransitions[order.status] || []
       if (!allowed.includes(status)) {
         return NextResponse.json(
           { 
@@ -190,35 +227,70 @@ export async function PUT(
           { status: 400 }
         )
       }
-
       updateData.status = status
+      events.push({ type: 'status', from: order.status, to: status })
 
-      // Set timestamp based on status
-      switch (status) {
-        case 'PAID':
-          updateData.paidAt = now
-          break
-        case 'SHIPPED':
-          updateData.shippedAt = now
-          break
-        case 'DELIVERED':
-          updateData.deliveredAt = now
-          break
-        case 'CANCELLED':
-          updateData.cancelledAt = now
-          if (cancelReason) updateData.cancelReason = cancelReason
-          break
-        case 'REFUNDED':
-          updateData.refundedAt = now
-          if (refundReason) updateData.refundReason = refundReason
-          break
+      // Set timestamps based on status
+      if (status === 'CANCELLED') {
+        updateData.cancelledAt = now
+      } else if (status === 'REFUNDED') {
+        updateData.refundedAt = now
+        if (refundReason) updateData.refundReason = refundReason
       }
     }
 
+    // Handle payment status transition
+    if (paymentStatus && paymentStatus !== order.paymentStatus) {
+      const allowed = validPaymentTransitions[order.paymentStatus] || []
+      if (!allowed.includes(paymentStatus)) {
+        return NextResponse.json(
+          { 
+            success: false, 
+            error: `Invalid payment status transition from ${order.paymentStatus} to ${paymentStatus}. Allowed: ${allowed.join(', ') || 'none'}` 
+          },
+          { status: 400 }
+        )
+      }
+      updateData.paymentStatus = paymentStatus
+      events.push({ type: 'paymentStatus', from: order.paymentStatus, to: paymentStatus })
+
+      // Set paid timestamp
+      if (paymentStatus === 'PAID') {
+        updateData.paidAt = now
+      }
+    }
+
+    // Handle fulfillment status transition
+    if (fulfillmentStatus && fulfillmentStatus !== order.fulfillmentStatus) {
+      const allowed = validFulfillmentTransitions[order.fulfillmentStatus] || []
+      if (!allowed.includes(fulfillmentStatus)) {
+        return NextResponse.json(
+          { 
+            success: false, 
+            error: `Invalid fulfillment status transition from ${order.fulfillmentStatus} to ${fulfillmentStatus}. Allowed: ${allowed.join(', ') || 'none'}` 
+          },
+          { status: 400 }
+        )
+      }
+      updateData.fulfillmentStatus = fulfillmentStatus
+      events.push({ type: 'fulfillmentStatus', from: order.fulfillmentStatus, to: fulfillmentStatus })
+    }
+
     // Handle other field updates
-    if (trackingNumber !== undefined) updateData.trackingNumber = trackingNumber
+    if (trackingNumber !== undefined) {
+      updateData.trackingNumber = trackingNumber
+      // If tracking added, assume shipped
+      if (trackingNumber && !order.shippedAt) {
+        updateData.shippedAt = now
+      }
+    }
     if (trackingUrl !== undefined) updateData.trackingUrl = trackingUrl
-    if (notes !== undefined) updateData.notes = notes
+    if (shippingCarrier !== undefined) updateData.shippingCarrier = shippingCarrier
+    if (estimatedDelivery !== undefined) updateData.estimatedDelivery = estimatedDelivery ? new Date(estimatedDelivery) : null
+    if (paymentMethod !== undefined) updateData.paymentMethod = paymentMethod
+    if (paymentRef !== undefined) updateData.paymentRef = paymentRef
+    if (internalNotes !== undefined) updateData.internalNotes = internalNotes
+    if (refundedAmount !== undefined) updateData.refundedAmount = refundedAmount
     if (shippingAddress !== undefined) updateData.shippingAddress = shippingAddress
     if (billingAddress !== undefined) updateData.billingAddress = billingAddress
 
@@ -235,14 +307,13 @@ export async function PUT(
       include: { items: true }
     })
 
-    // Emit status change event if status changed
-    if (status && status !== order.status) {
-      console.log('[SVM] Order Event: svm.order.status_changed', {
+    // Log events
+    if (events.length > 0) {
+      console.log('[SVM] Order Event: svm.order.updated', {
         orderId: updatedOrder.id,
         orderNumber: updatedOrder.orderNumber,
-        previousStatus: order.status,
-        newStatus: status,
-        tenantId
+        tenantId,
+        changes: events
       })
     }
 
@@ -252,10 +323,14 @@ export async function PUT(
         id: updatedOrder.id,
         orderNumber: updatedOrder.orderNumber,
         status: updatedOrder.status,
+        paymentStatus: updatedOrder.paymentStatus,
+        fulfillmentStatus: updatedOrder.fulfillmentStatus,
         tenantId: updatedOrder.tenantId,
         customerId: updatedOrder.customerId,
-        sessionId: updatedOrder.sessionId,
-        guestEmail: updatedOrder.guestEmail,
+        customerEmail: updatedOrder.customerEmail,
+        customerPhone: updatedOrder.customerPhone,
+        customerName: updatedOrder.customerName,
+        channel: updatedOrder.channel,
         items: updatedOrder.items.map(item => ({
           id: item.id,
           productId: item.productId,
@@ -268,23 +343,28 @@ export async function PUT(
           quantity: item.quantity,
           lineTotal: Number(item.lineTotal),
           discountAmount: Number(item.discountAmount),
-          taxAmount: Number(item.taxAmount)
+          taxAmount: Number(item.taxAmount),
+          fulfilledQuantity: item.fulfilledQuantity,
+          refundedQuantity: item.refundedQuantity
         })),
-        itemCount: updatedOrder.itemCount,
         subtotal: Number(updatedOrder.subtotal),
         shippingTotal: Number(updatedOrder.shippingTotal),
         taxTotal: Number(updatedOrder.taxTotal),
         discountTotal: Number(updatedOrder.discountTotal),
         grandTotal: Number(updatedOrder.grandTotal),
+        refundedAmount: Number(updatedOrder.refundedAmount),
         promotionCode: updatedOrder.promotionCode,
         currency: updatedOrder.currency,
         shippingAddress: updatedOrder.shippingAddress,
         billingAddress: updatedOrder.billingAddress,
         shippingMethod: updatedOrder.shippingMethod,
+        shippingCarrier: updatedOrder.shippingCarrier,
         trackingNumber: updatedOrder.trackingNumber,
         trackingUrl: updatedOrder.trackingUrl,
-        notes: updatedOrder.notes,
-        cancelReason: updatedOrder.cancelReason,
+        estimatedDelivery: updatedOrder.estimatedDelivery?.toISOString() || null,
+        paymentMethod: updatedOrder.paymentMethod,
+        paymentRef: updatedOrder.paymentRef,
+        internalNotes: updatedOrder.internalNotes,
         refundReason: updatedOrder.refundReason,
         paidAt: updatedOrder.paidAt?.toISOString() || null,
         shippedAt: updatedOrder.shippedAt?.toISOString() || null,
@@ -294,13 +374,13 @@ export async function PUT(
         createdAt: updatedOrder.createdAt.toISOString(),
         updatedAt: updatedOrder.updatedAt.toISOString()
       },
-      events: status && status !== order.status ? [{
+      events: events.map(e => ({
         eventId: `evt_${Date.now().toString(36)}`,
-        eventType: 'svm.order.status_changed',
-        previousStatus: order.status,
-        newStatus: status,
+        eventType: `svm.order.${e.type}_changed`,
+        previous: e.from,
+        current: e.to,
         timestamp: now.toISOString()
-      }] : []
+      }))
     })
 
   } catch (error) {
@@ -324,14 +404,12 @@ export async function DELETE(
     const { orderId } = await params
     const { searchParams } = new URL(request.url)
     let tenantId = searchParams.get('tenantId')
-    let cancelReason = searchParams.get('cancelReason')
 
     // Try body if not in query params
     if (!tenantId) {
       try {
         const body = await request.json()
         tenantId = body.tenantId
-        cancelReason = body.cancelReason || cancelReason
       } catch {
         // Body parse failed
       }
@@ -363,12 +441,12 @@ export async function DELETE(
     }
 
     // Check if cancellation is allowed
-    const allowed = validTransitions[order.status] || []
+    const allowed = validOrderTransitions[order.status] || []
     if (!allowed.includes('CANCELLED')) {
       return NextResponse.json(
         { 
           success: false, 
-          error: `Cannot cancel order in ${order.status} status. Order can only be cancelled from: DRAFT, PLACED, PAID, or PROCESSING` 
+          error: `Cannot cancel order in ${order.status} status. Order can only be cancelled from: PENDING, CONFIRMED, PROCESSING, or ON_HOLD` 
         },
         { status: 400 }
       )
@@ -378,8 +456,7 @@ export async function DELETE(
       where: { id: orderId },
       data: {
         status: 'CANCELLED',
-        cancelledAt: new Date(),
-        cancelReason: cancelReason || 'Cancelled by request'
+        cancelledAt: new Date()
       }
     })
 
@@ -397,8 +474,7 @@ export async function DELETE(
         id: updatedOrder.id,
         orderNumber: updatedOrder.orderNumber,
         status: updatedOrder.status,
-        cancelledAt: updatedOrder.cancelledAt?.toISOString(),
-        cancelReason: updatedOrder.cancelReason
+        cancelledAt: updatedOrder.cancelledAt?.toISOString()
       },
       events: [{
         eventId: `evt_${Date.now().toString(36)}`,
