@@ -1,7 +1,7 @@
 /**
  * SVM Orders API - Database Persistent
  * 
- * POST /api/svm/orders - Create a new order from cart
+ * POST /api/svm/orders - Create a new order from cart or items
  * GET /api/svm/orders - List orders for tenant/customer
  * 
  * Uses Prisma for database persistence.
@@ -10,23 +10,11 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 
-// Order status enum matching schema
-type OrderStatus = 
-  | 'DRAFT'
-  | 'PLACED'
-  | 'PAID'
-  | 'PROCESSING'
-  | 'SHIPPED'
-  | 'DELIVERED'
-  | 'FULFILLED'
-  | 'CANCELLED'
-  | 'REFUNDED'
-
 interface OrderItemInput {
   productId: string
   variantId?: string
   productName: string
-  productSku?: string
+  sku?: string
   variantName?: string
   imageUrl?: string
   unitPrice: number
@@ -52,21 +40,25 @@ export async function POST(request: NextRequest) {
     const { 
       tenantId, 
       customerId, 
-      sessionId,
       cartId, // Optional: create from existing cart
-      guestEmail, 
+      customerEmail,
+      customerPhone,
+      customerName,
       items, // Optional if cartId provided
       shippingAddress, 
       billingAddress,
       shippingMethod,
-      shippingZoneId,
-      shippingRateId,
+      shippingCarrier,
+      channel = 'WEB',
       currency = 'USD',
       shippingTotal = 0,
       taxTotal = 0,
       discountTotal = 0,
       promotionCode,
-      notes
+      promotionId,
+      customerNotes,
+      ipAddress,
+      userAgent
     } = body
 
     // Validation
@@ -77,15 +69,16 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    if (!customerId && !guestEmail && !sessionId) {
+    if (!shippingAddress) {
       return NextResponse.json(
-        { success: false, error: 'Either customerId, sessionId, or guestEmail is required' },
+        { success: false, error: 'shippingAddress is required' },
         { status: 400 }
       )
     }
 
     let orderItems: OrderItemInput[] = items || []
     let sourceCartId: string | null = null
+    let resolvedEmail = customerEmail
 
     // If cartId provided, get items from cart
     if (cartId) {
@@ -119,7 +112,7 @@ export async function POST(request: NextRequest) {
         productId: item.productId,
         variantId: item.variantId || undefined,
         productName: item.productName,
-        productSku: item.sku || undefined,
+        sku: item.sku || undefined,
         variantName: item.variantName || undefined,
         imageUrl: item.imageUrl || undefined,
         unitPrice: Number(item.unitPrice),
@@ -127,12 +120,25 @@ export async function POST(request: NextRequest) {
       }))
       
       sourceCartId = cartId
+      
+      // Use cart email if not provided
+      if (!resolvedEmail && cart.email) {
+        resolvedEmail = cart.email
+      }
     }
 
     // Validate items
     if (!orderItems || orderItems.length === 0) {
       return NextResponse.json(
         { success: false, error: 'At least one item is required (provide items array or cartId)' },
+        { status: 400 }
+      )
+    }
+
+    // Email is required
+    if (!resolvedEmail) {
+      return NextResponse.json(
+        { success: false, error: 'customerEmail is required' },
         { status: 400 }
       )
     }
@@ -149,7 +155,6 @@ export async function POST(request: NextRequest) {
     // Calculate totals
     const subtotal = orderItems.reduce((sum, item) => sum + (item.unitPrice * item.quantity), 0)
     const grandTotal = subtotal + shippingTotal + taxTotal - discountTotal
-    const itemCount = orderItems.reduce((sum, item) => sum + item.quantity, 0)
 
     // Create order with items in a transaction
     const order = await prisma.$transaction(async (tx) => {
@@ -157,39 +162,44 @@ export async function POST(request: NextRequest) {
       const newOrder = await tx.svmOrder.create({
         data: {
           tenantId,
-          customerId: customerId || null,
-          sessionId: sessionId || null,
-          guestEmail: guestEmail || null,
           orderNumber: generateOrderNumber(),
-          status: 'DRAFT',
+          customerId: customerId || null,
+          customerEmail: resolvedEmail,
+          customerPhone: customerPhone || null,
+          customerName: customerName || null,
+          status: 'PENDING',
+          paymentStatus: 'PENDING',
+          fulfillmentStatus: 'UNFULFILLED',
+          sourceCartId: sourceCartId,
+          channel,
           currency,
-          itemCount,
           subtotal,
           shippingTotal,
           taxTotal,
           discountTotal,
           grandTotal,
           promotionCode: promotionCode || null,
-          shippingAddress: shippingAddress || undefined,
-          billingAddress: billingAddress || undefined,
-          shippingZoneId: shippingZoneId || null,
-          shippingRateId: shippingRateId || null,
+          promotionId: promotionId || null,
+          shippingAddress,
+          billingAddress: billingAddress || null,
           shippingMethod: shippingMethod || null,
-          notes: notes || null,
+          shippingCarrier: shippingCarrier || null,
+          customerNotes: customerNotes || null,
+          ipAddress: ipAddress || null,
+          userAgent: userAgent || null,
           items: {
-            create: orderItems.map((item, index) => ({
+            create: orderItems.map(item => ({
               productId: item.productId,
               variantId: item.variantId || null,
               productName: item.productName,
-              sku: item.productSku || null,
+              sku: item.sku || null,
               variantName: item.variantName || null,
               imageUrl: item.imageUrl || null,
               unitPrice: item.unitPrice,
               quantity: item.quantity,
               lineTotal: item.unitPrice * item.quantity,
               discountAmount: 0,
-              taxAmount: 0,
-              sortOrder: index
+              taxAmount: 0
             }))
           }
         },
@@ -215,7 +225,8 @@ export async function POST(request: NextRequest) {
       orderId: order.id,
       orderNumber: order.orderNumber,
       tenantId,
-      itemCount: order.itemCount,
+      customerEmail: order.customerEmail,
+      itemCount: order.items.length,
       grandTotal: Number(order.grandTotal)
     })
 
@@ -225,10 +236,14 @@ export async function POST(request: NextRequest) {
         id: order.id,
         orderNumber: order.orderNumber,
         status: order.status,
+        paymentStatus: order.paymentStatus,
+        fulfillmentStatus: order.fulfillmentStatus,
         tenantId: order.tenantId,
         customerId: order.customerId,
-        sessionId: order.sessionId,
-        guestEmail: order.guestEmail,
+        customerEmail: order.customerEmail,
+        customerPhone: order.customerPhone,
+        customerName: order.customerName,
+        channel: order.channel,
         items: order.items.map(item => ({
           id: item.id,
           productId: item.productId,
@@ -243,7 +258,6 @@ export async function POST(request: NextRequest) {
           discountAmount: Number(item.discountAmount),
           taxAmount: Number(item.taxAmount)
         })),
-        itemCount: order.itemCount,
         subtotal: Number(order.subtotal),
         shippingTotal: Number(order.shippingTotal),
         taxTotal: Number(order.taxTotal),
@@ -254,7 +268,7 @@ export async function POST(request: NextRequest) {
         shippingAddress: order.shippingAddress,
         billingAddress: order.billingAddress,
         shippingMethod: order.shippingMethod,
-        notes: order.notes,
+        customerNotes: order.customerNotes,
         createdAt: order.createdAt.toISOString(),
         updatedAt: order.updatedAt.toISOString()
       },
@@ -283,8 +297,10 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url)
     const tenantId = searchParams.get('tenantId')
     const customerId = searchParams.get('customerId')
-    const sessionId = searchParams.get('sessionId')
-    const status = searchParams.get('status') as OrderStatus | null
+    const customerEmail = searchParams.get('customerEmail')
+    const status = searchParams.get('status')
+    const paymentStatus = searchParams.get('paymentStatus')
+    const fulfillmentStatus = searchParams.get('fulfillmentStatus')
     const orderNumber = searchParams.get('orderNumber')
     const limit = parseInt(searchParams.get('limit') || '50')
     const offset = parseInt(searchParams.get('offset') || '0')
@@ -299,21 +315,12 @@ export async function GET(request: NextRequest) {
     // Build where clause
     const where: Record<string, unknown> = { tenantId }
     
-    if (customerId) {
-      where.customerId = customerId
-    }
-    
-    if (sessionId) {
-      where.sessionId = sessionId
-    }
-    
-    if (status) {
-      where.status = status
-    }
-    
-    if (orderNumber) {
-      where.orderNumber = { contains: orderNumber, mode: 'insensitive' }
-    }
+    if (customerId) where.customerId = customerId
+    if (customerEmail) where.customerEmail = customerEmail
+    if (status) where.status = status
+    if (paymentStatus) where.paymentStatus = paymentStatus
+    if (fulfillmentStatus) where.fulfillmentStatus = fulfillmentStatus
+    if (orderNumber) where.orderNumber = { contains: orderNumber, mode: 'insensitive' }
 
     // Get total count
     const total = await prisma.svmOrder.count({ where })
@@ -333,10 +340,14 @@ export async function GET(request: NextRequest) {
         id: order.id,
         orderNumber: order.orderNumber,
         status: order.status,
+        paymentStatus: order.paymentStatus,
+        fulfillmentStatus: order.fulfillmentStatus,
         tenantId: order.tenantId,
         customerId: order.customerId,
-        sessionId: order.sessionId,
-        guestEmail: order.guestEmail,
+        customerEmail: order.customerEmail,
+        customerPhone: order.customerPhone,
+        customerName: order.customerName,
+        channel: order.channel,
         items: order.items.map(item => ({
           id: item.id,
           productId: item.productId,
@@ -349,23 +360,29 @@ export async function GET(request: NextRequest) {
           quantity: item.quantity,
           lineTotal: Number(item.lineTotal),
           discountAmount: Number(item.discountAmount),
-          taxAmount: Number(item.taxAmount)
+          taxAmount: Number(item.taxAmount),
+          fulfilledQuantity: item.fulfilledQuantity,
+          refundedQuantity: item.refundedQuantity
         })),
-        itemCount: order.itemCount,
         subtotal: Number(order.subtotal),
         shippingTotal: Number(order.shippingTotal),
         taxTotal: Number(order.taxTotal),
         discountTotal: Number(order.discountTotal),
         grandTotal: Number(order.grandTotal),
+        refundedAmount: Number(order.refundedAmount),
         promotionCode: order.promotionCode,
         currency: order.currency,
         shippingAddress: order.shippingAddress,
         billingAddress: order.billingAddress,
         shippingMethod: order.shippingMethod,
+        shippingCarrier: order.shippingCarrier,
+        trackingNumber: order.trackingNumber,
+        trackingUrl: order.trackingUrl,
         paidAt: order.paidAt?.toISOString() || null,
         shippedAt: order.shippedAt?.toISOString() || null,
         deliveredAt: order.deliveredAt?.toISOString() || null,
         cancelledAt: order.cancelledAt?.toISOString() || null,
+        refundedAt: order.refundedAt?.toISOString() || null,
         createdAt: order.createdAt.toISOString(),
         updatedAt: order.updatedAt.toISOString()
       })),
@@ -377,8 +394,10 @@ export async function GET(request: NextRequest) {
       filters: {
         tenantId,
         customerId: customerId || null,
-        sessionId: sessionId || null,
+        customerEmail: customerEmail || null,
         status: status || 'all',
+        paymentStatus: paymentStatus || 'all',
+        fulfillmentStatus: fulfillmentStatus || 'all',
         orderNumber: orderNumber || null
       }
     })
