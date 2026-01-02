@@ -646,7 +646,8 @@ export interface LocationData {
   tenantId: string
   name: string
   code?: string
-  type: 'STORE' | 'WAREHOUSE' | 'FULFILLMENT_CENTER' | 'POPUP'
+  type: string
+  status: 'ACTIVE' | 'INACTIVE' | 'CLOSED'
   address?: {
     street1?: string
     street2?: string
@@ -657,8 +658,9 @@ export interface LocationData {
   }
   phone?: string
   email?: string
-  isActive: boolean
   isDefault: boolean
+  allowsPickup: boolean
+  allowsShipping: boolean
   timezone?: string
   operatingHours?: Record<string, unknown>
 }
@@ -680,6 +682,7 @@ export class CoreLocationService {
       name: location.name,
       code: location.code || undefined,
       type: location.type,
+      status: location.status,
       address: {
         street1: location.addressLine1 || undefined,
         street2: location.addressLine2 || undefined,
@@ -690,9 +693,9 @@ export class CoreLocationService {
       },
       phone: location.phone || undefined,
       email: location.email || undefined,
-      isActive: location.isActive,
-      isDefault: location.isDefault,
-      timezone: location.timezone || undefined,
+      isDefault: location.isDefaultLocation,
+      allowsPickup: location.allowsPickup,
+      allowsShipping: location.allowsShipping,
       operatingHours: location.operatingHours as Record<string, unknown> || undefined
     }
   }
@@ -704,10 +707,10 @@ export class CoreLocationService {
     const locations = await prisma.location.findMany({
       where: {
         tenantId,
-        ...(activeOnly && { isActive: true })
+        ...(activeOnly && { status: 'ACTIVE' })
       },
       orderBy: [
-        { isDefault: 'desc' },
+        { isDefaultLocation: 'desc' },
         { name: 'asc' }
       ]
     })
@@ -718,6 +721,7 @@ export class CoreLocationService {
       name: l.name,
       code: l.code || undefined,
       type: l.type,
+      status: l.status,
       address: {
         street1: l.addressLine1 || undefined,
         street2: l.addressLine2 || undefined,
@@ -728,9 +732,9 @@ export class CoreLocationService {
       },
       phone: l.phone || undefined,
       email: l.email || undefined,
-      isActive: l.isActive,
-      isDefault: l.isDefault,
-      timezone: l.timezone || undefined,
+      isDefault: l.isDefaultLocation,
+      allowsPickup: l.allowsPickup,
+      allowsShipping: l.allowsShipping,
       operatingHours: l.operatingHours as Record<string, unknown> || undefined
     }))
   }
@@ -740,7 +744,7 @@ export class CoreLocationService {
    */
   async getDefaultLocation(tenantId: string): Promise<LocationData | null> {
     const location = await prisma.location.findFirst({
-      where: { tenantId, isDefault: true, isActive: true }
+      where: { tenantId, isDefaultLocation: true, status: 'ACTIVE' }
     })
     
     if (!location) return null
@@ -751,6 +755,7 @@ export class CoreLocationService {
       name: location.name,
       code: location.code || undefined,
       type: location.type,
+      status: location.status,
       address: {
         street1: location.addressLine1 || undefined,
         street2: location.addressLine2 || undefined,
@@ -761,9 +766,9 @@ export class CoreLocationService {
       },
       phone: location.phone || undefined,
       email: location.email || undefined,
-      isActive: location.isActive,
-      isDefault: location.isDefault,
-      timezone: location.timezone || undefined,
+      isDefault: location.isDefaultLocation,
+      allowsPickup: location.allowsPickup,
+      allowsShipping: location.allowsShipping,
       operatingHours: location.operatingHours as Record<string, unknown> || undefined
     }
   }
