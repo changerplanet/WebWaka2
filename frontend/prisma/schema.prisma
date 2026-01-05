@@ -394,18 +394,18 @@ model Partner {
   createdAt                DateTime                   @default(now())
   updatedAt                DateTime
   approvedAt               DateTime?
-  InstanceFinancialSummary InstanceFinancialSummary[]
-  InstanceSubscription     InstanceSubscription[]
-  PartnerAgreement         PartnerAgreement[]
-  PartnerEarning           PartnerEarning[]
-  PartnerInstanceEarning   PartnerInstanceEarning[]
-  PartnerPackage           PartnerPackage[]
-  PartnerPayoutSettings    PartnerPayoutSettings?
-  PartnerReferral          PartnerReferral[]
-  PartnerReferralCode      PartnerReferralCode[]
-  PartnerUser              PartnerUser[]
-  PayoutBatch              PayoutBatch[]
-  PlatformInstance         PlatformInstance[]
+  instanceFinancialSummaries InstanceFinancialSummary[]
+  instanceSubscriptions    InstanceSubscription[]
+  agreements               PartnerAgreement[]
+  earnings                 PartnerEarning[]
+  instanceEarnings         PartnerInstanceEarning[]
+  packages                 PartnerPackage[]
+  payoutSettings           PartnerPayoutSettings?
+  referrals                PartnerReferral[]
+  referralCodes            PartnerReferralCode[]
+  users                    PartnerUser[]
+  payoutBatches            PayoutBatch[]
+  createdInstances         PlatformInstance[]
 
   @@index([email])
   @@index([slug])
