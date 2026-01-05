@@ -441,6 +441,7 @@ async function createDemoData(tenants: Array<{ id: string; slug: string; type: s
       for (const cust of customers) {
         await prisma.customer.create({
           data: {
+            id: crypto.randomUUID(),
             tenantId: tenant.id,
             ...cust,
             fullName: `${cust.firstName} ${cust.lastName}`,
@@ -448,6 +449,7 @@ async function createDemoData(tenants: Array<{ id: string; slug: string; type: s
             totalOrders: Math.floor(Math.random() * 20),
             totalSpent: Math.floor(Math.random() * 500000),
             loyaltyPoints: Math.floor(Math.random() * 1000),
+            updatedAt: new Date(),
           }
         })
       }
