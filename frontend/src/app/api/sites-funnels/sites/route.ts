@@ -198,7 +198,7 @@ export async function POST(request: NextRequest) {
         }
         const result = await updateSite(siteId, tenantId, {
           ...updateData,
-          updatedBy: session.userId,
+          updatedBy: userId,
         });
         return NextResponse.json(result);
       }
@@ -217,7 +217,7 @@ export async function POST(request: NextRequest) {
         if (!siteId) {
           return NextResponse.json({ success: false, error: 'Site ID required' }, { status: 400 });
         }
-        const result = await publishSite(siteId, tenantId, session.userId);
+        const result = await publishSite(siteId, tenantId, userId);
         return NextResponse.json(result);
       }
 
@@ -226,7 +226,7 @@ export async function POST(request: NextRequest) {
         if (!siteId) {
           return NextResponse.json({ success: false, error: 'Site ID required' }, { status: 400 });
         }
-        const result = await unpublishSite(siteId, tenantId, session.userId);
+        const result = await unpublishSite(siteId, tenantId, userId);
         return NextResponse.json(result);
       }
 
@@ -241,7 +241,7 @@ export async function POST(request: NextRequest) {
           name,
           slug,
           pageType,
-          createdBy: session.userId,
+          createdBy: userId,
           templateId,
         });
         return NextResponse.json(result);
@@ -254,7 +254,7 @@ export async function POST(request: NextRequest) {
         }
         const result = await updatePage(pageId, tenantId, {
           ...updateData,
-          updatedBy: session.userId,
+          updatedBy: userId,
         });
         return NextResponse.json(result);
       }
@@ -264,7 +264,7 @@ export async function POST(request: NextRequest) {
         if (!pageId || !blocks) {
           return NextResponse.json({ success: false, error: 'Page ID and blocks required' }, { status: 400 });
         }
-        const result = await updatePageBlocks(pageId, tenantId, blocks, session.userId);
+        const result = await updatePageBlocks(pageId, tenantId, blocks, userId);
         return NextResponse.json(result);
       }
 
