@@ -261,9 +261,9 @@ function LoginV2Content() {
       return '/admin'
     }
     
-    // Partner users go to /dashboard/partner
+    // Partner users go to /partner-portal
     if (loginResponse.isPartner) {
-      return '/dashboard/partner'
+      return '/partner-portal'
     }
     
     // Tenant users go to /dashboard with tenant slug
