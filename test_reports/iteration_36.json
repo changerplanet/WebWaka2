@@ -1,0 +1,87 @@
+{
+  "summary": "Phase 2 Platform Instances - Comprehensive retest completed. All 17 backend API tests passed. PlatformInstance model verified with correct schema (id, tenantId, name, slug, suiteKeys, branding fields, isDefault, isActive). TenantDomain has platformInstanceId field for domain-to-instance mapping. All API endpoints working correctly. Frontend loads successfully. Login flow works with magic link authentication.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": [
+    "/app/tests/test_platform_instances_phase2.py",
+    "/app/test_reports/pytest/platform_instances_phase2_retest.xml"
+  ],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "PlatformInstance model correctly implemented with all Phase 2 fields (id, tenantId, name, slug, description, suiteKeys, branding fields, navigationConfig, isDefault, isActive)",
+    "TenantDomain model correctly extended with platformInstanceId for domain→instance mapping",
+    "instance-service.ts well-structured with proper CRUD operations and branding resolution",
+    "navigation-service.ts correctly implements filterNavigationByInstance and isCapabilityVisibleInInstance",
+    "default-instance.ts provides createDefaultInstanceForTenant and ensureAllTenantsHaveDefaultInstance",
+    "guardrails.ts properly documents Phase 2 boundaries with validation functions (validateTenantWideBilling, validateTenantWideAttribution, validateTenantWideRBAC)",
+    "tenant-resolver.ts correctly extended to return TenantContext with platformInstance and instanceResolvedVia",
+    "branding.ts correctly implements resolveInstanceBranding with source tracking ('instance' | 'tenant' | 'default')",
+    "AuthProvider.tsx correctly extended with activeInstanceId, activeInstance, availableInstances, and switchInstance function",
+    "/api/platform-instances endpoint returns instances with correct structure",
+    "/api/admin/migrate-platform-instances endpoint is idempotent and safe to run multiple times"
+  ],
+  "updated_files": [],
+  "success_rate": {
+    "backend": "100% - 17/17 tests passed",
+    "frontend": "100% - Homepage and login flow verified"
+  },
+  "test_credentials": "admin@acme.com (magic link auth), Tenant: Acme Corporation (ID: 67846c4f-9b38-47c7-86d9-fff55aa4afda)",
+  "seed_data_creation": "Migration already ran - 2 tenants (Acme Corporation, Beta Corp) have default platform instances",
+  "retest_needed": false,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "Phase 2 Platform Instances fully implemented and verified. Key verified features: 1) PlatformInstance table with correct schema, 2) Default instances exist for tenants (acme, beta-corp), 3) /api/platform-instances endpoint returns instances for tenant, 4) Empty suiteKeys means all capabilities visible, 5) Instance branding fields are null (uses tenant fallback), 6) No per-instance billing/attribution fields (guardrails enforced), 7) Backward compatibility maintained - existing routes work unchanged, 8) AuthProvider includes instance context (activeInstanceId, switchInstance).",
+  "tests_executed": {
+    "backend_api_tests": {
+      "GET /api/platform-instances (no tenantId)": "PASS - Returns 400 with error message",
+      "GET /api/platform-instances?tenantId=acme": "PASS - Returns default instance with correct structure",
+      "GET /api/platform-instances?tenantId=beta": "PASS - Returns default instance",
+      "GET /api/platform-instances?tenantId=invalid": "PASS - Returns empty array",
+      "GET /api/admin/migrate-platform-instances": "PASS - Returns endpoint info",
+      "POST /api/admin/migrate-platform-instances": "PASS - Idempotent migration (0 created, 2 existing)"
+    },
+    "schema_validation": {
+      "PlatformInstance table exists": "PASS",
+      "Required fields present": "PASS - id, name, slug, suiteKeys, isDefault",
+      "Branding fields present": "PASS - displayName, logoUrl, primaryColor, secondaryColor",
+      "No billing fields": "PASS - Guardrail enforced",
+      "No attribution fields": "PASS - Guardrail enforced"
+    },
+    "backward_compatibility": {
+      "/dashboard?tenant=acme": "PASS - Redirects to login (expected for unauthenticated)",
+      "/pos?tenant=acme": "PASS - Redirects to login (expected)",
+      "/api/auth/session": "PASS - Returns session info"
+    },
+    "ui_tests": {
+      "Homepage loads": "PASS - WebWaka Platform page loads correctly",
+      "Login page loads": "PASS - Magic link login form displayed",
+      "Login flow": "PASS - Email submission and Sign In Now button work"
+    }
+  },
+  "database_state": {
+    "platform_instances": [
+      {
+        "id": "aa9caad2-5e59-4e8a-a7fe-e9721457f81c",
+        "tenant": "Acme Corporation (acme)",
+        "name": "Acme Corporation Platform",
+        "slug": "default",
+        "suiteKeys": [],
+        "isDefault": true
+      },
+      {
+        "id": "3b6a6bce-6731-4072-94ab-415612bf811c",
+        "tenant": "Beta Corp (beta-corp)",
+        "name": "Beta Corp Platform",
+        "slug": "default",
+        "suiteKeys": [],
+        "isDefault": true
+      }
+    ]
+  }
+}

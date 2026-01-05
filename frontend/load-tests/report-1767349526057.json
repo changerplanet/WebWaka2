@@ -1,0 +1,80 @@
+[
+  {
+    "testName": "health",
+    "analysis": {
+      "test": "health",
+      "requests": {
+        "total": 57,
+        "average": 5.7,
+        "mean": 5.7,
+        "stddev": 0.9,
+        "min": 3,
+        "max": 6
+      },
+      "latency": {
+        "average": 1589.62,
+        "mean": 1589.62,
+        "stddev": 314.48,
+        "min": 722,
+        "max": 2203,
+        "p50": 1486,
+        "p90": 1977,
+        "p99": 2203
+      },
+      "throughput": {
+        "average": 1886.7,
+        "mean": 1886.7,
+        "total": 18867
+      },
+      "errors": 0,
+      "timeouts": 0,
+      "duration": 10.02,
+      "connections": 10
+    },
+    "assessment": [
+      "❌ High p99 latency (>500ms) - needs optimization",
+      "✅ No errors",
+      "✅ No timeouts",
+      "❌ Low throughput (6 req/s)"
+    ]
+  },
+  {
+    "testName": "cartRead",
+    "analysis": {
+      "test": "cartRead",
+      "requests": {
+        "total": 78,
+        "average": 5.2,
+        "mean": 5.2,
+        "stddev": 1.87,
+        "min": 1,
+        "max": 6
+      },
+      "latency": {
+        "average": 6754.57,
+        "mean": 6754.57,
+        "stddev": 2178.47,
+        "min": 1693,
+        "max": 9706,
+        "p50": 8002,
+        "p90": 8702,
+        "p99": 9706
+      },
+      "throughput": {
+        "average": 2746.47,
+        "mean": 2746.47,
+        "total": 41184
+      },
+      "errors": 1,
+      "timeouts": 1,
+      "duration": 15.01,
+      "connections": 50
+    },
+    "assessment": [
+      "❌ High p99 latency (>500ms) - needs optimization",
+      "❌ 1 errors detected",
+      "❌ 1 timeouts detected",
+      "❌ Low throughput (5 req/s)"
+    ]
+  }
+]

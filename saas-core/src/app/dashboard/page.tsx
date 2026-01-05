@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
-import { Building2, Users, Settings, LayoutDashboard, LogOut, ChevronRight, Activity, TrendingUp, Bell, UserCircle } from 'lucide-react'
+import { useAuth } from '@/components/AuthProvider'
+import { Building2, Users, Settings, LayoutDashboard, LogOut, ChevronRight, Activity, TrendingUp, Bell, UserCircle, Package, ShoppingCart, Store, Warehouse, Calculator, Heart, CreditCard, Handshake, Receipt, Plug, Truck, Briefcase, Megaphone, Shield, Brain, RefreshCw } from 'lucide-react'
 import { OfflineStatusBar } from '@/components/OfflineStatus'
 
 interface TenantBranding {
@@ -21,52 +22,52 @@ interface Tenant {
   branding: TenantBranding | null
 }
 
-interface SessionUser {
-  id: string
-  email: string
-  name: string | null
-  globalRole: string
-  memberships: { tenantId: string; tenantSlug: string; role: string }[]
-}
-
 export default function TenantDashboard() {
   const searchParams = useSearchParams()
   const router = useRouter()
+  const { user, activeTenantId, activeTenant, isLoading: authLoading, logout } = useAuth()
   const [tenant, setTenant] = useState<Tenant | null>(null)
-  const [user, setUser] = useState<SessionUser | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [activeCapabilities, setActiveCapabilities] = useState<Set<string>>(new Set())
 
-  const tenantSlug = searchParams.get('tenant')
+  const tenantSlug = searchParams.get('tenant') || activeTenant?.tenantSlug
 
+  // Fetch tenant and capabilities when tenant context is ready
   useEffect(() => {
-    fetchSession()
-  }, [])
-
-  useEffect(() => {
-    if (tenantSlug) {
+    if (authLoading) return
+    
+    if (tenantSlug && activeTenantId) {
       fetchTenant(tenantSlug)
-    } else {
+      fetchActiveCapabilities()
+    } else if (!activeTenantId && !tenantSlug) {
       setLoading(false)
       setError('No tenant specified. Use ?tenant=slug to view a tenant dashboard.')
     }
-  }, [tenantSlug])
+  }, [tenantSlug, activeTenantId, authLoading])
 
-  async function fetchSession() {
+  async function fetchActiveCapabilities() {
+    // Only fetch if we have an active tenant in the session
+    if (!activeTenantId) return
+    
     try {
-      const res = await fetch('/api/auth/session')
-      const data = await res.json()
-      if (data.authenticated && data.user) {
-        setUser(data.user)
+      const res = await fetch('/api/capabilities/tenant')
+      if (res.ok) {
+        const data = await res.json()
+        const active = new Set<string>(
+          data.capabilities
+            ?.filter((c: { status: string }) => c.status === 'ACTIVE')
+            ?.map((c: { key: string }) => c.key) || []
+        )
+        setActiveCapabilities(active)
       }
     } catch (err) {
-      console.error('Failed to fetch session:', err)
+      console.error('Failed to fetch capabilities:', err)
     }
   }
 
   async function handleLogout() {
-    await fetch('/api/auth/logout', { method: 'POST' })
-    router.push('/login')
+    await logout()
   }
 
   async function fetchTenant(slug: string) {
@@ -88,7 +89,7 @@ export default function TenantDashboard() {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-slate-100">
-        <div className="animate-spin w-8 h-8 border-4 border-indigo-600 border-t-transparent rounded-full" />
+        <div className="animate-spin w-8 h-8 border-4 border-green-600 border-t-transparent rounded-full" />
       </div>
     )
   }
@@ -99,7 +100,7 @@ export default function TenantDashboard() {
         <div className="text-center">
           <h1 className="text-2xl font-bold text-slate-800 mb-2">Tenant Dashboard</h1>
           <p className="text-slate-600 mb-4">{error}</p>
-          <a href="/" className="text-indigo-600 hover:text-indigo-700">← Back to Home</a>
+          <a href="/" className="text-green-600 hover:text-green-700">← Back to Home</a>
         </div>
       </div>
     )
@@ -124,7 +125,7 @@ export default function TenantDashboard() {
             </div>
             <div>
               <h1 className="font-bold text-lg">{branding.appName}</h1>
-              <p className="text-xs text-white/70">{tenant.slug}.emarketwaka.com</p>
+              <p className="text-xs text-white/70">{tenant.slug}.webwaka.com</p>
             </div>
           </div>
         </div>
@@ -134,7 +135,26 @@ export default function TenantDashboard() {
             {[
               { icon: LayoutDashboard, label: 'Dashboard', active: true, href: null },
               { icon: Users, label: 'Users', active: false, href: null },
-              { icon: Activity, label: 'Analytics', active: false, href: null },
+              { icon: ShoppingCart, label: 'POS', active: false, href: `/pos?tenant=${tenant?.slug}`, capability: 'pos' },
+              { icon: Store, label: 'Storefront', active: false, href: `/store?tenant=${tenant?.slug}`, capability: 'svm' },
+              { icon: Store, label: 'Marketplace', active: false, href: `/vendor?tenant=${tenant?.slug}`, capability: 'mvm' },
+              { icon: Warehouse, label: 'Inventory', active: false, href: `/dashboard/inventory?tenant=${tenant?.slug}`, capability: 'inventory' },
+              { icon: Calculator, label: 'Accounting', active: false, href: `/dashboard/accounting?tenant=${tenant?.slug}`, capability: 'accounting' },
+              { icon: Heart, label: 'CRM', active: false, href: `/dashboard/crm?tenant=${tenant?.slug}`, capability: 'crm' },
+              { icon: Truck, label: 'Logistics', active: false, href: `/dashboard/logistics?tenant=${tenant?.slug}`, capability: 'logistics' },
+              { icon: Briefcase, label: 'HR & Payroll', active: false, href: `/dashboard/hr?tenant=${tenant?.slug}`, capability: 'hr_payroll' },
+              { icon: Package, label: 'Procurement', active: false, href: `/dashboard/procurement?tenant=${tenant?.slug}`, capability: 'procurement' },
+              { icon: Activity, label: 'Analytics', active: false, href: `/dashboard/analytics?tenant=${tenant?.slug}`, capability: 'analytics' },
+              { icon: Megaphone, label: 'Marketing', active: false, href: `/dashboard/marketing?tenant=${tenant?.slug}`, capability: 'marketing' },
+              { icon: Building2, label: 'B2B & Wholesale', active: false, href: `/dashboard/b2b?tenant=${tenant?.slug}`, capability: 'b2b' },
+              { icon: CreditCard, label: 'Payments', active: false, href: `/dashboard/payments?tenant=${tenant?.slug}`, capability: 'payments' },
+              { icon: RefreshCw, label: 'Subscriptions', active: false, href: `/dashboard/subscriptions?tenant=${tenant?.slug}`, capability: 'subscriptions_billing' },
+              { icon: Shield, label: 'Compliance', active: false, href: `/dashboard/compliance?tenant=${tenant?.slug}`, capability: 'compliance_tax' },
+              { icon: Brain, label: 'AI & Automation', active: false, href: `/dashboard/ai?tenant=${tenant?.slug}`, capability: 'ai_automation' },
+              { icon: Handshake, label: 'Partners', active: false, href: `/dashboard/partner?tenant=${tenant?.slug}`, adminOnly: true },
+              { icon: Receipt, label: 'Billing', active: false, href: `/dashboard/billing?tenant=${tenant?.slug}`, adminOnly: true },
+              { icon: Plug, label: 'Integrations', active: false, href: `/dashboard/integrations?tenant=${tenant?.slug}`, capability: 'integrations_hub' },
+              { icon: Package, label: 'Capabilities', active: false, href: `/dashboard/capabilities?tenant=${tenant?.slug}`, adminOnly: true },
               { icon: Bell, label: 'Notifications', active: false, href: null },
               { icon: Settings, label: 'Settings', active: false, href: `/dashboard/settings?tenant=${tenant?.slug}`, adminOnly: true },
             ].filter(item => {
@@ -143,6 +163,10 @@ export default function TenantDashboard() {
                 const isAdmin = user?.globalRole === 'SUPER_ADMIN' || 
                   user?.memberships?.some(m => m.tenantSlug === tenant?.slug && m.role === 'TENANT_ADMIN')
                 return isAdmin
+              }
+              // Filter capability-based items based on active capabilities
+              if ((item as { capability?: string }).capability) {
+                return activeCapabilities.has((item as { capability: string }).capability)
               }
               return true
             }).map((item, i) => (
@@ -296,7 +320,7 @@ export default function TenantDashboard() {
               <p className="text-white/80 text-sm">This is your white-labeled workspace</p>
             </div>
             <div className="text-right text-sm">
-              <p><span className="text-white/60">Subdomain:</span> {tenant.slug}.emarketwaka.com</p>
+              <p><span className="text-white/60">Subdomain:</span> {tenant.slug}.webwaka.com</p>
               {tenant.customDomain && (
                 <p><span className="text-white/60">Custom Domain:</span> {tenant.customDomain}</p>
               )}

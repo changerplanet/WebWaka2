@@ -1,359 +1,329 @@
-'use client'
+/**
+ * WebWaka Homepage
+ * The primary entry point for the WebWaka Platform
+ * 
+ * Positioning: Multi-industry digital infrastructure for African organizations
+ * NOT: A POS product, marketplace, or app
+ */
 
-import { useState, useEffect } from 'react'
-import { Building2, Users, Palette, Globe, Shield, Zap, Plus, ChevronRight, Check, X, Loader2 } from 'lucide-react'
+import Link from 'next/link'
+import { 
+  ArrowRight, Check, Globe, Layers, Shield, Zap,
+  Store, GraduationCap, Heart, Landmark, Hotel, Truck, Users,
+  Wifi, Smartphone, Lock, Clock, Phone, Mail, Menu, Package
+} from 'lucide-react'
 
-interface TenantDomain {
-  id: string
-  domain: string
-  type: 'SUBDOMAIN' | 'CUSTOM'
-  status: 'PENDING' | 'VERIFIED' | 'FAILED'
-  isPrimary: boolean
+export const metadata = {
+  title: 'WebWaka Platform — Digital Infrastructure for African Organizations',
+  description: 'Empowering businesses, schools, clinics, and communities across Africa with modular digital solutions. Powered by HandyLife Digital.',
 }
 
-interface Tenant {
-  id: string
-  name: string
-  slug: string
-  status: string
-  appName: string
-  primaryColor: string
-  secondaryColor: string
-  domains: TenantDomain[]
-  createdAt: string
-  branding?: {
-    appName: string
-    logoUrl: string | null
-    faviconUrl: string | null
-    primaryColor: string
-    secondaryColor: string
-  } | null
-  _count?: {
-    users: number
-  }
-}
+// Suites data - all suites are available platform configurations
+const suites = [
+  {
+    id: 'commerce',
+    name: 'Commerce Suite',
+    icon: Store,
+    description: 'POS, inventory, online store, marketplace',
+    color: 'green',
+  },
+  {
+    id: 'education',
+    name: 'Education Suite',
+    icon: GraduationCap,
+    description: 'School management, grading, fees',
+    color: 'blue',
+  },
+  {
+    id: 'health',
+    name: 'Health Suite',
+    icon: Heart,
+    description: 'Clinic, pharmacy, patient records',
+    color: 'red',
+  },
+  {
+    id: 'civic',
+    name: 'Civic Suite',
+    icon: Landmark,
+    description: 'Community finance, member management',
+    color: 'purple',
+  },
+  {
+    id: 'hospitality',
+    name: 'Hospitality Suite',
+    icon: Hotel,
+    description: 'Hotels, restaurants, events',
+    color: 'amber',
+  },
+  {
+    id: 'logistics',
+    name: 'Logistics Suite',
+    icon: Truck,
+    description: 'Fleet, delivery, fulfillment',
+    color: 'orange',
+  },
+]
 
-interface CreateTenantForm {
-  name: string
-  slug: string
-  customDomain: string
-  appName: string
-  primaryColor: string
-  secondaryColor: string
-}
+const platformBenefits = [
+  { icon: Wifi, title: 'Works Offline', description: 'Reliable even when network is poor' },
+  { icon: Smartphone, title: 'Mobile-First', description: 'Designed for phones and tablets' },
+  { icon: Lock, title: 'Secure & Private', description: 'Your data stays yours' },
+  { icon: Clock, title: 'Quick Setup', description: 'Get started in minutes' },
+]
+
+const stats = [
+  { value: '7', label: 'Industry Suites' },
+  { value: '18+', label: 'Capabilities' },
+  { value: '36', label: 'Nigerian States' },
+  { value: '99.9%', label: 'Uptime' },
+]
+
+const navLinks = [
+  { href: '/platform', label: 'Platform' },
+  { href: '/capabilities', label: 'Capabilities' },
+  { href: '/suites', label: 'Suites' },
+  { href: '/solutions', label: 'Solutions' },
+  { href: '/partners', label: 'Partners' },
+  { href: '/about', label: 'About' },
+]
 
 export default function HomePage() {
-  const [tenants, setTenants] = useState<Tenant[]>([])
-  const [loading, setLoading] = useState(true)
-  const [showCreateModal, setShowCreateModal] = useState(false)
-  const [creating, setCreating] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-  const [success, setSuccess] = useState<string | null>(null)
-  
-  const [form, setForm] = useState<CreateTenantForm>({
-    name: '',
-    slug: '',
-    customDomain: '',
-    appName: '',
-    primaryColor: '#6366f1',
-    secondaryColor: '#8b5cf6'
-  })
-
-  useEffect(() => {
-    fetchTenants()
-  }, [])
-
-  async function fetchTenants() {
-    try {
-      const res = await fetch('/api/tenants')
-      const data = await res.json()
-      if (data.success) {
-        setTenants(data.tenants)
-      }
-    } catch (err) {
-      console.error('Failed to fetch tenants:', err)
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  async function handleCreateTenant(e: React.FormEvent) {
-    e.preventDefault()
-    setCreating(true)
-    setError(null)
-    
-    try {
-      const res = await fetch('/api/tenants', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(form)
-      })
-      
-      const data = await res.json()
-      
-      if (data.success) {
-        setSuccess(`Tenant "${data.tenant.name}" created successfully!`)
-        setShowCreateModal(false)
-        setForm({
-          name: '',
-          slug: '',
-          customDomain: '',
-          appName: '',
-          primaryColor: '#6366f1',
-          secondaryColor: '#8b5cf6'
-        })
-        fetchTenants()
-        setTimeout(() => setSuccess(null), 3000)
-      } else {
-        setError(data.error || 'Failed to create tenant')
-      }
-    } catch (err) {
-      setError('Network error. Please try again.')
-    } finally {
-      setCreating(false)
-    }
-  }
-
-  function handleSlugChange(name: string) {
-    const slug = name.toLowerCase()
-      .replace(/[^a-z0-9]+/g, '-')
-      .replace(/^-|-$/g, '')
-    setForm(prev => ({ ...prev, name, slug, appName: name || prev.appName }))
-  }
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
-      {/* Hero Section */}
-      <header className="relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-r from-indigo-600 to-purple-600" />
-        <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHBhdHRlcm4gaWQ9ImdyaWQiIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHBhdGggZD0iTSAxMCAwIEwgMCAwIDAgMTAiIGZpbGw9Im5vbmUiIHN0cm9rZT0icmdiYSgyNTUsMjU1LDI1NSwwLjA1KSIgc3Ryb2tlLXdpZHRoPSIxIi8+PC9wYXR0ZXJuPjwvZGVmcz48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ1cmwoI2dyaWQpIi8+PC9zdmc+')] opacity-40" />
-        
-        <nav className="relative z-10 container mx-auto px-6 py-6">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center">
-                <Building2 className="w-6 h-6 text-white" />
-              </div>
-              <span className="text-xl font-bold text-white">eMarketWaka</span>
-            </div>
-            <div className="flex items-center gap-4">
-              <button className="text-white/80 hover:text-white transition">Documentation</button>
-              <button className="px-4 py-2 bg-white/20 hover:bg-white/30 text-white rounded-lg transition">
-                Super Admin
-              </button>
-            </div>
+    <div className="min-h-screen bg-white">
+      {/* Top Bar */}
+      <div className="bg-gray-900 text-white text-sm py-2 hidden sm:block">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between">
+          <p>Digital Infrastructure for African Organizations</p>
+          <div className="flex items-center gap-4">
+            <a href="tel:+2348000000000" className="flex items-center gap-1 hover:text-green-400 transition-colors">
+              <Phone className="w-3 h-3" />
+              +234 800 000 0000
+            </a>
+            <a href="mailto:hello@webwaka.com" className="flex items-center gap-1 hover:text-green-400 transition-colors">
+              <Mail className="w-3 h-3" />
+              hello@webwaka.com
+            </a>
           </div>
-        </nav>
-        
-        <div className="relative z-10 container mx-auto px-6 py-20 text-center">
-          <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/20 rounded-full text-white/90 text-sm mb-6">
-            <Shield className="w-4 h-4" />
-            Complete Commerce Platform
-          </div>
-          <h1 className="text-5xl md:text-6xl font-bold text-white mb-6 leading-tight">
-            eMarketWaka
-            <br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-200 to-pink-200">
-              Commerce Platform
-            </span>
-          </h1>
-          <p className="text-xl text-white/80 max-w-2xl mx-auto mb-10">
-            POS, Online Store &amp; Marketplace — all in one platform.
-            Multi-tenant, white-label ready, built for African commerce.
-          </p>
-          <button
-            onClick={() => setShowCreateModal(true)}
-            className="inline-flex items-center gap-2 px-8 py-4 bg-white text-indigo-600 font-semibold rounded-xl hover:bg-white/90 transition shadow-lg shadow-indigo-900/30"
-          >
-            <Plus className="w-5 h-5" />
-            Create New Tenant
-          </button>
         </div>
-      </header>
+      </div>
 
-      {/* Features Grid */}
-      <section className="container mx-auto px-6 -mt-10 relative z-20">
-        <div className="grid md:grid-cols-3 gap-6">
-          {[
-            { icon: Globe, title: 'POS System', desc: 'Touch-first point of sale for retail & restaurants' },
-            { icon: Palette, title: 'Online Store', desc: 'Single-vendor e-commerce storefront' },
-            { icon: Shield, title: 'Marketplace', desc: 'Multi-vendor marketplace platform' },
-          ].map((feature, i) => (
-            <div key={i} className="bg-white rounded-2xl p-6 shadow-xl shadow-slate-200/50">
-              <div className="w-12 h-12 rounded-xl bg-indigo-100 flex items-center justify-center mb-4">
-                <feature.icon className="w-6 h-6 text-indigo-600" />
+      {/* Navigation */}
+      <nav className="sticky top-0 z-50 bg-white/95 backdrop-blur-sm border-b border-gray-100 shadow-sm">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-16 md:h-20">
+            {/* Logo */}
+            <Link href="/" className="flex items-center gap-2" data-testid="logo-link">
+              <div className="w-10 h-10 rounded-xl bg-green-600 flex items-center justify-center">
+                <Globe className="w-5 h-5 text-white" />
               </div>
-              <h3 className="text-lg font-semibold text-slate-900 mb-2">{feature.title}</h3>
-              <p className="text-slate-600">{feature.desc}</p>
+              <span className="text-xl font-bold text-gray-900">WebWaka</span>
+            </Link>
+
+            {/* Desktop Navigation */}
+            <div className="hidden md:flex items-center gap-6">
+              {navLinks.map((link) => (
+                <Link 
+                  key={link.href}
+                  href={link.href} 
+                  className="text-gray-600 hover:text-green-600 font-medium transition-colors"
+                >
+                  {link.label}
+                </Link>
+              ))}
             </div>
-          ))}
+
+            {/* CTA Buttons */}
+            <div className="hidden md:flex items-center gap-3">
+              <Link 
+                href="/login-v2" 
+                className="px-4 py-2 text-gray-700 font-medium hover:text-green-600 transition-colors"
+                data-testid="nav-login"
+              >
+                Log in
+              </Link>
+              <Link 
+                href="/signup-v2" 
+                className="px-5 py-2.5 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg transition-all"
+                data-testid="nav-get-started"
+              >
+                Get Started
+              </Link>
+            </div>
+
+            {/* Mobile CTA */}
+            <Link 
+              href="/signup-v2"
+              className="md:hidden px-4 py-2 bg-green-600 text-white font-semibold rounded-lg text-sm"
+            >
+              Get Started
+            </Link>
+          </div>
+        </div>
+      </nav>
+
+      {/* Hero Section */}
+      <section className="relative bg-gradient-to-br from-gray-900 via-gray-900 to-gray-800 overflow-hidden">
+        {/* Background Pattern */}
+        <div className="absolute inset-0 opacity-5">
+          <div className="absolute inset-0" style={{
+            backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+          }} />
+        </div>
+
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-32">
+          <div className="text-center max-w-4xl mx-auto">
+            {/* Badge */}
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-green-500/20 backdrop-blur-sm rounded-full text-green-400 text-sm font-medium mb-8">
+              <Globe className="w-4 h-4" />
+              Powered by HandyLife Digital
+            </div>
+
+            {/* Main Headline */}
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight">
+              Digital Infrastructure for
+              <br />
+              <span className="bg-gradient-to-r from-green-400 to-emerald-400 bg-clip-text text-transparent">
+                African Organizations
+              </span>
+            </h1>
+
+            <p className="text-lg md:text-xl text-gray-300 max-w-2xl mx-auto mb-10">
+              One platform. Many industries. Build, manage, and grow your business, school, clinic, or community organization with modular digital tools designed for Africa.
+            </p>
+
+            {/* CTA Buttons */}
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-12">
+              <Link 
+                href="/signup-v2"
+                className="w-full sm:w-auto px-8 py-4 bg-green-500 hover:bg-green-600 text-white font-bold rounded-lg text-lg transition-all shadow-lg shadow-green-500/30 flex items-center justify-center gap-2"
+                data-testid="hero-cta-get-started"
+              >
+                Get Started
+                <ArrowRight className="w-5 h-5" />
+              </Link>
+              <Link 
+                href="/platform"
+                className="w-full sm:w-auto px-8 py-4 bg-white/10 hover:bg-white/20 text-white font-semibold rounded-lg text-lg transition-all backdrop-blur-sm"
+                data-testid="hero-cta-explore"
+              >
+                Explore Platform
+              </Link>
+            </div>
+
+            {/* Trust Indicators */}
+            <div className="flex flex-wrap items-center justify-center gap-6 text-gray-400 text-sm">
+              <div className="flex items-center gap-2">
+                <Check className="w-5 h-5 text-green-500" />
+                Free to start
+              </div>
+              <div className="flex items-center gap-2">
+                <Check className="w-5 h-5 text-green-500" />
+                No credit card required
+              </div>
+              <div className="flex items-center gap-2">
+                <Check className="w-5 h-5 text-green-500" />
+                Activate only what you need
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Wave Divider */}
+        <div className="absolute bottom-0 left-0 right-0">
+          <svg viewBox="0 0 1440 120" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full">
+            <path d="M0 120L60 110C120 100 240 80 360 70C480 60 600 60 720 65C840 70 960 80 1080 85C1200 90 1320 90 1380 90L1440 90V120H1380C1320 120 1200 120 1080 120C960 120 840 120 720 120C600 120 480 120 360 120C240 120 120 120 60 120H0Z" fill="white"/>
+          </svg>
         </div>
       </section>
 
-      {/* Success/Error Messages */}
-      {(success || error) && (
-        <div className="container mx-auto px-6 mt-8">
-          {success && (
-            <div className="flex items-center gap-3 p-4 bg-green-50 border border-green-200 rounded-xl text-green-800">
-              <Check className="w-5 h-5" />
-              {success}
+      {/* Suites Section - Equal First-Class Treatment */}
+      <section className="py-20 md:py-28 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-gray-100 rounded-full text-gray-700 text-sm font-medium mb-4">
+              <Layers className="w-4 h-4" />
+              WebWaka Suites
             </div>
-          )}
-          {error && (
-            <div className="flex items-center gap-3 p-4 bg-red-50 border border-red-200 rounded-xl text-red-800">
-              <X className="w-5 h-5" />
-              {error}
-            </div>
-          )}
-        </div>
-      )}
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+              One Platform, Many Industries
+            </h2>
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+              Choose the suite that fits your organization. Each suite is configured based on your needs and delivered through our partner network. Activate only what you need.
+            </p>
+          </div>
 
-      {/* Tenants List */}
-      <section className="container mx-auto px-6 py-16">
-        <div className="flex items-center justify-between mb-8">
-          <div>
-            <h2 className="text-3xl font-bold text-slate-900">Active Tenants</h2>
-            <p className="text-slate-600 mt-1">Manage your multi-tenant organizations</p>
-          </div>
-          <button
-            onClick={() => setShowCreateModal(true)}
-            className="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition"
-          >
-            <Plus className="w-4 h-4" />
-            Add Tenant
-          </button>
-        </div>
-
-        {loading ? (
-          <div className="flex items-center justify-center py-20">
-            <Loader2 className="w-8 h-8 animate-spin text-indigo-600" />
-          </div>
-        ) : tenants.length === 0 ? (
-          <div className="text-center py-20 bg-white rounded-2xl border-2 border-dashed border-slate-200">
-            <Building2 className="w-16 h-16 mx-auto text-slate-300 mb-4" />
-            <h3 className="text-xl font-semibold text-slate-700 mb-2">No tenants yet</h3>
-            <p className="text-slate-500 mb-6">Create your first tenant to get started</p>
-            <button
-              onClick={() => setShowCreateModal(true)}
-              className="inline-flex items-center gap-2 px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition"
-            >
-              <Plus className="w-4 h-4" />
-              Create First Tenant
-            </button>
-          </div>
-        ) : (
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {tenants.map(tenant => (
-              <div
-                key={tenant.id}
-                className="bg-white rounded-2xl p-6 shadow-lg shadow-slate-200/50 hover:shadow-xl transition group"
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {suites.map((suite) => (
+              <div 
+                key={suite.id}
+                className="relative bg-white rounded-2xl p-6 border-2 border-gray-100 hover:border-green-300 transition-all hover:shadow-lg"
               >
-                <div className="flex items-start justify-between mb-4">
-                  <div
-                    className="w-12 h-12 rounded-xl flex items-center justify-center text-white font-bold text-lg"
-                    style={{ backgroundColor: tenant.primaryColor || '#6366f1' }}
-                  >
-                    {tenant.name.charAt(0).toUpperCase()}
-                  </div>
-                  <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-                    tenant.status === 'ACTIVE' 
-                      ? 'bg-green-100 text-green-700' 
-                      : 'bg-slate-100 text-slate-600'
-                  }`}>
-                    {tenant.status === 'ACTIVE' ? 'Active' : tenant.status}
-                  </span>
+                <div className="w-12 h-12 rounded-xl flex items-center justify-center mb-4 bg-green-100">
+                  <suite.icon className="w-6 h-6 text-green-600" />
                 </div>
-                
-                <h3 className="text-xl font-semibold text-slate-900 mb-1">
-                  {tenant.appName || tenant.name}
-                </h3>
-                <p className="text-slate-500 text-sm mb-4">{tenant.name}</p>
-                
-                <div className="space-y-2 mb-4">
-                  {tenant.domains?.filter(d => d.type === 'SUBDOMAIN').map(d => (
-                    <div key={d.id} className="flex items-center gap-2 text-sm">
-                      <Globe className="w-4 h-4 text-slate-400" />
-                      <span className="text-slate-600">{d.domain}.emarketwaka.com</span>
-                    </div>
-                  ))}
-                  {tenant.domains?.filter(d => d.type === 'CUSTOM').map(d => (
-                    <div key={d.id} className="flex items-center gap-2 text-sm">
-                      <Globe className="w-4 h-4 text-indigo-400" />
-                      <span className="text-indigo-600">{d.domain}</span>
-                      {d.status !== 'VERIFIED' && (
-                        <span className="text-xs text-amber-600 bg-amber-50 px-2 py-0.5 rounded">{d.status}</span>
-                      )}
-                    </div>
-                  ))}
-                  <div className="flex items-center gap-2 text-sm">
-                    <Users className="w-4 h-4 text-slate-400" />
-                    <span className="text-slate-600">{tenant._count?.users || 0} members</span>
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-2 pt-4 border-t border-slate-100">
-                  <div className="flex items-center gap-1">
-                    <div 
-                      className="w-6 h-6 rounded-full border-2 border-white shadow-sm" 
-                      style={{ backgroundColor: tenant.primaryColor || '#6366f1' }}
-                      title="Primary Color"
-                    />
-                    <div 
-                      className="w-6 h-6 rounded-full border-2 border-white shadow-sm -ml-2" 
-                      style={{ backgroundColor: tenant.secondaryColor || '#8b5cf6' }}
-                      title="Secondary Color"
-                    />
-                  </div>
-                  <div className="flex-1" />
-                  <a
-                    href={`/?tenant=${tenant.slug}`}
-                    className="inline-flex items-center gap-1 text-sm text-indigo-600 hover:text-indigo-700 font-medium group-hover:gap-2 transition-all"
-                  >
-                    View Tenant
-                    <ChevronRight className="w-4 h-4" />
-                  </a>
-                </div>
+                <h3 className="text-lg font-bold text-gray-900 mb-2">{suite.name}</h3>
+                <p className="text-gray-600 text-sm">{suite.description}</p>
               </div>
             ))}
           </div>
-        )}
+
+          <div className="text-center mt-10">
+            <Link 
+              href="/suites"
+              className="inline-flex items-center gap-2 text-green-600 font-semibold hover:text-green-700 transition-colors"
+            >
+              Explore all suites
+              <ArrowRight className="w-4 h-4" />
+            </Link>
+          </div>
+        </div>
       </section>
 
-      {/* Architecture Info */}
-      <section className="container mx-auto px-6 pb-16">
-        <div className="bg-slate-900 rounded-3xl p-8 md:p-12">
-          <div className="grid md:grid-cols-2 gap-12">
+      {/* Platform Benefits */}
+      <section className="py-20 md:py-28 bg-gray-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid lg:grid-cols-2 gap-16 items-center">
             <div>
-              <h3 className="text-2xl font-bold text-white mb-4">Platform</h3>
-              <ul className="space-y-3">
-                {[
-                  'Next.js App Router',
-                  'PostgreSQL + Prisma ORM',
-                  'Multi-tenant architecture',
-                  'White-label ready',
-                  'POS, SVM, MVM modules',
-                ].map((item, i) => (
-                  <li key={i} className="flex items-center gap-3 text-slate-300">
-                    <Check className="w-5 h-5 text-green-400" />
-                    {item}
-                  </li>
+              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">
+                Built for African Realities
+              </h2>
+              <p className="text-lg text-gray-600 mb-8">
+                WebWaka is designed from the ground up for the unique challenges and opportunities of operating in Africa. Offline-first, mobile-first, and always reliable.
+              </p>
+
+              <div className="grid sm:grid-cols-2 gap-6">
+                {platformBenefits.map((benefit) => (
+                  <div key={benefit.title} className="flex items-start gap-4">
+                    <div className="w-10 h-10 rounded-lg bg-green-100 flex items-center justify-center flex-shrink-0">
+                      <benefit.icon className="w-5 h-5 text-green-600" />
+                    </div>
+                    <div>
+                      <h4 className="font-semibold text-gray-900">{benefit.title}</h4>
+                      <p className="text-gray-600 text-sm">{benefit.description}</p>
+                    </div>
+                  </div>
                 ))}
-              </ul>
+              </div>
+
+              <div className="mt-8">
+                <Link 
+                  href="/platform"
+                  className="inline-flex items-center gap-2 text-green-600 font-semibold hover:text-green-700 transition-colors"
+                >
+                  Learn more about the platform
+                  <ArrowRight className="w-4 h-4" />
+                </Link>
+              </div>
             </div>
-            <div>
-              <h3 className="text-2xl font-bold text-white mb-4">Tenant Access</h3>
-              <div className="space-y-4">
-                <div className="bg-slate-800 rounded-xl p-4">
-                  <p className="text-slate-400 text-sm mb-1">Subdomain</p>
-                  <code className="text-green-400">acme.emarketwaka.com → tenant: acme</code>
-                </div>
-                <div className="bg-slate-800 rounded-xl p-4">
-                  <p className="text-slate-400 text-sm mb-1">Custom Domain</p>
-                  <code className="text-green-400">shop.acme.com → tenant: acme</code>
-                </div>
-                <div className="bg-slate-800 rounded-xl p-4">
-                  <p className="text-slate-400 text-sm mb-1">Query Param (Testing)</p>
-                  <code className="text-green-400">?tenant=acme → tenant: acme</code>
+
+            <div className="bg-white rounded-2xl p-8 shadow-xl border border-gray-100">
+              <div className="aspect-video bg-gradient-to-br from-gray-900 to-gray-800 rounded-xl flex items-center justify-center">
+                <div className="text-center">
+                  <div className="w-20 h-20 rounded-2xl bg-green-500 flex items-center justify-center mx-auto mb-4">
+                    <Zap className="w-10 h-10 text-white" />
+                  </div>
+                  <p className="text-white font-semibold">WebWaka Platform</p>
+                  <p className="text-gray-400 text-sm">Digital Infrastructure for Africa</p>
                 </div>
               </div>
             </div>
@@ -361,170 +331,242 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Create Tenant Modal */}
-      {showCreateModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
-            <div className="p-6 border-b border-slate-100">
-              <div className="flex items-center justify-between">
-                <h2 className="text-xl font-bold text-slate-900">Create New Tenant</h2>
-                <button
-                  onClick={() => setShowCreateModal(false)}
-                  className="p-2 hover:bg-slate-100 rounded-lg transition"
-                >
-                  <X className="w-5 h-5 text-slate-500" />
-                </button>
+      {/* Stats Section */}
+      <section className="py-16 bg-gray-900">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+            {stats.map((stat) => (
+              <div key={stat.label}>
+                <div className="text-4xl md:text-5xl font-bold text-white mb-2">{stat.value}</div>
+                <p className="text-gray-400">{stat.label}</p>
               </div>
-            </div>
-            
-            <form onSubmit={handleCreateTenant} className="p-6 space-y-5">
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-2">
-                  Organization Name *
-                </label>
-                <input
-                  type="text"
-                  required
-                  value={form.name}
-                  onChange={e => handleSlugChange(e.target.value)}
-                  className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition"
-                  placeholder="Acme Corporation"
-                />
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-2">
-                  Subdomain Slug *
-                </label>
-                <div className="flex">
-                  <input
-                    type="text"
-                    required
-                    value={form.slug}
-                    onChange={e => setForm(prev => ({ ...prev, slug: e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, '') }))}
-                    className="flex-1 px-4 py-3 border border-slate-200 rounded-l-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition"
-                    placeholder="acme"
-                  />
-                  <span className="px-4 py-3 bg-slate-100 border border-l-0 border-slate-200 rounded-r-xl text-slate-500 text-sm">
-                    .emarketwaka.com
-                  </span>
-                </div>
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-2">
-                  Custom Domain (Optional)
-                </label>
-                <input
-                  type="text"
-                  value={form.customDomain}
-                  onChange={e => setForm(prev => ({ ...prev, customDomain: e.target.value }))}
-                  className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition"
-                  placeholder="app.acme.com"
-                />
-              </div>
-              
-              <div className="pt-4 border-t border-slate-100">
-                <h3 className="font-medium text-slate-900 mb-4">White-Label Branding</h3>
-                
-                <div className="space-y-4">
-                  <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-2">
-                      App Name
-                    </label>
-                    <input
-                      type="text"
-                      value={form.appName}
-                      onChange={e => setForm(prev => ({ ...prev, appName: e.target.value }))}
-                      className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition"
-                      placeholder="Acme App"
-                    />
-                  </div>
-                  
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium text-slate-700 mb-2">
-                        Primary Color
-                      </label>
-                      <div className="flex items-center gap-3">
-                        <input
-                          type="color"
-                          value={form.primaryColor}
-                          onChange={e => setForm(prev => ({ ...prev, primaryColor: e.target.value }))}
-                          className="w-12 h-12 rounded-lg cursor-pointer border-0"
-                        />
-                        <input
-                          type="text"
-                          value={form.primaryColor}
-                          onChange={e => setForm(prev => ({ ...prev, primaryColor: e.target.value }))}
-                          className="flex-1 px-3 py-2 border border-slate-200 rounded-lg text-sm"
-                        />
-                      </div>
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-slate-700 mb-2">
-                        Secondary Color
-                      </label>
-                      <div className="flex items-center gap-3">
-                        <input
-                          type="color"
-                          value={form.secondaryColor}
-                          onChange={e => setForm(prev => ({ ...prev, secondaryColor: e.target.value }))}
-                          className="w-12 h-12 rounded-lg cursor-pointer border-0"
-                        />
-                        <input
-                          type="text"
-                          value={form.secondaryColor}
-                          onChange={e => setForm(prev => ({ ...prev, secondaryColor: e.target.value }))}
-                          className="flex-1 px-3 py-2 border border-slate-200 rounded-lg text-sm"
-                        />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              
-              {error && (
-                <div className="p-4 bg-red-50 border border-red-200 rounded-xl text-red-800 text-sm">
-                  {error}
-                </div>
-              )}
-              
-              <div className="flex gap-3 pt-4">
-                <button
-                  type="button"
-                  onClick={() => setShowCreateModal(false)}
-                  className="flex-1 px-4 py-3 border border-slate-200 rounded-xl text-slate-700 hover:bg-slate-50 transition"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={creating}
-                  className="flex-1 px-4 py-3 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-                >
-                  {creating ? (
-                    <>
-                      <Loader2 className="w-4 h-4 animate-spin" />
-                      Creating...
-                    </>
-                  ) : (
-                    <>
-                      <Plus className="w-4 h-4" />
-                      Create Tenant
-                    </>
-                  )}
-                </button>
-              </div>
-            </form>
+            ))}
           </div>
         </div>
-      )}
+      </section>
+
+      {/* Partner & Impact Section */}
+      <section className="py-20 md:py-28 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid md:grid-cols-2 gap-8">
+            {/* Partners Card */}
+            <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-2xl p-8 border border-green-100">
+              <div className="w-12 h-12 rounded-xl bg-green-100 flex items-center justify-center mb-6">
+                <Users className="w-6 h-6 text-green-600" />
+              </div>
+              <h3 className="text-2xl font-bold text-gray-900 mb-4">Partner With Us</h3>
+              <p className="text-gray-600 mb-6">
+                Join our network of Digital Transformation Partners. Resell, onboard, and support organizations in your community while earning commissions.
+              </p>
+              <Link 
+                href="/partners"
+                className="inline-flex items-center gap-2 px-6 py-3 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg transition-all"
+                data-testid="cta-become-partner"
+              >
+                Become a Partner
+                <ArrowRight className="w-4 h-4" />
+              </Link>
+            </div>
+
+            {/* Impact Card */}
+            <div className="bg-gradient-to-br from-purple-50 to-indigo-50 rounded-2xl p-8 border border-purple-100">
+              <div className="w-12 h-12 rounded-xl bg-purple-100 flex items-center justify-center mb-6">
+                <Globe className="w-6 h-6 text-purple-600" />
+              </div>
+              <h3 className="text-2xl font-bold text-gray-900 mb-4">Social Impact</h3>
+              <p className="text-gray-600 mb-6">
+                WebWaka is powered by HandyLife Digital, a social enterprise committed to building inclusive digital infrastructure for African communities.
+              </p>
+              <Link 
+                href="/impact"
+                className="inline-flex items-center gap-2 px-6 py-3 bg-purple-600 hover:bg-purple-700 text-white font-semibold rounded-lg transition-all"
+              >
+                Learn About Our Impact
+                <ArrowRight className="w-4 h-4" />
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Capabilities Highlight Section */}
+      <section className="py-20 md:py-28 bg-gray-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-green-100 rounded-full text-green-700 text-sm font-medium mb-4">
+              <Layers className="w-4 h-4" />
+              18+ Platform Capabilities
+            </div>
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+              Everything You Need to Operate
+            </h2>
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+              From point-of-sale to AI automation, every capability is built, tested, and ready to activate. No roadmaps, no waiting—just working software.
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-3 lg:grid-cols-6 gap-4 mb-10">
+            {[
+              { icon: Store, label: 'POS & Retail' },
+              { icon: Package, label: 'Inventory' },
+              { icon: Users, label: 'CRM' },
+              { icon: Truck, label: 'Logistics' },
+              { icon: Shield, label: 'Compliance' },
+              { icon: Zap, label: 'AI & Automation' },
+            ].map((cap) => (
+              <div key={cap.label} className="bg-white rounded-xl p-4 border border-gray-200 text-center hover:border-green-300 hover:shadow-md transition-all">
+                <cap.icon className="w-8 h-8 text-green-600 mx-auto mb-2" />
+                <p className="text-sm font-medium text-gray-700">{cap.label}</p>
+              </div>
+            ))}
+          </div>
+
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
+            {[
+              'Accounting & Finance',
+              'HR & Payroll', 
+              'B2B & Wholesale',
+              'Marketing Automation',
+              'Payments & Wallets',
+              'Procurement',
+              'Analytics & BI',
+              'Subscriptions',
+              'Multi-Vendor Marketplace',
+              'Online Store',
+              'Partner Platform',
+              'Integrations Hub',
+            ].map((cap) => (
+              <div key={cap} className="flex items-center gap-2 text-gray-700">
+                <Check className="w-5 h-5 text-green-500 flex-shrink-0" />
+                <span className="text-sm">{cap}</span>
+              </div>
+            ))}
+          </div>
+
+          <div className="text-center">
+            <Link 
+              href="/capabilities"
+              className="inline-flex items-center gap-2 px-6 py-3 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg transition-all"
+              data-testid="cta-explore-capabilities"
+            >
+              Explore All Capabilities
+              <ArrowRight className="w-4 h-4" />
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* Final CTA Section */}
+      <section className="py-20 md:py-28 bg-gradient-to-br from-green-600 to-green-700">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">
+            Ready to Transform Your Organization?
+          </h2>
+          <p className="text-lg md:text-xl text-green-100 mb-10">
+            Join thousands of organizations across Africa using WebWaka. 
+            Start with what you need. Grow at your own pace.
+          </p>
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+            <Link 
+              href="/signup-v2"
+              className="w-full sm:w-auto px-8 py-4 bg-white text-green-700 font-bold rounded-lg text-lg transition-all shadow-lg hover:bg-gray-100 flex items-center justify-center gap-2"
+              data-testid="cta-final-get-started"
+            >
+              Get Started
+              <ArrowRight className="w-5 h-5" />
+            </Link>
+            <Link 
+              href="/contact"
+              className="w-full sm:w-auto px-8 py-4 bg-green-500/30 hover:bg-green-500/40 text-white font-semibold rounded-lg text-lg transition-all"
+            >
+              Contact Sales
+            </Link>
+          </div>
+        </div>
+      </section>
 
       {/* Footer */}
-      <footer className="border-t border-slate-200 py-8">
-        <div className="container mx-auto px-6 text-center text-slate-500 text-sm">
-          <p>eMarketWaka — Complete commerce platform for African businesses</p>
+      <footer className="bg-gray-900 text-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16">
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-8">
+            {/* Company */}
+            <div className="col-span-2 md:col-span-1">
+              <div className="flex items-center gap-2 mb-4">
+                <div className="w-9 h-9 rounded-lg bg-green-600 flex items-center justify-center">
+                  <Globe className="w-4 h-4 text-white" />
+                </div>
+                <span className="font-bold text-lg">WebWaka</span>
+              </div>
+              <p className="text-gray-400 text-sm mb-4">
+                Digital infrastructure for African organizations.
+              </p>
+              <p className="text-gray-500 text-xs">
+                Powered by HandyLife Digital
+              </p>
+            </div>
+
+            {/* Platform */}
+            <div>
+              <h4 className="font-semibold mb-4">Platform</h4>
+              <ul className="space-y-3 text-gray-400 text-sm">
+                <li><Link href="/platform" className="hover:text-green-400 transition-colors">Overview</Link></li>
+                <li><Link href="/capabilities" className="hover:text-green-400 transition-colors">Capabilities</Link></li>
+                <li><Link href="/suites" className="hover:text-green-400 transition-colors">Suites</Link></li>
+                <li><Link href="/solutions" className="hover:text-green-400 transition-colors">Solutions</Link></li>
+              </ul>
+            </div>
+
+            {/* Company */}
+            <div>
+              <h4 className="font-semibold mb-4">Company</h4>
+              <ul className="space-y-3 text-gray-400 text-sm">
+                <li><Link href="/about" className="hover:text-green-400 transition-colors">About Us</Link></li>
+                <li><Link href="/partners" className="hover:text-green-400 transition-colors">Partners</Link></li>
+                <li><Link href="/impact" className="hover:text-green-400 transition-colors">Impact</Link></li>
+              </ul>
+            </div>
+
+            {/* Resources */}
+            <div>
+              <h4 className="font-semibold mb-4">Resources</h4>
+              <ul className="space-y-3 text-gray-400 text-sm">
+                <li><Link href="/contact" className="hover:text-green-400 transition-colors">Contact</Link></li>
+                <li><Link href="/login-v2" className="hover:text-green-400 transition-colors">Log In</Link></li>
+                <li><Link href="/signup-v2" className="hover:text-green-400 transition-colors">Sign Up</Link></li>
+              </ul>
+            </div>
+
+            {/* Contact */}
+            <div>
+              <h4 className="font-semibold mb-4">Get in Touch</h4>
+              <ul className="space-y-3 text-gray-400 text-sm">
+                <li>
+                  <a href="mailto:hello@webwaka.com" className="hover:text-green-400 transition-colors">
+                    hello@webwaka.com
+                  </a>
+                </li>
+                <li>
+                  <a href="tel:+2348000000000" className="hover:text-green-400 transition-colors">
+                    +234 800 000 0000
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <div className="border-t border-gray-800 mt-12 pt-8 flex flex-col md:flex-row items-center justify-between gap-4">
+            <p className="text-gray-400 text-sm">
+              © {new Date().getFullYear()} WebWaka. Powered by HandyLife Digital. All rights reserved.
+            </p>
+            <div className="flex items-center gap-6 text-gray-400 text-sm">
+              <Link href="/privacy" className="hover:text-green-400 transition-colors">
+                Privacy Policy
+              </Link>
+              <Link href="/terms" className="hover:text-green-400 transition-colors">
+                Terms of Service
+              </Link>
+            </div>
+          </div>
         </div>
       </footer>
     </div>

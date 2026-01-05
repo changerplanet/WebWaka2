@@ -19,7 +19,7 @@ import requests
 import os
 
 # Base URL from environment
-BASE_URL = "https://wakaweb.preview.emergentagent.com"
+BASE_URL = "https://admin-dashboard-634.preview.emergentagent.com"
 
 # Test credentials from main agent
 VALID_SESSION_TOKEN = "d63e63e0-1dc7-40ce-89ef-a2ee32602a8b-d22dacf5-6c71-46ad-8c26-5ac6d821a1e4"

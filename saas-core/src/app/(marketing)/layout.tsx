@@ -1,18 +1,19 @@
 /**
  * Marketing Layout
- * Nigerian-business focused design with green color scheme
+ * WebWaka Platform - Digital Infrastructure for African Organizations
  */
 
 'use client'
 
 import Link from 'next/link'
 import { useState } from 'react'
-import { ShoppingBag, Menu, X, Phone, Mail } from 'lucide-react'
+import { Globe, Menu, X, Phone, Mail } from 'lucide-react'
 
 const navLinks = [
-  { href: '/features', label: 'Features' },
+  { href: '/platform', label: 'Platform' },
+  { href: '/capabilities', label: 'Capabilities' },
+  { href: '/suites', label: 'Suites' },
   { href: '/solutions', label: 'Solutions' },
-  { href: '/pricing', label: 'Pricing' },
   { href: '/partners', label: 'Partners' },
   { href: '/about', label: 'About' },
 ]
@@ -29,34 +30,34 @@ export default function MarketingLayout({
       {/* Top Bar */}
       <div className="bg-gray-900 text-white text-sm py-2 hidden sm:block">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between">
-          <p>Built for Nigerian businesses</p>
+          <p>Digital Infrastructure for African Organizations</p>
           <div className="flex items-center gap-4">
             <a href="tel:+2348000000000" className="flex items-center gap-1 hover:text-green-400 transition-colors">
               <Phone className="w-3 h-3" />
               +234 800 000 0000
             </a>
-            <a href="mailto:hello@emarketwaka.com" className="flex items-center gap-1 hover:text-green-400 transition-colors">
+            <a href="mailto:hello@webwaka.com" className="flex items-center gap-1 hover:text-green-400 transition-colors">
               <Mail className="w-3 h-3" />
-              hello@emarketwaka.com
+              hello@webwaka.com
             </a>
           </div>
         </div>
       </div>
 
       {/* Navigation */}
-      <nav className="sticky top-0 z-50 bg-white border-b border-gray-100 shadow-sm">
+      <nav className="sticky top-0 z-50 bg-white/95 backdrop-blur-sm border-b border-gray-100 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16 md:h-20">
             {/* Logo */}
             <Link href="/" className="flex items-center gap-2" data-testid="logo-link">
               <div className="w-10 h-10 rounded-xl bg-green-600 flex items-center justify-center">
-                <ShoppingBag className="w-5 h-5 text-white" />
+                <Globe className="w-5 h-5 text-white" />
               </div>
-              <span className="text-xl font-bold text-gray-900">eMarketWaka</span>
+              <span className="text-xl font-bold text-gray-900">WebWaka</span>
             </Link>
 
             {/* Desktop Navigation */}
-            <div className="hidden md:flex items-center gap-8">
+            <div className="hidden md:flex items-center gap-6">
               {navLinks.map((link) => (
                 <Link 
                   key={link.href}
@@ -72,18 +73,18 @@ export default function MarketingLayout({
             {/* CTA Buttons */}
             <div className="hidden md:flex items-center gap-3">
               <Link 
-                href="/login" 
+                href="/login-v2" 
                 className="px-4 py-2 text-gray-700 font-medium hover:text-green-600 transition-colors"
                 data-testid="nav-login"
               >
                 Log in
               </Link>
               <Link 
-                href="/login?signup=true" 
-                className="px-5 py-2.5 bg-amber-500 hover:bg-amber-600 text-white font-semibold rounded-lg transition-all"
+                href="/signup-v2" 
+                className="px-5 py-2.5 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg transition-all"
                 data-testid="nav-get-started"
               >
-                Get Started Free
+                Get Started
               </Link>
             </div>
 
@@ -114,18 +115,18 @@ export default function MarketingLayout({
               ))}
               <div className="pt-4 border-t border-gray-100 space-y-2">
                 <Link
-                  href="/login"
+                  href="/login-v2"
                   onClick={() => setMobileMenuOpen(false)}
                   className="block px-4 py-3 text-gray-700 hover:bg-gray-50 rounded-lg font-medium text-center"
                 >
                   Log in
                 </Link>
                 <Link
-                  href="/login?signup=true"
+                  href="/signup-v2"
                   onClick={() => setMobileMenuOpen(false)}
-                  className="block px-4 py-3 bg-amber-500 hover:bg-amber-600 text-white rounded-lg font-semibold text-center"
+                  className="block px-4 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg font-semibold text-center"
                 >
-                  Get Started Free
+                  Get Started
                 </Link>
               </div>
             </div>
@@ -141,31 +142,31 @@ export default function MarketingLayout({
       {/* Footer */}
       <footer className="bg-gray-900 text-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-8">
             {/* Company */}
             <div className="col-span-2 md:col-span-1">
               <div className="flex items-center gap-2 mb-4">
                 <div className="w-9 h-9 rounded-lg bg-green-600 flex items-center justify-center">
-                  <ShoppingBag className="w-4 h-4 text-white" />
+                  <Globe className="w-4 h-4 text-white" />
                 </div>
-                <span className="font-bold text-lg">eMarketWaka</span>
+                <span className="font-bold text-lg">WebWaka</span>
               </div>
               <p className="text-gray-400 text-sm mb-4">
-                Your business, simplified. Built for Nigerian businesses.
+                Digital infrastructure for African organizations.
               </p>
-              <p className="text-gray-400 text-sm">
-                Works online and offline — even when network is bad.
+              <p className="text-gray-500 text-xs">
+                Powered by HandyLife Digital
               </p>
             </div>
 
-            {/* Solutions */}
+            {/* Platform */}
             <div>
-              <h4 className="font-semibold mb-4">Solutions</h4>
+              <h4 className="font-semibold mb-4">Platform</h4>
               <ul className="space-y-3 text-gray-400 text-sm">
-                <li><Link href="/solutions#pos" className="hover:text-green-400 transition-colors">Point of Sale</Link></li>
-                <li><Link href="/solutions#store" className="hover:text-green-400 transition-colors">Online Store</Link></li>
-                <li><Link href="/solutions#marketplace" className="hover:text-green-400 transition-colors">Marketplace</Link></li>
-                <li><Link href="/features" className="hover:text-green-400 transition-colors">All Features</Link></li>
+                <li><Link href="/platform" className="hover:text-green-400 transition-colors">Overview</Link></li>
+                <li><Link href="/capabilities" className="hover:text-green-400 transition-colors">Capabilities</Link></li>
+                <li><Link href="/suites" className="hover:text-green-400 transition-colors">Suites</Link></li>
+                <li><Link href="/solutions" className="hover:text-green-400 transition-colors">Solutions</Link></li>
               </ul>
             </div>
 
@@ -175,8 +176,17 @@ export default function MarketingLayout({
               <ul className="space-y-3 text-gray-400 text-sm">
                 <li><Link href="/about" className="hover:text-green-400 transition-colors">About Us</Link></li>
                 <li><Link href="/partners" className="hover:text-green-400 transition-colors">Partners</Link></li>
-                <li><Link href="/pricing" className="hover:text-green-400 transition-colors">Pricing</Link></li>
+                <li><Link href="/impact" className="hover:text-green-400 transition-colors">Impact</Link></li>
+              </ul>
+            </div>
+
+            {/* Resources */}
+            <div>
+              <h4 className="font-semibold mb-4">Resources</h4>
+              <ul className="space-y-3 text-gray-400 text-sm">
                 <li><Link href="/contact" className="hover:text-green-400 transition-colors">Contact</Link></li>
+                <li><Link href="/login-v2" className="hover:text-green-400 transition-colors">Log In</Link></li>
+                <li><Link href="/signup-v2" className="hover:text-green-400 transition-colors">Sign Up</Link></li>
               </ul>
             </div>
 
@@ -185,8 +195,8 @@ export default function MarketingLayout({
               <h4 className="font-semibold mb-4">Get in Touch</h4>
               <ul className="space-y-3 text-gray-400 text-sm">
                 <li>
-                  <a href="mailto:hello@emarketwaka.com" className="hover:text-green-400 transition-colors">
-                    hello@emarketwaka.com
+                  <a href="mailto:hello@webwaka.com" className="hover:text-green-400 transition-colors">
+                    hello@webwaka.com
                   </a>
                 </li>
                 <li>
@@ -205,7 +215,7 @@ export default function MarketingLayout({
 
           <div className="border-t border-gray-800 mt-12 pt-8 flex flex-col md:flex-row items-center justify-between gap-4">
             <p className="text-gray-400 text-sm">
-              © {new Date().getFullYear()} eMarketWaka. All rights reserved.
+              © {new Date().getFullYear()} WebWaka. Powered by HandyLife Digital. All rights reserved.
             </p>
             <div className="flex items-center gap-6 text-gray-400 text-sm">
               <Link href="/privacy" className="hover:text-green-400 transition-colors">

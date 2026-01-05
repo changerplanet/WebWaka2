@@ -1,0 +1,107 @@
+{
+  "summary": "Phase 2.1 UI Implementation testing completed. All backend APIs working (11/11 tests passed). Dashboard UI components verified: Instance Switcher, Instance Indicator, Platform Instances navigation link. Settings page Platform Instances tab loads correctly with instance list, create button, domain mapping, and edit functionality. One minor issue: Instance switching API call fails with 400 because session PATCH endpoint doesn't handle instanceId parameter.",
+  "backend_issues": {
+    "critical": [],
+    "minor": [
+      {
+        "endpoint": "PATCH /api/auth/session",
+        "issue": "Does not support instanceId parameter for instance switching. Returns 400 when AuthProvider tries to switch instances.",
+        "priority": "MEDIUM"
+      }
+    ]
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [
+      {
+        "flow": "Instance Switching",
+        "issue": "When clicking on a different instance in the Instance Switcher dropdown, the API call to PATCH /api/auth/session with instanceId fails with 400. The session endpoint only handles tenantId, not instanceId.",
+        "affected_selectors": ["[data-testid='instance-switcher-trigger']", "[data-testid='instance-option-commerce-hub']"]
+      }
+    ],
+    "design_issues": []
+  },
+  "test_report_links": [
+    "/app/tests/test_platform_instances_phase21.py",
+    "/app/test_reports/pytest/platform_instances_phase21_results.xml"
+  ],
+  "action_items": [
+    "Update PATCH /api/auth/session to handle instanceId parameter for instance switching, or make instance switching client-side only (update local state without API call)"
+  ],
+  "critical_code_review_comments": [
+    "InstanceSwitcher.tsx correctly shows when tenant has 2+ instances with proper data-testid attributes",
+    "InstanceIndicator shows current instance name with color accent",
+    "InstanceAdminPage.tsx provides full CRUD interface for instances with proper form validation",
+    "InstanceBrandingPreview.tsx shows branding with source indicators (instance/tenant/default)",
+    "DomainInstanceMapping.tsx provides domain-to-instance mapping UI",
+    "AuthProvider.tsx has switchInstance function but the backend session API doesn't support it yet",
+    "Dashboard page correctly filters navigation based on activeInstance.suiteKeys",
+    "Settings page has Platform Instances tab that loads InstanceAdminPage component"
+  ],
+  "updated_files": [
+    "/app/tests/test_platform_instances_phase21.py"
+  ],
+  "success_rate": {
+    "backend": "100% - 11/11 API tests passed",
+    "frontend": "90% - All UI components load correctly, instance switching API integration needs fix"
+  },
+  "test_credentials": "admin@acme.com (magic link auth), Tenant: acme",
+  "seed_data_creation": "2 instances exist for acme tenant: 'Acme Corporation Platform' (default, all capabilities) and 'Commerce Hub' (5 capabilities: pos, svm, inventory, payments, crm)",
+  "retest_needed": false,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "Phase 2.1 UI Implementation verified. Key features working: 1) Instance Switcher dropdown in dashboard sidebar shows when 2+ instances exist, 2) Instance Indicator badge in header, 3) Platform Instances admin page accessible via Settings > Platform Instances tab, 4) Instance list with create/edit/deactivate functionality, 5) Branding preview with source indicators, 6) Domain mapping UI. Minor issue: Instance switching API call fails because session endpoint doesn't handle instanceId - this is a backend fix needed.",
+  "tests_executed": {
+    "backend_api_tests": {
+      "GET /api/platform-instances?tenantId=acme": "PASS - Returns 2 instances",
+      "GET /api/platform-instances (no tenantId)": "PASS - Returns 400",
+      "GET /api/platform-instances?tenantId=invalid": "PASS - Returns empty array",
+      "Instance structure validation": "PASS - All required fields present",
+      "Commerce Hub suiteKeys": "PASS - Has 5 capabilities",
+      "Default instance empty suiteKeys": "PASS - All capabilities visible",
+      "POST /api/platform-instances": "PASS - Create works",
+      "PATCH /api/platform-instances/[id]": "PASS - Update works",
+      "Cannot deactivate default instance": "PASS - Guardrail works",
+      "GET /api/auth/session": "PASS - Returns session info",
+      "GET /api/tenants/acme/settings": "PASS - Returns tenant settings"
+    },
+    "ui_tests": {
+      "Dashboard loads": "PASS",
+      "Instance Switcher visible": "PASS - Shows 'Acme Corporation Pl...' dropdown",
+      "Instance Switcher dropdown": "PASS - Shows both instances with capabilities count",
+      "Instance Indicator badge": "PASS - Shows 'Acme Corporation Platform'",
+      "Platform Instances nav link": "PASS - Found in sidebar",
+      "Settings Platform Instances tab": "PASS - Tab visible and clickable",
+      "Instance Admin Page": "PASS - Loads with 2 instance cards",
+      "Create Instance button": "PASS - data-testid='create-instance-btn'",
+      "Domain Mapping button": "PASS - Opens domain mapping view",
+      "Edit Instance form": "PASS - Shows name, slug, description, suiteKeys",
+      "Visible Capabilities checkboxes": "PASS - Grouped by category",
+      "Show Preview button": "PASS - Toggles branding preview"
+    }
+  },
+  "database_state": {
+    "platform_instances": [
+      {
+        "id": "aa9caad2-5e59-4e8a-a7fe-e9721457f81c",
+        "tenant": "acme",
+        "name": "Acme Corporation Platform",
+        "slug": "default",
+        "suiteKeys": [],
+        "isDefault": true,
+        "isActive": true
+      },
+      {
+        "id": "dfb98f2d-b983-4bd8-a312-256898097381",
+        "tenant": "acme",
+        "name": "Commerce Hub",
+        "slug": "commerce-hub",
+        "suiteKeys": ["pos", "svm", "inventory", "payments", "crm"],
+        "isDefault": false,
+        "isActive": true,
+        "displayName": "Acme Commerce",
+        "primaryColor": "#22C55E",
+        "secondaryColor": "#8B5CF6"
+      }
+    ]
+  }
+}

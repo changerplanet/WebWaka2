@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import { 
   Building2, Users, Globe, Shield, Settings, LogOut, Plus, Search, 
   MoreVertical, ChevronRight, Check, X, Loader2, AlertTriangle,
-  Activity, RefreshCw, Eye, Trash2, UserPlus, Clock
+  Activity, RefreshCw, Eye, Trash2, UserPlus, Clock, Package
 } from 'lucide-react'
 
 interface Tenant {
@@ -126,7 +126,7 @@ export default function SuperAdminDashboard() {
   if (!user) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-slate-900">
-        <Loader2 className="w-8 h-8 animate-spin text-indigo-500" />
+        <Loader2 className="w-8 h-8 animate-spin text-green-500" />
       </div>
     )
   }
@@ -137,7 +137,7 @@ export default function SuperAdminDashboard() {
       <aside className="fixed left-0 top-0 h-full w-64 bg-slate-800 border-r border-slate-700">
         <div className="p-6 border-b border-slate-700">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-indigo-600 flex items-center justify-center">
+            <div className="w-10 h-10 rounded-xl bg-green-600 flex items-center justify-center">
               <Shield className="w-6 h-6" />
             </div>
             <div>
@@ -152,6 +152,7 @@ export default function SuperAdminDashboard() {
             {[
               { icon: Building2, label: 'Tenants', active: true, href: '/admin' },
               { icon: Users, label: 'All Users', href: '/admin/users' },
+              { icon: Package, label: 'Capabilities', href: '/admin/capabilities' },
               { icon: Activity, label: 'Audit Logs', href: '/admin/audit-logs' },
               { icon: Settings, label: 'Settings', disabled: true },
             ].map((item, i) => (
@@ -161,7 +162,7 @@ export default function SuperAdminDashboard() {
                   disabled={item.disabled}
                   className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition ${
                     item.active 
-                      ? 'bg-indigo-600/20 text-indigo-400' 
+                      ? 'bg-green-600/20 text-green-400' 
                       : item.disabled
                         ? 'text-slate-600 cursor-not-allowed'
                         : 'text-slate-400 hover:bg-slate-700/50 hover:text-white'
@@ -177,7 +178,7 @@ export default function SuperAdminDashboard() {
 
         <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-slate-700">
           <div className="flex items-center gap-3 mb-4 px-2">
-            <div className="w-8 h-8 rounded-full bg-indigo-600 flex items-center justify-center text-sm font-bold">
+            <div className="w-8 h-8 rounded-full bg-green-600 flex items-center justify-center text-sm font-bold">
               {user.email.charAt(0).toUpperCase()}
             </div>
             <div className="flex-1 min-w-0">
@@ -205,7 +206,7 @@ export default function SuperAdminDashboard() {
           </div>
           <button
             onClick={() => setShowCreateModal(true)}
-            className="flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 rounded-xl transition"
+            className="flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 rounded-xl transition"
           >
             <Plus className="w-5 h-5" />
             Create Tenant
@@ -215,10 +216,10 @@ export default function SuperAdminDashboard() {
         {/* Stats */}
         <div className="grid grid-cols-4 gap-6 mb-8">
           {[
-            { label: 'Total Tenants', value: stats.total, icon: Building2, color: 'bg-indigo-500/20 text-indigo-400' },
+            { label: 'Total Tenants', value: stats.total, icon: Building2, color: 'bg-green-500/20 text-green-400' },
             { label: 'Active', value: stats.active, icon: Check, color: 'bg-green-500/20 text-green-400' },
             { label: 'Suspended', value: stats.suspended, icon: AlertTriangle, color: 'bg-amber-500/20 text-amber-400' },
-            { label: 'Total Members', value: stats.totalMembers, icon: Users, color: 'bg-purple-500/20 text-purple-400' },
+            { label: 'Total Members', value: stats.totalMembers, icon: Users, color: 'bg-green-500/20 text-green-400' },
           ].map((stat, i) => (
             <div key={i} className="bg-slate-800 rounded-2xl p-6 border border-slate-700">
               <div className={`w-12 h-12 rounded-xl ${stat.color} flex items-center justify-center mb-4`}>
@@ -240,13 +241,13 @@ export default function SuperAdminDashboard() {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && fetchTenants()}
-              className="w-full pl-10 pr-4 py-2 bg-slate-800 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none"
+              className="w-full pl-10 pr-4 py-2 bg-slate-800 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none"
             />
           </div>
           <select
             value={statusFilter}
             onChange={(e) => { setStatusFilter(e.target.value); fetchTenants() }}
-            className="px-4 py-2 bg-slate-800 border border-slate-700 rounded-xl text-white focus:ring-2 focus:ring-indigo-500 outline-none"
+            className="px-4 py-2 bg-slate-800 border border-slate-700 rounded-xl text-white focus:ring-2 focus:ring-green-500 outline-none"
           >
             <option value="">All Status</option>
             <option value="ACTIVE">Active</option>
@@ -264,7 +265,7 @@ export default function SuperAdminDashboard() {
         {/* Tenant List */}
         {loading ? (
           <div className="flex items-center justify-center py-20">
-            <Loader2 className="w-8 h-8 animate-spin text-indigo-500" />
+            <Loader2 className="w-8 h-8 animate-spin text-green-500" />
           </div>
         ) : error ? (
           <div className="text-center py-20 text-red-400">
@@ -278,7 +279,7 @@ export default function SuperAdminDashboard() {
             <p className="text-slate-400 mb-6">Create your first tenant to get started</p>
             <button
               onClick={() => setShowCreateModal(true)}
-              className="inline-flex items-center gap-2 px-6 py-3 bg-indigo-600 hover:bg-indigo-700 rounded-xl transition"
+              className="inline-flex items-center gap-2 px-6 py-3 bg-green-600 hover:bg-green-700 rounded-xl transition"
             >
               <Plus className="w-5 h-5" />
               Create Tenant
@@ -463,7 +464,7 @@ function CreateTenantModal({ onClose, onCreated }: { onClose: () => void; onCrea
               required
               value={form.name}
               onChange={(e) => handleNameChange(e.target.value)}
-              className="w-full px-4 py-3 bg-slate-900 border border-slate-700 rounded-xl text-white focus:ring-2 focus:ring-indigo-500 outline-none"
+              className="w-full px-4 py-3 bg-slate-900 border border-slate-700 rounded-xl text-white focus:ring-2 focus:ring-green-500 outline-none"
               placeholder="Acme Corporation"
             />
           </div>
@@ -476,10 +477,10 @@ function CreateTenantModal({ onClose, onCreated }: { onClose: () => void; onCrea
                 required
                 value={form.slug}
                 onChange={(e) => setForm(prev => ({ ...prev, slug: e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, '') }))}
-                className="flex-1 px-4 py-3 bg-slate-900 border border-slate-700 rounded-l-xl text-white focus:ring-2 focus:ring-indigo-500 outline-none"
+                className="flex-1 px-4 py-3 bg-slate-900 border border-slate-700 rounded-l-xl text-white focus:ring-2 focus:ring-green-500 outline-none"
                 placeholder="acme"
               />
-              <span className="px-4 py-3 bg-slate-700 border border-l-0 border-slate-700 rounded-r-xl text-slate-400">.emarketwaka.com</span>
+              <span className="px-4 py-3 bg-slate-700 border border-l-0 border-slate-700 rounded-r-xl text-slate-400">.webwaka.com</span>
             </div>
           </div>
 
@@ -489,7 +490,7 @@ function CreateTenantModal({ onClose, onCreated }: { onClose: () => void; onCrea
               type="text"
               value={form.appName}
               onChange={(e) => setForm(prev => ({ ...prev, appName: e.target.value }))}
-              className="w-full px-4 py-3 bg-slate-900 border border-slate-700 rounded-xl text-white focus:ring-2 focus:ring-indigo-500 outline-none"
+              className="w-full px-4 py-3 bg-slate-900 border border-slate-700 rounded-xl text-white focus:ring-2 focus:ring-green-500 outline-none"
               placeholder="Acme App"
             />
           </div>
@@ -537,7 +538,7 @@ function CreateTenantModal({ onClose, onCreated }: { onClose: () => void; onCrea
               type="email"
               value={form.adminEmail}
               onChange={(e) => setForm(prev => ({ ...prev, adminEmail: e.target.value }))}
-              className="w-full px-4 py-3 bg-slate-900 border border-slate-700 rounded-xl text-white focus:ring-2 focus:ring-indigo-500 outline-none"
+              className="w-full px-4 py-3 bg-slate-900 border border-slate-700 rounded-xl text-white focus:ring-2 focus:ring-green-500 outline-none"
               placeholder="admin@acme.com"
             />
             <p className="text-xs text-slate-500 mt-1">This user will be created as Tenant Admin</p>
@@ -560,7 +561,7 @@ function CreateTenantModal({ onClose, onCreated }: { onClose: () => void; onCrea
             <button
               type="submit"
               disabled={loading}
-              className="flex-1 px-4 py-3 bg-indigo-600 rounded-xl hover:bg-indigo-700 transition disabled:opacity-50 flex items-center justify-center gap-2"
+              className="flex-1 px-4 py-3 bg-green-600 rounded-xl hover:bg-green-700 transition disabled:opacity-50 flex items-center justify-center gap-2"
             >
               {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Plus className="w-5 h-5" />}
               {loading ? 'Creating...' : 'Create Tenant'}

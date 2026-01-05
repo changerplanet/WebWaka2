@@ -125,7 +125,7 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
       await createAuditLog({
         action: auditAction,
         actorId: authResult.user.id,
-        actorEmail: authResult.user.email,
+        actorEmail: authResult.user.email || 'unknown',
         targetType: 'Tenant',
         targetId: id,
         metadata: { oldStatus: existingTenant.status, newStatus: status }
@@ -134,7 +134,7 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
       await createAuditLog({
         action: 'TENANT_UPDATED',
         actorId: authResult.user.id,
-        actorEmail: authResult.user.email,
+        actorEmail: authResult.user.email || 'unknown',
         targetType: 'Tenant',
         targetId: id,
         metadata: updateData
@@ -196,7 +196,7 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
     await createAuditLog({
       action: 'TENANT_DEACTIVATED',
       actorId: authResult.user.id,
-      actorEmail: authResult.user.email,
+      actorEmail: authResult.user.email || 'unknown',
       targetType: 'Tenant',
       targetId: id,
       metadata: { name: tenant.name, slug: tenant.slug }

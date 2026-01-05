@@ -1,251 +1,295 @@
 /**
- * Contact Page
- * Simple contact form for Nigerian businesses
+ * WebWaka Contact Page
+ * Contact form and support channels
  */
 
-'use client'
+import Link from 'next/link'
+import { 
+  ArrowRight, Globe, Phone, Mail, MessageCircle, MapPin,
+  Clock, Users
+} from 'lucide-react'
 
-import { useState } from 'react'
-import { Mail, Phone, MessageCircle, Send, Check, MapPin } from 'lucide-react'
+export const metadata = {
+  title: 'Contact — WebWaka Platform',
+  description: 'Get in touch with the WebWaka team. We are here to help with sales, support, and partnership inquiries.',
+}
+
+const contactMethods = [
+  {
+    icon: Phone,
+    title: 'Phone',
+    description: 'Speak with our team directly',
+    value: '+234 800 000 0000',
+    href: 'tel:+2348000000000',
+  },
+  {
+    icon: Mail,
+    title: 'Email',
+    description: 'Send us a message',
+    value: 'hello@webwaka.com',
+    href: 'mailto:hello@webwaka.com',
+  },
+  {
+    icon: MessageCircle,
+    title: 'WhatsApp',
+    description: 'Chat with support',
+    value: '+234 800 000 0000',
+    href: 'https://wa.me/2348000000000',
+  },
+]
+
+const departments = [
+  {
+    name: 'Sales',
+    email: 'sales@webwaka.com',
+    description: 'For pricing, demos, and enterprise inquiries',
+  },
+  {
+    name: 'Support',
+    email: 'support@webwaka.com',
+    description: 'For technical help and account issues',
+  },
+  {
+    name: 'Partners',
+    email: 'partners@webwaka.com',
+    description: 'For partnership and reseller inquiries',
+  },
+]
 
 export default function ContactPage() {
-  const [formState, setFormState] = useState<'idle' | 'submitting' | 'success'>('idle')
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    phone: '',
-    business: '',
-    type: 'general',
-    message: '',
-  })
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setFormState('submitting')
-    
-    // Simulate form submission
-    await new Promise(resolve => setTimeout(resolve, 1500))
-    
-    setFormState('success')
-    setFormData({ name: '', email: '', phone: '', business: '', type: 'general', message: '' })
-  }
-
   return (
     <div>
-      {/* Hero */}
-      <section className="bg-gradient-to-br from-gray-900 to-gray-800 py-16 md:py-24">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h1 className="text-4xl md:text-5xl font-bold text-white mb-6">
-            Let's Talk
-          </h1>
-          <p className="text-lg md:text-xl text-gray-300 max-w-2xl mx-auto">
-            Have questions? We're here to help. Send us a message and we'll respond as soon as possible.
-          </p>
+      {/* Hero Section */}
+      <section className="relative bg-gradient-to-br from-gray-900 via-gray-900 to-gray-800 overflow-hidden">
+        <div className="absolute inset-0 opacity-5">
+          <div className="absolute inset-0" style={{
+            backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+          }} />
+        </div>
+
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-28">
+          <div className="text-center max-w-3xl mx-auto">
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-green-500/20 backdrop-blur-sm rounded-full text-green-400 text-sm font-medium mb-6">
+              <MessageCircle className="w-4 h-4" />
+              Get in Touch
+            </div>
+
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight">
+              We&apos;re Here to
+              <br />
+              <span className="bg-gradient-to-r from-green-400 to-emerald-400 bg-clip-text text-transparent">
+                Help
+              </span>
+            </h1>
+
+            <p className="text-lg md:text-xl text-gray-300 max-w-2xl mx-auto">
+              Have questions? Need a demo? Want to partner with us? Our team is ready to assist you.
+            </p>
+          </div>
         </div>
       </section>
 
-      {/* Contact Section */}
-      <section className="py-16 md:py-24 bg-white">
+      {/* Contact Methods */}
+      <section className="py-20 md:py-28 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid lg:grid-cols-3 gap-12">
-            {/* Contact Info */}
-            <div>
-              <h2 className="text-2xl font-bold text-gray-900 mb-6">Get in Touch</h2>
-              
-              <div className="space-y-6">
-                <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 rounded-xl bg-green-100 flex items-center justify-center flex-shrink-0">
-                    <Mail className="w-5 h-5 text-green-600" />
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-gray-900 mb-1">Email Us</h3>
-                    <p className="text-gray-600">hello@emarketwaka.com</p>
-                    <p className="text-gray-600">support@emarketwaka.com</p>
-                  </div>
+          <div className="grid md:grid-cols-3 gap-6 mb-16">
+            {contactMethods.map((method) => (
+              <a 
+                key={method.title}
+                href={method.href}
+                className="bg-white rounded-2xl p-6 border border-gray-100 hover:border-green-200 hover:shadow-lg transition-all text-center"
+              >
+                <div className="w-12 h-12 rounded-xl bg-green-100 flex items-center justify-center mx-auto mb-4">
+                  <method.icon className="w-6 h-6 text-green-600" />
                 </div>
-                
-                <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 rounded-xl bg-green-100 flex items-center justify-center flex-shrink-0">
-                    <Phone className="w-5 h-5 text-green-600" />
+                <h3 className="font-bold text-gray-900 mb-1">{method.title}</h3>
+                <p className="text-gray-500 text-sm mb-2">{method.description}</p>
+                <p className="text-green-600 font-medium">{method.value}</p>
+              </a>
+            ))}
+          </div>
+
+          <div className="grid lg:grid-cols-2 gap-12">
+            {/* Contact Form */}
+            <div className="bg-gray-50 rounded-2xl p-8">
+              <h2 className="text-2xl font-bold text-gray-900 mb-6">Send us a Message</h2>
+              <form className="space-y-6">
+                <div className="grid sm:grid-cols-2 gap-4">
+                  <div>
+                    <label htmlFor="firstName" className="block text-sm font-medium text-gray-700 mb-1">
+                      First Name
+                    </label>
+                    <input
+                      type="text"
+                      id="firstName"
+                      name="firstName"
+                      className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-green-500 focus:ring-2 focus:ring-green-500/20 outline-none transition-all"
+                      placeholder="Your first name"
+                    />
                   </div>
                   <div>
-                    <h3 className="font-semibold text-gray-900 mb-1">Call Us</h3>
-                    <p className="text-gray-600">+234 800 000 0000</p>
-                    <p className="text-gray-500 text-sm">Mon-Fri, 8am-6pm</p>
-                  </div>
-                </div>
-                
-                <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 rounded-xl bg-green-100 flex items-center justify-center flex-shrink-0">
-                    <MessageCircle className="w-5 h-5 text-green-600" />
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-gray-900 mb-1">WhatsApp</h3>
-                    <a 
-                      href="https://wa.me/2348000000000" 
-                      className="text-green-600 hover:text-green-700 font-medium"
-                    >
-                      Chat with us on WhatsApp
-                    </a>
-                    <p className="text-gray-500 text-sm">Usually reply within minutes</p>
+                    <label htmlFor="lastName" className="block text-sm font-medium text-gray-700 mb-1">
+                      Last Name
+                    </label>
+                    <input
+                      type="text"
+                      id="lastName"
+                      name="lastName"
+                      className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-green-500 focus:ring-2 focus:ring-green-500/20 outline-none transition-all"
+                      placeholder="Your last name"
+                    />
                   </div>
                 </div>
 
-                <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 rounded-xl bg-green-100 flex items-center justify-center flex-shrink-0">
-                    <MapPin className="w-5 h-5 text-green-600" />
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-gray-900 mb-1">Location</h3>
-                    <p className="text-gray-600">Lagos, Nigeria</p>
-                  </div>
+                <div>
+                  <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+                    Email
+                  </label>
+                  <input
+                    type="email"
+                    id="email"
+                    name="email"
+                    className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-green-500 focus:ring-2 focus:ring-green-500/20 outline-none transition-all"
+                    placeholder="you@example.com"
+                  />
                 </div>
-              </div>
 
-              <div className="mt-10 p-6 bg-gray-50 rounded-2xl">
-                <h3 className="font-semibold text-gray-900 mb-3">Quick Answers</h3>
-                <ul className="space-y-2 text-sm text-gray-600">
-                  <li>• Getting started? Check our <a href="/features" className="text-green-600 hover:underline">Features</a></li>
-                  <li>• Pricing questions? See our <a href="/pricing" className="text-green-600 hover:underline">Plans</a></li>
-                  <li>• Want to partner? <a href="/partners" className="text-green-600 hover:underline">Learn more</a></li>
-                </ul>
-              </div>
+                <div>
+                  <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1">
+                    Phone Number
+                  </label>
+                  <input
+                    type="tel"
+                    id="phone"
+                    name="phone"
+                    className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-green-500 focus:ring-2 focus:ring-green-500/20 outline-none transition-all"
+                    placeholder="+234 800 000 0000"
+                  />
+                </div>
+
+                <div>
+                  <label htmlFor="subject" className="block text-sm font-medium text-gray-700 mb-1">
+                    Subject
+                  </label>
+                  <select
+                    id="subject"
+                    name="subject"
+                    className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-green-500 focus:ring-2 focus:ring-green-500/20 outline-none transition-all bg-white"
+                  >
+                    <option value="">Select a subject</option>
+                    <option value="sales">Sales inquiry</option>
+                    <option value="support">Technical support</option>
+                    <option value="partnership">Partnership inquiry</option>
+                    <option value="demo">Request a demo</option>
+                    <option value="other">Other</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-1">
+                    Message
+                  </label>
+                  <textarea
+                    id="message"
+                    name="message"
+                    rows={4}
+                    className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-green-500 focus:ring-2 focus:ring-green-500/20 outline-none transition-all resize-none"
+                    placeholder="How can we help you?"
+                  />
+                </div>
+
+                <button
+                  type="submit"
+                  className="w-full px-6 py-3 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg transition-all flex items-center justify-center gap-2"
+                >
+                  Send Message
+                  <ArrowRight className="w-4 h-4" />
+                </button>
+              </form>
             </div>
 
-            {/* Contact Form */}
-            <div className="lg:col-span-2">
-              <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 md:p-8">
-                {formState === 'success' ? (
-                  <div className="text-center py-12">
-                    <div className="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-6">
-                      <Check className="w-8 h-8 text-green-600" />
-                    </div>
-                    <h3 className="text-2xl font-bold text-gray-900 mb-2">Message Sent!</h3>
-                    <p className="text-gray-600 mb-6">
-                      Thank you for reaching out. We'll get back to you within 24 hours.
-                    </p>
-                    <button
-                      onClick={() => setFormState('idle')}
-                      className="px-6 py-3 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 transition-all"
+            {/* Departments & Info */}
+            <div className="space-y-8">
+              <div>
+                <h2 className="text-2xl font-bold text-gray-900 mb-6">Contact by Department</h2>
+                <div className="space-y-4">
+                  {departments.map((dept) => (
+                    <div 
+                      key={dept.name}
+                      className="bg-white rounded-xl p-4 border border-gray-100"
                     >
-                      Send Another Message
-                    </button>
-                  </div>
-                ) : (
-                  <form onSubmit={handleSubmit} className="space-y-6">
-                    <div className="grid md:grid-cols-2 gap-6">
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                          Your Name *
-                        </label>
-                        <input
-                          type="text"
-                          required
-                          value={formData.name}
-                          onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                          className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
-                          placeholder="Chidi Okonkwo"
-                          data-testid="contact-name"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                          Email Address *
-                        </label>
-                        <input
-                          type="email"
-                          required
-                          value={formData.email}
-                          onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                          className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
-                          placeholder="chidi@example.com"
-                          data-testid="contact-email"
-                        />
-                      </div>
-                    </div>
-
-                    <div className="grid md:grid-cols-2 gap-6">
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                          Phone Number
-                        </label>
-                        <input
-                          type="tel"
-                          value={formData.phone}
-                          onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                          className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
-                          placeholder="+234 800 000 0000"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                          Business Name
-                        </label>
-                        <input
-                          type="text"
-                          value={formData.business}
-                          onChange={(e) => setFormData({ ...formData, business: e.target.value })}
-                          className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
-                          placeholder="Your Business Name"
-                        />
-                      </div>
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        What can we help with?
-                      </label>
-                      <select
-                        value={formData.type}
-                        onChange={(e) => setFormData({ ...formData, type: e.target.value })}
-                        className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
+                      <h3 className="font-bold text-gray-900">{dept.name}</h3>
+                      <p className="text-gray-500 text-sm mb-2">{dept.description}</p>
+                      <a 
+                        href={`mailto:${dept.email}`}
+                        className="text-green-600 font-medium hover:text-green-700 transition-colors"
                       >
-                        <option value="general">General Inquiry</option>
-                        <option value="demo">Request a Demo</option>
-                        <option value="sales">Pricing & Sales</option>
-                        <option value="support">Technical Support</option>
-                        <option value="partner">Partnership Inquiry</option>
-                      </select>
+                        {dept.email}
+                      </a>
                     </div>
+                  ))}
+                </div>
+              </div>
 
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Your Message *
-                      </label>
-                      <textarea
-                        required
-                        rows={5}
-                        value={formData.message}
-                        onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                        className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all resize-none"
-                        placeholder="Tell us how we can help you..."
-                        data-testid="contact-message"
-                      />
-                    </div>
+              <div className="bg-gray-50 rounded-xl p-6">
+                <h3 className="font-bold text-gray-900 mb-4">Office Location</h3>
+                <div className="flex items-start gap-3 text-gray-600 mb-4">
+                  <MapPin className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+                  <div>
+                    <p>Lagos, Nigeria</p>
+                    <p className="text-sm text-gray-500">West Africa</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3 text-gray-600">
+                  <Clock className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+                  <div>
+                    <p>Monday - Friday</p>
+                    <p className="text-sm text-gray-500">9:00 AM - 6:00 PM WAT</p>
+                  </div>
+                </div>
+              </div>
 
-                    <button
-                      type="submit"
-                      disabled={formState === 'submitting'}
-                      className="w-full md:w-auto px-8 py-4 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg transition-all disabled:opacity-70 flex items-center justify-center gap-2"
-                      data-testid="contact-submit"
+              <div className="bg-green-50 rounded-xl p-6 border border-green-100">
+                <div className="flex items-start gap-4">
+                  <div className="w-10 h-10 rounded-lg bg-green-100 flex items-center justify-center flex-shrink-0">
+                    <Users className="w-5 h-5 text-green-600" />
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-gray-900 mb-1">Interested in Partnering?</h3>
+                    <p className="text-gray-600 text-sm mb-3">
+                      Join our network of Digital Transformation Partners across Nigeria.
+                    </p>
+                    <Link 
+                      href="/partners"
+                      className="text-green-600 font-medium hover:text-green-700 transition-colors inline-flex items-center gap-1"
                     >
-                      {formState === 'submitting' ? (
-                        <>
-                          <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                          Sending...
-                        </>
-                      ) : (
-                        <>
-                          <Send className="w-5 h-5" />
-                          Send Message
-                        </>
-                      )}
-                    </button>
-                  </form>
-                )}
+                      Learn more
+                      <ArrowRight className="w-4 h-4" />
+                    </Link>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* CTA Section */}
+      <section className="py-16 bg-gray-900">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <h2 className="text-2xl md:text-3xl font-bold text-white mb-4">
+            Ready to Get Started?
+          </h2>
+          <p className="text-gray-400 mb-8">
+            Skip the form and jump right in. Create your free account today.
+          </p>
+          <Link 
+            href="/signup-v2"
+            className="inline-flex items-center gap-2 px-8 py-4 bg-green-500 hover:bg-green-600 text-white font-bold rounded-lg text-lg transition-all"
+          >
+            Get Started
+            <ArrowRight className="w-5 h-5" />
+          </Link>
         </div>
       </section>
     </div>

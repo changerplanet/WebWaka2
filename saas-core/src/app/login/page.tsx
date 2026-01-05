@@ -73,10 +73,10 @@ export default function LoginPage() {
       <div className="w-full max-w-md">
         {/* Logo */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 mb-4">
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-green-500 to-green-600 mb-4">
             <Building2 className="w-8 h-8 text-white" />
           </div>
-          <h1 className="text-2xl font-bold text-slate-900">eMarketWaka</h1>
+          <h1 className="text-2xl font-bold text-slate-900">WebWaka</h1>
           {tenantSlug && (
             <p className="text-slate-500 mt-1">Signing in to {tenantSlug}</p>
           )}
@@ -105,7 +105,7 @@ export default function LoginPage() {
                 <div className="space-y-3 mb-6">
                   <a
                     href={magicLink}
-                    className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-indigo-600 text-white font-medium rounded-xl hover:bg-indigo-700 transition"
+                    className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-green-600 text-white font-medium rounded-xl hover:bg-green-700 transition"
                   >
                     <ExternalLink className="w-5 h-5" />
                     Sign In Now
@@ -127,7 +127,7 @@ export default function LoginPage() {
                 Didn't receive it?{' '}
                 <button
                   onClick={() => { setSent(false); setError(null); setMagicLink(null) }}
-                  className="text-indigo-600 hover:text-indigo-700 font-medium"
+                  className="text-green-600 hover:text-green-700 font-medium"
                 >
                   Try again
                 </button>
@@ -161,7 +161,7 @@ export default function LoginPage() {
                       required
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      className="w-full pl-12 pr-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition"
+                      className="w-full pl-12 pr-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none transition"
                       placeholder="you@example.com"
                     />
                   </div>
@@ -170,7 +170,7 @@ export default function LoginPage() {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-indigo-600 text-white font-medium rounded-xl hover:bg-indigo-700 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-green-600 text-white font-medium rounded-xl hover:bg-green-700 focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {loading ? (
                     <>

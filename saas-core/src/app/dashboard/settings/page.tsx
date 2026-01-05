@@ -100,7 +100,7 @@ export default function SettingsPage() {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-slate-100">
-        <Loader2 className="w-8 h-8 animate-spin text-indigo-600" />
+        <Loader2 className="w-8 h-8 animate-spin text-green-600" />
       </div>
     )
   }
@@ -111,7 +111,7 @@ export default function SettingsPage() {
         <div className="text-center">
           <h1 className="text-2xl font-bold text-slate-800 mb-2">Settings</h1>
           <p className="text-slate-600 mb-4">{error}</p>
-          <a href={`/dashboard?tenant=${tenantSlug}`} className="text-indigo-600 hover:text-indigo-700">
+          <a href={`/dashboard?tenant=${tenantSlug}`} className="text-green-600 hover:text-green-700">
             ← Back to Dashboard
           </a>
         </div>
@@ -165,7 +165,7 @@ export default function SettingsPage() {
                     onClick={() => setActiveTab(tab.id as any)}
                     className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left transition ${
                       activeTab === tab.id
-                        ? 'bg-indigo-50 text-indigo-700 font-medium'
+                        ? 'bg-green-50 text-green-700 font-medium'
                         : 'text-slate-600 hover:bg-slate-100'
                     }`}
                   >
@@ -251,7 +251,7 @@ function GeneralSettings({ settings, tenantSlug, onUpdate }: {
             type="text"
             value={name}
             onChange={e => setName(e.target.value)}
-            className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
           />
         </div>
         
@@ -266,7 +266,7 @@ function GeneralSettings({ settings, tenantSlug, onUpdate }: {
               disabled
               className="flex-1 px-4 py-2 border border-slate-200 rounded-lg bg-slate-50 text-slate-500"
             />
-            <span className="text-slate-500">.emarketwaka.com</span>
+            <span className="text-slate-500">.webwaka.com</span>
           </div>
           <p className="text-xs text-slate-500 mt-1">Subdomain cannot be changed after creation</p>
         </div>
@@ -306,7 +306,7 @@ function GeneralSettings({ settings, tenantSlug, onUpdate }: {
           <button
             onClick={handleSave}
             disabled={saving}
-            className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:opacity-50 transition"
+            className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 transition"
           >
             {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
             Save Changes

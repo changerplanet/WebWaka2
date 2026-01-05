@@ -1,0 +1,88 @@
+{
+  "summary": "Phase 2 Platform Instances - All tests passed. PlatformInstance table exists with correct schema, migration ran successfully (2 tenants have default instances), /api/platform-instances endpoint works correctly, branding resolution with tenant fallback verified, navigation filtering logic verified, backward compatibility confirmed, guardrails enforced (no per-instance billing/attribution).",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": [
+    "/app/tests/test_platform_instances_phase2.py",
+    "/app/test_reports/pytest/platform_instances_phase2_results.xml"
+  ],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "PlatformInstance model correctly added to schema with all required fields (id, tenantId, name, slug, suiteKeys, branding fields, isDefault, isActive)",
+    "TenantDomain model correctly extended with platformInstanceId for domain→instance mapping",
+    "instance-service.ts well-structured with proper separation of concerns and clear Phase 2 boundaries documented",
+    "navigation-service.ts correctly implements capability filtering by suiteKeys",
+    "guardrails.ts properly documents Phase 2 boundaries and provides validation functions",
+    "tenant-resolver.ts correctly extended to include platformInstance in TenantContext",
+    "branding.ts correctly implements instance override with tenant fallback pattern",
+    "AuthProvider.tsx correctly extended with activeInstanceId, activeInstance, availableInstances, and switchInstance",
+    "/api/platform-instances endpoint correctly returns instances for a tenant with proper error handling",
+    "/api/admin/migrate-platform-instances endpoint is idempotent and safe to run multiple times"
+  ],
+  "updated_files": [
+    "/app/tests/test_platform_instances_phase2.py"
+  ],
+  "success_rate": {
+    "backend": "100% - 17/17 tests passed",
+    "frontend": "100% - All UI tests passed"
+  },
+  "test_credentials": "Test tenant: acme (ID: 67846c4f-9b38-47c7-86d9-fff55aa4afda)",
+  "seed_data_creation": "Migration already ran - 2 tenants (Acme Corporation, Beta Corp) have default platform instances",
+  "retest_needed": false,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "Phase 2 Platform Instances fully implemented and tested. Key verified features: 1) PlatformInstance table with correct schema, 2) Default instances created for existing tenants (acme, beta-corp), 3) /api/platform-instances endpoint returns instances for tenant, 4) Empty suiteKeys means all capabilities visible, 5) Instance branding fields are null (uses tenant fallback), 6) No per-instance billing/attribution fields (guardrails enforced), 7) Backward compatibility maintained - existing routes work unchanged.",
+  "tests_executed": {
+    "backend_api_tests": {
+      "GET /api/platform-instances (no tenantId)": "PASS - Returns 400 with error message",
+      "GET /api/platform-instances?tenantId=acme": "PASS - Returns default instance with correct structure",
+      "GET /api/platform-instances?tenantId=beta": "PASS - Returns default instance",
+      "GET /api/platform-instances?tenantId=invalid": "PASS - Returns empty array",
+      "GET /api/admin/migrate-platform-instances": "PASS - Returns endpoint info",
+      "POST /api/admin/migrate-platform-instances": "PASS - Idempotent migration"
+    },
+    "schema_validation": {
+      "PlatformInstance table exists": "PASS",
+      "Required fields present": "PASS - id, name, slug, suiteKeys, isDefault",
+      "Branding fields present": "PASS - displayName, logoUrl, primaryColor, secondaryColor",
+      "No billing fields": "PASS - Guardrail enforced",
+      "No attribution fields": "PASS - Guardrail enforced"
+    },
+    "backward_compatibility": {
+      "/dashboard?tenant=acme": "PASS - Redirects to login (expected)",
+      "/pos?tenant=acme": "PASS - Redirects to login (expected)",
+      "/api/auth/session": "PASS - Returns session info"
+    },
+    "ui_tests": {
+      "Homepage loads": "PASS",
+      "Login page loads": "PASS",
+      "Platform Instances API via browser": "PASS - Returns Acme Corporation Platform instance"
+    }
+  },
+  "database_state": {
+    "platform_instances": [
+      {
+        "id": "aa9caad2-5e59-4e8a-a7fe-e9721457f81c",
+        "tenant": "Acme Corporation (acme)",
+        "name": "Acme Corporation Platform",
+        "slug": "default",
+        "suiteKeys": [],
+        "isDefault": true
+      },
+      {
+        "id": "3b6a6bce-6731-4072-94ab-415612bf811c",
+        "tenant": "Beta Corp (beta-corp)",
+        "name": "Beta Corp Platform",
+        "slug": "default",
+        "suiteKeys": [],
+        "isDefault": true
+      }
+    ]
+  }
+}
