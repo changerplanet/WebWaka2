@@ -126,7 +126,7 @@ export async function getPartnerModuleStatus() {
     prisma.partner.count(),
     prisma.partner.count({ where: { status: 'ACTIVE' } }),
     prisma.partner.count({ where: { status: 'PENDING' } }),
-    prisma.partnerAttributionRecord.count(),
+    prisma.partner_attributions_ext.count(),
     prisma.partner_commission_records_ext.count({ where: { status: 'PENDING' } }),
   ]);
   
