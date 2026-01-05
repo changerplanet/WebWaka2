@@ -34,29 +34,23 @@ export default function TenantDashboard() {
 
   const tenantSlug = searchParams.get('tenant') || activeTenant?.tenantSlug
 
-  // Fetch tenant and capabilities when tenant context is ready
+  // Fetch tenant immediately when we have a slug
   useEffect(() => {
-    // If still loading auth, wait but not forever
-    if (authLoading) {
-      const timeout = setTimeout(() => {
-        // After 3 seconds, try to fetch anyway if we have a tenant slug
-        if (tenantSlug) {
-          fetchTenant(tenantSlug)
-        }
-      }, 3000)
-      return () => clearTimeout(timeout)
-    }
-    
-    if (tenantSlug) {
+    if (tenantSlug && !tenant) {
       fetchTenant(tenantSlug)
-      if (activeTenantId) {
-        fetchActiveCapabilities()
-      }
-    } else if (!activeTenantId && !tenantSlug) {
+    } else if (!tenantSlug && !authLoading) {
+      // Only show error after auth has finished loading
       setLoading(false)
       setError('No tenant specified. Use ?tenant=slug to view a tenant dashboard.')
     }
-  }, [tenantSlug, activeTenantId, authLoading])
+  }, [tenantSlug, tenant, authLoading])
+
+  // Fetch capabilities when we have tenant context
+  useEffect(() => {
+    if (activeTenantId && tenant) {
+      fetchActiveCapabilities()
+    }
+  }, [activeTenantId, tenant])
 
   async function fetchActiveCapabilities() {
     // Only fetch if we have an active tenant in the session
