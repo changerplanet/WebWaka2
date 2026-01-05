@@ -421,7 +421,6 @@ export async function deactivateSitesFunnels(
 
 /**
  * Check if tenant can create more sites
- * Note: sf_sites table will be created in PROMPT 2
  */
 export async function canCreateSite(tenantId: string): Promise<{
   allowed: boolean;
@@ -439,9 +438,10 @@ export async function canCreateSite(tenantId: string): Promise<{
     return { allowed: false, reason: 'Sites feature is not enabled' };
   }
 
-  // Count existing sites - table will be created in PROMPT 2
-  // For now, return allowed with 0 count
-  const siteCount = 0; // Will be: await prisma.sf_sites.count({ where: { tenantId } })
+  // Count existing sites
+  const siteCount = await prisma.sf_sites.count({
+    where: { tenantId },
+  });
 
   if (siteCount >= status.limits.maxSites) {
     return {
@@ -461,7 +461,6 @@ export async function canCreateSite(tenantId: string): Promise<{
 
 /**
  * Check if tenant can create more funnels
- * Note: sf_funnels table will be created in PROMPT 2
  */
 export async function canCreateFunnel(tenantId: string): Promise<{
   allowed: boolean;
@@ -479,9 +478,10 @@ export async function canCreateFunnel(tenantId: string): Promise<{
     return { allowed: false, reason: 'Funnels feature is not enabled' };
   }
 
-  // Count existing funnels - table will be created in PROMPT 2
-  // For now, return allowed with 0 count
-  const funnelCount = 0; // Will be: await prisma.sf_funnels.count({ where: { tenantId } })
+  // Count existing funnels
+  const funnelCount = await prisma.sf_funnels.count({
+    where: { tenantId },
+  });
 
   if (funnelCount >= status.limits.maxFunnels) {
     return {
@@ -501,7 +501,6 @@ export async function canCreateFunnel(tenantId: string): Promise<{
 
 /**
  * Check if AI content generation is allowed
- * Note: sf_ai_content_logs table will be created in PROMPT 2
  */
 export async function canUseAIContent(tenantId: string): Promise<{
   allowed: boolean;
@@ -519,9 +518,17 @@ export async function canUseAIContent(tenantId: string): Promise<{
     return { allowed: false, reason: 'AI Content feature is not enabled' };
   }
 
-  // Count AI requests this month - table will be created in PROMPT 2
-  // For now, return allowed with 0 count
-  const aiRequestCount = 0; // Will query sf_ai_content_logs
+  // Count AI requests this month
+  const startOfMonth = new Date();
+  startOfMonth.setDate(1);
+  startOfMonth.setHours(0, 0, 0, 0);
+
+  const aiRequestCount = await prisma.sf_ai_content_logs.count({
+    where: {
+      tenantId,
+      createdAt: { gte: startOfMonth },
+    },
+  });
 
   if (aiRequestCount >= status.limits.aiRequestsPerMonth) {
     return {
