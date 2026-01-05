@@ -552,7 +552,7 @@ async function createExternalRoleUsers(tenants: Array<{ id: string; slug: string
 
   const hashedPassword = await hashPassword(DEMO_PASSWORD)
   
-  // Find marketplace tenant for vendor
+  // Find marketplace tenant for vendor (using Supplier model)
   const marketplaceTenant = tenants.find(t => t.type === 'MARKETPLACE')
   if (marketplaceTenant) {
     // Create Vendor user (for MVM)
@@ -573,24 +573,25 @@ async function createExternalRoleUsers(tenants: Array<{ id: string; slug: string
       console.log(`✅ Vendor user created: ${vendorEmail}`)
     }
 
-    // Create vendor record
-    const existingVendor = await prisma.vendor.findFirst({
+    // Create supplier record (vendors are stored as suppliers in this schema)
+    const existingSupplier = await prisma.supplier.findFirst({
       where: { tenantId: marketplaceTenant.id, email: vendorEmail }
     })
 
-    if (!existingVendor) {
-      await prisma.vendor.create({
+    if (!existingSupplier) {
+      await prisma.supplier.create({
         data: {
+          id: crypto.randomUUID(),
           tenantId: marketplaceTenant.id,
           name: 'Premium Goods Nigeria',
           contactName: 'Demo Vendor',
           email: vendorEmail,
           phone: '+2348300000001',
-          status: 'ACTIVE',
-          commissionRate: 10,
+          status: SupplierStatus.ACTIVE,
+          updatedAt: new Date(),
         }
       })
-      console.log(`  ↳ Vendor record created`)
+      console.log(`  ↳ Vendor/Supplier record created`)
     }
   }
 
