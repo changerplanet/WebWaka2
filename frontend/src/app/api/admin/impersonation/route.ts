@@ -117,7 +117,7 @@ export async function POST(request: NextRequest) {
         authResult.user.email || 'unknown',
         targetType,
         targetId,
-        authResult.session.sessionId, // sessionId is the token
+        authResult.session.sessionToken, // Use the token for session updates
         ipAddress,
         userAgent
       )
