@@ -13,6 +13,7 @@ KEY VERIFICATION:
 import pytest
 import requests
 import os
+import re
 
 BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', '').rstrip('/')
 
@@ -21,12 +22,13 @@ TEST_EMAIL = "demo.owner@webwaka.com"
 TEST_PASSWORD = "Demo2026!"
 
 
-class TestParkHubAuthentication:
-    """Authentication tests for ParkHub APIs"""
-    
-    @pytest.fixture(scope="class")
-    def auth_token(self):
-        """Get authentication token"""
+# Module-level auth token
+_auth_token = None
+
+def get_auth_token():
+    """Get or create authentication token"""
+    global _auth_token
+    if _auth_token is None:
         response = requests.post(
             f"{BASE_URL}/api/auth/v2",
             json={
@@ -37,8 +39,14 @@ class TestParkHubAuthentication:
         )
         if response.status_code == 200:
             data = response.json()
-            return data.get("sessionToken") or data.get("token")
-        pytest.skip(f"Authentication failed: {response.status_code} - {response.text}")
+            _auth_token = data.get("sessionToken") or data.get("token")
+        else:
+            pytest.skip(f"Authentication failed: {response.status_code} - {response.text}")
+    return _auth_token
+
+
+class TestParkHubAuthentication:
+    """Authentication tests for ParkHub APIs"""
     
     def test_login_with_valid_credentials(self):
         """Test login with demo partner credentials"""
@@ -52,28 +60,13 @@ class TestParkHubAuthentication:
         )
         assert response.status_code == 200, f"Login failed: {response.text}"
         data = response.json()
-        assert data.get("success") == True or "sessionToken" in data or "token" in data
+        assert data.get("success") == True
+        assert "sessionToken" in data
         print(f"✓ Login successful for {TEST_EMAIL}")
 
 
 class TestParkHubConfigAPI:
     """Tests for GET /api/parkhub?action=config"""
-    
-    @pytest.fixture(scope="class")
-    def auth_token(self):
-        """Get authentication token"""
-        response = requests.post(
-            f"{BASE_URL}/api/auth/v2",
-            json={
-                "action": "login-password",
-                "email": TEST_EMAIL,
-                "password": TEST_PASSWORD
-            }
-        )
-        if response.status_code == 200:
-            data = response.json()
-            return data.get("sessionToken") or data.get("token")
-        pytest.skip("Authentication failed")
     
     def test_config_api_requires_auth(self):
         """Test that config API requires authentication"""
@@ -81,11 +74,12 @@ class TestParkHubConfigAPI:
         assert response.status_code == 401, f"Expected 401, got {response.status_code}"
         print("✓ Config API correctly requires authentication")
     
-    def test_config_api_returns_labels(self, auth_token):
+    def test_config_api_returns_labels(self):
         """Test that config API returns ParkHub labels"""
+        token = get_auth_token()
         response = requests.get(
             f"{BASE_URL}/api/parkhub?action=config",
-            headers={"Authorization": f"Bearer {auth_token}"}
+            headers={"Authorization": f"Bearer {token}"}
         )
         assert response.status_code == 200, f"Config API failed: {response.text}"
         data = response.json()
@@ -108,11 +102,12 @@ class TestParkHubConfigAPI:
         assert labels.get("customers") == "Passengers"
         print("✓ Config API returns correct ParkHub labels")
     
-    def test_config_api_returns_mvm_config(self, auth_token):
+    def test_config_api_returns_mvm_config(self):
         """Test that config API returns MVM configuration"""
+        token = get_auth_token()
         response = requests.get(
             f"{BASE_URL}/api/parkhub?action=config",
-            headers={"Authorization": f"Bearer {auth_token}"}
+            headers={"Authorization": f"Bearer {token}"}
         )
         assert response.status_code == 200
         data = response.json()
@@ -132,11 +127,12 @@ class TestParkHubConfigAPI:
         assert mvm_config.get("defaultCommissionRate") == 0.10
         print("✓ Config API returns correct MVM configuration")
     
-    def test_config_api_returns_capability_bundle(self, auth_token):
+    def test_config_api_returns_capability_bundle(self):
         """Test that config API returns capability bundle"""
+        token = get_auth_token()
         response = requests.get(
             f"{BASE_URL}/api/parkhub?action=config",
-            headers={"Authorization": f"Bearer {auth_token}"}
+            headers={"Authorization": f"Bearer {token}"}
         )
         assert response.status_code == 200
         data = response.json()
@@ -158,33 +154,18 @@ class TestParkHubConfigAPI:
 class TestParkHubSolutionPackageAPI:
     """Tests for GET /api/parkhub?action=solution-package"""
     
-    @pytest.fixture(scope="class")
-    def auth_token(self):
-        """Get authentication token"""
-        response = requests.post(
-            f"{BASE_URL}/api/auth/v2",
-            json={
-                "action": "login-password",
-                "email": TEST_EMAIL,
-                "password": TEST_PASSWORD
-            }
-        )
-        if response.status_code == 200:
-            data = response.json()
-            return data.get("sessionToken") or data.get("token")
-        pytest.skip("Authentication failed")
-    
     def test_solution_package_api_requires_auth(self):
         """Test that solution-package API requires authentication"""
         response = requests.get(f"{BASE_URL}/api/parkhub?action=solution-package")
         assert response.status_code == 401
         print("✓ Solution-package API correctly requires authentication")
     
-    def test_solution_package_api_returns_details(self, auth_token):
+    def test_solution_package_api_returns_details(self):
         """Test that solution-package API returns package details"""
+        token = get_auth_token()
         response = requests.get(
             f"{BASE_URL}/api/parkhub?action=solution-package",
-            headers={"Authorization": f"Bearer {auth_token}"}
+            headers={"Authorization": f"Bearer {token}"}
         )
         assert response.status_code == 200, f"Solution-package API failed: {response.text}"
         data = response.json()
@@ -198,11 +179,12 @@ class TestParkHubSolutionPackageAPI:
         assert "pricing" in solution
         print("✓ Solution-package API returns correct package details")
     
-    def test_solution_package_api_returns_activation_checklist(self, auth_token):
+    def test_solution_package_api_returns_activation_checklist(self):
         """Test that solution-package API returns activation checklist"""
+        token = get_auth_token()
         response = requests.get(
             f"{BASE_URL}/api/parkhub?action=solution-package",
-            headers={"Authorization": f"Bearer {auth_token}"}
+            headers={"Authorization": f"Bearer {token}"}
         )
         assert response.status_code == 200
         data = response.json()
@@ -218,33 +200,18 @@ class TestParkHubSolutionPackageAPI:
 class TestParkHubDemoDataAPI:
     """Tests for GET /api/parkhub?action=demo-data"""
     
-    @pytest.fixture(scope="class")
-    def auth_token(self):
-        """Get authentication token"""
-        response = requests.post(
-            f"{BASE_URL}/api/auth/v2",
-            json={
-                "action": "login-password",
-                "email": TEST_EMAIL,
-                "password": TEST_PASSWORD
-            }
-        )
-        if response.status_code == 200:
-            data = response.json()
-            return data.get("sessionToken") or data.get("token")
-        pytest.skip("Authentication failed")
-    
     def test_demo_data_api_requires_auth(self):
         """Test that demo-data API requires authentication"""
         response = requests.get(f"{BASE_URL}/api/parkhub?action=demo-data")
         assert response.status_code == 401
         print("✓ Demo-data API correctly requires authentication")
     
-    def test_demo_data_api_returns_summary(self, auth_token):
+    def test_demo_data_api_returns_summary(self):
         """Test that demo-data API returns demo data summary"""
+        token = get_auth_token()
         response = requests.get(
             f"{BASE_URL}/api/parkhub?action=demo-data",
-            headers={"Authorization": f"Bearer {auth_token}"}
+            headers={"Authorization": f"Bearer {token}"}
         )
         assert response.status_code == 200, f"Demo-data API failed: {response.text}"
         data = response.json()
@@ -267,11 +234,12 @@ class TestParkHubDemoDataAPI:
         assert len(summary["companies"]) == 3
         print("✓ Demo-data API returns correct demo data summary")
     
-    def test_demo_data_api_returns_credentials(self, auth_token):
+    def test_demo_data_api_returns_credentials(self):
         """Test that demo-data API returns demo credentials"""
+        token = get_auth_token()
         response = requests.get(
             f"{BASE_URL}/api/parkhub?action=demo-data",
-            headers={"Authorization": f"Bearer {auth_token}"}
+            headers={"Authorization": f"Bearer {token}"}
         )
         assert response.status_code == 200
         data = response.json()
@@ -286,22 +254,6 @@ class TestParkHubDemoDataAPI:
 class TestParkHubActivationAPI:
     """Tests for POST /api/parkhub with action: activate"""
     
-    @pytest.fixture(scope="class")
-    def auth_token(self):
-        """Get authentication token"""
-        response = requests.post(
-            f"{BASE_URL}/api/auth/v2",
-            json={
-                "action": "login-password",
-                "email": TEST_EMAIL,
-                "password": TEST_PASSWORD
-            }
-        )
-        if response.status_code == 200:
-            data = response.json()
-            return data.get("sessionToken") or data.get("token")
-        pytest.skip("Authentication failed")
-    
     def test_activation_api_requires_auth(self):
         """Test that activation API requires authentication"""
         response = requests.post(
@@ -311,11 +263,12 @@ class TestParkHubActivationAPI:
         assert response.status_code == 401
         print("✓ Activation API correctly requires authentication")
     
-    def test_activation_api_requires_tenant_id(self, auth_token):
+    def test_activation_api_requires_tenant_id(self):
         """Test that activation API requires tenant ID"""
+        token = get_auth_token()
         response = requests.post(
             f"{BASE_URL}/api/parkhub",
-            headers={"Authorization": f"Bearer {auth_token}"},
+            headers={"Authorization": f"Bearer {token}"},
             json={"action": "activate", "parkName": "Test Park"}
         )
         assert response.status_code == 400
@@ -324,11 +277,12 @@ class TestParkHubActivationAPI:
         assert "Tenant ID" in data.get("error", "") or "required" in data.get("error", "").lower()
         print("✓ Activation API correctly requires tenant ID")
     
-    def test_activation_api_requires_park_name(self, auth_token):
+    def test_activation_api_requires_park_name(self):
         """Test that activation API requires park name"""
+        token = get_auth_token()
         response = requests.post(
             f"{BASE_URL}/api/parkhub",
-            headers={"Authorization": f"Bearer {auth_token}"},
+            headers={"Authorization": f"Bearer {token}"},
             json={"action": "activate", "tenantId": "test-tenant-123"}
         )
         assert response.status_code == 400
@@ -336,11 +290,12 @@ class TestParkHubActivationAPI:
         assert data.get("success") == False
         print("✓ Activation API correctly requires park name")
     
-    def test_activation_api_success(self, auth_token):
+    def test_activation_api_success(self):
         """Test successful ParkHub activation"""
+        token = get_auth_token()
         response = requests.post(
             f"{BASE_URL}/api/parkhub",
-            headers={"Authorization": f"Bearer {auth_token}"},
+            headers={"Authorization": f"Bearer {token}"},
             json={
                 "action": "activate",
                 "tenantId": f"test-tenant-{os.urandom(4).hex()}",
@@ -365,11 +320,12 @@ class TestParkHubActivationAPI:
         assert "payments" in capabilities
         print("✓ Activation API successfully activates ParkHub")
     
-    def test_check_activation_api(self, auth_token):
+    def test_check_activation_api(self):
         """Test check-activation API"""
+        token = get_auth_token()
         response = requests.post(
             f"{BASE_URL}/api/parkhub",
-            headers={"Authorization": f"Bearer {auth_token}"},
+            headers={"Authorization": f"Bearer {token}"},
             json={
                 "action": "check-activation",
                 "tenantCapabilities": ["mvm", "logistics", "payments"],
@@ -387,38 +343,24 @@ class TestParkHubActivationAPI:
 class TestParkHubInvalidActions:
     """Tests for invalid API actions"""
     
-    @pytest.fixture(scope="class")
-    def auth_token(self):
-        """Get authentication token"""
-        response = requests.post(
-            f"{BASE_URL}/api/auth/v2",
-            json={
-                "action": "login-password",
-                "email": TEST_EMAIL,
-                "password": TEST_PASSWORD
-            }
-        )
-        if response.status_code == 200:
-            data = response.json()
-            return data.get("sessionToken") or data.get("token")
-        pytest.skip("Authentication failed")
-    
-    def test_invalid_get_action(self, auth_token):
+    def test_invalid_get_action(self):
         """Test invalid GET action returns error"""
+        token = get_auth_token()
         response = requests.get(
             f"{BASE_URL}/api/parkhub?action=invalid-action",
-            headers={"Authorization": f"Bearer {auth_token}"}
+            headers={"Authorization": f"Bearer {token}"}
         )
         assert response.status_code == 400
         data = response.json()
         assert data.get("success") == False
         print("✓ Invalid GET action correctly returns 400")
     
-    def test_invalid_post_action(self, auth_token):
+    def test_invalid_post_action(self):
         """Test invalid POST action returns error"""
+        token = get_auth_token()
         response = requests.post(
             f"{BASE_URL}/api/parkhub",
-            headers={"Authorization": f"Bearer {auth_token}"},
+            headers={"Authorization": f"Bearer {token}"},
             json={"action": "invalid-action"}
         )
         assert response.status_code == 400
@@ -455,7 +397,6 @@ class TestNoNewSchemas:
     
     def test_no_parkhub_tables_in_schema(self):
         """Verify no parkhub-specific tables in schema.prisma"""
-        import re
         schema_path = "/app/frontend/prisma/schema.prisma"
         with open(schema_path, 'r') as f:
             content = f.read()
