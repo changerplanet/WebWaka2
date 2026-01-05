@@ -10,9 +10,7 @@
  * - custom_commission_rules_enabled
  */
 
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
+import { prisma } from '@/lib/prisma';
 
 // ============================================================================
 // PARTNER ENTITLEMENTS
