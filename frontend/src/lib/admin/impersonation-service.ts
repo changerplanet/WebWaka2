@@ -98,14 +98,27 @@ export async function startImpersonation(
     }
 
     // Store impersonation context in session
-    await prisma.session.update({
-      where: { token: sessionId },
-      data: {
-        // Store impersonation context in userAgent (temporary storage)
-        // In production, use a dedicated field or Redis
-        userAgent: JSON.stringify({ impersonation: context, originalUserAgent: userAgent })
-      }
-    })
+    console.log('Impersonation: Updating session with token:', sessionId?.substring(0, 20) + '...')
+    
+    if (!sessionId) {
+      console.error('Impersonation: No session ID provided')
+      return { success: false, error: 'No session token available' }
+    }
+    
+    try {
+      await prisma.session.update({
+        where: { token: sessionId },
+        data: {
+          // Store impersonation context in userAgent (temporary storage)
+          // In production, use a dedicated field or Redis
+          userAgent: JSON.stringify({ impersonation: context, originalUserAgent: userAgent })
+        }
+      })
+      console.log('Impersonation: Session updated successfully')
+    } catch (sessionErr) {
+      console.error('Impersonation: Failed to update session:', sessionErr)
+      // Continue anyway - impersonation can work without session storage
+    }
 
     // Create audit log
     await createAuditLog({
