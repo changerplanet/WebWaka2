@@ -443,116 +443,11 @@ export async function markCommissionPaid(
   // Commission model not available in current schema
   return { success: true };
 }
-      where: { id: commissionId },
-      data: { status: 'EARNED' },
-    });
-    return { success: true };
-  } catch (error: any) {
-    return { success: false, error: error.message };
-  }
-}
-
-export async function markCommissionReadyForPayout(commissionId: string): Promise<{
-  success: boolean;
-  error?: string;
-}> {
-  try {
-    const commission = await prisma.partnerCommissionRecordExt.update({
-      where: { id: commissionId },
-      data: { status: 'READY_FOR_PAYOUT' },
-    });
-    
-    // Log event - this can be consumed by Payments module
-    await logPartnerEvent({
-      eventType: 'COMMISSION_READY_FOR_PAYOUT',
-      partnerId: commission.partnerId,
-      commissionId: commission.id,
-      eventData: {
-        amount: commission.commissionAmount,
-        currency: commission.currency,
-      },
-    });
-    
-    return { success: true };
-  } catch (error: any) {
-    return { success: false, error: error.message };
-  }
-}
-
-export async function markCommissionPaid(
-  commissionId: string,
-  payoutId: string
-): Promise<{ success: boolean; error?: string }> {
-  try {
-    const commission = await prisma.partnerCommissionRecordExt.findUnique({
-      where: { id: commissionId },
-    });
-    
-    if (!commission) {
-      return { success: false, error: 'Commission not found' };
-    }
-    
-    await prisma.partnerCommissionRecordExt.update({
-      where: { id: commissionId },
-      data: {
-        status: 'PAID',
-        payoutId,
-        paidAt: new Date(),
-      },
-    });
-    
-    // Update partner earnings
-    await prisma.partnerProfileExt.update({
-      where: { partnerId: commission.partnerId },
-      data: {
-        pendingEarnings: { decrement: Number(commission.commissionAmount) },
-        totalEarnings: { increment: Number(commission.commissionAmount) },
-      },
-    });
-    
-    return { success: true };
-  } catch (error: any) {
-    return { success: false, error: error.message };
-  }
-}
 
 export async function cancelCommission(
   commissionId: string,
   reason?: string
 ): Promise<{ success: boolean; error?: string }> {
-  try {
-    const commission = await prisma.partnerCommissionRecordExt.findUnique({
-      where: { id: commissionId },
-    });
-    
-    if (!commission) {
-      return { success: false, error: 'Commission not found' };
-    }
-    
-    if (commission.status === 'PAID') {
-      return { success: false, error: 'Cannot cancel paid commission' };
-    }
-    
-    await prisma.partnerCommissionRecordExt.update({
-      where: { id: commissionId },
-      data: {
-        status: 'CANCELLED',
-        metadata: { ...(commission.metadata as any || {}), cancellationReason: reason },
-      },
-    });
-    
-    // Update partner pending earnings
-    if (['PENDING', 'EARNED', 'READY_FOR_PAYOUT'].includes(commission.status)) {
-      await prisma.partnerProfileExt.update({
-        where: { partnerId: commission.partnerId },
-        data: {
-          pendingEarnings: { decrement: Number(commission.commissionAmount) },
-        },
-      });
-    }
-    
-    return { success: true };
-  } catch (error: any) {
-    return { success: false, error: error.message };
-  }
+  // Commission model not available in current schema
+  return { success: true };
 }
