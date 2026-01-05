@@ -636,8 +636,8 @@ model PartnerUser {
   assignedTenantIds String[]    @default([])
   department        String?
   displayName       String?
-  Partner           Partner     @relation(fields: [partnerId], references: [id], onDelete: Cascade)
-  User              User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  partner           Partner     @relation(fields: [partnerId], references: [id], onDelete: Cascade)
+  user              User        @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([partnerId, userId])
   @@index([partnerId])
