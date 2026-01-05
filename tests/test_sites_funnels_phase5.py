@@ -240,6 +240,96 @@ class TestFunnelsAPINoTenant:
         print(f"✓ Create funnel correctly returns error: {data.get('error')}")
 
 
+class TestAIContentAPINoTenant:
+    """AI Content API tests - user without tenant should get proper error"""
+    
+    @pytest.fixture(autouse=True)
+    def setup(self):
+        """Login and get session cookie"""
+        response = requests.post(f"{BASE_URL}/api/auth/v2", json={
+            "action": "login-password",
+            "identifier": DEMO_PARTNER_EMAIL,
+            "password": DEMO_PARTNER_PASSWORD
+        })
+        data = response.json()
+        self.session_token = data.get("sessionToken")
+        self.cookies = {"session_token": self.session_token}
+    
+    def test_ai_content_history_without_tenant_returns_error(self):
+        """Test that AI content history without tenant returns NO_TENANT error"""
+        response = requests.get(
+            f"{BASE_URL}/api/sites-funnels/ai-content?action=history",
+            cookies=self.cookies
+        )
+        
+        # Should return 400 with NO_TENANT code
+        assert response.status_code == 400, f"Expected 400, got {response.status_code}: {response.text}"
+        data = response.json()
+        assert data.get("success") == False, "Should not be successful"
+        assert data.get("code") == "NO_TENANT", f"Expected NO_TENANT code, got: {data.get('code')}"
+        print(f"✓ AI Content history correctly returns NO_TENANT error: {data.get('error')}")
+
+
+class TestDomainsAPINoTenant:
+    """Domains API tests - user without tenant should get proper error"""
+    
+    @pytest.fixture(autouse=True)
+    def setup(self):
+        """Login and get session cookie"""
+        response = requests.post(f"{BASE_URL}/api/auth/v2", json={
+            "action": "login-password",
+            "identifier": DEMO_PARTNER_EMAIL,
+            "password": DEMO_PARTNER_PASSWORD
+        })
+        data = response.json()
+        self.session_token = data.get("sessionToken")
+        self.cookies = {"session_token": self.session_token}
+    
+    def test_domains_list_without_tenant_returns_error(self):
+        """Test that domains list without tenant returns NO_TENANT error"""
+        response = requests.get(
+            f"{BASE_URL}/api/sites-funnels/domains?action=list&siteId=test",
+            cookies=self.cookies
+        )
+        
+        # Should return 400 with NO_TENANT code
+        assert response.status_code == 400, f"Expected 400, got {response.status_code}: {response.text}"
+        data = response.json()
+        assert data.get("success") == False, "Should not be successful"
+        assert data.get("code") == "NO_TENANT", f"Expected NO_TENANT code, got: {data.get('code')}"
+        print(f"✓ Domains list correctly returns NO_TENANT error: {data.get('error')}")
+
+
+class TestAnalyticsAPINoTenant:
+    """Analytics API tests - user without tenant should get proper error"""
+    
+    @pytest.fixture(autouse=True)
+    def setup(self):
+        """Login and get session cookie"""
+        response = requests.post(f"{BASE_URL}/api/auth/v2", json={
+            "action": "login-password",
+            "identifier": DEMO_PARTNER_EMAIL,
+            "password": DEMO_PARTNER_PASSWORD
+        })
+        data = response.json()
+        self.session_token = data.get("sessionToken")
+        self.cookies = {"session_token": self.session_token}
+    
+    def test_analytics_site_without_tenant_returns_error(self):
+        """Test that analytics without tenant returns NO_TENANT error"""
+        response = requests.get(
+            f"{BASE_URL}/api/sites-funnels/analytics?action=site&siteId=test",
+            cookies=self.cookies
+        )
+        
+        # Should return 400 with NO_TENANT code
+        assert response.status_code == 400, f"Expected 400, got {response.status_code}: {response.text}"
+        data = response.json()
+        assert data.get("success") == False, "Should not be successful"
+        assert data.get("code") == "NO_TENANT", f"Expected NO_TENANT code, got: {data.get('code')}"
+        print(f"✓ Analytics correctly returns NO_TENANT error: {data.get('error')}")
+
+
 class TestUnauthorizedAccess:
     """Test unauthorized access to APIs"""
     
@@ -265,6 +355,27 @@ class TestUnauthorizedAccess:
         
         assert response.status_code == 401, f"Expected 401, got {response.status_code}"
         print("✓ Funnels API correctly requires authentication")
+    
+    def test_ai_content_without_auth_returns_401(self):
+        """Test that AI content API requires authentication"""
+        response = requests.get(f"{BASE_URL}/api/sites-funnels/ai-content?action=history")
+        
+        assert response.status_code == 401, f"Expected 401, got {response.status_code}"
+        print("✓ AI Content API correctly requires authentication")
+    
+    def test_domains_without_auth_returns_401(self):
+        """Test that domains API requires authentication"""
+        response = requests.get(f"{BASE_URL}/api/sites-funnels/domains?action=list&siteId=test")
+        
+        assert response.status_code == 401, f"Expected 401, got {response.status_code}"
+        print("✓ Domains API correctly requires authentication")
+    
+    def test_analytics_without_auth_returns_401(self):
+        """Test that analytics API requires authentication"""
+        response = requests.get(f"{BASE_URL}/api/sites-funnels/analytics?action=site&siteId=test")
+        
+        assert response.status_code == 401, f"Expected 401, got {response.status_code}"
+        print("✓ Analytics API correctly requires authentication")
     
     def test_seed_without_auth_returns_401(self):
         """Test that seed API requires authentication (or is public)"""
