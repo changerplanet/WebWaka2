@@ -36,7 +36,16 @@ export default function TenantDashboard() {
 
   // Fetch tenant and capabilities when tenant context is ready
   useEffect(() => {
-    if (authLoading) return
+    // If still loading auth, wait but not forever
+    if (authLoading) {
+      const timeout = setTimeout(() => {
+        // After 3 seconds, try to fetch anyway if we have a tenant slug
+        if (tenantSlug) {
+          fetchTenant(tenantSlug)
+        }
+      }, 3000)
+      return () => clearTimeout(timeout)
+    }
     
     if (tenantSlug) {
       fetchTenant(tenantSlug)
