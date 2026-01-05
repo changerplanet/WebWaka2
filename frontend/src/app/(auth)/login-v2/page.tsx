@@ -198,7 +198,9 @@ function LoginV2Content() {
       const data = await response.json()
 
       if (data.success) {
-        router.push(returnTo)
+        // Compute role-based redirect
+        const redirectUrl = computeRedirectUrl(data, returnTo)
+        router.push(redirectUrl)
       } else {
         setError(data.error || 'Invalid code')
         setOtpCode(['', '', '', '', '', ''])
