@@ -21,7 +21,7 @@ import uuid
 from datetime import datetime
 
 # Base URL from environment
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://webwaka-staging.preview.emergentagent.com').rstrip('/')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://site-funnels.preview.emergentagent.com').rstrip('/')
 
 
 class TestInventoryModuleAuth:
