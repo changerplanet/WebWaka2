@@ -1094,7 +1094,7 @@ model Tenant {
   PlatformInstance PlatformInstance[]
   Subscription     Subscription?
   TenantDomain     TenantDomain[]
-  TenantMembership TenantMembership[]
+  memberships TenantMembership[]
 
   @@index([slug])
   @@index([status])
@@ -1158,7 +1158,7 @@ model User {
   OtpCode          OtpCode[]
   PartnerUser      PartnerUser?
   Session          Session[]
-  TenantMembership TenantMembership[]
+  memberships      TenantMembership[]
   user_intents     user_intents[]
 
   @@index([email])
