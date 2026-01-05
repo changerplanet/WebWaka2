@@ -38,8 +38,45 @@ export async function GET(request: NextRequest) {
   const action = searchParams.get('action') || 'list';
   const tenantId = searchParams.get('tenantId') || session.activeTenantId;
 
+  // Templates can be accessed without tenant (they're global)
+  if (action === 'templates' || action === 'template') {
+    try {
+      if (action === 'templates') {
+        const categorySlug = searchParams.get('category') || undefined;
+        const industry = searchParams.get('industry') || undefined;
+        const useCase = searchParams.get('useCase') || undefined;
+        const search = searchParams.get('search') || undefined;
+        const page = parseInt(searchParams.get('page') || '1');
+        const limit = parseInt(searchParams.get('limit') || '20');
+
+        const result = await listTemplates({ categorySlug, industry, useCase, search, page, limit });
+        return NextResponse.json({ success: true, ...result });
+      }
+
+      if (action === 'template') {
+        const templateId = searchParams.get('templateId');
+        if (!templateId) {
+          return NextResponse.json({ success: false, error: 'Template ID required' }, { status: 400 });
+        }
+        const template = await getTemplate(templateId);
+        if (!template) {
+          return NextResponse.json({ success: false, error: 'Template not found' }, { status: 404 });
+        }
+        return NextResponse.json({ success: true, template });
+      }
+    } catch (error: any) {
+      console.error('Sites API templates error:', error);
+      return NextResponse.json({ success: false, error: error.message || 'Server error' }, { status: 500 });
+    }
+  }
+
+  // All other actions require a tenant
   if (!tenantId) {
-    return NextResponse.json({ success: false, error: 'Tenant ID required' }, { status: 400 });
+    return NextResponse.json({ 
+      success: false, 
+      error: 'No active tenant. Please select a tenant from your partner dashboard to manage sites.',
+      code: 'NO_TENANT'
+    }, { status: 400 });
   }
 
   // Check entitlement
