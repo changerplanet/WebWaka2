@@ -6416,3 +6416,388 @@ enum WebhookStatus {
   PAUSED
   DISABLED
 }
+
+
+// ============================================================================
+// PHASE 5: SITES & FUNNELS MODULE
+// Partner-built websites and marketing funnels
+// ============================================================================
+
+// Site Status
+enum SiteStatus {
+  DRAFT
+  PUBLISHED
+  UNPUBLISHED
+  ARCHIVED
+}
+
+// Funnel Status
+enum FunnelStatus {
+  DRAFT
+  ACTIVE
+  PAUSED
+  COMPLETED
+  ARCHIVED
+}
+
+// Page Type
+enum PageType {
+  LANDING
+  CONTENT
+  CONTACT
+  FUNNEL_STEP
+  THANK_YOU
+  CHECKOUT
+  CUSTOM
+}
+
+// Template Category
+model sf_template_categories {
+  id          String   @id @default(uuid())
+  name        String
+  slug        String   @unique
+  description String?
+  industry    String?  // e.g., "retail", "healthcare", "education"
+  icon        String?
+  sortOrder   Int      @default(0)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  templates   sf_templates[]
+  
+  @@index([industry])
+  @@index([isActive])
+}
+
+// Template (Read-only, cloneable)
+model sf_templates {
+  id              String   @id @default(uuid())
+  categoryId      String
+  name            String
+  slug            String   @unique
+  description     String?
+  previewImageUrl String?
+  thumbnailUrl    String?
+  
+  // Template metadata
+  industry        String?  // Target industry
+  useCase         String?  // e.g., "lead_generation", "product_showcase"
+  pageType        PageType @default(LANDING)
+  
+  // Template content (JSON)
+  blocks          Json     @default("[]")  // Page blocks/sections
+  styles          Json?    // Custom styles
+  settings        Json?    // Template settings
+  
+  // Versioning
+  version         String   @default("1.0.0")
+  isLatest        Boolean  @default(true)
+  
+  // Status
+  isActive        Boolean  @default(true)
+  isPremium       Boolean  @default(false)
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  category        sf_template_categories @relation(fields: [categoryId], references: [id])
+  
+  @@index([categoryId])
+  @@index([industry])
+  @@index([useCase])
+  @@index([pageType])
+  @@index([isActive])
+}
+
+// Site (Partner-owned)
+model sf_sites {
+  id                  String     @id @default(uuid())
+  tenantId            String
+  platformInstanceId  String?
+  partnerId           String
+  
+  // Site details
+  name                String
+  slug                String
+  description         String?
+  
+  // Status
+  status              SiteStatus @default(DRAFT)
+  publishedAt         DateTime?
+  unpublishedAt       DateTime?
+  
+  // Branding (inherits from Instance if not set)
+  logoUrl             String?
+  faviconUrl          String?
+  primaryColor        String?
+  secondaryColor      String?
+  fontFamily          String?
+  
+  // SEO
+  metaTitle           String?
+  metaDescription     String?
+  metaKeywords        String[]   @default([])
+  ogImageUrl          String?
+  
+  // Settings
+  settings            Json?
+  customCss           String?    // Limited custom CSS
+  headerCode          String?    // Analytics/tracking scripts
+  footerCode          String?
+  
+  // Analytics
+  viewCount           Int        @default(0)
+  
+  createdAt           DateTime   @default(now())
+  updatedAt           DateTime   @updatedAt
+  createdBy           String
+  updatedBy           String?
+  
+  pages               sf_pages[]
+  domainMappings      sf_domain_mappings[]
+  analyticsEvents     sf_analytics_events[]
+  
+  @@unique([tenantId, slug])
+  @@index([tenantId])
+  @@index([platformInstanceId])
+  @@index([partnerId])
+  @@index([status])
+}
+
+// Funnel (Partner-owned)
+model sf_funnels {
+  id                  String       @id @default(uuid())
+  tenantId            String
+  platformInstanceId  String?
+  partnerId           String
+  siteId              String?      // Optional: can be standalone or part of a site
+  
+  // Funnel details
+  name                String
+  slug                String
+  description         String?
+  
+  // Status
+  status              FunnelStatus @default(DRAFT)
+  
+  // Conversion goal
+  goalType            String?      // e.g., "lead", "booking", "purchase", "signup"
+  goalValue           Decimal?     @db.Decimal(10, 2)
+  
+  // Settings
+  settings            Json?
+  
+  // Analytics
+  totalVisitors       Int          @default(0)
+  totalConversions    Int          @default(0)
+  conversionRate      Decimal?     @db.Decimal(5, 2)
+  
+  createdAt           DateTime     @default(now())
+  updatedAt           DateTime     @updatedAt
+  createdBy           String
+  updatedBy           String?
+  
+  pages               sf_pages[]
+  analyticsEvents     sf_analytics_events[]
+  
+  @@unique([tenantId, slug])
+  @@index([tenantId])
+  @@index([platformInstanceId])
+  @@index([partnerId])
+  @@index([siteId])
+  @@index([status])
+}
+
+// Page (Content + Layout)
+model sf_pages {
+  id                  String    @id @default(uuid())
+  tenantId            String
+  siteId              String?
+  funnelId            String?
+  
+  // Page details
+  name                String
+  slug                String
+  pageType            PageType  @default(CONTENT)
+  
+  // Funnel positioning
+  funnelOrder         Int?      // Order in funnel (1, 2, 3...)
+  
+  // Content (JSON blocks)
+  blocks              Json      @default("[]")
+  
+  // SEO
+  metaTitle           String?
+  metaDescription     String?
+  ogImageUrl          String?
+  
+  // Status
+  isPublished         Boolean   @default(false)
+  publishedAt         DateTime?
+  
+  // Settings
+  settings            Json?
+  customCss           String?
+  
+  // Analytics
+  viewCount           Int       @default(0)
+  
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+  createdBy           String
+  updatedBy           String?
+  
+  site                sf_sites?   @relation(fields: [siteId], references: [id], onDelete: Cascade)
+  funnel              sf_funnels? @relation(fields: [funnelId], references: [id], onDelete: Cascade)
+  pageBlocks          sf_page_blocks[]
+  
+  @@unique([siteId, slug])
+  @@unique([funnelId, slug])
+  @@index([tenantId])
+  @@index([siteId])
+  @@index([funnelId])
+  @@index([pageType])
+}
+
+// Page Block (Individual content sections)
+model sf_page_blocks {
+  id          String   @id @default(uuid())
+  pageId      String
+  
+  // Block details
+  blockType   String   // e.g., "hero", "features", "testimonials", "cta", "form"
+  name        String?
+  
+  // Content (JSON)
+  content     Json     @default("{}")
+  styles      Json?
+  settings    Json?
+  
+  // Positioning
+  sortOrder   Int      @default(0)
+  
+  // Visibility
+  isVisible   Boolean  @default(true)
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  page        sf_pages @relation(fields: [pageId], references: [id], onDelete: Cascade)
+  
+  @@index([pageId])
+  @@index([blockType])
+}
+
+// Domain Mapping
+model sf_domain_mappings {
+  id                  String   @id @default(uuid())
+  siteId              String
+  
+  // Domain details
+  domain              String   @unique
+  subdomain           String?
+  
+  // Type
+  domainType          String   @default("custom") // "custom", "partner", "instance"
+  
+  // SSL
+  sslStatus           String   @default("pending") // "pending", "active", "failed"
+  sslExpiresAt        DateTime?
+  
+  // Status
+  isActive            Boolean  @default(true)
+  isPrimary           Boolean  @default(false)
+  verifiedAt          DateTime?
+  
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+  
+  site                sf_sites @relation(fields: [siteId], references: [id], onDelete: Cascade)
+  
+  @@index([siteId])
+  @@index([domain])
+  @@index([isActive])
+}
+
+// AI Content Logs (Audit trail for AI usage)
+model sf_ai_content_logs {
+  id                  String   @id @default(uuid())
+  tenantId            String
+  platformInstanceId  String?
+  partnerId           String
+  
+  // Request details
+  promptType          String   // e.g., "headline", "body", "cta", "seo"
+  prompt              String   @db.Text
+  
+  // Response
+  generatedContent    String   @db.Text
+  
+  // Approval
+  status              String   @default("pending") // "pending", "approved", "rejected", "edited"
+  approvedBy          String?
+  approvedAt          DateTime?
+  
+  // Usage tracking
+  tokensUsed          Int?
+  model               String?  // AI model used
+  
+  // Context
+  siteId              String?
+  funnelId            String?
+  pageId              String?
+  
+  createdAt           DateTime @default(now())
+  createdBy           String
+  
+  @@index([tenantId])
+  @@index([partnerId])
+  @@index([status])
+  @@index([createdAt])
+}
+
+// Analytics Events
+model sf_analytics_events {
+  id                  String   @id @default(uuid())
+  tenantId            String
+  platformInstanceId  String?
+  
+  // Event details
+  eventType           String   // "page_view", "funnel_start", "funnel_step", "conversion", "form_submit"
+  eventData           Json?
+  
+  // Context
+  siteId              String?
+  funnelId            String?
+  pageId              String?
+  
+  // Visitor info (anonymized)
+  visitorId           String?  // Anonymous visitor tracking
+  sessionId           String?
+  
+  // Source
+  referrer            String?
+  utmSource           String?
+  utmMedium           String?
+  utmCampaign         String?
+  
+  // Device info
+  deviceType          String?  // "desktop", "mobile", "tablet"
+  browser             String?
+  country             String?
+  
+  createdAt           DateTime @default(now())
+  
+  site                sf_sites?   @relation(fields: [siteId], references: [id], onDelete: SetNull)
+  funnel              sf_funnels? @relation(fields: [funnelId], references: [id], onDelete: SetNull)
+  
+  @@index([tenantId])
+  @@index([platformInstanceId])
+  @@index([eventType])
+  @@index([siteId])
+  @@index([funnelId])
+  @@index([createdAt])
+  @@index([visitorId])
+}
+
