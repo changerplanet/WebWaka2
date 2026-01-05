@@ -235,7 +235,7 @@ export class ValidationService {
    * Check 6: Capability is registered
    */
   private static async checkCapabilityRegistered(): Promise<ValidationCheck> {
-    const capability = await prisma.capability.findFirst({
+    const capability = await prisma.core_capabilities.findFirst({
       where: { key: 'logistics' },
     })
 

@@ -159,7 +159,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Check if key already exists
-    const existing = await prisma.capability.findUnique({
+    const existing = await prisma.core_capabilities.findUnique({
       where: { key },
     });
 
@@ -170,7 +170,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const capability = await prisma.capability.create({
+    const capability = await prisma.core_capabilities.create({
       data: {
         key,
         displayName,

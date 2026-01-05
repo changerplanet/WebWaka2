@@ -333,7 +333,7 @@ export async function getActiveCapabilities(
   const activeKeys = activations.map((a) => a.capabilityKey);
 
   // Add core capabilities (always active)
-  const allCapabilities = await prisma.capability.findMany({
+  const allCapabilities = await prisma.core_capabilities.findMany({
     where: { isCore: true },
     select: { key: true },
   });

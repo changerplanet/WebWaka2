@@ -31,7 +31,7 @@ export async function GET(
 
     const { key } = await params;
 
-    const capability = await prisma.capability.findUnique({
+    const capability = await prisma.core_capabilities.findUnique({
       where: { key },
       include: {
         activations: {
@@ -119,7 +119,7 @@ export async function PUT(
       metadata,
     } = body;
 
-    const capability = await prisma.capability.update({
+    const capability = await prisma.core_capabilities.update({
       where: { key },
       data: {
         ...(displayName !== undefined && { displayName }),

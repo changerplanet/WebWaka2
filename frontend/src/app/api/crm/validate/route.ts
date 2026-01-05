@@ -60,7 +60,7 @@ export async function GET(request: NextRequest) {
     });
 
     // Check 4: Capability registered
-    const capability = await prisma.capability.findUnique({
+    const capability = await prisma.core_capabilities.findUnique({
       where: { key: 'crm' },
     });
     

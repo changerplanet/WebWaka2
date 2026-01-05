@@ -27,7 +27,7 @@ export async function GET(request: NextRequest) {
       where.domain = domain;
     }
 
-    const capabilities = await prisma.capability.findMany({
+    const capabilities = await prisma.core_capabilities.findMany({
       where,
       orderBy: [{ domain: 'asc' }, { sortOrder: 'asc' }],
       select: {

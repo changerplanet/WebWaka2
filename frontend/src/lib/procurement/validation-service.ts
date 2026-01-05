@@ -141,7 +141,7 @@ export class ProcValidationService {
    */
   private static async checkCapabilityRegistered(): Promise<ValidationCheck> {
     // Check if procurement capability exists
-    const capability = await prisma.capability.findFirst({
+    const capability = await prisma.core_capabilities.findFirst({
       where: { key: 'procurement' },
     })
 
