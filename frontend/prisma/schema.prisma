@@ -842,7 +842,7 @@ model Session {
   deviceName        String?
   isRemembered      Boolean   @default(false)
   rememberedAt      DateTime?
-  User              User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user              User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([deviceFingerprint])
   @@index([expiresAt])
