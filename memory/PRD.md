@@ -283,6 +283,36 @@ Following comprehensive platform testing by Manus, 5 observed issues were fixed:
 ---
 
 ## Credentials
-- **Tenant Admin**: admin@acme.com (Magic link)
-- **Super Admin**: admin@saascore.com (Magic link)
-- **WebWaka Partner**: webwaka-digital-services (slug)
+
+### Platform-Level
+- **Super Admin**: `superadmin@saascore.com` (Password: `Demo2026!`)
+
+### Partner-Level (WebWaka Demo Partner)
+- **Partner Owner**: `demo.owner@webwaka.com` (Password: `Demo2026!`)
+- **Partner Admin**: `demo.admin@webwaka.com` (Password: `Demo2026!`)
+- **Partner Sales**: `demo.sales@webwaka.com` (Password: `Demo2026!`)
+- **Partner Support**: `demo.support@webwaka.com` (Password: `Demo2026!`)
+- **Partner Staff**: `demo.staff@webwaka.com` (Password: `Demo2026!`)
+
+### Tenant-Level (Demo Tenants)
+- **Retail Admin**: `admin@demo-retail-store.demo` (Password: `Demo2026!`)
+- **Marketplace Admin**: `admin@demo-marketplace.demo` (Password: `Demo2026!`)
+- **School Admin**: `admin@demo-school.demo` (Password: `Demo2026!`)
+- **Clinic Admin**: `admin@demo-clinic.demo` (Password: `Demo2026!`)
+- **Logistics Admin**: `admin@demo-logistics.demo` (Password: `Demo2026!`)
+- **B2B Admin**: `admin@demo-b2b.demo` (Password: `Demo2026!`)
+
+### External Roles
+- **Vendor (MVM)**: `vendor@demo-marketplace.demo` (Password: `Demo2026!`)
+- **Driver (Logistics)**: `driver@demo-logistics.demo` (Password: `Demo2026!`)
+- **B2B Customer**: `b2b@demo-b2b.demo` (Password: `Demo2026!`)
+- **Registered Customer**: `customer@demo.com` (Password: `Demo2026!`)
+
+### Referral Codes
+- `DEMO-SALES-2026` - Demo sales campaign code
+
+### URLs
+- **Login**: `/login-v2`
+- **Super Admin Dashboard**: `/admin`
+- **Partner Dashboard**: `/dashboard/partner`
+- **Tenant Dashboard**: `/dashboard`
