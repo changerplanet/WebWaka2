@@ -38,9 +38,11 @@ export default function TenantDashboard() {
   useEffect(() => {
     if (authLoading) return
     
-    if (tenantSlug && activeTenantId) {
+    if (tenantSlug) {
       fetchTenant(tenantSlug)
-      fetchActiveCapabilities()
+      if (activeTenantId) {
+        fetchActiveCapabilities()
+      }
     } else if (!activeTenantId && !tenantSlug) {
       setLoading(false)
       setError('No tenant specified. Use ?tenant=slug to view a tenant dashboard.')
