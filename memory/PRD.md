@@ -299,6 +299,45 @@ All 6 demo tenants now successfully:
 4. Load 28 capabilities
 5. Display full dashboard UI
 
+### Partner Portal Schema Drift Fix ✅
+**Completed: January 5, 2026**
+
+Partner Portal was stuck on "Loading Partner Portal..." for all partner-level users (Owner, Admin, Sales, Support, Staff).
+
+**Root Cause:** Two issues identified:
+1. **Prisma model naming mismatch:** Code used PascalCase model names (`partnerReferralLinkExt`) but generated Prisma client uses snake_case (`partner_referral_links_ext`)
+2. **Separate PrismaClient instances:** Partner service files were creating their own `new PrismaClient()` instead of using the shared instance from `@/lib/prisma`
+
+**Model Name Corrections:**
+| Code Reference | Correct Prisma Model |
+|----------------|---------------------|
+| `partnerReferralLinkExt` | `partner_referral_links_ext` |
+| `partnerAttributionRecord` | `partner_attributions_ext` |
+| `partnerCommissionRecordExt` | `partner_commission_records_ext` |
+| `partnerCommissionRuleExt` | `partner_commission_rules_ext` |
+| `partnerEventLogExt` | `partner_event_logs_ext` |
+| `partnerProfileExt` | `partner_profiles_ext` |
+| `partnerConfiguration` | `partner_configurations` |
+| `partnerVerificationRecord` | `partner_verifications` |
+
+**Files Fixed:**
+- `/app/frontend/src/lib/partner/referral-service.ts`
+- `/app/frontend/src/lib/partner/commission-service.ts`
+- `/app/frontend/src/lib/partner/event-service.ts`
+- `/app/frontend/src/lib/partner/config-service.ts`
+- `/app/frontend/src/lib/partner/onboarding-service.ts`
+- `/app/frontend/src/lib/partner/entitlements-service.ts`
+
+**Verification Results:**
+- Partner Owner: ✅ Login + Portal loads with all sections
+- Partner Admin: ✅ Login + Portal loads
+- Partner Sales: ✅ Login + Portal loads (occasional intermittent loading)
+- Partner Support: ✅ Login + Portal loads
+- Partner Staff: ✅ Login + Portal loads
+- Super Admin: ✅ Login + Admin dashboard loads
+
+**Test Report:** `/app/test_reports/iteration_46.json`
+
 ---
 
 ## Roadmap (Upcoming)
