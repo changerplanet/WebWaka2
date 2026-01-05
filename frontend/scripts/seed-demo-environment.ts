@@ -528,16 +528,15 @@ async function createDemoData(tenants: Array<{ id: string; slug: string; type: s
       for (const staff of staffMembers) {
         await prisma.staffMember.create({
           data: {
+            id: crypto.randomUUID(),
             tenantId: tenant.id,
             firstName: staff.firstName,
             lastName: staff.lastName,
-            fullName: `${staff.firstName} ${staff.lastName}`,
             email: `${staff.firstName.toLowerCase()}@${tenant.slug}.demo`,
-            role: staff.role as any,
-            status: 'ACTIVE',
-            hourlyRate: staff.hourlyRate,
+            status: StaffStatus.ACTIVE,
             locationId: location.id,
             hireDate: new Date(Date.now() - Math.random() * 365 * 24 * 60 * 60 * 1000),
+            updatedAt: new Date(),
           }
         })
       }
