@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-01-05T12:21:46.835Z",
+  "generatedAt": "2026-01-05T14:06:57.254Z",
   "description": "Known Prisma model naming issues (legacy code)",
   "knownIssues": [
     "src/lib/ai/config-service.ts:71:aIInsight",
