@@ -1,8 +1,8 @@
 {
-  "timestamp": "2026-01-05T16:57:28.585Z",
+  "timestamp": "2026-01-05T16:58:14.734Z",
   "mode": "check",
   "summary": {
-    "totalFiles": 535,
+    "totalFiles": 536,
     "totalReferences": 2037,
     "validModels": 193,
     "totalErrors": 235,
