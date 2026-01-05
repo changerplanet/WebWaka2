@@ -617,15 +617,15 @@ async function createExternalRoleUsers(tenants: Array<{ id: string; slug: string
       // Create staff member for driver
       await prisma.staffMember.create({
         data: {
+          id: crypto.randomUUID(),
           tenantId: logisticsTenant.id,
           userId: driverUser.id,
           firstName: 'Demo',
           lastName: 'Driver',
-          fullName: 'Demo Driver',
           email: driverEmail,
           phone: '+2348300000002',
-          role: 'STAFF',
-          status: 'ACTIVE',
+          status: StaffStatus.ACTIVE,
+          updatedAt: new Date(),
         }
       })
       console.log(`  ↳ Driver staff record created`)
