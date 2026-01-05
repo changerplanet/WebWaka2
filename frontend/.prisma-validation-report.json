@@ -1,34 +1,15 @@
 {
-  "timestamp": "2026-01-05T14:06:16.134Z",
+  "timestamp": "2026-01-05T14:06:27.112Z",
   "mode": "check",
   "summary": {
     "totalFiles": 503,
     "totalReferences": 1920,
-    "validModels": 184,
-    "totalErrors": 237,
+    "validModels": 193,
+    "totalErrors": 235,
     "legacyIssues": 966,
-    "newErrors": 2,
+    "newErrors": 0,
     "baselinedIssues": 1201
   },
-  "newErrors": [
-    {
-      "model": "sf_sites",
-      "method": "count",
-      "line": 444,
-      "file": "/app/frontend/src/lib/sites-funnels/entitlements-service.ts",
-      "key": "src/lib/sites-funnels/entitlements-service.ts:444:sf_sites",
-      "type": "UNKNOWN_MODEL",
-      "suggestion": null
-    },
-    {
-      "model": "sf_funnels",
-      "method": "count",
-      "line": 484,
-      "file": "/app/frontend/src/lib/sites-funnels/entitlements-service.ts",
-      "key": "src/lib/sites-funnels/entitlements-service.ts:484:sf_funnels",
-      "type": "UNKNOWN_MODEL",
-      "suggestion": null
-    }
-  ],
-  "status": "FAILED"
+  "newErrors": [],
+  "status": "PASSED"
 }
