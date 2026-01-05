@@ -203,6 +203,36 @@ Following comprehensive platform testing by Manus, 5 observed issues were fixed:
 - Test Report: `/app/test_reports/iteration_43.json`
 - All 5 fixes verified by testing agent (100% pass rate)
 
+### Global Auth Failure Remediation ✅
+**Completed: January 5, 2026**
+
+**Root Cause:** Prisma schema corruption from `prisma db pull` command renamed relation fields from lowercase (code convention) to PascalCase (Prisma default):
+- `memberships` → `TenantMembership`
+- `tenant` → `Tenant`
+- `user` → `User`
+
+This caused ALL login attempts to fail with "Unknown field" Prisma validation errors.
+
+**Fix Applied:**
+1. Restored relation names in `prisma/schema.prisma`:
+   - User model: `TenantMembership` → `memberships`
+   - TenantMembership model: `Tenant` → `tenant`, `User` → `user`
+   - Multiple other models fixed by testing agent
+2. Regenerated Prisma client
+3. Added role-based redirect logic in `/login-v2/page.tsx`:
+   - Super Admin → `/admin`
+   - Partner users → `/dashboard/partner`
+   - Tenant users → `/dashboard?tenant={slug}`
+4. Updated login service to return `globalRole` and `isPartner` in response
+
+**Verification:**
+- All 22+ demo accounts login successfully
+- Correct role-based routing after login
+- No 500 errors
+- All admin governance pages working
+
+- Test Reports: `/app/test_reports/iteration_45.json`
+
 ---
 
 ## Roadmap (Upcoming)
