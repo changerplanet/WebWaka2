@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getCurrentSession, switchTenant } from '@/lib/auth'
+import { prisma } from '@/lib/prisma'
 
 // GET /api/auth/session - Get current session
 export async function GET() {
@@ -13,6 +14,21 @@ export async function GET() {
         user: null
       })
     }
+    
+    // Check if user is a partner user
+    const partnerUser = await prisma.partnerUser.findUnique({
+      where: { userId: session.user.id },
+      include: {
+        partner: {
+          select: {
+            id: true,
+            name: true,
+            slug: true,
+            status: true
+          }
+        }
+      }
+    })
     
     return NextResponse.json({
       success: true,
@@ -28,7 +44,17 @@ export async function GET() {
           tenantName: m.tenant.name,
           tenantSlug: m.tenant.slug,
           role: m.role
-        }))
+        })),
+        // Include partner info if user is a partner user
+        isPartner: !!partnerUser,
+        partner: partnerUser ? {
+          id: partnerUser.partner.id,
+          name: partnerUser.partner.name,
+          slug: partnerUser.partner.slug,
+          status: partnerUser.partner.status,
+          role: partnerUser.role,
+          department: partnerUser.department
+        } : null
       },
       activeTenantId: session.activeTenantId
     })
