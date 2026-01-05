@@ -11,7 +11,27 @@
  * Run: npx ts-node scripts/seed-demo-environment.ts
  */
 
-import { PrismaClient, GlobalRole, TenantRole, PartnerRole, PartnerStatus, PartnerTier, TenantStatus, CustomerStatus, ProductStatus, ProductType, LocationStatus } from '@prisma/client'
+import { PrismaClient } from '@prisma/client'
+
+// Define enums manually since they may vary from introspection
+const GlobalRole = { SUPER_ADMIN: 'SUPER_ADMIN', USER: 'USER' } as const
+const TenantRole = { TENANT_ADMIN: 'TENANT_ADMIN', TENANT_USER: 'TENANT_USER' } as const
+const PartnerRole = { 
+  PARTNER_OWNER: 'PARTNER_OWNER', 
+  PARTNER_ADMIN: 'PARTNER_ADMIN', 
+  PARTNER_SALES: 'PARTNER_SALES', 
+  PARTNER_SUPPORT: 'PARTNER_SUPPORT', 
+  PARTNER_STAFF: 'PARTNER_STAFF' 
+} as const
+const PartnerStatus = { PENDING: 'PENDING', ACTIVE: 'ACTIVE', SUSPENDED: 'SUSPENDED', TERMINATED: 'TERMINATED' } as const
+const PartnerTier = { BRONZE: 'BRONZE', SILVER: 'SILVER', GOLD: 'GOLD', PLATINUM: 'PLATINUM' } as const
+const TenantStatus = { PENDING_ACTIVATION: 'PENDING_ACTIVATION', ACTIVE: 'ACTIVE', SUSPENDED: 'SUSPENDED', DEACTIVATED: 'DEACTIVATED' } as const
+const CustomerStatus = { ACTIVE: 'ACTIVE', INACTIVE: 'INACTIVE', BLOCKED: 'BLOCKED' } as const
+const ProductStatus = { DRAFT: 'DRAFT', ACTIVE: 'ACTIVE', ARCHIVED: 'ARCHIVED' } as const
+const ProductType = { PHYSICAL: 'PHYSICAL', DIGITAL: 'DIGITAL', SERVICE: 'SERVICE', BUNDLE: 'BUNDLE' } as const
+const LocationStatus = { ACTIVE: 'ACTIVE', INACTIVE: 'INACTIVE', CLOSED: 'CLOSED' } as const
+const StaffStatus = { ACTIVE: 'ACTIVE', INACTIVE: 'INACTIVE', TERMINATED: 'TERMINATED' } as const
+const SupplierStatus = { ACTIVE: 'ACTIVE', INACTIVE: 'INACTIVE' } as const
 import bcrypt from 'bcryptjs'
 
 const prisma = new PrismaClient()
