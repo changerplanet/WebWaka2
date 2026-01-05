@@ -128,11 +128,13 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
-  const session = await getSessionFromRequest(request);
+  const session = await getCurrentSession();
   
-  if (!session?.userId) {
+  if (!session?.user?.id) {
     return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
   }
+
+  const userId = session.user.id;
 
   try {
     const body = await request.json();
