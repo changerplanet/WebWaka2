@@ -106,6 +106,49 @@ export default function PartnerPortal() {
   const [showCreateLink, setShowCreateLink] = useState(false)
   const [newLinkName, setNewLinkName] = useState('')
   const [copiedCode, setCopiedCode] = useState<string | null>(null)
+  const [retryCount, setRetryCount] = useState(0)
+  const maxRetries = 3
+  const retryTimeoutRef = useRef<NodeJS.Timeout | null>(null)
+
+  // Retry fetch with exponential backoff
+  const fetchWithRetry = useCallback(async (
+    fetchFn: () => Promise<Response>,
+    retries: number = 3,
+    baseDelay: number = 1000
+  ): Promise<Response> => {
+    let lastError: Error | null = null;
+    
+    for (let attempt = 0; attempt < retries; attempt++) {
+      try {
+        const response = await fetchFn();
+        if (response.ok) {
+          return response;
+        }
+        // If response is not ok but not a server error, don't retry
+        if (response.status < 500) {
+          return response;
+        }
+        throw new Error(`Server error: ${response.status}`);
+      } catch (err) {
+        lastError = err as Error;
+        if (attempt < retries - 1) {
+          const delay = baseDelay * Math.pow(2, attempt);
+          await new Promise(resolve => setTimeout(resolve, delay));
+        }
+      }
+    }
+    
+    throw lastError || new Error('Request failed after retries');
+  }, []);
+
+  // Cleanup retry timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (retryTimeoutRef.current) {
+        clearTimeout(retryTimeoutRef.current);
+      }
+    };
+  }, []);
 
   // Fetch initial partner when authenticated
   useEffect(() => {
@@ -126,18 +169,28 @@ export default function PartnerPortal() {
 
   const fetchSession = async () => {
     try {
-      const res = await fetch('/api/auth/session')
+      const res = await fetchWithRetry(() => fetch('/api/auth/session'), 3, 500);
       const data = await res.json()
       
       if (data.success && data.user?.isPartner && data.user?.partner?.id) {
         setPartnerId(data.user.partner.id)
+        setRetryCount(0) // Reset retry count on success
       } else {
         // Fallback to searching by email
         await fetchInitialPartner()
       }
     } catch (err) {
       console.error('Error fetching session:', err)
-      await fetchInitialPartner()
+      // Retry the session fetch with backoff
+      if (retryCount < maxRetries) {
+        const delay = 1000 * Math.pow(2, retryCount);
+        setRetryCount(prev => prev + 1);
+        retryTimeoutRef.current = setTimeout(() => {
+          fetchSession();
+        }, delay);
+      } else {
+        await fetchInitialPartner()
+      }
     }
   }
 
@@ -145,7 +198,11 @@ export default function PartnerPortal() {
     try {
       // First try to find partner by user email
       if (user?.email) {
-        const userPartnerRes = await fetch(`/api/partner?action=partners&search=${encodeURIComponent(user.email)}&limit=1`)
+        const userPartnerRes = await fetchWithRetry(
+          () => fetch(`/api/partner?action=partners&search=${encodeURIComponent(user.email)}&limit=1`),
+          2,
+          500
+        );
         const userPartnerData = await userPartnerRes.json()
         
         if (userPartnerData.partners && userPartnerData.partners.length > 0) {
@@ -155,14 +212,22 @@ export default function PartnerPortal() {
       }
       
       // Fallback: Get list of partners and use the first active one
-      const res = await fetch('/api/partner?action=partners&status=ACTIVE&limit=1')
+      const res = await fetchWithRetry(
+        () => fetch('/api/partner?action=partners&status=ACTIVE&limit=1'),
+        2,
+        500
+      );
       const data = await res.json()
       
       if (data.partners && data.partners.length > 0) {
         setPartnerId(data.partners[0].id)
       } else {
         // No active partners, try any partner
-        const allRes = await fetch('/api/partner?action=partners&limit=1')
+        const allRes = await fetchWithRetry(
+          () => fetch('/api/partner?action=partners&limit=1'),
+          2,
+          500
+        );
         const allData = await allRes.json()
         if (allData.partners && allData.partners.length > 0) {
           setPartnerId(allData.partners[0].id)
@@ -185,42 +250,59 @@ export default function PartnerPortal() {
       setLoading(true)
       setError(null)
 
-      // Fetch partner profile
-      const partnerRes = await fetch(`/api/partner?action=partner&partnerId=${partnerId}`)
-      const partnerData = await partnerRes.json()
-      if (partnerData.partner) {
-        setPartner(partnerData.partner)
+      // Fetch all data in parallel with individual error handling
+      const [partnerRes, linksRes, attributionsRes, commissionsRes, earningsRes] = await Promise.allSettled([
+        fetchWithRetry(() => fetch(`/api/partner?action=partner&partnerId=${partnerId}`), 2, 500),
+        fetchWithRetry(() => fetch(`/api/partner?action=referral-links&partnerId=${partnerId}`), 2, 500),
+        fetchWithRetry(() => fetch(`/api/partner?action=attributions&partnerId=${partnerId}&limit=10`), 2, 500),
+        fetchWithRetry(() => fetch(`/api/partner?action=commissions&partnerId=${partnerId}&limit=10`), 2, 500),
+        fetchWithRetry(() => fetch(`/api/partner?action=earnings-summary&partnerId=${partnerId}`), 2, 500),
+      ]);
+
+      // Process partner data (required)
+      if (partnerRes.status === 'fulfilled') {
+        const partnerData = await partnerRes.value.json();
+        if (partnerData.partner) {
+          setPartner(partnerData.partner);
+        }
+      } else {
+        console.error('Failed to fetch partner profile:', partnerRes.reason);
       }
 
-      // Fetch referral links
-      const linksRes = await fetch(`/api/partner?action=referral-links&partnerId=${partnerId}`)
-      const linksData = await linksRes.json()
-      if (linksData.referralLinks) {
-        setReferralLinks(linksData.referralLinks)
+      // Process referral links (optional)
+      if (linksRes.status === 'fulfilled') {
+        const linksData = await linksRes.value.json();
+        if (linksData.referralLinks) {
+          setReferralLinks(linksData.referralLinks);
+        }
       }
 
-      // Fetch attributions
-      const attributionsRes = await fetch(`/api/partner?action=attributions&partnerId=${partnerId}&limit=10`)
-      const attributionsData = await attributionsRes.json()
-      if (attributionsData.attributions) {
-        setAttributions(attributionsData.attributions)
+      // Process attributions (optional)
+      if (attributionsRes.status === 'fulfilled') {
+        const attributionsData = await attributionsRes.value.json();
+        if (attributionsData.attributions) {
+          setAttributions(attributionsData.attributions);
+        }
       }
 
-      // Fetch commissions
-      const commissionsRes = await fetch(`/api/partner?action=commissions&partnerId=${partnerId}&limit=10`)
-      const commissionsData = await commissionsRes.json()
-      if (commissionsData.records) {
-        setCommissions(commissionsData.records)
+      // Process commissions (optional)
+      if (commissionsRes.status === 'fulfilled') {
+        const commissionsData = await commissionsRes.value.json();
+        if (commissionsData.records) {
+          setCommissions(commissionsData.records);
+        }
       }
 
-      // Fetch earnings summary
-      const earningsRes = await fetch(`/api/partner?action=earnings-summary&partnerId=${partnerId}`)
-      const earningsData = await earningsRes.json()
-      if (earningsData.summary) {
-        setEarnings(earningsData.summary)
+      // Process earnings (optional)
+      if (earningsRes.status === 'fulfilled') {
+        const earningsData = await earningsRes.value.json();
+        if (earningsData.summary) {
+          setEarnings(earningsData.summary);
+        }
       }
 
     } catch (err: any) {
+      console.error('Partner data fetch error:', err);
       setError(err.message || 'Failed to load partner data')
     } finally {
       setLoading(false)
