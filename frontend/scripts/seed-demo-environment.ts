@@ -155,6 +155,7 @@ async function createDemoPartner() {
   if (!existingAgreement) {
     await prisma.partnerAgreement.create({
       data: {
+        id: crypto.randomUUID(),
         partnerId: partner.id,
         version: 1,
         effectiveFrom: new Date(),
@@ -165,6 +166,7 @@ async function createDemoPartner() {
         status: 'ACTIVE',
         signedAt: new Date(),
         approvedAt: new Date(),
+        updatedAt: new Date(),
       }
     })
     console.log('✅ Partner Agreement created')
