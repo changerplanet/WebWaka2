@@ -1112,8 +1112,8 @@ model TenantDomain {
   createdAt          DateTime          @default(now())
   updatedAt          DateTime
   platformInstanceId String?
-  PlatformInstance   PlatformInstance? @relation(fields: [platformInstanceId], references: [id])
-  Tenant             Tenant            @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  platformInstance   PlatformInstance? @relation(fields: [platformInstanceId], references: [id])
+  tenant             Tenant            @relation(fields: [tenantId], references: [id], onDelete: Cascade)
 
   @@index([domain])
   @@index([platformInstanceId])
