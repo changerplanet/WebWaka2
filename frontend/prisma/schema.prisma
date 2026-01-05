@@ -702,9 +702,9 @@ model PlatformInstance {
   InstanceFinancialSummary InstanceFinancialSummary?
   InstanceSubscription     InstanceSubscription?
   PartnerInstanceEarning   PartnerInstanceEarning[]
-  Partner                  Partner?                  @relation(fields: [createdByPartnerId], references: [id])
-  Tenant                   Tenant                    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  TenantDomain             TenantDomain[]
+  createdByPartner         Partner?                  @relation(fields: [createdByPartnerId], references: [id])
+  tenant                   Tenant                    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  domains                  TenantDomain[]
 
   @@unique([tenantId, slug])
   @@index([createdByPartnerId])
