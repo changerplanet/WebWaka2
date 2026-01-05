@@ -180,7 +180,7 @@ export class CapabilityActivationService {
       capabilitiesQuery.domain = options.domain;
     }
 
-    const capabilities = await prisma.capability.findMany({
+    const capabilities = await prisma.core_capabilities.findMany({
       where: capabilitiesQuery,
       orderBy: [{ domain: 'asc' }, { sortOrder: 'asc' }],
     });
