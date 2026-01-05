@@ -117,10 +117,10 @@ export async function startImpersonation(
       metadata: {
         targetName,
         expiresAt: expiresAt.toISOString(),
-        reason: 'Support/Diagnostics'
-      },
-      ipAddress,
-      userAgent
+        reason: 'Support/Diagnostics',
+        ipAddress,
+        userAgent
+      }
     })
 
     return { success: true, context }
