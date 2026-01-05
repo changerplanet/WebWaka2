@@ -7,7 +7,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { getSessionFromRequest } from '@/lib/auth';
+import { getCurrentSession } from '@/lib/auth';
 import { requireSitesFunnelsEnabled, requirePartnerOwnership } from '@/lib/sites-funnels/entitlements-service';
 import {
   createFunnel,
@@ -23,12 +23,13 @@ import {
 } from '@/lib/sites-funnels/funnel-service';
 
 export async function GET(request: NextRequest) {
-  const session = await getSessionFromRequest(request);
+  const session = await getCurrentSession();
   
-  if (!session?.userId) {
+  if (!session?.user?.id) {
     return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
   }
 
+  const userId = session.user.id;
   const { searchParams } = new URL(request.url);
   const action = searchParams.get('action') || 'list';
   const tenantId = searchParams.get('tenantId') || session.activeTenantId;
@@ -95,11 +96,13 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
-  const session = await getSessionFromRequest(request);
+  const session = await getCurrentSession();
   
-  if (!session?.userId) {
+  if (!session?.user?.id) {
     return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
   }
+
+  const userId = session.user.id;
 
   try {
     const body = await request.json();
@@ -117,7 +120,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Check partner ownership for write operations
-    const partnerCheck = await requirePartnerOwnership(tenantId, session.userId);
+    const partnerCheck = await requirePartnerOwnership(tenantId, userId);
     if (!partnerCheck.authorized) {
       return NextResponse.json({ success: false, error: partnerCheck.error }, { status: 403 });
     }
@@ -140,7 +143,7 @@ export async function POST(request: NextRequest) {
           description,
           goalType,
           goalValue,
-          createdBy: session.userId,
+          createdBy: userId,
         });
         return NextResponse.json(result);
       }
@@ -152,7 +155,7 @@ export async function POST(request: NextRequest) {
         }
         const result = await updateFunnel(funnelId, tenantId, {
           ...updateData,
-          updatedBy: session.userId,
+          updatedBy: userId,
         });
         return NextResponse.json(result);
       }
@@ -171,7 +174,7 @@ export async function POST(request: NextRequest) {
         if (!funnelId) {
           return NextResponse.json({ success: false, error: 'Funnel ID required' }, { status: 400 });
         }
-        const result = await activateFunnel(funnelId, tenantId, session.userId);
+        const result = await activateFunnel(funnelId, tenantId, userId);
         return NextResponse.json(result);
       }
 
@@ -180,7 +183,7 @@ export async function POST(request: NextRequest) {
         if (!funnelId) {
           return NextResponse.json({ success: false, error: 'Funnel ID required' }, { status: 400 });
         }
-        const result = await pauseFunnel(funnelId, tenantId, session.userId);
+        const result = await pauseFunnel(funnelId, tenantId, userId);
         return NextResponse.json(result);
       }
 
@@ -195,7 +198,7 @@ export async function POST(request: NextRequest) {
           name,
           slug,
           pageType,
-          createdBy: session.userId,
+          createdBy: userId,
           templateId,
         });
         return NextResponse.json(result);
