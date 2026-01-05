@@ -279,3 +279,49 @@ export async function isTenantAdmin(userId: string, tenantId: string): Promise<b
   
   return membership?.role === 'TENANT_ADMIN' && membership.isActive
 }
+
+/**
+ * Extended session type for API routes
+ */
+export type ApiSession = {
+  userId: string;
+  sessionId: string;
+  sessionToken: string;
+  activeTenantId: string | null;
+  user: SessionUser;
+}
+
+/**
+ * Get session from NextRequest for API routes
+ * Extracts session token from cookies and validates it
+ */
+export async function getSessionFromRequest(request: Request): Promise<ApiSession | null> {
+  // Try to get token from cookie header
+  const cookieHeader = request.headers.get('cookie') || '';
+  const cookies = Object.fromEntries(
+    cookieHeader.split(';').map(c => {
+      const [key, ...val] = c.trim().split('=');
+      return [key, val.join('=')];
+    })
+  );
+  
+  const sessionToken = cookies['session_token'];
+  
+  if (!sessionToken) {
+    return null;
+  }
+  
+  const session = await getSessionByToken(sessionToken);
+  
+  if (!session) {
+    return null;
+  }
+  
+  return {
+    userId: session.user.id,
+    sessionId: session.sessionId,
+    sessionToken: session.sessionToken,
+    activeTenantId: session.activeTenantId,
+    user: session.user,
+  };
+}
