@@ -190,7 +190,7 @@ export async function createAttribution(input: CreateAttributionInput): Promise<
     const config = await getPartnerConfiguration();
     
     // Check if tenant already has attribution
-    const existingAttribution = await prisma.partnerAttributionRecord.findUnique({
+    const existingAttribution = await prisma.partner_attributions_ext.findUnique({
       where: { tenantId: input.tenantId },
     });
     
@@ -213,7 +213,7 @@ export async function createAttribution(input: CreateAttributionInput): Promise<
     }
     
     // Create attribution
-    const attribution = await prisma.partnerAttributionRecord.create({
+    const attribution = await prisma.partner_attributions_ext.create({
       data: {
         partnerId: input.partnerId,
         tenantId: input.tenantId,
@@ -229,14 +229,14 @@ export async function createAttribution(input: CreateAttributionInput): Promise<
     
     // Update referral link signups count
     if (input.referralLinkId) {
-      await prisma.partnerReferralLinkExt.update({
+      await prisma.partner_referral_links_ext.update({
         where: { id: input.referralLinkId },
         data: { signups: { increment: 1 } },
       });
     }
     
     // Update partner metrics
-    await prisma.partnerProfileExt.update({
+    await prisma.partner_profiles_ext.update({
       where: { partnerId: input.partnerId },
       data: { totalReferrals: { increment: 1 } },
     });
@@ -273,7 +273,7 @@ export async function lockAttribution(tenantId: string): Promise<{
   error?: string;
 }> {
   try {
-    const attribution = await prisma.partnerAttributionRecord.findUnique({
+    const attribution = await prisma.partner_attributions_ext.findUnique({
       where: { tenantId },
     });
     
@@ -285,7 +285,7 @@ export async function lockAttribution(tenantId: string): Promise<{
       return { success: true };  // Already locked
     }
     
-    await prisma.partnerAttributionRecord.update({
+    await prisma.partner_attributions_ext.update({
       where: { tenantId },
       data: {
         isLocked: true,
@@ -297,7 +297,7 @@ export async function lockAttribution(tenantId: string): Promise<{
     
     // Update referral link conversions
     if (attribution.referralLinkId) {
-      await prisma.partnerReferralLinkExt.update({
+      await prisma.partner_referral_links_ext.update({
         where: { id: attribution.referralLinkId },
         data: { conversions: { increment: 1 } },
       });
@@ -319,7 +319,7 @@ export async function lockAttribution(tenantId: string): Promise<{
 }
 
 export async function getAttributionByTenant(tenantId: string) {
-  return prisma.partnerAttributionRecord.findUnique({
+  return prisma.partner_attributions_ext.findUnique({
     where: { tenantId },
   });
 }
@@ -336,13 +336,13 @@ export async function getAttributionsByPartner(
   }
   
   const [attributions, total] = await Promise.all([
-    prisma.partnerAttributionRecord.findMany({
+    prisma.partner_attributions_ext.findMany({
       where,
       skip: (page - 1) * limit,
       take: limit,
       orderBy: { attributedAt: 'desc' },
     }),
-    prisma.partnerAttributionRecord.count({ where }),
+    prisma.partner_attributions_ext.count({ where }),
   ]);
   
   return {
@@ -364,7 +364,7 @@ export async function resolvePartnerFromReferralCode(code: string): Promise<{
   partnerId: string | null;
   referralLinkId: string | null;
 }> {
-  const link = await prisma.partnerReferralLinkExt.findUnique({
+  const link = await prisma.partner_referral_links_ext.findUnique({
     where: { code },
   });
   
