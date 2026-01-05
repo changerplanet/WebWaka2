@@ -570,6 +570,7 @@ export function getAvailableDomains(): { key: CapabilityDomain; label: string }[
     logistics: 'Logistics',
     hr: 'Human Resources',
     crm: 'Customer Relations',
+    marketing: 'Marketing & Sites',
     general: 'General',
   };
 
