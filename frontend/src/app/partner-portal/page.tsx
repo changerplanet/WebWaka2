@@ -133,10 +133,11 @@ export default function PartnerPortal() {
         setPartnerId(data.user.partner.id)
       } else {
         // Fallback to searching by email
-        fetchInitialPartner()
+        await fetchInitialPartner()
       }
     } catch (err) {
-      fetchInitialPartner()
+      console.error('Error fetching session:', err)
+      await fetchInitialPartner()
     }
   }
 
@@ -171,6 +172,7 @@ export default function PartnerPortal() {
         }
       }
     } catch (err: any) {
+      console.error('Error fetching partner:', err)
       setError(err.message || 'Failed to load partner')
       setLoading(false)
     }
