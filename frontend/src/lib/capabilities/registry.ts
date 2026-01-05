@@ -176,8 +176,71 @@ export const CAPABILITY_REGISTRY: Record<string, CapabilityDefinition> = {
     icon: 'truck',
     sortOrder: 1,
     metadata: {
-      version: '0.0.0',
-      status: 'planned',
+      version: '1.0.0',
+      status: 'active',
+    },
+  },
+  
+  // =========================================================================
+  // TRANSPORT & MOBILITY CAPABILITIES
+  // =========================================================================
+  
+  parkhub: {
+    key: 'parkhub',
+    displayName: 'ParkHub - Motor Park Marketplace',
+    domain: CAPABILITY_DOMAINS.LOGISTICS,
+    description: 'Multi-vendor motor park marketplace for transport companies. Routes as products, seats as inventory, tickets as orders.',
+    dependencies: ['mvm', 'logistics', 'payments'],
+    icon: 'bus',
+    sortOrder: 2,
+    metadata: {
+      version: '1.0.0',
+      releaseDate: '2026-01-05',
+      status: 'active',
+      nigeriaFirst: true,
+      solutionType: 'transport_marketplace',
+      // MVM Configuration Mapping
+      mvmMapping: {
+        marketplaceOwner: 'Motor Park (Tenant)',
+        vendors: 'Transport Companies',
+        products: 'Routes / Trips',
+        inventory: 'Seats per Bus',
+        orders: 'Tickets',
+        commission: 'Park-level Commission',
+      },
+      // Product type override
+      productType: 'service',
+      inventoryType: 'seat_count',
+      orderType: 'ticket',
+      // UI label overrides
+      labelOverrides: {
+        vendor: 'Transport Company',
+        vendors: 'Transport Companies',
+        product: 'Route',
+        products: 'Routes',
+        inventory: 'Seats',
+        order: 'Ticket',
+        orders: 'Tickets',
+        customer: 'Passenger',
+        customers: 'Passengers',
+      },
+      // Logistics integration
+      logisticsIntegration: {
+        agentType: 'DRIVER',
+        assignmentType: 'TRIP',
+        statusWorkflow: ['SCHEDULED', 'BOARDING', 'DEPARTED', 'IN_TRANSIT', 'ARRIVED', 'COMPLETED'],
+      },
+      owns: [],
+      doesNotOwn: ['mvm_vendors', 'mvm_products', 'mvm_orders', 'logistics_agents', 'logistics_assignments'],
+      principles: [
+        'ParkHub is a CONFIGURATION of MVM, not a new module',
+        'No transport-specific database tables',
+        'Routes stored as products with metadata',
+        'Seats tracked via inventory quantities',
+        'Drivers managed via Logistics agents',
+        'Trips tracked via Logistics assignments',
+        'Commission via existing MVM commission engine',
+      ],
     },
   },
   
