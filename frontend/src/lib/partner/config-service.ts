@@ -78,10 +78,10 @@ export const DEFAULT_PARTNER_CONFIG = {
 // ============================================================================
 
 export async function getPartnerConfiguration() {
-  let config = await prisma.partnerConfiguration.findFirst();
+  let config = await prisma.partner_configurations.findFirst();
   
   if (!config) {
-    config = await prisma.partnerConfiguration.create({
+    config = await prisma.partner_configurations.create({
       data: DEFAULT_PARTNER_CONFIG,
     });
   }
@@ -102,7 +102,7 @@ export async function updatePartnerConfiguration(data: {
 }) {
   const existing = await getPartnerConfiguration();
   
-  return prisma.partnerConfiguration.update({
+  return prisma.partner_configurations.update({
     where: { id: existing.id },
     data,
   });
@@ -127,7 +127,7 @@ export async function getPartnerModuleStatus() {
     prisma.partner.count({ where: { status: 'ACTIVE' } }),
     prisma.partner.count({ where: { status: 'PENDING' } }),
     prisma.partnerAttributionRecord.count(),
-    prisma.partnerCommissionRecordExt.count({ where: { status: 'PENDING' } }),
+    prisma.partner_commission_records_ext.count({ where: { status: 'PENDING' } }),
   ]);
   
   return {
@@ -200,7 +200,7 @@ export async function validatePartnerModule(): Promise<{
   });
   
   // Check 6: Configuration exists
-  const config = await prisma.partnerConfiguration.findFirst();
+  const config = await prisma.partner_configurations.findFirst();
   checks.push({
     name: 'Configuration Exists',
     passed: !!config,

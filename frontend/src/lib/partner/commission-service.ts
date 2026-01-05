@@ -42,7 +42,7 @@ export async function createCommissionRule(input: CreateCommissionRuleInput): Pr
   error?: string;
 }> {
   try {
-    const rule = await prisma.partnerCommissionRuleExt.create({
+    const rule = await prisma.partner_commission_rules_ext.create({
       data: {
         partnerId: input.partnerId,
         name: input.name,
@@ -83,7 +83,7 @@ export async function createCommissionRule(input: CreateCommissionRuleInput): Pr
 }
 
 export async function getCommissionRule(ruleId: string) {
-  return prisma.partnerCommissionRuleExt.findUnique({
+  return prisma.partner_commission_rules_ext.findUnique({
     where: { id: ruleId },
   });
 }
@@ -107,7 +107,7 @@ export async function listCommissionRules(params: {
     where.isActive = true;
   }
   
-  return prisma.partnerCommissionRuleExt.findMany({
+  return prisma.partner_commission_rules_ext.findMany({
     where,
     orderBy: [{ priority: 'desc' }, { createdAt: 'desc' }],
   });
@@ -126,7 +126,7 @@ export async function updateCommissionRule(
   }
 ): Promise<{ success: boolean; rule?: any; error?: string }> {
   try {
-    const rule = await prisma.partnerCommissionRuleExt.update({
+    const rule = await prisma.partner_commission_rules_ext.update({
       where: { id: ruleId },
       data,
     });
@@ -141,7 +141,7 @@ export async function deactivateCommissionRule(ruleId: string): Promise<{
   error?: string;
 }> {
   try {
-    await prisma.partnerCommissionRuleExt.update({
+    await prisma.partner_commission_rules_ext.update({
       where: { id: ruleId },
       data: { isActive: false },
     });
@@ -233,7 +233,7 @@ async function createCommissionRecord(data: {
   ruleId?: string | null;
 }): Promise<{ success: boolean; commission?: any; error?: string }> {
   try {
-    const commission = await prisma.partnerCommissionRecordExt.create({
+    const commission = await prisma.partner_commission_records_ext.create({
       data: {
         partnerId: data.partnerId,
         attributionId: data.attributionId,
@@ -249,7 +249,7 @@ async function createCommissionRecord(data: {
     });
     
     // Update partner pending earnings
-    await prisma.partnerProfileExt.update({
+    await prisma.partner_profiles_ext.update({
       where: { partnerId: data.partnerId },
       data: {
         pendingEarnings: { increment: data.commissionAmount },
@@ -285,7 +285,7 @@ async function findApplicableRule(params: {
   const now = new Date();
   
   // Look for partner-specific rule first, then global
-  const rules = await prisma.partnerCommissionRuleExt.findMany({
+  const rules = await prisma.partner_commission_rules_ext.findMany({
     where: {
       isActive: true,
       OR: [
@@ -333,7 +333,7 @@ async function findApplicableRule(params: {
 // ============================================================================
 
 export async function getCommissionRecord(commissionId: string) {
-  return prisma.partnerCommissionRecordExt.findUnique({
+  return prisma.partner_commission_records_ext.findUnique({
     where: { id: commissionId },
   });
 }

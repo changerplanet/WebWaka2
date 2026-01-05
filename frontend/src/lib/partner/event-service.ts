@@ -42,7 +42,7 @@ interface LogEventInput {
 
 export async function logPartnerEvent(input: LogEventInput): Promise<void> {
   try {
-    await prisma.partnerEventLogExt.create({
+    await prisma.partner_event_logs_ext.create({
       data: {
         eventType: input.eventType,
         partnerId: input.partnerId,
@@ -85,13 +85,13 @@ export async function getPartnerEvents(params: {
   }
   
   const [events, total] = await Promise.all([
-    prisma.partnerEventLogExt.findMany({
+    prisma.partner_event_logs_ext.findMany({
       where,
       skip: (page - 1) * limit,
       take: limit,
       orderBy: { occurredAt: 'desc' },
     }),
-    prisma.partnerEventLogExt.count({ where }),
+    prisma.partner_event_logs_ext.count({ where }),
   ]);
   
   return {
@@ -238,7 +238,7 @@ export async function isEventProcessed(
   eventType: string,
   eventId: string
 ): Promise<boolean> {
-  const existing = await prisma.partnerEventLogExt.findFirst({
+  const existing = await prisma.partner_event_logs_ext.findFirst({
     where: {
       eventType,
       eventData: {
