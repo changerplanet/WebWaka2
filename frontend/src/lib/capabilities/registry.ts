@@ -416,6 +416,47 @@ export const CAPABILITY_REGISTRY: Record<string, CapabilityDefinition> = {
   },
   
   // =========================================================================
+  // MARKETING CAPABILITIES (Phase 5)
+  // =========================================================================
+  
+  sites_and_funnels: {
+    key: 'sites_and_funnels',
+    displayName: 'Sites & Funnels',
+    domain: CAPABILITY_DOMAINS.MARKETING,
+    description: 'Partner-built websites and marketing funnels with industry templates, AI content assistance, and white-label deployment',
+    icon: 'globe',
+    sortOrder: 1,
+    metadata: {
+      version: '1.0.0',
+      releaseDate: '2026-01-05',
+      status: 'active',
+      nigeriaFirst: true,
+      owns: [
+        'sf_sites',
+        'sf_funnels',
+        'sf_pages',
+        'sf_templates',
+        'sf_template_categories',
+        'sf_domain_mappings',
+        'sf_page_blocks',
+        'sf_ai_content_logs',
+        'sf_analytics_events',
+      ],
+      doesNotOwn: ['tenants', 'partners', 'users', 'subscriptions', 'payments', 'crm_contacts', 'orders'],
+      principles: [
+        'Partner-First: Only Partners can create/manage sites',
+        'AI is assistive: Drafts only, human approval required',
+        'No auto-publish: All content requires explicit publish action',
+        'Instance-aware: Sites tied to Platform Instance branding',
+        'White-label: Full Partner branding control',
+        'Templates are read-only: Cloning creates editable copies',
+        'No custom code: Block-based editing only',
+      ],
+      optionalDependencies: ['crm', 'analytics', 'marketing'],
+    },
+  },
+  
+  // =========================================================================
   // FUTURE NON-COMMERCE CAPABILITIES (Examples for future verticals)
   // =========================================================================
   
