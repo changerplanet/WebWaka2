@@ -363,7 +363,10 @@ Partner Portal was stuck on "Loading Partner Portal..." for all partner-level us
   - `--check` (default): Fail only on NEW issues
   - `--baseline`: Generate baseline of known issues
   - `--strict`: Fail on all issues
-- **Integration**: `yarn validate:schema`, runs on `yarn build`
+- **Integration**: 
+  - `yarn validate:schema` - Manual validation
+  - `yarn build` - Runs validation before build
+  - **Git pre-commit hook** - `/app/.husky/pre-commit` - Catches issues before commit
 - **Documentation**: `/app/frontend/docs/PRISMA_NAMING_CONVENTIONS.md`
 
 ### P1: Enhanced Error Logging ✅
