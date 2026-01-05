@@ -99,10 +99,11 @@ export async function startImpersonation(
 
     // Store impersonation context in session
     await prisma.session.update({
-      where: { id: sessionId },
+      where: { token: sessionId },
       data: {
-        // Store impersonation context in a way that can be retrieved
-        // Using userAgent to store JSON (could use a dedicated field in production)
+        // Store impersonation context in userAgent (temporary storage)
+        // In production, use a dedicated field or Redis
+        userAgent: JSON.stringify({ impersonation: context, originalUserAgent: userAgent })
       }
     })
 
