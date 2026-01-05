@@ -25,7 +25,7 @@ import uuid
 from datetime import datetime, timedelta
 
 # Base URL from environment
-BASE_URL = os.environ.get('NEXT_PUBLIC_APP_URL', 'https://admin-dashboard-634.preview.emergentagent.com').rstrip('/')
+BASE_URL = os.environ.get('NEXT_PUBLIC_APP_URL', 'https://webwaka-staging.preview.emergentagent.com').rstrip('/')
 
 # Test tenant ID (Acme tenant)
 TENANT_ID = "67846c4f-9b38-47c7-86d9-fff55aa4afda"

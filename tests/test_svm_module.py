@@ -22,7 +22,7 @@ import os
 import uuid
 from datetime import datetime
 
-BASE_URL = "https://admin-dashboard-634.preview.emergentagent.com"
+BASE_URL = "https://webwaka-staging.preview.emergentagent.com"
 TEST_TENANT_ID = f"test-tenant-{uuid.uuid4().hex[:8]}"
 TEST_CUSTOMER_ID = f"test-customer-{uuid.uuid4().hex[:8]}"
 TEST_SESSION_ID = f"test-session-{uuid.uuid4().hex[:8]}"

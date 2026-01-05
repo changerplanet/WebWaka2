@@ -28,7 +28,7 @@ import uuid
 from datetime import datetime, timedelta
 
 # Base URL
-BASE_URL = "https://admin-dashboard-634.preview.emergentagent.com"
+BASE_URL = "https://webwaka-staging.preview.emergentagent.com"
 
 # Test tenant
 TENANT_SLUG = "acme"
