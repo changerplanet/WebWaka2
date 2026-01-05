@@ -7,7 +7,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { getSessionFromRequest } from '@/lib/auth';
+import { getCurrentSession } from '@/lib/auth';
 import { requireSitesFunnelsEnabled, requirePartnerOwnership } from '@/lib/sites-funnels/entitlements-service';
 import {
   createSite,
@@ -27,12 +27,13 @@ import {
 import { listTemplates, getTemplate, cloneSiteFromTemplate } from '@/lib/sites-funnels/template-service';
 
 export async function GET(request: NextRequest) {
-  const session = await getSessionFromRequest(request);
+  const session = await getCurrentSession();
   
-  if (!session?.userId) {
+  if (!session?.user?.id) {
     return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
   }
 
+  const userId = session.user.id;
   const { searchParams } = new URL(request.url);
   const action = searchParams.get('action') || 'list';
   const tenantId = searchParams.get('tenantId') || session.activeTenantId;
