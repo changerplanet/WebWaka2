@@ -31,7 +31,7 @@ class TestParkHubAuthentication:
             f"{BASE_URL}/api/auth/v2",
             json={
                 "action": "login-password",
-                "email": TEST_EMAIL,
+                "identifier": TEST_EMAIL,
                 "password": TEST_PASSWORD
             }
         )
@@ -46,7 +46,7 @@ class TestParkHubAuthentication:
             f"{BASE_URL}/api/auth/v2",
             json={
                 "action": "login-password",
-                "email": TEST_EMAIL,
+                "identifier": TEST_EMAIL,
                 "password": TEST_PASSWORD
             }
         )
