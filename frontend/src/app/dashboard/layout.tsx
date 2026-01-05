@@ -74,7 +74,8 @@ function DashboardContent({ children }: { children: ReactNode }) {
   }, [isLoading, isAuthenticated, activeTenantId, tenantSlug, user, router, switchTenant])
 
   // Loading state with timeout handling
-  if (isLoading || isInitializing) {
+  // Don't block if we have a tenant slug - let the page component handle its own loading
+  if ((isLoading || isInitializing) && !tenantSlug) {
     if (loadingTimeout) {
       return (
         <div className="min-h-screen bg-gray-50 flex items-center justify-center">
