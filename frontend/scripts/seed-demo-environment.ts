@@ -666,6 +666,7 @@ async function createExternalRoleUsers(tenants: Array<{ id: string; slug: string
       // Create B2B customer record
       await prisma.customer.create({
         data: {
+          id: crypto.randomUUID(),
           tenantId: b2bTenant.id,
           email: b2bEmail,
           phone: '+2348300000003',
@@ -676,6 +677,7 @@ async function createExternalRoleUsers(tenants: Array<{ id: string; slug: string
           taxId: 'TIN-12345678',
           status: CustomerStatus.ACTIVE,
           tags: ['b2b', 'wholesale'],
+          updatedAt: new Date(),
         }
       })
       console.log(`  ↳ B2B customer record created`)
