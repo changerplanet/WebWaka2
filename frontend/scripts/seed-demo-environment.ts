@@ -464,10 +464,12 @@ async function createDemoData(tenants: Array<{ id: string; slug: string; type: s
     if (!category) {
       category = await prisma.productCategory.create({
         data: {
+          id: crypto.randomUUID(),
           tenantId: tenant.id,
           name: 'General Products',
           slug: 'general',
           isActive: true,
+          updatedAt: new Date(),
         }
       })
     }
