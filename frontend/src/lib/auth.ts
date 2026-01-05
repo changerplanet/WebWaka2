@@ -17,6 +17,7 @@ export type SessionUser = User & {
 export type AuthSession = {
   user: SessionUser
   sessionId: string
+  sessionToken: string
   activeTenantId: string | null
 }
 
