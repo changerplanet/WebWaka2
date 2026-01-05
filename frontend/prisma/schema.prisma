@@ -1086,14 +1086,14 @@ model Tenant {
   activatedAt      DateTime?
   activatedModules String[]           @default([])
   requestedModules String[]           @default([])
-  BusinessProfile  BusinessProfile?
-  Entitlement      Entitlement[]
-  Invoice          Invoice[]
-  MagicLink        MagicLink[]
-  PartnerReferral  PartnerReferral?
-  PlatformInstance PlatformInstance[]
-  Subscription     Subscription?
-  TenantDomain     TenantDomain[]
+  businessProfile  BusinessProfile?
+  entitlements     Entitlement[]
+  invoices         Invoice[]
+  magicLinks       MagicLink[]
+  partnerReferral  PartnerReferral?
+  platformInstances PlatformInstance[]
+  subscription     Subscription?
+  domains          TenantDomain[]
   memberships TenantMembership[]
 
   @@index([slug])
