@@ -68,6 +68,7 @@ export default function PartnerSitesPage() {
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [newSite, setNewSite] = useState({ name: '', slug: '', description: '' });
   const [creating, setCreating] = useState(false);
+  const [errorState, setErrorState] = useState<{ code?: string; message?: string } | null>(null);
 
   useEffect(() => {
     if (!authLoading && user) {
@@ -78,13 +79,19 @@ export default function PartnerSitesPage() {
   const fetchSites = async () => {
     try {
       setLoading(true);
+      setErrorState(null);
       const res = await fetch('/api/sites-funnels/sites?action=list');
       const data = await res.json();
       if (data.success) {
         setSites(data.sites || []);
+      } else if (data.code === 'NO_TENANT') {
+        setErrorState({ code: 'NO_TENANT', message: data.error });
+      } else {
+        setErrorState({ message: data.error || 'Failed to load sites' });
       }
     } catch (error) {
       console.error('Error fetching sites:', error);
+      setErrorState({ message: 'Failed to connect to server' });
     } finally {
       setLoading(false);
     }
