@@ -79,7 +79,7 @@ export class CapabilityActivationService {
     const definitions = Object.values(CAPABILITY_REGISTRY);
     
     for (const def of definitions) {
-      await prisma.capability.upsert({
+      await prisma.core_capabilities.upsert({
         where: { key: def.key },
         update: {
           displayName: def.displayName,
