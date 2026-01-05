@@ -22,14 +22,15 @@ TEST_EMAIL = "demo.owner@webwaka.com"
 TEST_PASSWORD = "Demo2026!"
 
 
-# Module-level auth token
-_auth_token = None
+# Module-level session
+_session = None
 
-def get_auth_token():
-    """Get or create authentication token"""
-    global _auth_token
-    if _auth_token is None:
-        response = requests.post(
+def get_authenticated_session():
+    """Get or create authenticated session with cookies"""
+    global _session
+    if _session is None:
+        _session = requests.Session()
+        response = _session.post(
             f"{BASE_URL}/api/auth/v2",
             json={
                 "action": "login-password",
@@ -39,10 +40,13 @@ def get_auth_token():
         )
         if response.status_code == 200:
             data = response.json()
-            _auth_token = data.get("sessionToken") or data.get("token")
+            # Set the session token as a cookie
+            session_token = data.get("sessionToken") or data.get("token")
+            if session_token:
+                _session.cookies.set("session_token", session_token)
         else:
             pytest.skip(f"Authentication failed: {response.status_code} - {response.text}")
-    return _auth_token
+    return _session
 
 
 class TestParkHubAuthentication:
@@ -76,11 +80,8 @@ class TestParkHubConfigAPI:
     
     def test_config_api_returns_labels(self):
         """Test that config API returns ParkHub labels"""
-        token = get_auth_token()
-        response = requests.get(
-            f"{BASE_URL}/api/parkhub?action=config",
-            headers={"Authorization": f"Bearer {token}"}
-        )
+        session = get_authenticated_session()
+        response = session.get(f"{BASE_URL}/api/parkhub?action=config")
         assert response.status_code == 200, f"Config API failed: {response.text}"
         data = response.json()
         assert data.get("success") == True
@@ -104,11 +105,8 @@ class TestParkHubConfigAPI:
     
     def test_config_api_returns_mvm_config(self):
         """Test that config API returns MVM configuration"""
-        token = get_auth_token()
-        response = requests.get(
-            f"{BASE_URL}/api/parkhub?action=config",
-            headers={"Authorization": f"Bearer {token}"}
-        )
+        session = get_authenticated_session()
+        response = session.get(f"{BASE_URL}/api/parkhub?action=config")
         assert response.status_code == 200
         data = response.json()
         config = data["config"]
@@ -129,11 +127,8 @@ class TestParkHubConfigAPI:
     
     def test_config_api_returns_capability_bundle(self):
         """Test that config API returns capability bundle"""
-        token = get_auth_token()
-        response = requests.get(
-            f"{BASE_URL}/api/parkhub?action=config",
-            headers={"Authorization": f"Bearer {token}"}
-        )
+        session = get_authenticated_session()
+        response = session.get(f"{BASE_URL}/api/parkhub?action=config")
         assert response.status_code == 200
         data = response.json()
         config = data["config"]
@@ -162,11 +157,8 @@ class TestParkHubSolutionPackageAPI:
     
     def test_solution_package_api_returns_details(self):
         """Test that solution-package API returns package details"""
-        token = get_auth_token()
-        response = requests.get(
-            f"{BASE_URL}/api/parkhub?action=solution-package",
-            headers={"Authorization": f"Bearer {token}"}
-        )
+        session = get_authenticated_session()
+        response = session.get(f"{BASE_URL}/api/parkhub?action=solution-package")
         assert response.status_code == 200, f"Solution-package API failed: {response.text}"
         data = response.json()
         assert data.get("success") == True
@@ -181,11 +173,8 @@ class TestParkHubSolutionPackageAPI:
     
     def test_solution_package_api_returns_activation_checklist(self):
         """Test that solution-package API returns activation checklist"""
-        token = get_auth_token()
-        response = requests.get(
-            f"{BASE_URL}/api/parkhub?action=solution-package",
-            headers={"Authorization": f"Bearer {token}"}
-        )
+        session = get_authenticated_session()
+        response = session.get(f"{BASE_URL}/api/parkhub?action=solution-package")
         assert response.status_code == 200
         data = response.json()
         
@@ -208,11 +197,8 @@ class TestParkHubDemoDataAPI:
     
     def test_demo_data_api_returns_summary(self):
         """Test that demo-data API returns demo data summary"""
-        token = get_auth_token()
-        response = requests.get(
-            f"{BASE_URL}/api/parkhub?action=demo-data",
-            headers={"Authorization": f"Bearer {token}"}
-        )
+        session = get_authenticated_session()
+        response = session.get(f"{BASE_URL}/api/parkhub?action=demo-data")
         assert response.status_code == 200, f"Demo-data API failed: {response.text}"
         data = response.json()
         assert data.get("success") == True
@@ -236,11 +222,8 @@ class TestParkHubDemoDataAPI:
     
     def test_demo_data_api_returns_credentials(self):
         """Test that demo-data API returns demo credentials"""
-        token = get_auth_token()
-        response = requests.get(
-            f"{BASE_URL}/api/parkhub?action=demo-data",
-            headers={"Authorization": f"Bearer {token}"}
-        )
+        session = get_authenticated_session()
+        response = session.get(f"{BASE_URL}/api/parkhub?action=demo-data")
         assert response.status_code == 200
         data = response.json()
         
@@ -265,10 +248,9 @@ class TestParkHubActivationAPI:
     
     def test_activation_api_requires_tenant_id(self):
         """Test that activation API requires tenant ID"""
-        token = get_auth_token()
-        response = requests.post(
+        session = get_authenticated_session()
+        response = session.post(
             f"{BASE_URL}/api/parkhub",
-            headers={"Authorization": f"Bearer {token}"},
             json={"action": "activate", "parkName": "Test Park"}
         )
         assert response.status_code == 400
@@ -279,10 +261,9 @@ class TestParkHubActivationAPI:
     
     def test_activation_api_requires_park_name(self):
         """Test that activation API requires park name"""
-        token = get_auth_token()
-        response = requests.post(
+        session = get_authenticated_session()
+        response = session.post(
             f"{BASE_URL}/api/parkhub",
-            headers={"Authorization": f"Bearer {token}"},
             json={"action": "activate", "tenantId": "test-tenant-123"}
         )
         assert response.status_code == 400
@@ -292,10 +273,9 @@ class TestParkHubActivationAPI:
     
     def test_activation_api_success(self):
         """Test successful ParkHub activation"""
-        token = get_auth_token()
-        response = requests.post(
+        session = get_authenticated_session()
+        response = session.post(
             f"{BASE_URL}/api/parkhub",
-            headers={"Authorization": f"Bearer {token}"},
             json={
                 "action": "activate",
                 "tenantId": f"test-tenant-{os.urandom(4).hex()}",
@@ -322,10 +302,9 @@ class TestParkHubActivationAPI:
     
     def test_check_activation_api(self):
         """Test check-activation API"""
-        token = get_auth_token()
-        response = requests.post(
+        session = get_authenticated_session()
+        response = session.post(
             f"{BASE_URL}/api/parkhub",
-            headers={"Authorization": f"Bearer {token}"},
             json={
                 "action": "check-activation",
                 "tenantCapabilities": ["mvm", "logistics", "payments"],
@@ -345,11 +324,8 @@ class TestParkHubInvalidActions:
     
     def test_invalid_get_action(self):
         """Test invalid GET action returns error"""
-        token = get_auth_token()
-        response = requests.get(
-            f"{BASE_URL}/api/parkhub?action=invalid-action",
-            headers={"Authorization": f"Bearer {token}"}
-        )
+        session = get_authenticated_session()
+        response = session.get(f"{BASE_URL}/api/parkhub?action=invalid-action")
         assert response.status_code == 400
         data = response.json()
         assert data.get("success") == False
@@ -357,10 +333,9 @@ class TestParkHubInvalidActions:
     
     def test_invalid_post_action(self):
         """Test invalid POST action returns error"""
-        token = get_auth_token()
-        response = requests.post(
+        session = get_authenticated_session()
+        response = session.post(
             f"{BASE_URL}/api/parkhub",
-            headers={"Authorization": f"Bearer {token}"},
             json={"action": "invalid-action"}
         )
         assert response.status_code == 400
