@@ -152,10 +152,10 @@ export async function endImpersonation(
         targetName: context.targetName,
         startedAt: context.startedAt,
         endedAt: new Date().toISOString(),
-        duration: Math.round((Date.now() - new Date(context.startedAt).getTime()) / 1000 / 60) + ' minutes'
-      },
-      ipAddress,
-      userAgent
+        duration: Math.round((Date.now() - new Date(context.startedAt).getTime()) / 1000 / 60) + ' minutes',
+        ipAddress,
+        userAgent
+      }
     })
 
     return { success: true }
