@@ -233,6 +233,36 @@ This caused ALL login attempts to fail with "Unknown field" Prisma validation er
 
 - Test Reports: `/app/test_reports/iteration_45.json`
 
+### Manus Test Report Fixes ✅
+**Completed: January 5, 2026**
+
+Following comprehensive testing by Manus (SET 1 & SET 2), the following issues were identified and fixed:
+
+| Issue | Severity | Root Cause | Fix |
+|-------|----------|------------|-----|
+| Financials Page Crash | Critical | `activeSubscriptionCount` returned as object `{id:1}` instead of number | Fixed API to return `revenueStats._count.id` instead of `revenueStats._count` |
+| Capabilities API Failure | High | Prisma model renamed to `core_capabilities` by db pull; missing `id` field in create | Updated activation-service to use `core_capabilities` model and generate UUID for id |
+| Partner "No Business Access" | Critical | Session endpoint didn't include partner info | Added partner lookup to `/api/auth/session` with full partner context |
+| Partner Profile API Error | High | Missing `partnerProfileExt` and `partnerVerificationRecord` models | Made `getPartner` gracefully handle missing extension models |
+| Login Redirect to Wrong Dashboard | Medium | Partner users redirected to `/dashboard/partner` | Changed redirect to `/partner-portal` for partner users |
+| Partner Portal Not Loading Partner | Medium | Partner portal searched by email instead of using session | Updated to fetch partner ID from session first |
+| Impersonation Session Storage | High | Using session `id` instead of `token` for update | Fixed to use `token` field for session lookup |
+
+**Files Modified:**
+- `/app/frontend/src/app/api/admin/financials/route.ts` - Fixed activeSubscriptionCount
+- `/app/frontend/src/lib/capabilities/activation-service.ts` - Fixed model names and UUID generation
+- `/app/frontend/src/app/api/admin/capabilities/route.ts` - Fixed model names
+- `/app/frontend/src/app/api/auth/session/route.ts` - Added partner info to session
+- `/app/frontend/src/lib/partner/onboarding-service.ts` - Made getPartner robust
+- `/app/frontend/src/app/partner-portal/page.tsx` - Use session partner info
+- `/app/frontend/src/app/(auth)/login-v2/page.tsx` - Fixed partner redirect URL
+- `/app/frontend/src/lib/admin/impersonation-service.ts` - Fixed session token lookup
+
+**Verification Results:**
+- Super Admin: All APIs working ✅
+- Partner: Login, session, and profile APIs working ✅
+- Tenant: Login and membership working ✅
+
 ---
 
 ## Roadmap (Upcoming)
