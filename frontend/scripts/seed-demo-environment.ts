@@ -411,6 +411,7 @@ async function createDemoData(tenants: Array<{ id: string; slug: string; type: s
     if (!location) {
       location = await prisma.location.create({
         data: {
+          id: crypto.randomUUID(),
           tenantId: tenant.id,
           name: 'Main Location',
           code: 'LOC-001',
@@ -420,6 +421,7 @@ async function createDemoData(tenants: Array<{ id: string; slug: string; type: s
           city: 'Lagos',
           state: 'Lagos',
           country: 'NG',
+          updatedAt: new Date(),
         }
       })
       console.log(`  ↳ Location created`)
