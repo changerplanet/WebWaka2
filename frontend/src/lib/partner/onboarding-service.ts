@@ -107,7 +107,7 @@ export async function createPartnerApplication(input: PartnerSignupInput): Promi
     });
     
     // Create partner profile extension
-    await prisma.partnerProfileExt.create({
+    await prisma.partner_profiles_ext.create({
       data: {
         partnerId: partner.id,
         partnerType: input.partnerType || 'INDIVIDUAL',
@@ -127,7 +127,7 @@ export async function createPartnerApplication(input: PartnerSignupInput): Promi
     
     // Create verification record if required
     if (config.verificationRequired) {
-      await prisma.partnerVerificationRecord.create({
+      await prisma.partner_verifications.create({
         data: {
           partnerId: partner.id,
           status: 'PENDING',
@@ -189,7 +189,7 @@ export async function submitVerificationDocuments(input: VerificationSubmission)
     }
     
     // Update or create verification record
-    const verification = await prisma.partnerVerificationRecord.upsert({
+    const verification = await prisma.partner_verifications.upsert({
       where: { partnerId: input.partnerId },
       create: {
         partnerId: input.partnerId,
@@ -244,7 +244,7 @@ export async function approveVerification(
 ): Promise<{ success: boolean; error?: string }> {
   try {
     // Update verification record
-    await prisma.partnerVerificationRecord.update({
+    await prisma.partner_verifications.update({
       where: { partnerId },
       data: {
         status: 'VERIFIED',
@@ -291,7 +291,7 @@ export async function rejectVerification(
 ): Promise<{ success: boolean; error?: string }> {
   try {
     // Update verification record
-    await prisma.partnerVerificationRecord.update({
+    await prisma.partner_verifications.update({
       where: { partnerId },
       data: {
         status: 'REJECTED',
@@ -408,13 +408,13 @@ export async function getPendingVerifications(page: number = 1, limit: number = 
   const where = { status: 'IN_REVIEW' as VerificationStatus };
   
   const [verifications, total] = await Promise.all([
-    prisma.partnerVerificationRecord.findMany({
+    prisma.partner_verifications.findMany({
       where,
       skip: (page - 1) * limit,
       take: limit,
       orderBy: { createdAt: 'desc' },
     }),
-    prisma.partnerVerificationRecord.count({ where }),
+    prisma.partner_verifications.count({ where }),
   ]);
   
   // Get partner details for each verification
