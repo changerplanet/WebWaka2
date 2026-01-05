@@ -131,30 +131,6 @@ export async function GET(request: NextRequest) {
         return NextResponse.json({ success: true, page });
       }
 
-      case 'templates': {
-        const categorySlug = searchParams.get('category') || undefined;
-        const industry = searchParams.get('industry') || undefined;
-        const useCase = searchParams.get('useCase') || undefined;
-        const search = searchParams.get('search') || undefined;
-        const page = parseInt(searchParams.get('page') || '1');
-        const limit = parseInt(searchParams.get('limit') || '20');
-
-        const result = await listTemplates({ categorySlug, industry, useCase, search, page, limit });
-        return NextResponse.json({ success: true, ...result });
-      }
-
-      case 'template': {
-        const templateId = searchParams.get('templateId');
-        if (!templateId) {
-          return NextResponse.json({ success: false, error: 'Template ID required' }, { status: 400 });
-        }
-        const template = await getTemplate(templateId);
-        if (!template) {
-          return NextResponse.json({ success: false, error: 'Template not found' }, { status: 404 });
-        }
-        return NextResponse.json({ success: true, template });
-      }
-
       default:
         return NextResponse.json({ success: false, error: 'Invalid action' }, { status: 400 });
     }
