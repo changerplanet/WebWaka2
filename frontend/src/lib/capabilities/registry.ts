@@ -25,6 +25,7 @@ export const CAPABILITY_DOMAINS = {
   LOGISTICS: 'logistics', // Shipping, delivery, fleet management
   HR: 'hr',               // Human resources, payroll
   CRM: 'crm',             // Customer relationship management
+  MARKETING: 'marketing', // Sites, funnels, landing pages
   GENERAL: 'general',     // Cross-industry utilities
 } as const;
 
