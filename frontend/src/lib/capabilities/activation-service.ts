@@ -145,7 +145,7 @@ export class CapabilityActivationService {
       return 'ACTIVE';
     }
 
-    const activation = await prisma.tenantCapabilityActivation.findUnique({
+    const activation = await prisma.core_tenant_capability_activations.findUnique({
       where: {
         tenantId_capabilityKey: {
           tenantId,
@@ -182,7 +182,7 @@ export class CapabilityActivationService {
     });
 
     // Get tenant activations
-    const activations = await prisma.tenantCapabilityActivation.findMany({
+    const activations = await prisma.core_tenant_capability_activations.findMany({
       where: { tenantId },
     });
     const activationMap = new Map(
@@ -273,7 +273,7 @@ export class CapabilityActivationService {
 
     // Create or update activation
     const now = new Date();
-    const activation = await prisma.tenantCapabilityActivation.upsert({
+    const activation = await prisma.core_tenant_capability_activations.upsert({
       where: {
         tenantId_capabilityKey: {
           tenantId,
@@ -386,7 +386,7 @@ export class CapabilityActivationService {
     }
 
     // Get current activation
-    const existing = await prisma.tenantCapabilityActivation.findUnique({
+    const existing = await prisma.core_tenant_capability_activations.findUnique({
       where: {
         tenantId_capabilityKey: {
           tenantId,
@@ -408,7 +408,7 @@ export class CapabilityActivationService {
     const now = new Date();
 
     // Update to inactive
-    await prisma.tenantCapabilityActivation.update({
+    await prisma.core_tenant_capability_activations.update({
       where: { id: existing.id },
       data: {
         status: 'INACTIVE',
@@ -474,7 +474,7 @@ export class CapabilityActivationService {
       };
     }
 
-    const existing = await prisma.tenantCapabilityActivation.findUnique({
+    const existing = await prisma.core_tenant_capability_activations.findUnique({
       where: {
         tenantId_capabilityKey: {
           tenantId,
@@ -486,7 +486,7 @@ export class CapabilityActivationService {
     const previousStatus = existing?.status || 'INACTIVE';
     const now = new Date();
 
-    const activation = await prisma.tenantCapabilityActivation.upsert({
+    const activation = await prisma.core_tenant_capability_activations.upsert({
       where: {
         tenantId_capabilityKey: {
           tenantId,
