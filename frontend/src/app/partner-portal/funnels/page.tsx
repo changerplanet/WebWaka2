@@ -214,6 +214,35 @@ export default function PartnerFunnelsPage() {
     );
   }
 
+  // Show error state for no tenant
+  if (errorState?.code === 'NO_TENANT') {
+    return (
+      <div className="space-y-6" data-testid="partner-funnels-page">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-bold">Funnels</h1>
+            <p className="text-muted-foreground">Build conversion funnels for your clients</p>
+          </div>
+        </div>
+        <div className="flex flex-col items-center justify-center min-h-[400px] bg-muted/30 rounded-lg border-2 border-dashed">
+          <div className="flex flex-col items-center text-center p-8 max-w-md">
+            <div className="p-4 bg-yellow-100 rounded-full mb-4">
+              <GitBranch className="w-8 h-8 text-yellow-600" />
+            </div>
+            <h2 className="text-xl font-semibold mb-2">No Active Tenant</h2>
+            <p className="text-muted-foreground mb-6">
+              To create and manage funnels, you need to select an active tenant first. 
+              Visit your partner dashboard to select or create a tenant.
+            </p>
+            <Button onClick={() => router.push('/partner-portal')} data-testid="go-to-dashboard-btn">
+              Go to Partner Dashboard
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6" data-testid="partner-funnels-page">
       {/* Header */}
