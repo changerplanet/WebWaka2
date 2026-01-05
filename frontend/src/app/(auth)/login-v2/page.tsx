@@ -229,7 +229,9 @@ function LoginV2Content() {
       const data = await response.json()
 
       if (data.success) {
-        router.push(returnTo)
+        // Compute role-based redirect
+        const redirectUrl = computeRedirectUrl(data, returnTo)
+        router.push(redirectUrl)
       } else {
         setError(data.error || 'Invalid credentials')
       }
@@ -238,6 +240,37 @@ function LoginV2Content() {
     } finally {
       setLoading(false)
     }
+  }
+
+  // Helper to compute the correct redirect URL based on user role
+  const computeRedirectUrl = (loginResponse: {
+    globalRole?: string
+    isPartner?: boolean
+    tenantId?: string
+    tenantSlug?: string
+  }, defaultReturn: string): string => {
+    // If an explicit return URL was provided (not default), use it
+    if (defaultReturn !== '/dashboard') {
+      return defaultReturn
+    }
+    
+    // Super Admin goes to /admin
+    if (loginResponse.globalRole === 'SUPER_ADMIN') {
+      return '/admin'
+    }
+    
+    // Partner users go to /dashboard/partner
+    if (loginResponse.isPartner) {
+      return '/dashboard/partner'
+    }
+    
+    // Tenant users go to /dashboard with tenant slug
+    if (loginResponse.tenantSlug) {
+      return `/dashboard?tenant=${loginResponse.tenantSlug}`
+    }
+    
+    // Default fallback
+    return defaultReturn
   }
 
   const handleResendOtp = async () => {
