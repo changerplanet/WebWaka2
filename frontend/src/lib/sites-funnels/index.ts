@@ -10,6 +10,23 @@
 // Entitlements & Access Control
 export * from './entitlements-service';
 
+// Core Services
+export * from './site-service';
+export * from './funnel-service';
+export * from './template-service';
+
+// AI Content
+export * from './ai-content-service';
+
+// Domain & Branding
+export * from './domain-service';
+
+// Permissions
+export * from './permissions-service';
+
+// Analytics
+export * from './analytics-service';
+
 // Capability key constant
 export const CAPABILITY_KEY = 'sites_and_funnels';
 
@@ -61,4 +78,22 @@ export const MODULE_INFO = {
     'sf_ai_content_logs',
     'sf_analytics_events',
   ],
+  
+  // UI Routes
+  routes: {
+    sites: '/partner-portal/sites',
+    siteEditor: '/partner-portal/sites/:siteId/editor',
+    funnels: '/partner-portal/funnels',
+    funnelEditor: '/partner-portal/funnels/:funnelId/editor',
+    templates: '/partner-portal/templates',
+    analytics: '/partner-portal/analytics',
+  },
+  
+  // API Endpoints
+  apiEndpoints: {
+    sites: '/api/sites-funnels/sites',
+    funnels: '/api/sites-funnels/funnels',
+    templates: '/api/sites-funnels/templates',
+    analytics: '/api/sites-funnels/analytics',
+  },
 };
