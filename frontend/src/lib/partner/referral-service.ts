@@ -11,11 +11,10 @@
  * - No reassignment of referrals
  */
 
-import { PrismaClient, AttributionStatus } from '@prisma/client';
+import { AttributionStatus } from '@prisma/client';
+import { prisma } from '@/lib/prisma';
 import { getPartnerConfiguration } from './config-service';
 import { logPartnerEvent } from './event-service';
-
-const prisma = new PrismaClient();
 
 // ============================================================================
 // REFERRAL LINK MANAGEMENT

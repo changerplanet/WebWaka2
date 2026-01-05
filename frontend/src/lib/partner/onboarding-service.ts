@@ -11,11 +11,10 @@
  * - Manual verification workflows (NIN, BVN, CAC)
  */
 
-import { PrismaClient, PartnerStatus, PartnerType, VerificationStatus } from '@prisma/client';
+import { PartnerStatus, PartnerType, VerificationStatus } from '@prisma/client';
+import { prisma } from '@/lib/prisma';
 import { getPartnerConfiguration } from './config-service';
 import { logPartnerEvent } from './event-service';
-
-const prisma = new PrismaClient();
 
 // ============================================================================
 // PARTNER SIGNUP

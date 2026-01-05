@@ -11,11 +11,10 @@
  * - Commission records are immutable
  */
 
-import { PrismaClient, CommissionTypeExt, CommissionEventType, CommissionStatusExt } from '@prisma/client';
+import { CommissionTypeExt, CommissionEventType, CommissionStatusExt } from '@prisma/client';
+import { prisma } from '@/lib/prisma';
 import { getPartnerConfiguration } from './config-service';
 import { logPartnerEvent } from './event-service';
-
-const prisma = new PrismaClient();
 
 // ============================================================================
 // COMMISSION RULE MANAGEMENT

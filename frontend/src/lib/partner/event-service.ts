@@ -20,11 +20,9 @@
  * - COMMISSION_READY_FOR_PAYOUT
  */
 
-import { PrismaClient } from '@prisma/client';
+import { prisma } from '@/lib/prisma';
 import { getAttributionByTenant, lockAttribution } from './referral-service';
 import { calculateCommission } from './commission-service';
-
-const prisma = new PrismaClient();
 
 // ============================================================================
 // EVENT LOGGING
