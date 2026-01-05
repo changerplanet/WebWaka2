@@ -87,6 +87,7 @@ export default function PartnerFunnelsPage() {
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [newFunnel, setNewFunnel] = useState({ name: '', slug: '', description: '', goalType: 'lead' });
   const [creating, setCreating] = useState(false);
+  const [errorState, setErrorState] = useState<{ code?: string; message?: string } | null>(null);
 
   useEffect(() => {
     if (!authLoading && user) {
@@ -97,13 +98,19 @@ export default function PartnerFunnelsPage() {
   const fetchFunnels = async () => {
     try {
       setLoading(true);
+      setErrorState(null);
       const res = await fetch('/api/sites-funnels/funnels?action=list');
       const data = await res.json();
       if (data.success) {
         setFunnels(data.funnels || []);
+      } else if (data.error?.includes('Tenant ID required') || data.error?.includes('No active tenant')) {
+        setErrorState({ code: 'NO_TENANT', message: data.error });
+      } else {
+        setErrorState({ message: data.error || 'Failed to load funnels' });
       }
     } catch (error) {
       console.error('Error fetching funnels:', error);
+      setErrorState({ message: 'Failed to connect to server' });
     } finally {
       setLoading(false);
     }
