@@ -492,6 +492,7 @@ async function createDemoData(tenants: Array<{ id: string; slug: string; type: s
         for (const prod of products) {
           const product = await prisma.product.create({
             data: {
+              id: crypto.randomUUID(),
               tenantId: tenant.id,
               name: prod.name,
               slug: prod.sku.toLowerCase(),
@@ -502,18 +503,21 @@ async function createDemoData(tenants: Array<{ id: string; slug: string; type: s
               status: ProductStatus.ACTIVE,
               categoryId: category.id,
               trackInventory: true,
+              updatedAt: new Date(),
             }
           })
 
           // Create inventory level
           await prisma.inventoryLevel.create({
             data: {
+              id: crypto.randomUUID(),
               tenantId: tenant.id,
               productId: product.id,
               locationId: location.id,
               quantityOnHand: Math.floor(Math.random() * 100) + 20,
               quantityReserved: 0,
               quantityAvailable: Math.floor(Math.random() * 100) + 20,
+              updatedAt: new Date(),
             }
           })
         }
