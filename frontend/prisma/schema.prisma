@@ -368,7 +368,7 @@ model OtpCode {
   userAgent         String?
   deviceFingerprint String?
   createdAt         DateTime   @default(now())
-  User              User?      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user              User?      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([createdAt])
   @@index([email])
