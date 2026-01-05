@@ -42,11 +42,11 @@ export async function GET(request: NextRequest) {
       where.domain = domain;
     }
 
-    const capabilities = await prisma.capability.findMany({
+    const capabilities = await prisma.core_capabilities.findMany({
       where,
       orderBy: [{ domain: 'asc' }, { sortOrder: 'asc' }],
       include: {
-        activations: includeStats
+        core_tenant_capability_activations: includeStats
           ? {
               select: { status: true },
             }
@@ -56,7 +56,7 @@ export async function GET(request: NextRequest) {
 
     // Transform with stats
     const capabilitiesWithStats = capabilities.map((cap) => {
-      const activations = (cap as unknown as { activations?: Array<{ status: string }> }).activations || [];
+      const activations = (cap as unknown as { core_tenant_capability_activations?: Array<{ status: string }> }).core_tenant_capability_activations || [];
       return {
         id: cap.id,
         key: cap.key,
