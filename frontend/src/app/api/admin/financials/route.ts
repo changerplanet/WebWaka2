@@ -161,7 +161,7 @@ export async function GET(request: NextRequest) {
         activeSubscriptionRevenue: revenueStats._sum.amount?.toNumber() || 0,
         wholesaleCosts: revenueStats._sum.wholesaleCost?.toNumber() || 0,
         partnerMargins: revenueStats._sum.partnerMargin?.toNumber() || 0,
-        activeSubscriptionCount: revenueStats._count
+        activeSubscriptionCount: revenueStats._count.id || 0
       },
       partnerEarnings: {
         total: {
