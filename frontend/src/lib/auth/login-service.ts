@@ -421,11 +421,17 @@ export async function loginWithPassword(request: LoginWithPasswordRequest): Prom
   const user = normalized.type === 'phone'
     ? await prisma.user.findUnique({
         where: { phone: normalized.value },
-        include: { memberships: { where: { isActive: true }, include: { tenant: true } } },
+        include: { 
+          memberships: { where: { isActive: true }, include: { tenant: true } },
+          PartnerUser: true,
+        },
       })
     : await prisma.user.findUnique({
         where: { email: normalized.value },
-        include: { memberships: { where: { isActive: true }, include: { tenant: true } } },
+        include: { 
+          memberships: { where: { isActive: true }, include: { tenant: true } },
+          PartnerUser: true,
+        },
       })
   
   if (!user) {
@@ -476,6 +482,8 @@ export async function loginWithPassword(request: LoginWithPasswordRequest): Prom
     success: true,
     sessionToken: session.token,
     userId: user.id,
+    globalRole: user.globalRole,
+    isPartner: !!user.PartnerUser,
     tenantId: user.memberships[0]?.tenantId,
     tenantSlug: user.memberships[0]?.tenant.slug,
     hasMultipleTenants: user.memberships.length > 1,
