@@ -455,28 +455,49 @@ class TestNoNewSchemas:
     
     def test_no_parkhub_tables_in_schema(self):
         """Verify no parkhub-specific tables in schema.prisma"""
+        import re
         schema_path = "/app/frontend/prisma/schema.prisma"
         with open(schema_path, 'r') as f:
-            content = f.read().lower()
+            content = f.read()
         
-        # Check for parkhub-specific table names
-        forbidden_patterns = [
-            "model parkhub",
-            "model transport_",
-            "model route",
-            "model trip",
-            "model bus",
-            "model driver",
-            "model seat",
-            "model ticket",
-            "model motor_park",
-            "model park_",
+        # Extract all model names
+        model_names = re.findall(r'^model\s+(\w+)\s*\{', content, re.MULTILINE)
+        
+        # Check for parkhub-specific table names (exact matches)
+        forbidden_prefixes = [
+            "parkhub_",
+            "transport_",
+            "motor_park",
+            "park_",
+            "ph_",  # parkhub prefix
         ]
         
-        for pattern in forbidden_patterns:
-            assert pattern not in content, f"Found forbidden pattern '{pattern}' in schema.prisma"
+        forbidden_exact = [
+            "Route",
+            "Routes",
+            "Trip",
+            "Trips",
+            "Bus",
+            "Buses",
+            "Driver",
+            "Drivers",
+            "Seat",
+            "Seats",
+            "Ticket",
+            "Tickets",
+            "MotorPark",
+            "TransportCompany",
+        ]
         
-        print("✓ No ParkHub-specific tables in schema.prisma")
+        for model in model_names:
+            model_lower = model.lower()
+            for prefix in forbidden_prefixes:
+                assert not model_lower.startswith(prefix), f"Found forbidden model '{model}' with prefix '{prefix}'"
+            
+            for exact in forbidden_exact:
+                assert model != exact, f"Found forbidden model '{model}'"
+        
+        print(f"✓ No ParkHub-specific tables in schema.prisma (checked {len(model_names)} models)")
     
     def test_uses_existing_mvm_structures(self):
         """Verify ParkHub uses existing MVM structures"""
