@@ -77,6 +77,7 @@ export class CapabilityActivationService {
    */
   static async seedCapabilities(): Promise<void> {
     const definitions = Object.values(CAPABILITY_REGISTRY);
+    const crypto = await import('crypto');
     
     for (const def of definitions) {
       await prisma.core_capabilities.upsert({
@@ -90,8 +91,10 @@ export class CapabilityActivationService {
           sortOrder: def.sortOrder || 0,
           icon: def.icon || null,
           metadata: def.metadata ? JSON.parse(JSON.stringify(def.metadata)) : undefined,
+          updatedAt: new Date(),
         },
         create: {
+          id: crypto.randomUUID(),
           key: def.key,
           displayName: def.displayName,
           domain: def.domain,
@@ -102,6 +105,7 @@ export class CapabilityActivationService {
           sortOrder: def.sortOrder || 0,
           icon: def.icon || null,
           metadata: def.metadata ? JSON.parse(JSON.stringify(def.metadata)) : undefined,
+          updatedAt: new Date(),
         },
       });
     }
