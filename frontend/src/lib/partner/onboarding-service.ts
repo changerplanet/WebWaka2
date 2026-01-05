@@ -337,11 +337,22 @@ export async function getPartner(partnerId: string) {
   
   if (!partner) return null;
   
-  // Get extension data
-  const [profile, verification] = await Promise.all([
-    prisma.partnerProfileExt.findUnique({ where: { partnerId } }),
-    prisma.partnerVerificationRecord.findUnique({ where: { partnerId } }),
-  ]);
+  // Try to get extension data (may not exist in all schemas)
+  let profile = null;
+  let verification = null;
+  
+  try {
+    // These models may not exist in all schema versions
+    const extModels = prisma as any;
+    if (extModels.partnerProfileExt) {
+      profile = await extModels.partnerProfileExt.findUnique({ where: { partnerId } });
+    }
+    if (extModels.partnerVerificationRecord) {
+      verification = await extModels.partnerVerificationRecord.findUnique({ where: { partnerId } });
+    }
+  } catch (e) {
+    // Extension models not available, continue without them
+  }
   
   return {
     ...partner,
