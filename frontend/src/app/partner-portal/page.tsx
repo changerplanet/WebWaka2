@@ -110,7 +110,8 @@ export default function PartnerPortal() {
   // Fetch initial partner when authenticated
   useEffect(() => {
     if (!authLoading && isAuthenticated && user) {
-      fetchInitialPartner()
+      // Check if session already has partner info
+      fetchSession()
     } else if (!authLoading && !isAuthenticated) {
       setLoading(false)
       setError('Authentication required')
@@ -122,6 +123,22 @@ export default function PartnerPortal() {
       fetchPartnerData()
     }
   }, [partnerId])
+
+  const fetchSession = async () => {
+    try {
+      const res = await fetch('/api/auth/session')
+      const data = await res.json()
+      
+      if (data.success && data.user?.isPartner && data.user?.partner?.id) {
+        setPartnerId(data.user.partner.id)
+      } else {
+        // Fallback to searching by email
+        fetchInitialPartner()
+      }
+    } catch (err) {
+      fetchInitialPartner()
+    }
+  }
 
   const fetchInitialPartner = async () => {
     try {
