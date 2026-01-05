@@ -35,7 +35,11 @@ export async function GET(request: NextRequest) {
   const tenantId = searchParams.get('tenantId') || session.activeTenantId;
 
   if (!tenantId) {
-    return NextResponse.json({ success: false, error: 'Tenant ID required' }, { status: 400 });
+    return NextResponse.json({ 
+      success: false, 
+      error: 'No active tenant. Please select a tenant from your partner dashboard to manage funnels.',
+      code: 'NO_TENANT'
+    }, { status: 400 });
   }
 
   // Check entitlement
