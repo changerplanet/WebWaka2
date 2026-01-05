@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "yarn validate:schema && next build",
     "start": "next dev",
     "lint": "next lint",
     "test": "jest",
@@ -12,7 +12,9 @@
     "test:integration": "jest __tests__/integration",
     "test:e2e": "jest __tests__/e2e",
     "test:coverage": "jest --coverage",
-    "test:watch": "jest --watch"
+    "test:watch": "jest --watch",
+    "validate:schema": "node scripts/validation/validate-prisma-models.js",
+    "prebuild": "yarn validate:schema"
   },
   "dependencies": {
     "@prisma/client": "5.22.0",
