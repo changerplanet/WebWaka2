@@ -14,7 +14,8 @@
     "test:coverage": "jest --coverage",
     "test:watch": "jest --watch",
     "validate:schema": "node scripts/validation/validate-prisma-models.js",
-    "prebuild": "yarn validate:schema"
+    "prebuild": "yarn validate:schema",
+    "prepare": "husky"
   },
   "dependencies": {
     "@prisma/client": "5.22.0",
