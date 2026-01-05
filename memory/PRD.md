@@ -263,6 +263,42 @@ Following comprehensive testing by Manus (SET 1 & SET 2), the following issues w
 - Partner: Login, session, and profile APIs working ✅
 - Tenant: Login and membership working ✅
 
+### SET 3 - Tenant Dashboard Fixes ✅
+**Completed: January 5, 2026**
+
+Following SET 3 test report (Tenant-Level Testing), all 6 demo tenant logins were failing with "Tenant not found" error after successful authentication.
+
+**Root Cause:** Multiple Prisma model naming issues from schema introspection:
+- `PlatformInstance.Tenant` → should be `tenant` (lowercase)
+- `prisma.capability` → should be `prisma.core_capabilities`
+- Multiple validation services using wrong model names
+
+**Fixes Applied:**
+| File | Issue | Fix |
+|------|-------|-----|
+| `prisma/schema.prisma` | PlatformInstance relations wrong case | Changed `Tenant` → `tenant`, `Partner` → `createdByPartner` |
+| `lib/capabilities/activation-service.ts` | Wrong model name | Changed `prisma.capability` → `prisma.core_capabilities` |
+| `lib/capabilities/runtime-guard.ts` | Wrong model name | Changed `prisma.capability` → `prisma.core_capabilities` |
+| `app/api/capabilities/route.ts` | Wrong model name | Changed `prisma.capability` → `prisma.core_capabilities` |
+| `app/api/admin/capabilities/*.ts` | Wrong model name | Changed all references |
+| `app/dashboard/page.tsx` | Blocked on authLoading | Fetch tenant immediately when slug available |
+| `app/dashboard/layout.tsx` | Blocking render on loading | Don't block if tenant slug present |
+
+**Verification Results:**
+- demo-retail-store: ✅ Login + Dashboard
+- demo-marketplace: ✅ Login + Dashboard
+- demo-school: ✅ Login + Dashboard
+- demo-clinic: ✅ Login + Dashboard
+- demo-logistics: ✅ Login + Dashboard
+- demo-b2b: ✅ Login + Dashboard
+
+All 6 demo tenants now successfully:
+1. Login with password
+2. Redirect to `/dashboard?tenant={slug}`
+3. Resolve tenant context
+4. Load 28 capabilities
+5. Display full dashboard UI
+
 ---
 
 ## Roadmap (Upcoming)
