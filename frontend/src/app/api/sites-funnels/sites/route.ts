@@ -152,7 +152,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Check partner ownership for write operations
-    const partnerCheck = await requirePartnerOwnership(tenantId, session.userId);
+    const partnerCheck = await requirePartnerOwnership(tenantId, userId);
     if (!partnerCheck.authorized) {
       return NextResponse.json({ success: false, error: partnerCheck.error }, { status: 403 });
     }
@@ -174,7 +174,7 @@ export async function POST(request: NextRequest) {
             partnerId: partnerCheck.partnerId!,
             siteName: name,
             siteSlug: slug,
-            createdBy: session.userId,
+            createdBy: userId,
           });
           return NextResponse.json(result);
         }
@@ -186,7 +186,7 @@ export async function POST(request: NextRequest) {
           name,
           slug,
           description,
-          createdBy: session.userId,
+          createdBy: userId,
         });
         return NextResponse.json(result);
       }
