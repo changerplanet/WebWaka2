@@ -1,9 +1,9 @@
 {
-  "timestamp": "2026-01-05T14:15:17.656Z",
+  "timestamp": "2026-01-05T14:15:56.598Z",
   "mode": "check",
   "summary": {
-    "totalFiles": 514,
-    "totalReferences": 2024,
+    "totalFiles": 515,
+    "totalReferences": 2037,
     "validModels": 193,
     "totalErrors": 235,
     "legacyIssues": 966,
