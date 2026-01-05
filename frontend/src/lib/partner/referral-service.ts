@@ -53,7 +53,7 @@ export async function createReferralLink(input: CreateReferralLinkInput): Promis
     // Generate unique referral code
     const code = generateReferralCode(partner.slug);
     
-    const referralLink = await prisma.partnerReferralLinkExt.create({
+    const referralLink = await prisma.partner_referral_links_ext.create({
       data: {
         partnerId: input.partnerId,
         code,
@@ -97,7 +97,7 @@ export async function createReferralLink(input: CreateReferralLinkInput): Promis
 }
 
 export async function getReferralLink(code: string) {
-  return prisma.partnerReferralLinkExt.findUnique({
+  return prisma.partner_referral_links_ext.findUnique({
     where: { code },
   });
 }
@@ -108,7 +108,7 @@ export async function trackReferralClick(code: string): Promise<{
   error?: string;
 }> {
   try {
-    const link = await prisma.partnerReferralLinkExt.findUnique({
+    const link = await prisma.partner_referral_links_ext.findUnique({
       where: { code },
     });
     
@@ -125,7 +125,7 @@ export async function trackReferralClick(code: string): Promise<{
     }
     
     // Increment click count
-    await prisma.partnerReferralLinkExt.update({
+    await prisma.partner_referral_links_ext.update({
       where: { code },
       data: { clicks: { increment: 1 } },
     });
@@ -146,7 +146,7 @@ export async function listPartnerReferralLinks(partnerId: string, activeOnly: bo
     where.isActive = true;
   }
   
-  return prisma.partnerReferralLinkExt.findMany({
+  return prisma.partner_referral_links_ext.findMany({
     where,
     orderBy: { createdAt: 'desc' },
   });
@@ -157,7 +157,7 @@ export async function deactivateReferralLink(linkId: string): Promise<{
   error?: string;
 }> {
   try {
-    await prisma.partnerReferralLinkExt.update({
+    await prisma.partner_referral_links_ext.update({
       where: { id: linkId },
       data: { isActive: false },
     });
