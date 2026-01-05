@@ -121,7 +121,7 @@ export class CapabilityActivationService {
       return true;
     }
 
-    const activation = await prisma.tenantCapabilityActivation.findUnique({
+    const activation = await prisma.core_tenant_capability_activations.findUnique({
       where: {
         tenantId_capabilityKey: {
           tenantId,
