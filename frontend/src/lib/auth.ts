@@ -178,6 +178,7 @@ export async function getSessionByToken(token: string): Promise<AuthSession | nu
   return {
     user: session.user as SessionUser,
     sessionId: session.id,
+    sessionToken: session.token,
     activeTenantId: session.activeTenant
   }
 }
