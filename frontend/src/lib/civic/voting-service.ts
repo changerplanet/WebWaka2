@@ -254,7 +254,7 @@ export async function castVote(
   
   // Check if already voted
   const voterHash = hashVoterId(voterId, pollId);
-  const existingVote = voteStore.find((v: string) => v.pollId === pollId && v.voterHash === voterHash);
+  const existingVote = voteStore.find((v: Vote) => v.pollId === pollId && v.voterHash === voterHash);
   if (existingVote) {
     return { success: false, message: 'You have already voted in this poll' };
   }
@@ -282,12 +282,12 @@ export async function castVote(
 export async function hasVoted(pollId: string, voterId: string): Promise<boolean> {
   const voteStore = getVotesStore();
   const voterHash = hashVoterId(voterId, pollId);
-  return voteStore.some((v: string) => v.pollId === pollId && v.voterHash === voterHash);
+  return voteStore.some((v: Vote) => v.pollId === pollId && v.voterHash === voterHash);
 }
 
 async function calculatePollResults(pollId: string): Promise<Record<string, number>> {
   const voteStore = getVotesStore();
-  const votes = voteStore.filter((v: string) => v.pollId === pollId);
+  const votes = voteStore.filter((v: Vote) => v.pollId === pollId);
   
   const results: Record<string, number> = {};
   
