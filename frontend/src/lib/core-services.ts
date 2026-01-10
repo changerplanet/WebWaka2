@@ -415,7 +415,7 @@ export class CoreInventoryService {
       where,
       include: {
         ProductCategory: true,
-        inventoryLevels: options?.locationId ? {
+        InventoryLevel: options?.locationId ? {
           where: { locationId: options.locationId, variantId: null }
         } : {
           where: { variantId: null }
@@ -429,7 +429,7 @@ export class CoreInventoryService {
     }) : null
     
     let results = products.map(product => {
-      const invLevel = product.inventoryLevels[0]
+      const invLevel = product.InventoryLevel[0]
       return mapProductToInventory(product, invLevel, location)
     })
     
@@ -459,16 +459,16 @@ export class CoreInventoryService {
         Product: {
           include: { ProductCategory: true }
         },
-        variant: true,
-        location: true
+        ProductVariant: true,
+        Location: true
       }
     })
     
     return inventoryLevels.map(il => {
-      if (il.variant) {
-        return mapVariantToInventory(il.variant, il.product, il, il.location)
+      if (il.ProductVariant) {
+        return mapVariantToInventory(il.ProductVariant, il.Product, il, il.Location)
       }
-      return mapProductToInventory(il.product, il, il.location)
+      return mapProductToInventory(il.Product, il, il.Location)
     })
   }
 
@@ -493,14 +493,14 @@ export class CoreInventoryService {
       where,
       include: {
         ProductCategory: true,
-        variants: {
+        ProductVariant: {
           include: {
-            inventoryLevels: options?.locationId ? {
+            InventoryLevel: options?.locationId ? {
               where: { locationId: options.locationId }
             } : true
           }
         },
-        inventoryLevels: options?.locationId ? {
+        InventoryLevel: options?.locationId ? {
           where: { locationId: options.locationId }
         } : true
       }
@@ -514,7 +514,7 @@ export class CoreInventoryService {
     
     for (const product of products) {
       // Add product-level inventory
-      const productInv = product.inventoryLevels.find(il => !il.variantId)
+      const productInv = product.InventoryLevel.find((il: any) => !il.variantId)
       const inv = mapProductToInventory(product, productInv, location)
       
       if (options?.includeZeroStock || inv.quantityAvailable > 0 || !inv.trackInventory) {
@@ -522,8 +522,8 @@ export class CoreInventoryService {
       }
       
       // Add variant-level inventory
-      for (const variant of product.variants) {
-        const variantInv = variant.inventoryLevels[0]
+      for (const variant of product.ProductVariant) {
+        const variantInv = (variant as any).InventoryLevel[0]
         const vInv = mapVariantToInventory(variant, product, variantInv, location)
         
         if (options?.includeZeroStock || vInv.quantityAvailable > 0 || !vInv.trackInventory) {
