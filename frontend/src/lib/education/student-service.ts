@@ -11,7 +11,7 @@ import { StudentMetadata, EDUCATION_CONTACT_TYPES } from './config';
 // TYPES
 // ============================================================================
 
-export interface CreateStudentInput {
+export interface CreateStudentServiceInput {
   firstName: string;
   lastName: string;
   email?: string;
