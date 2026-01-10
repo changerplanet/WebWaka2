@@ -30,7 +30,7 @@ export interface CreateAgentInput {
   bankName?: string
   bankAccount?: string
   bankAccountName?: string
-  metadata?: object
+  metadata?: Record<string, unknown>
 }
 
 export interface UpdateAgentInput extends Partial<CreateAgentInput> {

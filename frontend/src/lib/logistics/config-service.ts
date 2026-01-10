@@ -26,7 +26,7 @@ export interface InitializeLogisticsInput {
   maxConcurrentDeliveries?: number
   maxDeliveryAttempts?: number
   operatingHours?: object
-  metadata?: object
+  metadata?: Record<string, unknown>
 }
 
 export interface UpdateConfigInput {
@@ -56,7 +56,7 @@ export interface UpdateConfigInput {
   notifyCustomerOnFailure?: boolean
   supportInformalAddresses?: boolean
   landmarkRequired?: boolean
-  metadata?: object
+  metadata?: Record<string, unknown>
 }
 
 // ============================================================================

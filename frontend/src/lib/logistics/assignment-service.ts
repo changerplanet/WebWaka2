@@ -77,7 +77,7 @@ export interface CreateAssignmentInput {
   autoAssigned?: boolean
   assignedBy?: string
   
-  metadata?: object
+  metadata?: Record<string, unknown>
 }
 
 export interface UpdateAssignmentInput {
@@ -90,7 +90,7 @@ export interface UpdateAssignmentInput {
   deliveryWindowEnd?: Date
   specialInstructions?: string
   estimatedFee?: number
-  metadata?: object
+  metadata?: Record<string, unknown>
 }
 
 export interface StatusUpdateInput {

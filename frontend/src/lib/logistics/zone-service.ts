@@ -27,7 +27,7 @@ export interface CreateZoneInput {
   radiusKm?: number
   polygon?: object
   sortOrder?: number
-  metadata?: object
+  metadata?: Record<string, unknown>
 }
 
 export interface UpdateZoneInput extends Partial<CreateZoneInput> {

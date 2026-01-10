@@ -37,7 +37,7 @@ export interface CaptureProofInput {
   // Offline support
   offlineId?: string
   
-  metadata?: object
+  metadata?: Record<string, unknown>
 }
 
 export interface VerifyPinInput {

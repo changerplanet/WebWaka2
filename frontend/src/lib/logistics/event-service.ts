@@ -64,7 +64,7 @@ export interface OrderReadyEvent {
   priority?: 'STANDARD' | 'EXPRESS' | 'SAME_DAY' | 'NEXT_DAY'
   scheduledDeliveryAt?: Date
   specialInstructions?: string
-  metadata?: object
+  metadata?: Record<string, unknown>
 }
 
 export interface OrderCancelledEvent {
