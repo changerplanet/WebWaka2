@@ -44,7 +44,7 @@ import json
 from typing import Dict, Any, Optional
 
 # Use the production URL from frontend/.env
-BASE_URL = "https://tscleanup.preview.emergentagent.com"
+BASE_URL = "https://build-fixer-13.preview.emergentagent.com"
 
 # Test tenant and user IDs as specified in the review request
 TEST_TENANT_ID = "test-tenant"

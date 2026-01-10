@@ -38,7 +38,7 @@ import uuid
 from datetime import datetime, timedelta
 
 # Base URL
-BASE_URL = "https://tscleanup.preview.emergentagent.com"
+BASE_URL = "https://build-fixer-13.preview.emergentagent.com"
 
 # Test tenant
 TENANT_SLUG = "acme"

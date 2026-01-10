@@ -169,7 +169,7 @@
 
 ### Frontend Testing Agent (January 7, 2026)
 - **Tests Passed**: 21/23
-- **Production URL**: https://tscleanup.preview.emergentagent.com/warehouse-demo
+- **Production URL**: https://build-fixer-13.preview.emergentagent.com/warehouse-demo
 
 #### Verified Elements
 - ✅ Base page loads without authentication
