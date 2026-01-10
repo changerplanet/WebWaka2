@@ -87,7 +87,7 @@ export class CampaignService {
   static async create(tenantId: string, input: CampaignInput, createdBy?: string) {
     const slug = input.slug || this.generateSlug(input.name);
 
-    return prisma.crm_campaigns.create({
+    return (prisma.crm_campaigns.create as any)({
       data: {
         tenantId,
         name: input.name,
@@ -188,7 +188,7 @@ export class CampaignService {
       offset?: number;
     }
   ) {
-    const where: Prisma.CrmCampaignWhereInput = { tenantId };
+    const where: Prisma.crm_campaignsWhereInput = { tenantId };
 
     if (options?.status) where.status = options.status;
     if (options?.campaignType) where.campaignType = options.campaignType;
@@ -250,7 +250,7 @@ export class CampaignService {
     });
 
     // Create new audience
-    const created = await prisma.crm_campaign_audiences.create({
+    const created = await (prisma.crm_campaign_audiences.create as any)({
       data: {
         tenantId,
         campaignId,
