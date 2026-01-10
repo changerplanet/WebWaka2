@@ -103,8 +103,8 @@ export class ProofService {
         capturedAt: input.capturedAt || new Date(),
         offlineId: input.offlineId,
         syncedAt: input.offlineId ? new Date() : null,
-        metadata: input.metadata as any,
-      },
+        ...(input.metadata && { metadata: input.metadata }),
+      } as any,
     })
   }
 

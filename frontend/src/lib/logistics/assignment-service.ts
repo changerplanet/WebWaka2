@@ -524,7 +524,7 @@ export class AssignmentService {
         offlineId: input.offlineId,
         recordedAt: input.recordedAt || new Date(),
         syncedAt: input.offlineId ? new Date() : null,
-      },
+      } as any,
     })
   }
 

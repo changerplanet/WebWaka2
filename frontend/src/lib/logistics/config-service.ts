@@ -94,8 +94,8 @@ export class ConfigurationService {
         maxConcurrentDeliveries: input.maxConcurrentDeliveries || 5,
         maxDeliveryAttempts: input.maxDeliveryAttempts || 3,
         operatingHours: input.operatingHours,
-        metadata: input.metadata as any,
-      },
+        ...(input.metadata && { metadata: input.metadata }),
+      } as any,
     })
 
     // Create default Nigerian zones if requested
@@ -153,8 +153,8 @@ export class ConfigurationService {
         ...(input.notifyCustomerOnFailure !== undefined && { notifyCustomerOnFailure: input.notifyCustomerOnFailure }),
         ...(input.supportInformalAddresses !== undefined && { supportInformalAddresses: input.supportInformalAddresses }),
         ...(input.landmarkRequired !== undefined && { landmarkRequired: input.landmarkRequired }),
-        ...(input.metadata !== undefined && { metadata: input.metadata ?? undefined }),
-      },
+        ...(input.metadata && { metadata: input.metadata }),
+      } as any,
     })
   }
 
