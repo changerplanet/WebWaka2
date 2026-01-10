@@ -486,7 +486,7 @@ export async function getSubscription(tenantId: string): Promise<Subscription | 
     where: { tenantId },
     include: {
       SubscriptionPlan: true,
-      entitlements: true
+      Entitlement: true
     }
   })
 }
@@ -500,7 +500,7 @@ export async function getSubscriptionById(subscriptionId: string): Promise<Subsc
     include: {
       SubscriptionPlan: true,
       Tenant: true,
-      entitlements: true
+      Entitlement: true
     }
   })
 }
