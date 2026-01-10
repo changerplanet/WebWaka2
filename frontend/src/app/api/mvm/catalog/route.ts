@@ -50,8 +50,8 @@ function mapProductToResponse(product: any) {
     
     status: product.status,
     
-    hasVariants: product.variants?.length > 1,
-    variants: product.variants?.map((v: any) => ({
+    hasVariants: product.ProductVariant?.length > 1,
+    variants: product.ProductVariant?.map((v: any) => ({
       id: v.id,
       productId: v.productId,
       name: v.name,
@@ -107,7 +107,7 @@ export async function GET(request: NextRequest) {
         where: { id: productId, tenantId },
         include: {
           ProductCategory: true,
-          variants: true
+          ProductVariant: true
         }
       })
       
@@ -151,7 +151,7 @@ export async function GET(request: NextRequest) {
       where,
       include: {
         ProductCategory: true,
-        variants: true
+        ProductVariant: true
       },
       orderBy: { name: 'asc' },
       take: limit,
@@ -209,7 +209,7 @@ export async function POST(request: NextRequest) {
       },
       include: {
         ProductCategory: true,
-        variants: true
+        ProductVariant: true
       }
     })
     
