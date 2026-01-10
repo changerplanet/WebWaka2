@@ -160,7 +160,7 @@ registerEventHandler('STOCK_TRANSFER_RECEIVED', async (event) => {
       });
 
       if (product) {
-        await prisma.inventoryLevel.create({
+        await (prisma.inventoryLevel.create as any)({
           data: {
             tenantId: product.tenantId,
             productId: delta.productId,
