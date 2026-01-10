@@ -215,7 +215,7 @@ export class OfflineService {
       })),
       assignments: assignments.map(a => ({
         ...a,
-        deliveryAddress: a.deliveryAddress as object | null,
+        deliveryAddress: a.deliveryAddress,
         deliveryLatitude: a.deliveryLatitude?.toString() || null,
         deliveryLongitude: a.deliveryLongitude?.toString() || null,
         estimatedFee: a.estimatedFee?.toString() || null,
@@ -443,7 +443,7 @@ export class OfflineService {
 
     const formatAssignment = (a: typeof newAssignments[0]): OfflineAssignment => ({
       ...a,
-      deliveryAddress: a.deliveryAddress as object | null,
+      deliveryAddress: a.deliveryAddress,
       deliveryLatitude: a.deliveryLatitude?.toString() || null,
       deliveryLongitude: a.deliveryLongitude?.toString() || null,
       estimatedFee: a.estimatedFee?.toString() || null,

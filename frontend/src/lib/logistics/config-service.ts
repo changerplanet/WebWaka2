@@ -93,7 +93,7 @@ export class ConfigurationService {
         assignmentAlgorithm: input.assignmentAlgorithm || 'NEAREST',
         maxConcurrentDeliveries: input.maxConcurrentDeliveries || 5,
         maxDeliveryAttempts: input.maxDeliveryAttempts || 3,
-        operatingHours: input.operatingHours as object | undefined,
+        operatingHours: input.operatingHours,
         metadata: input.metadata ?? undefined,
       },
     })
@@ -142,7 +142,7 @@ export class ConfigurationService {
         ...(input.defaultDeliveryWindowHours !== undefined && { defaultDeliveryWindowHours: input.defaultDeliveryWindowHours }),
         ...(input.expressDeliveryWindowHours !== undefined && { expressDeliveryWindowHours: input.expressDeliveryWindowHours }),
         ...(input.sameDayDeliveryWindowHours !== undefined && { sameDayDeliveryWindowHours: input.sameDayDeliveryWindowHours }),
-        ...(input.operatingHours !== undefined && { operatingHours: input.operatingHours as object | undefined }),
+        ...(input.operatingHours !== undefined && { operatingHours: input.operatingHours }),
         ...(input.maxDeliveryAttempts !== undefined && { maxDeliveryAttempts: input.maxDeliveryAttempts }),
         ...(input.retryDelayHours !== undefined && { retryDelayHours: input.retryDelayHours }),
         ...(input.notifyCustomerOnAssignment !== undefined && { notifyCustomerOnAssignment: input.notifyCustomerOnAssignment }),
