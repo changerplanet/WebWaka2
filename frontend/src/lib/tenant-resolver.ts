@@ -104,12 +104,12 @@ export async function resolveTenantFromHost(hostname: string): Promise<TenantCon
       status: 'VERIFIED'
     },
     include: {
-      Tenant: {
+      tenant: {
         include: { domains: true }
       },
       // Phase 2: Include platform instance if mapped
       platformInstance: {
-        include: { Tenant: true }
+        include: { tenant: true }
       }
     }
   })
@@ -149,11 +149,11 @@ export async function resolveTenantFromHost(hostname: string): Promise<TenantCon
           status: 'VERIFIED'
         },
         include: {
-          Tenant: {
+          tenant: {
             include: { domains: true }
           },
           platformInstance: {
-            include: { Tenant: true }
+            include: { tenant: true }
           }
         }
       })
