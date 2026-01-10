@@ -10,7 +10,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server'
-import { checkCapabilityGuardLegacy, extractTenantId } from '@/lib/capabilities'
+import { checkCapabilityGuard, extractTenantId } from '@/lib/capabilities'
 import { 
   generateDailySummary,
   generateShiftSummary,
@@ -28,7 +28,7 @@ import {
 export async function GET(request: NextRequest) {
   try {
     // Capability guard
-    const guardResult = await checkCapabilityGuardLegacy(request, 'pos')
+    const guardResult = await checkCapabilityGuard(request, 'pos')
     if (guardResult) return guardResult
 
     const tenantId = await extractTenantId(request)

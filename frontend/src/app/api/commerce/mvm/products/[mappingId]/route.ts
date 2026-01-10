@@ -10,7 +10,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server'
-import { checkCapabilityGuardLegacy } from '@/lib/capabilities'
+import { checkCapabilityGuard } from '@/lib/capabilities'
 import { ProductMappingService } from '@/lib/mvm'
 
 // ============================================================================
@@ -22,7 +22,7 @@ export async function GET(
   { params }: { params: { mappingId: string } }
 ) {
   try {
-    const guardResult = await checkCapabilityGuardLegacy(request, 'mvm')
+    const guardResult = await checkCapabilityGuard(request, 'mvm')
     if (guardResult) return guardResult
 
     const { mappingId } = params
@@ -74,7 +74,7 @@ export async function PUT(
   { params }: { params: { mappingId: string } }
 ) {
   try {
-    const guardResult = await checkCapabilityGuardLegacy(request, 'mvm')
+    const guardResult = await checkCapabilityGuard(request, 'mvm')
     if (guardResult) return guardResult
 
     const { mappingId } = params
@@ -125,7 +125,7 @@ export async function DELETE(
   { params }: { params: { mappingId: string } }
 ) {
   try {
-    const guardResult = await checkCapabilityGuardLegacy(request, 'mvm')
+    const guardResult = await checkCapabilityGuard(request, 'mvm')
     if (guardResult) return guardResult
 
     const { mappingId } = params
@@ -162,7 +162,7 @@ export async function POST(
   { params }: { params: { mappingId: string } }
 ) {
   try {
-    const guardResult = await checkCapabilityGuardLegacy(request, 'mvm')
+    const guardResult = await checkCapabilityGuard(request, 'mvm')
     if (guardResult) return guardResult
 
     const { mappingId } = params

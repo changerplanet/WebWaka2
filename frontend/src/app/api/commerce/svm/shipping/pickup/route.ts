@@ -8,7 +8,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server'
-import { checkCapabilityGuardLegacy, extractTenantId } from '@/lib/capabilities'
+import { checkCapabilityGuard, extractTenantId } from '@/lib/capabilities'
 import {
   isLocalPickupAvailable,
   enableLocalPickup,
@@ -22,7 +22,7 @@ import {
 export async function GET(request: NextRequest) {
   try {
     // Capability guard
-    const guardResult = await checkCapabilityGuardLegacy(request, 'svm')
+    const guardResult = await checkCapabilityGuard(request, 'svm')
     if (guardResult) return guardResult
 
     const tenantId = await extractTenantId(request)
@@ -60,7 +60,7 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     // Capability guard
-    const guardResult = await checkCapabilityGuardLegacy(request, 'svm')
+    const guardResult = await checkCapabilityGuard(request, 'svm')
     if (guardResult) return guardResult
 
     const tenantId = await extractTenantId(request)

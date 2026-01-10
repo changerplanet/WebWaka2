@@ -8,7 +8,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server'
-import { checkCapabilityGuardLegacy, extractTenantId } from '@/lib/capabilities'
+import { checkCapabilityGuard, extractTenantId } from '@/lib/capabilities'
 import { prisma } from '@/lib/prisma'
 import { formatNGN } from '@/lib/currency'
 import {
@@ -24,7 +24,7 @@ import {
 export async function POST(request: NextRequest) {
   try {
     // Capability guard
-    const guardResult = await checkCapabilityGuardLegacy(request, 'svm')
+    const guardResult = await checkCapabilityGuard(request, 'svm')
     if (guardResult) return guardResult
 
     const tenantId = await extractTenantId(request)
@@ -137,7 +137,7 @@ export async function POST(request: NextRequest) {
 export async function GET(request: NextRequest) {
   try {
     // Capability guard
-    const guardResult = await checkCapabilityGuardLegacy(request, 'svm')
+    const guardResult = await checkCapabilityGuard(request, 'svm')
     if (guardResult) return guardResult
 
     const tenantId = await extractTenantId(request)

@@ -9,7 +9,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server'
-import { checkCapabilityGuardLegacy, extractTenantId } from '@/lib/capabilities'
+import { checkCapabilityGuard, extractTenantId } from '@/lib/capabilities'
 import { MarketplaceConfigService } from '@/lib/mvm'
 
 // ============================================================================
@@ -18,7 +18,7 @@ import { MarketplaceConfigService } from '@/lib/mvm'
 
 export async function GET(request: NextRequest) {
   try {
-    const guardResult = await checkCapabilityGuardLegacy(request, 'mvm')
+    const guardResult = await checkCapabilityGuard(request, 'mvm')
     if (guardResult) return guardResult
 
     const tenantId = await extractTenantId(request)
@@ -66,7 +66,7 @@ export async function GET(request: NextRequest) {
 
 export async function PUT(request: NextRequest) {
   try {
-    const guardResult = await checkCapabilityGuardLegacy(request, 'mvm')
+    const guardResult = await checkCapabilityGuard(request, 'mvm')
     if (guardResult) return guardResult
 
     const tenantId = await extractTenantId(request)
@@ -126,7 +126,7 @@ export async function PUT(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    const guardResult = await checkCapabilityGuardLegacy(request, 'mvm')
+    const guardResult = await checkCapabilityGuard(request, 'mvm')
     if (guardResult) return guardResult
 
     const tenantId = await extractTenantId(request)

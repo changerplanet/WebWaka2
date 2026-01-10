@@ -9,7 +9,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server'
-import { checkCapabilityGuardLegacy, extractTenantId } from '@/lib/capabilities'
+import { checkCapabilityGuard, extractTenantId } from '@/lib/capabilities'
 import {
   calculateCheckoutSummary,
   validateCheckout,
@@ -28,7 +28,7 @@ import {
 export async function POST(request: NextRequest) {
   try {
     // Capability guard
-    const guardResult = await checkCapabilityGuardLegacy(request, 'svm')
+    const guardResult = await checkCapabilityGuard(request, 'svm')
     if (guardResult) return guardResult
 
     const tenantId = await extractTenantId(request)

@@ -8,7 +8,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server'
-import { checkCapabilityGuardLegacy, extractTenantId } from '@/lib/capabilities'
+import { checkCapabilityGuard, extractTenantId } from '@/lib/capabilities'
 import { generateZReport, getShift, reconcileShift } from '@/lib/pos/shift-service'
 
 // =============================================================================
@@ -21,7 +21,7 @@ export async function GET(
 ) {
   try {
     // Capability guard
-    const guardResult = await checkCapabilityGuardLegacy(request, 'pos')
+    const guardResult = await checkCapabilityGuard(request, 'pos')
     if (guardResult) return guardResult
 
     const tenantId = await extractTenantId(request)
@@ -69,7 +69,7 @@ export async function POST(
 ) {
   try {
     // Capability guard
-    const guardResult = await checkCapabilityGuardLegacy(request, 'pos')
+    const guardResult = await checkCapabilityGuard(request, 'pos')
     if (guardResult) return guardResult
 
     const body = await request.json()

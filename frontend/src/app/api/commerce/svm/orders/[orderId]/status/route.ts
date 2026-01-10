@@ -8,7 +8,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server'
-import { checkCapabilityGuardLegacy, extractTenantId } from '@/lib/capabilities'
+import { checkCapabilityGuard, extractTenantId } from '@/lib/capabilities'
 import { prisma } from '@/lib/prisma'
 import { 
   updateOrderStatus,
@@ -28,7 +28,7 @@ export async function POST(
 ) {
   try {
     // Capability guard
-    const guardResult = await checkCapabilityGuardLegacy(request, 'svm')
+    const guardResult = await checkCapabilityGuard(request, 'svm')
     if (guardResult) return guardResult
 
     const tenantId = await extractTenantId(request)
@@ -135,7 +135,7 @@ export async function GET(
 ) {
   try {
     // Capability guard
-    const guardResult = await checkCapabilityGuardLegacy(request, 'svm')
+    const guardResult = await checkCapabilityGuard(request, 'svm')
     if (guardResult) return guardResult
 
     const tenantId = await extractTenantId(request)

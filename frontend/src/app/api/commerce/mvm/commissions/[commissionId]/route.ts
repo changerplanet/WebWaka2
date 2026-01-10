@@ -8,7 +8,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server'
-import { checkCapabilityGuardLegacy } from '@/lib/capabilities'
+import { checkCapabilityGuard } from '@/lib/capabilities'
 import { CommissionService } from '@/lib/mvm'
 
 // ============================================================================
@@ -20,7 +20,7 @@ export async function GET(
   { params }: { params: { commissionId: string } }
 ) {
   try {
-    const guardResult = await checkCapabilityGuardLegacy(request, 'mvm')
+    const guardResult = await checkCapabilityGuard(request, 'mvm')
     if (guardResult) return guardResult
 
     const { commissionId } = params
@@ -80,7 +80,7 @@ export async function POST(
   { params }: { params: { commissionId: string } }
 ) {
   try {
-    const guardResult = await checkCapabilityGuardLegacy(request, 'mvm')
+    const guardResult = await checkCapabilityGuard(request, 'mvm')
     if (guardResult) return guardResult
 
     const { commissionId } = params

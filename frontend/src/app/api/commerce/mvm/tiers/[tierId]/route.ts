@@ -9,7 +9,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server'
-import { checkCapabilityGuardLegacy, extractTenantId } from '@/lib/capabilities'
+import { checkCapabilityGuard, extractTenantId } from '@/lib/capabilities'
 import { VendorTierService } from '@/lib/mvm'
 
 // ============================================================================
@@ -21,7 +21,7 @@ export async function GET(
   { params }: { params: { tierId: string } }
 ) {
   try {
-    const guardResult = await checkCapabilityGuardLegacy(request, 'mvm')
+    const guardResult = await checkCapabilityGuard(request, 'mvm')
     if (guardResult) return guardResult
 
     const tenantId = await extractTenantId(request)
@@ -78,7 +78,7 @@ export async function PUT(
   { params }: { params: { tierId: string } }
 ) {
   try {
-    const guardResult = await checkCapabilityGuardLegacy(request, 'mvm')
+    const guardResult = await checkCapabilityGuard(request, 'mvm')
     if (guardResult) return guardResult
 
     const tenantId = await extractTenantId(request)
@@ -130,7 +130,7 @@ export async function DELETE(
   { params }: { params: { tierId: string } }
 ) {
   try {
-    const guardResult = await checkCapabilityGuardLegacy(request, 'mvm')
+    const guardResult = await checkCapabilityGuard(request, 'mvm')
     if (guardResult) return guardResult
 
     const tenantId = await extractTenantId(request)
