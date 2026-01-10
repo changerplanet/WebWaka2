@@ -76,7 +76,7 @@ export class EngagementService {
    * Record an engagement event
    */
   static async recordEvent(tenantId: string, input: EngagementInput) {
-    return prisma.crm_engagement_events.create({
+    return (prisma.crm_engagement_events.create as any)({
       data: {
         tenantId,
         customerId: input.customerId,
@@ -284,7 +284,7 @@ export class EngagementService {
       offset?: number;
     }
   ) {
-    const where: Prisma.CrmEngagementEventWhereInput = { tenantId, customerId };
+    const where: Prisma.crm_engagement_eventsWhereInput = { tenantId, customerId };
 
     if (options?.eventType) where.eventType = options.eventType;
     if (options?.startDate || options?.endDate) {
@@ -359,7 +359,7 @@ export class EngagementService {
     tenantId: string,
     options?: { startDate?: Date; endDate?: Date }
   ) {
-    const where: Prisma.CrmEngagementEventWhereInput = { tenantId };
+    const where: Prisma.crm_engagement_eventsWhereInput = { tenantId };
 
     if (options?.startDate || options?.endDate) {
       where.occurredAt = {};
