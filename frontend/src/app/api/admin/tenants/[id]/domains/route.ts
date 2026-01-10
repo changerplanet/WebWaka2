@@ -104,7 +104,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
         isPrimary: isPrimary || false,
         verificationToken: type === 'CUSTOM' ? uuidv4() : null,
         verifiedAt: type === 'SUBDOMAIN' ? new Date() : null
-      }
+      } as any
     })
     
     await createAuditLog({
