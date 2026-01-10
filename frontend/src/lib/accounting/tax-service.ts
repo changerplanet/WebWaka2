@@ -282,7 +282,7 @@ export class TaxService {
         default:
           // Other sources - check if it's an expense account
           for (const line of journal.lines) {
-            if (line.ledgerAccount.chartOfAccount.accountType === 'EXPENSE') {
+            if (line.ledgerAccount.acct_chart_of_accounts.accountType === 'EXPENSE') {
               inputVAT.expenses = inputVAT.expenses.plus(taxAmount);
               expenseCount++;
               break;
@@ -498,7 +498,7 @@ export class TaxService {
         taxCode: 'VAT_7.5',
         period: { fiscalYear: year },
       },
-      include: { period: true },
+      include: { acct_financial_periods: true },
       orderBy: { period: { startDate: 'asc' } },
     });
 
@@ -510,8 +510,8 @@ export class TaxService {
       totalPaid = totalPaid.plus(s.taxPaid.toString());
 
       return {
-        month: s.period.code,
-        monthName: s.period.name,
+        month: s.acct_financial_periods.code,
+        monthName: s.acct_financial_periods.name,
         taxCollected: s.taxCollected.toString(),
         taxPaid: s.taxPaid.toString(),
         netTax: s.netTaxLiability.toString(),

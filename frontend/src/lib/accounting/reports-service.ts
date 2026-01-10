@@ -436,7 +436,7 @@ export class ReportsService {
       
       if (['POS_SALE', 'SVM_ORDER', 'MVM_ORDER', 'EXPENSE', 'REFUND'].includes(sourceType || '')) {
         operatingCash = operatingCash.plus(netAmount);
-      } else if (entry.ledgerAccount.chartOfAccount.code.startsWith('15')) {
+      } else if (entry.ledgerAccount.acct_chart_of_accounts.code.startsWith('15')) {
         investingCash = investingCash.plus(netAmount);
       } else {
         financingCash = financingCash.plus(netAmount);
@@ -601,16 +601,16 @@ export class ReportsService {
 
         // Calculate balance based on normal balance
         let balance: Decimal;
-        if (la.chartOfAccount.normalBalance === 'DEBIT') {
+        if (la.acct_chart_of_accounts.normalBalance === 'DEBIT') {
           balance = periodDebit.minus(periodCredit);
         } else {
           balance = periodCredit.minus(periodDebit);
         }
 
         return {
-          accountCode: la.chartOfAccount.code,
-          accountName: la.chartOfAccount.name,
-          accountType: la.chartOfAccount.accountType,
+          accountCode: la.acct_chart_of_accounts.code,
+          accountName: la.acct_chart_of_accounts.name,
+          accountType: la.acct_chart_of_accounts.accountType,
           balance: balance.abs().toFixed(2),
           debit: periodDebit.toFixed(2),
           credit: periodCredit.toFixed(2),
