@@ -78,7 +78,7 @@ export async function createOffer(
   // Verify application exists and is at offer stage
   const application = await prisma.recruit_application.findFirst({
     where: { id: input.applicationId, tenantId },
-    include: { log_jobs: true },
+    include: { job: true },
   });
 
   if (!application) {
@@ -166,7 +166,7 @@ export async function getOfferById(
           applicantEmail: true,
           applicantPhone: true,
           expectedSalary: true,
-          log_jobs: {
+          job: {
             select: { id: true, title: true, jobCode: true, department: true },
           },
         },
@@ -189,7 +189,7 @@ export async function getOfferByApplication(
         select: {
           applicantName: true,
           applicantEmail: true,
-          log_jobs: { select: { title: true } },
+          job: { select: { title: true } },
         },
       },
     },
@@ -234,7 +234,7 @@ export async function getOffers(
           select: {
             applicantName: true,
             applicantEmail: true,
-            log_jobs: { select: { title: true, jobCode: true } },
+            job: { select: { title: true, jobCode: true } },
           },
         },
       },

@@ -145,7 +145,7 @@ export async function getApplicationById(
   return prisma.recruit_application.findFirst({
     where: { id: applicationId, tenantId },
     include: {
-      log_jobs: {
+      job: {
         select: {
           id: true,
           jobCode: true,
@@ -206,7 +206,7 @@ export async function getApplications(
       skip: (page - 1) * limit,
       take: limit,
       include: {
-        log_jobs: {
+        job: {
           select: { id: true, title: true, jobCode: true },
         },
         _count: {

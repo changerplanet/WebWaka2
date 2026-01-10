@@ -207,7 +207,7 @@ export async function getOnboardingTaskById(
         select: {
           applicantName: true,
           applicantEmail: true,
-          log_jobs: { select: { title: true } },
+          job: { select: { title: true } },
         },
       },
     },
@@ -255,7 +255,7 @@ export async function getOnboardingTasks(
         application: {
           select: {
             applicantName: true,
-            log_jobs: { select: { title: true } },
+            job: { select: { title: true } },
           },
         },
       },
@@ -480,7 +480,7 @@ export async function getOverdueTasks(
       application: {
         select: {
           applicantName: true,
-          log_jobs: { select: { title: true } },
+          job: { select: { title: true } },
         },
       },
     },

@@ -137,7 +137,7 @@ export async function getJobById(
       applications: {
         select: {
           id: true,
-          crm_stages: true,
+          stage: true,
           applicantName: true,
         },
       },

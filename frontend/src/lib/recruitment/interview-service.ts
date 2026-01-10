@@ -142,8 +142,8 @@ export async function getInterviewById(
           applicantName: true,
           applicantEmail: true,
           applicantPhone: true,
-          crm_stages: true,
-          log_jobs: {
+          stage: true,
+          job: {
             select: { id: true, title: true, jobCode: true },
           },
         },
@@ -197,7 +197,7 @@ export async function getInterviews(
             id: true,
             applicantName: true,
             applicantEmail: true,
-            log_jobs: { select: { title: true, jobCode: true } },
+            job: { select: { title: true, jobCode: true } },
           },
         },
       },
@@ -377,7 +377,7 @@ export async function getUpcomingInterviews(
           applicantName: true,
           applicantPhone: true,
           applicantEmail: true,
-          log_jobs: { select: { title: true } },
+          job: { select: { title: true } },
         },
       },
     },
@@ -408,7 +408,7 @@ export async function getTodayInterviews(
           applicantName: true,
           applicantPhone: true,
           applicantEmail: true,
-          log_jobs: { select: { title: true, jobCode: true } },
+          job: { select: { title: true, jobCode: true } },
         },
       },
     },
@@ -500,7 +500,7 @@ export async function getInterviewsByInterviewer(
         application: {
           select: {
             applicantName: true,
-            log_jobs: { select: { title: true } },
+            job: { select: { title: true } },
           },
         },
       },
