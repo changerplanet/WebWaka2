@@ -602,10 +602,13 @@ export class StockTransferService {
       },
       include: {
         inv_stock_transfer_items: true,
-        
-        
       },
     });
+
+    // Fetch warehouse info if needed for reversal
+    const fromWarehouse = needsReversal 
+      ? await prisma.inv_warehouses.findUnique({ where: { id: updated.fromWarehouseId } })
+      : null;
 
     // Emit cancellation event
     await emitInventoryEvent({
@@ -623,7 +626,7 @@ export class StockTransferService {
           ? updated.inv_stock_transfer_items.map(i => ({
               productId: i.productId,
               variantId: i.variantId || undefined,
-              locationId: updated.fromWarehouse.locationId,
+              locationId: fromWarehouse?.locationId,
               delta: i.quantityShipped, // Positive = restore
               reason: 'TRANSFER_CANCELLED' as const,
             }))
@@ -632,7 +635,7 @@ export class StockTransferService {
       metadata: { userId, userName },
     });
 
-    return this.toResponse(updated);
+    return this.toResponse(updated, fromWarehouse, null);
   }
 
   /**
