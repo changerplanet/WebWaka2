@@ -643,15 +643,16 @@ export class ExpenseService {
       });
     }
 
+    const ledgerAccountAny = ledgerAccount as any;
     return {
       ...expense,
       amount: expense.amount.toString(),
       taxAmount: expense.taxAmount?.toString(),
-      account: ledgerAccount ? {
-        id: ledgerAccount.id,
-        code: ledgerAccount.chartOfAccount.code,
-        name: ledgerAccount.chartOfAccount.name,
-        type: ledgerAccount.chartOfAccount.accountType,
+      account: ledgerAccountAny ? {
+        id: ledgerAccountAny.id,
+        code: ledgerAccountAny.acct_chart_of_accounts.code,
+        name: ledgerAccountAny.acct_chart_of_accounts.name,
+        type: ledgerAccountAny.acct_chart_of_accounts.accountType,
       } : null,
       journal: journalEntry ? {
         ...journalEntry,
@@ -669,7 +670,7 @@ export class ExpenseService {
     startDate?: Date,
     endDate?: Date
   ) {
-    const where: Prisma.AcctExpenseRecordWhereInput = {
+    const where: Prisma.acct_expense_recordsWhereInput = {
       tenantId,
       status: 'POSTED',
     };
@@ -683,7 +684,7 @@ export class ExpenseService {
     const expenses = await prisma.acct_expense_records.findMany({
       where,
       include: {
-        period: { select: { id: true, name: true, code: true } },
+        acct_financial_periods: { select: { id: true, name: true, code: true } },
       },
     });
 
@@ -699,15 +700,16 @@ export class ExpenseService {
     const summary: Record<string, { count: number; total: Decimal; account: string }> = {};
 
     for (const expense of expenses) {
+      const acctInfo = accountMap.get(expense.ledgerAccountId) as any;
       const category = expense.categoryName || 
-        accountMap.get(expense.ledgerAccountId)?.chartOfAccount.name || 
+        acctInfo?.acct_chart_of_accounts.name || 
         'Uncategorized';
       
       if (!summary[category]) {
         summary[category] = {
           count: 0,
           total: new Decimal(0),
-          account: accountMap.get(expense.ledgerAccountId)?.chartOfAccount.code || '',
+          account: acctInfo?.acct_chart_of_accounts.code || '',
         };
       }
       summary[category].count++;
