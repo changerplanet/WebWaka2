@@ -129,7 +129,7 @@ export async function getOrder(tenantId: string, orderId: string) {
       table: true,
       stay: true,
       venue: true,
-      inv_audit_items: { orderBy: { createdAt: 'asc' } },
+      items: { orderBy: { createdAt: 'asc' } },
       chargeFacts: true
     }
   })
@@ -138,7 +138,7 @@ export async function getOrder(tenantId: string, orderId: string) {
 export async function getOrderByNumber(tenantId: string, orderNumber: string) {
   return prisma.hospitality_order.findFirst({
     where: { orderNumber, tenantId },
-    include: { guest: true, table: true, inv_audit_items: true }
+    include: { guest: true, table: true, items: true }
   })
 }
 
@@ -166,8 +166,8 @@ export async function listOrders(tenantId: string, options?: OrderSearchOptions)
       include: {
         guest: true,
         table: true,
-        inv_audit_items: true,
-        _count: { select: { inv_audit_items: true } }
+        items: true,
+        _count: { select: { items: true } }
       },
       skip,
       take: limit,
@@ -240,7 +240,7 @@ export async function confirmOrder(tenantId: string, orderId: string) {
   return prisma.hospitality_order.update({
     where: { id: orderId },
     data: { status: 'CONFIRMED', confirmedAt: new Date(), updatedAt: new Date() },
-    include: { inv_audit_items: true }
+    include: { items: true }
   })
 }
 
@@ -320,7 +320,7 @@ export async function getKitchenQueue(tenantId: string, venueId: string, prepSta
       ...(prepStation && { prepStation })
     },
     include: {
-      svm_orders: {
+      order: {
         select: {
           orderNumber: true,
           orderType: true,
@@ -351,8 +351,8 @@ export async function getActiveOrders(tenantId: string, venueId: string) {
     include: {
       table: true,
       guest: true,
-      inv_audit_items: true,
-      _count: { select: { inv_audit_items: true } }
+      items: true,
+      _count: { select: { items: true } }
     },
     orderBy: { placedAt: 'asc' }
   })
@@ -403,7 +403,7 @@ export async function assignItemToSplit(tenantId: string, itemId: string, splitN
 export async function getSplitBillTotals(tenantId: string, orderId: string) {
   const order = await prisma.hospitality_order.findFirst({
     where: { id: orderId, tenantId },
-    include: { inv_audit_items: { where: { status: { not: 'CANCELLED' } } } }
+    include: { items: { where: { status: { not: 'CANCELLED' } } } }
   })
 
   if (!order) throw new Error('Order not found')

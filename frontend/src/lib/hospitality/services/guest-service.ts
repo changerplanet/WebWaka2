@@ -199,7 +199,7 @@ export async function getGuestHistory(tenantId: string, guestId: string) {
     }),
     prisma.hospitality_order.findMany({
       where: { tenantId, guestId },
-      include: { venue: true, _count: { select: { inv_audit_items: true } } },
+      include: { venue: true, _count: { select: { items: true } } },
       orderBy: { placedAt: 'desc' },
       take: 10
     }),

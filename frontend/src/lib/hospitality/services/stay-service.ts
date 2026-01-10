@@ -106,7 +106,7 @@ export async function getStay(tenantId: string, stayId: string) {
       room: { include: { floor: true } },
       venue: true,
       reservation: true,
-      orders: { include: { inv_audit_items: true } },
+      orders: { include: { items: true } },
       serviceEvents: true,
       chargeFacts: true
     }

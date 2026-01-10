@@ -78,14 +78,14 @@ export async function createChargeFact(input: CreateChargeFactInput) {
       referenceId: input.referenceId,
       status: 'PENDING'
     }),
-    include: { guest: true, stay: true, svm_orders: true }
+    include: { guest: true, stay: true, order: true }
   })
 }
 
 export async function getChargeFact(tenantId: string, factId: string) {
   return prisma.hospitality_charge_fact.findFirst({
     where: { id: factId, tenantId },
-    include: { guest: true, stay: true, svm_orders: true }
+    include: { guest: true, stay: true, order: true }
   })
 }
 
@@ -110,7 +110,7 @@ export async function listChargeFacts(tenantId: string, options?: ChargeFactSear
   const [facts, total] = await Promise.all([
     prisma.hospitality_charge_fact.findMany({
       where,
-      include: { guest: true, stay: true, svm_orders: true },
+      include: { guest: true, stay: true, order: true },
       skip,
       take: limit,
       orderBy: { serviceDate: 'desc' }
@@ -167,7 +167,7 @@ export async function getPendingChargeFacts(tenantId: string, guestId?: string, 
       ...(guestId && { guestId }),
       ...(stayId && { stayId })
     },
-    include: { guest: true, stay: true, svm_orders: true },
+    include: { guest: true, stay: true, order: true },
     orderBy: { serviceDate: 'asc' }
   })
 }
@@ -265,7 +265,7 @@ export async function generateRoomNightCharges(tenantId: string, stayId: string)
 export async function generateOrderCharges(tenantId: string, orderId: string) {
   const order = await prisma.hospitality_order.findFirst({
     where: { id: orderId, tenantId },
-    include: { guest: true, inv_audit_items: true, stay: true }
+    include: { guest: true, items: true, stay: true }
   })
 
   if (!order) throw new Error('Order not found')
