@@ -276,7 +276,7 @@ export class OfflineSyncService {
     idempotencyKey: string
   ): Promise<SyncResult> {
     // Check if already synced (idempotency)
-    const existing = await prisma.stockTransfer.findFirst({
+    const existing = await prisma.inv_stock_transfers.findFirst({
       where: {
         tenantId,
         offlineId: action.offlineEntityId,
@@ -309,15 +309,15 @@ export class OfflineSyncService {
       // Generate transfer number
       const year = new Date().getFullYear();
       const month = String(new Date().getMonth() + 1).padStart(2, '0');
-      const count = await prisma.stockTransfer.count({
+      const count = await prisma.inv_stock_transfers.count({
         where: { tenantId },
       });
       const transferNumber = `TRF-${year}${month}-${String(count + 1).padStart(4, '0')}`;
 
       // Validate warehouses
       const [fromWh, toWh] = await Promise.all([
-        prisma.warehouse.findFirst({ where: { id: payload.fromWarehouseId, tenantId } }),
-        prisma.warehouse.findFirst({ where: { id: payload.toWarehouseId, tenantId } }),
+        prisma.inv_warehouses.findFirst({ where: { id: payload.fromWarehouseId, tenantId } }),
+        prisma.inv_warehouses.findFirst({ where: { id: payload.toWarehouseId, tenantId } }),
       ]);
 
       if (!fromWh || !toWh) {
@@ -336,7 +336,7 @@ export class OfflineSyncService {
       });
       const productMap = new Map(products.map(p => [p.id, p]));
 
-      const transfer = await prisma.stockTransfer.create({
+      const transfer = await prisma.inv_stock_transfers.create({
         data: {
           tenantId,
           transferNumber,
@@ -399,7 +399,7 @@ export class OfflineSyncService {
     };
 
     // Get transfer
-    const transfer = await prisma.stockTransfer.findFirst({
+    const transfer = await prisma.inv_stock_transfers.findFirst({
       where: {
         OR: [
           { id: payload.transferId },
@@ -452,14 +452,14 @@ export class OfflineSyncService {
         );
 
         if (item) {
-          await prisma.stockTransferItem.update({
+          await prisma.inv_stock_transfer_items.update({
             where: { id: item.id },
             data: { quantityShipped: shipItem.quantityShipped },
           });
         }
       }
 
-      await prisma.stockTransfer.update({
+      await prisma.inv_stock_transfers.update({
         where: { id: transfer.id },
         data: {
           status: 'IN_TRANSIT',
@@ -501,7 +501,7 @@ export class OfflineSyncService {
       }>;
     };
 
-    const transfer = await prisma.stockTransfer.findFirst({
+    const transfer = await prisma.inv_stock_transfers.findFirst({
       where: {
         OR: [
           { id: payload.transferId },
@@ -554,7 +554,7 @@ export class OfflineSyncService {
 
         if (item) {
           const variance = receiveItem.quantityReceived - item.quantityShipped;
-          await prisma.stockTransferItem.update({
+          await prisma.inv_stock_transfer_items.update({
             where: { id: item.id },
             data: {
               quantityReceived: receiveItem.quantityReceived,
@@ -565,7 +565,7 @@ export class OfflineSyncService {
         }
       }
 
-      await prisma.stockTransfer.update({
+      await prisma.inv_stock_transfers.update({
         where: { id: transfer.id },
         data: {
           status: 'COMPLETED',
@@ -600,7 +600,7 @@ export class OfflineSyncService {
     idempotencyKey: string
   ): Promise<SyncResult> {
     // Check idempotency
-    const existing = await prisma.inventoryAudit.findFirst({
+    const existing = await prisma.inv_audits.findFirst({
       where: {
         tenantId,
         offlineId: action.offlineEntityId,
@@ -630,7 +630,7 @@ export class OfflineSyncService {
       // Generate audit number
       const year = new Date().getFullYear();
       const month = String(new Date().getMonth() + 1).padStart(2, '0');
-      const count = await prisma.inventoryAudit.count({ where: { tenantId } });
+      const count = await prisma.inv_audits.count({ where: { tenantId } });
       const auditNumber = `AUD-${year}${month}-${String(count + 1).padStart(4, '0')}`;
 
       // Get product details
@@ -640,7 +640,7 @@ export class OfflineSyncService {
       });
       const productMap = new Map(products.map(p => [p.id, p]));
 
-      const audit = await prisma.inventoryAudit.create({
+      const audit = await prisma.inv_audits.create({
         data: {
           tenantId,
           auditNumber,
@@ -701,7 +701,7 @@ export class OfflineSyncService {
       }>;
     };
 
-    const audit = await prisma.inventoryAudit.findFirst({
+    const audit = await prisma.inv_audits.findFirst({
       where: {
         OR: [
           { id: payload.auditId },
@@ -756,7 +756,7 @@ export class OfflineSyncService {
           } else {
             // Apply offline count
             const variance = count.countedQuantity - item.expectedQuantity;
-            await prisma.inventoryAuditItem.update({
+            await prisma.inv_audit_items.update({
               where: { id: item.id },
               data: {
                 countedQuantity: count.countedQuantity,

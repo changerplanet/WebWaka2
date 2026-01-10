@@ -94,7 +94,7 @@ export class ReorderRuleService {
     tenantId: string,
     data: ReorderRuleInput
   ): Promise<{ id: string }> {
-    const rule = await prisma.reorderRule.create({
+    const rule = await prisma.inv_reorder_rules.create({
       data: {
         tenantId,
         name: data.name,
@@ -145,7 +145,7 @@ export class ReorderRuleService {
     if (options?.triggerType) where.triggerType = options.triggerType;
     if (options?.isActive !== undefined) where.isActive = options.isActive;
 
-    return prisma.reorderRule.findMany({
+    return prisma.inv_reorder_rules.findMany({
       where,
       orderBy: [{ priority: 'desc' }, { name: 'asc' }],
     });
@@ -159,7 +159,7 @@ export class ReorderRuleService {
     ruleId: string,
     data: Partial<ReorderRuleInput>
   ) {
-    const existing = await prisma.reorderRule.findFirst({
+    const existing = await prisma.inv_reorder_rules.findFirst({
       where: { id: ruleId, tenantId },
     });
 
@@ -167,7 +167,7 @@ export class ReorderRuleService {
       throw new Error('Reorder rule not found');
     }
 
-    return prisma.reorderRule.update({
+    return prisma.inv_reorder_rules.update({
       where: { id: ruleId },
       data: {
         name: data.name,
@@ -198,7 +198,7 @@ export class ReorderRuleService {
    * Delete (deactivate) a reorder rule
    */
   static async deactivate(tenantId: string, ruleId: string) {
-    const existing = await prisma.reorderRule.findFirst({
+    const existing = await prisma.inv_reorder_rules.findFirst({
       where: { id: ruleId, tenantId },
     });
 
@@ -206,7 +206,7 @@ export class ReorderRuleService {
       throw new Error('Reorder rule not found');
     }
 
-    await prisma.reorderRule.update({
+    await prisma.inv_reorder_rules.update({
       where: { id: ruleId },
       data: { isActive: false },
     });
@@ -496,7 +496,7 @@ export class ReorderSuggestionEngine {
       ];
     }
 
-    const rules = await prisma.reorderRule.findMany({
+    const rules = await prisma.inv_reorder_rules.findMany({
       where: rulesWhere,
       orderBy: { priority: 'desc' },
     });
@@ -510,7 +510,7 @@ export class ReorderSuggestionEngine {
 
       for (const suggestion of ruleSuggestions) {
         // Check for existing pending suggestion for same product/location
-        const existing = await prisma.reorderSuggestion.findFirst({
+        const existing = await prisma.inv_reorder_suggestions.findFirst({
           where: {
             tenantId,
             productId: suggestion.productId,
@@ -524,7 +524,7 @@ export class ReorderSuggestionEngine {
           // Update existing suggestion if new one is more urgent
           const urgencyOrder = ['LOW', 'NORMAL', 'HIGH', 'CRITICAL'];
           if (urgencyOrder.indexOf(suggestion.urgency) > urgencyOrder.indexOf(existing.urgency)) {
-            await prisma.reorderSuggestion.update({
+            await prisma.inv_reorder_suggestions.update({
               where: { id: existing.id },
               data: {
                 suggestedQuantity: suggestion.suggestedQuantity,
@@ -569,7 +569,7 @@ export class ReorderSuggestionEngine {
           : undefined;
 
         // Create suggestion
-        const created = await prisma.reorderSuggestion.create({
+        const created = await prisma.inv_reorder_suggestions.create({
           data: {
             tenantId,
             ruleId: rule.id,
@@ -671,7 +671,7 @@ export class ReorderSuggestionEngine {
     }
 
     const [suggestions, total] = await Promise.all([
-      prisma.reorderSuggestion.findMany({
+      prisma.inv_reorder_suggestions.findMany({
         where,
         include: { rule: true },
         orderBy: [
@@ -681,7 +681,7 @@ export class ReorderSuggestionEngine {
         take: options?.limit || 50,
         skip: options?.offset || 0,
       }),
-      prisma.reorderSuggestion.count({ where }),
+      prisma.inv_reorder_suggestions.count({ where }),
     ]);
 
     return {
@@ -699,7 +699,7 @@ export class ReorderSuggestionEngine {
     userId: string,
     userName: string
   ): Promise<void> {
-    const suggestion = await prisma.reorderSuggestion.findFirst({
+    const suggestion = await prisma.inv_reorder_suggestions.findFirst({
       where: { id: suggestionId, tenantId },
     });
 
@@ -711,7 +711,7 @@ export class ReorderSuggestionEngine {
       throw new Error('Suggestion is not pending');
     }
 
-    await prisma.reorderSuggestion.update({
+    await prisma.inv_reorder_suggestions.update({
       where: { id: suggestionId },
       data: {
         status: 'APPROVED',
@@ -732,7 +732,7 @@ export class ReorderSuggestionEngine {
     userName: string,
     reason: string
   ): Promise<void> {
-    const suggestion = await prisma.reorderSuggestion.findFirst({
+    const suggestion = await prisma.inv_reorder_suggestions.findFirst({
       where: { id: suggestionId, tenantId },
     });
 
@@ -744,7 +744,7 @@ export class ReorderSuggestionEngine {
       throw new Error('Suggestion is not pending');
     }
 
-    await prisma.reorderSuggestion.update({
+    await prisma.inv_reorder_suggestions.update({
       where: { id: suggestionId },
       data: {
         status: 'REJECTED',

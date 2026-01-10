@@ -34,7 +34,7 @@ export class WarehouseService {
     }
 
     // Check if warehouse already exists for this location
-    const existing = await prisma.warehouse.findUnique({
+    const existing = await prisma.inv_warehouses.findUnique({
       where: { locationId: data.locationId },
     });
 
@@ -43,7 +43,7 @@ export class WarehouseService {
     }
 
     // Check for duplicate code
-    const duplicateCode = await prisma.warehouse.findFirst({
+    const duplicateCode = await prisma.inv_warehouses.findFirst({
       where: {
         tenantId,
         code: data.code,
@@ -56,13 +56,13 @@ export class WarehouseService {
 
     // If setting as default, unset other defaults
     if (data.isDefaultForReceiving) {
-      await prisma.warehouse.updateMany({
+      await prisma.inv_warehouses.updateMany({
         where: { tenantId, isDefaultForReceiving: true },
         data: { isDefaultForReceiving: false },
       });
     }
 
-    const warehouse = await prisma.warehouse.create({
+    const warehouse = await prisma.inv_warehouses.create({
       data: {
         tenantId,
         locationId: data.locationId,
@@ -114,7 +114,7 @@ export class WarehouseService {
       where.acceptsTransfersOut = options.acceptsTransfersOut;
     }
 
-    const warehouses = await prisma.warehouse.findMany({
+    const warehouses = await prisma.inv_warehouses.findMany({
       where,
       orderBy: [
         { fulfillmentPriority: 'desc' },
@@ -139,7 +139,7 @@ export class WarehouseService {
     tenantId: string,
     warehouseId: string
   ): Promise<WarehouseResponse | null> {
-    const warehouse = await prisma.warehouse.findFirst({
+    const warehouse = await prisma.inv_warehouses.findFirst({
       where: {
         id: warehouseId,
         tenantId,
@@ -162,7 +162,7 @@ export class WarehouseService {
     tenantId: string,
     locationId: string
   ): Promise<WarehouseResponse | null> {
-    const warehouse = await prisma.warehouse.findFirst({
+    const warehouse = await prisma.inv_warehouses.findFirst({
       where: {
         locationId,
         tenantId,
@@ -186,7 +186,7 @@ export class WarehouseService {
     warehouseId: string,
     data: Partial<CreateWarehouseRequest>
   ): Promise<WarehouseResponse> {
-    const existing = await prisma.warehouse.findFirst({
+    const existing = await prisma.inv_warehouses.findFirst({
       where: { id: warehouseId, tenantId },
     });
 
@@ -196,7 +196,7 @@ export class WarehouseService {
 
     // Check for duplicate code if changing
     if (data.code && data.code !== existing.code) {
-      const duplicateCode = await prisma.warehouse.findFirst({
+      const duplicateCode = await prisma.inv_warehouses.findFirst({
         where: {
           tenantId,
           code: data.code,
@@ -211,13 +211,13 @@ export class WarehouseService {
 
     // If setting as default, unset other defaults
     if (data.isDefaultForReceiving && !existing.isDefaultForReceiving) {
-      await prisma.warehouse.updateMany({
+      await prisma.inv_warehouses.updateMany({
         where: { tenantId, isDefaultForReceiving: true },
         data: { isDefaultForReceiving: false },
       });
     }
 
-    const warehouse = await prisma.warehouse.update({
+    const warehouse = await prisma.inv_warehouses.update({
       where: { id: warehouseId },
       data: {
         name: data.name,
@@ -252,7 +252,7 @@ export class WarehouseService {
     tenantId: string,
     warehouseId: string
   ): Promise<void> {
-    const existing = await prisma.warehouse.findFirst({
+    const existing = await prisma.inv_warehouses.findFirst({
       where: { id: warehouseId, tenantId },
     });
 
@@ -261,7 +261,7 @@ export class WarehouseService {
     }
 
     // Check for pending transfers
-    const pendingTransfers = await prisma.stockTransfer.count({
+    const pendingTransfers = await prisma.inv_stock_transfers.count({
       where: {
         tenantId,
         OR: [
@@ -280,7 +280,7 @@ export class WarehouseService {
       );
     }
 
-    await prisma.warehouse.update({
+    await prisma.inv_warehouses.update({
       where: { id: warehouseId },
       data: { isActive: false },
     });
@@ -316,7 +316,7 @@ export class WarehouseService {
   static async getDefaultReceivingWarehouse(
     tenantId: string
   ): Promise<WarehouseResponse | null> {
-    const warehouse = await prisma.warehouse.findFirst({
+    const warehouse = await prisma.inv_warehouses.findFirst({
       where: {
         tenantId,
         isActive: true,

@@ -91,7 +91,7 @@ async function generateAuditNumber(tenantId: string): Promise<string> {
   const year = new Date().getFullYear();
   const month = String(new Date().getMonth() + 1).padStart(2, '0');
   
-  const count = await prisma.inventoryAudit.count({
+  const count = await prisma.inv_audits.count({
     where: {
       tenantId,
       createdAt: {
@@ -119,7 +119,7 @@ export class InventoryAuditService {
     userName?: string
   ): Promise<AuditResponse> {
     // Validate warehouse
-    const warehouse = await prisma.warehouse.findFirst({
+    const warehouse = await prisma.inv_warehouses.findFirst({
       where: { id: data.warehouseId, tenantId, isActive: true },
     });
 
@@ -168,7 +168,7 @@ export class InventoryAuditService {
     }
 
     // Create audit with items
-    const audit = await prisma.inventoryAudit.create({
+    const audit = await prisma.inv_audits.create({
       data: {
         tenantId,
         auditNumber,
@@ -222,7 +222,7 @@ export class InventoryAuditService {
       throw new Error(`Cannot start audit from status '${audit.status}'`);
     }
 
-    const updated = await prisma.inventoryAudit.update({
+    const updated = await prisma.inv_audits.update({
       where: { id: auditId },
       data: {
         status: 'IN_PROGRESS',
@@ -289,7 +289,7 @@ export class InventoryAuditService {
         ? variance * Number(item.unitCost)
         : null;
 
-      await prisma.inventoryAuditItem.update({
+      await prisma.inv_audit_items.update({
         where: { id: item.id },
         data: {
           countedQuantity: count.countedQuantity,
@@ -307,7 +307,7 @@ export class InventoryAuditService {
     }
 
     // Refresh and return
-    const updated = await prisma.inventoryAudit.findUnique({
+    const updated = await prisma.inv_audits.findUnique({
       where: { id: auditId },
       include: {
         bill_invoice_items: true,
@@ -333,7 +333,7 @@ export class InventoryAuditService {
       throw new Error('Audit must be in progress or pending review to request recount');
     }
 
-    await prisma.inventoryAuditItem.updateMany({
+    await prisma.inv_audit_items.updateMany({
       where: {
         id: { in: itemIds },
         auditId,
@@ -347,13 +347,13 @@ export class InventoryAuditService {
 
     // If in PENDING_REVIEW, move back to IN_PROGRESS
     if (audit.status === 'PENDING_REVIEW') {
-      await prisma.inventoryAudit.update({
+      await prisma.inv_audits.update({
         where: { id: auditId },
         data: { status: 'IN_PROGRESS' },
       });
     }
 
-    const updated = await prisma.inventoryAudit.findUnique({
+    const updated = await prisma.inv_audits.findUnique({
       where: { id: auditId },
       include: {
         bill_invoice_items: true,
@@ -410,7 +410,7 @@ export class InventoryAuditService {
         ? (totalVarianceValue / totalExpectedValue) * 100
         : 0;
 
-    const updated = await prisma.inventoryAudit.update({
+    const updated = await prisma.inv_audits.update({
       where: { id: auditId },
       data: {
         status: 'PENDING_REVIEW',
@@ -451,7 +451,7 @@ export class InventoryAuditService {
       : audit.items.filter(i => i.varianceQuantity !== null && i.varianceQuantity !== 0);
 
     // Mark items as approved
-    await prisma.inventoryAuditItem.updateMany({
+    await prisma.inv_audit_items.updateMany({
       where: {
         id: { in: itemsToApprove.map(i => i.id) },
       },
@@ -463,7 +463,7 @@ export class InventoryAuditService {
     });
 
     // Update audit status
-    const updated = await prisma.inventoryAudit.update({
+    const updated = await prisma.inv_audits.update({
       where: { id: auditId },
       data: {
         status: 'APPROVED',
@@ -503,7 +503,7 @@ export class InventoryAuditService {
       });
 
       // Update audit with event ID
-      await prisma.inventoryAudit.update({
+      await prisma.inv_audits.update({
         where: { id: auditId },
         data: {
           adjustmentEventId: eventId,
@@ -552,13 +552,13 @@ export class InventoryAuditService {
     });
 
     // Mark as completed
-    await prisma.inventoryAudit.update({
+    await prisma.inv_audits.update({
       where: { id: auditId },
       data: { status: 'COMPLETED' },
     });
 
     // Refresh and return
-    const final = await prisma.inventoryAudit.findUnique({
+    const final = await prisma.inv_audits.findUnique({
       where: { id: auditId },
       include: {
         bill_invoice_items: true,
@@ -583,7 +583,7 @@ export class InventoryAuditService {
       throw new Error(`Cannot cancel audit from status '${audit.status}'`);
     }
 
-    const updated = await prisma.inventoryAudit.update({
+    const updated = await prisma.inv_audits.update({
       where: { id: auditId },
       data: {
         status: 'CANCELLED',
@@ -626,7 +626,7 @@ export class InventoryAuditService {
     }
 
     const [audits, total] = await Promise.all([
-      prisma.inventoryAudit.findMany({
+      prisma.inv_audits.findMany({
         where,
         include: {
           bill_invoice_items: true,
@@ -636,7 +636,7 @@ export class InventoryAuditService {
         take: options?.limit || 50,
         skip: options?.offset || 0,
       }),
-      prisma.inventoryAudit.count({ where }),
+      prisma.inv_audits.count({ where }),
     ]);
 
     return {
@@ -652,7 +652,7 @@ export class InventoryAuditService {
     tenantId: string,
     auditId: string
   ): Promise<AuditResponse | null> {
-    const audit = await prisma.inventoryAudit.findFirst({
+    const audit = await prisma.inv_audits.findFirst({
       where: { id: auditId, tenantId },
       include: {
         bill_invoice_items: true,
@@ -743,7 +743,7 @@ export class InventoryAuditService {
     varianceReason?: string;
     warehouseName: string;
   }>> {
-    const items = await prisma.inventoryAuditItem.findMany({
+    const items = await prisma.inv_audit_items.findMany({
       where: {
         productId,
         variantId: variantId || null,
@@ -778,7 +778,7 @@ export class InventoryAuditService {
    * Get audit or throw
    */
   private static async getAuditOrThrow(tenantId: string, auditId: string) {
-    const audit = await prisma.inventoryAudit.findFirst({
+    const audit = await prisma.inv_audits.findFirst({
       where: { id: auditId, tenantId },
       include: {
         bill_invoice_items: true,

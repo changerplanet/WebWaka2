@@ -274,16 +274,16 @@ export class InventoryEntitlementsService {
       auditsThisMonth,
       reorderRuleCount,
     ] = await Promise.all([
-      prisma.warehouse.count({
+      prisma.inv_warehouses.count({
         where: { tenantId, isActive: true },
       }),
-      prisma.stockTransfer.count({
+      prisma.inv_stock_transfers.count({
         where: { tenantId, createdAt: { gte: startOfMonth } },
       }),
-      prisma.inventoryAudit.count({
+      prisma.inv_audits.count({
         where: { tenantId, createdAt: { gte: startOfMonth } },
       }),
-      prisma.reorderRule.count({
+      prisma.inv_reorder_rules.count({
         where: { tenantId, isActive: true },
       }),
     ]);

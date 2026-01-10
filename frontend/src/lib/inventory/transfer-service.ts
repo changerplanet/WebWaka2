@@ -26,7 +26,7 @@ async function generateTransferNumber(tenantId: string): Promise<string> {
   const month = String(new Date().getMonth() + 1).padStart(2, '0');
   
   // Count existing transfers this month
-  const count = await prisma.stockTransfer.count({
+  const count = await prisma.inv_stock_transfers.count({
     where: {
       tenantId,
       createdAt: {
@@ -55,10 +55,10 @@ export class StockTransferService {
   ): Promise<StockTransferResponse> {
     // Validate warehouses
     const [fromWarehouse, toWarehouse] = await Promise.all([
-      prisma.warehouse.findFirst({
+      prisma.inv_warehouses.findFirst({
         where: { id: data.fromWarehouseId, tenantId, isActive: true },
       }),
-      prisma.warehouse.findFirst({
+      prisma.inv_warehouses.findFirst({
         where: { id: data.toWarehouseId, tenantId, isActive: true },
       }),
     ]);
@@ -105,7 +105,7 @@ export class StockTransferService {
     const transferNumber = await generateTransferNumber(tenantId);
 
     // Create transfer with items
-    const transfer = await prisma.stockTransfer.create({
+    const transfer = await prisma.inv_stock_transfers.create({
       data: {
         tenantId,
         transferNumber,
@@ -165,7 +165,7 @@ export class StockTransferService {
       throw new Error(`Cannot submit transfer from status '${transfer.status}'`);
     }
 
-    const updated = await prisma.stockTransfer.update({
+    const updated = await prisma.inv_stock_transfers.update({
       where: { id: transferId },
       data: {
         status: 'PENDING_APPROVAL',
@@ -221,7 +221,7 @@ export class StockTransferService {
       throw new Error(`Cannot approve transfer from status '${transfer.status}'`);
     }
 
-    const updated = await prisma.stockTransfer.update({
+    const updated = await prisma.inv_stock_transfers.update({
       where: { id: transferId },
       data: {
         status: 'APPROVED',
@@ -273,7 +273,7 @@ export class StockTransferService {
       throw new Error(`Cannot reject transfer from status '${transfer.status}'`);
     }
 
-    const updated = await prisma.stockTransfer.update({
+    const updated = await prisma.inv_stock_transfers.update({
       where: { id: transferId },
       data: {
         status: 'REJECTED',
@@ -338,13 +338,13 @@ export class StockTransferService {
         );
       }
 
-      await prisma.stockTransferItem.update({
+      await prisma.inv_stock_transfer_items.update({
         where: { id: item.id },
         data: { quantityShipped: shipItem.quantityShipped },
       });
     }
 
-    const updated = await prisma.stockTransfer.update({
+    const updated = await prisma.inv_stock_transfers.update({
       where: { id: transferId },
       data: {
         status: 'IN_TRANSIT',
@@ -393,7 +393,7 @@ export class StockTransferService {
     });
 
     // Update event tracking
-    await prisma.stockTransfer.update({
+    await prisma.inv_stock_transfers.update({
       where: { id: transferId },
       data: {
         eventId,
@@ -458,7 +458,7 @@ export class StockTransferService {
 
       const variance = receiveItem.quantityReceived - item.quantityShipped;
 
-      await prisma.stockTransferItem.update({
+      await prisma.inv_stock_transfer_items.update({
         where: { id: item.id },
         data: {
           quantityReceived: receiveItem.quantityReceived,
@@ -470,7 +470,7 @@ export class StockTransferService {
     }
 
     // Determine final status
-    const updatedItems = await prisma.stockTransferItem.findMany({
+    const updatedItems = await prisma.inv_stock_transfer_items.findMany({
       where: { transferId },
     });
 
@@ -484,7 +484,7 @@ export class StockTransferService {
       newStatus = 'PARTIALLY_RECEIVED';
     }
 
-    const updated = await prisma.stockTransfer.update({
+    const updated = await prisma.inv_stock_transfers.update({
       where: { id: transferId },
       data: {
         status: newStatus,
@@ -578,7 +578,7 @@ export class StockTransferService {
     // If already shipped, we need to reverse the inventory
     const needsReversal = transfer.status === 'IN_TRANSIT';
 
-    const updated = await prisma.stockTransfer.update({
+    const updated = await prisma.inv_stock_transfers.update({
       where: { id: transferId },
       data: {
         status: 'CANCELLED',
@@ -658,7 +658,7 @@ export class StockTransferService {
     }
 
     const [transfers, total] = await Promise.all([
-      prisma.stockTransfer.findMany({
+      prisma.inv_stock_transfers.findMany({
         where,
         include: {
           bill_invoice_items: true,
@@ -669,7 +669,7 @@ export class StockTransferService {
         take: options?.limit || 50,
         skip: options?.offset || 0,
       }),
-      prisma.stockTransfer.count({ where }),
+      prisma.inv_stock_transfers.count({ where }),
     ]);
 
     return {
@@ -685,7 +685,7 @@ export class StockTransferService {
     tenantId: string,
     transferId: string
   ): Promise<StockTransferResponse | null> {
-    const transfer = await prisma.stockTransfer.findFirst({
+    const transfer = await prisma.inv_stock_transfers.findFirst({
       where: { id: transferId, tenantId },
       include: {
         bill_invoice_items: true,
@@ -704,7 +704,7 @@ export class StockTransferService {
     tenantId: string,
     transferId: string
   ) {
-    const transfer = await prisma.stockTransfer.findFirst({
+    const transfer = await prisma.inv_stock_transfers.findFirst({
       where: { id: transferId, tenantId },
       include: {
         bill_invoice_items: true,
