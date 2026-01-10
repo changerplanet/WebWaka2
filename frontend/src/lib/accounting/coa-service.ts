@@ -658,7 +658,7 @@ export class ChartOfAccountService {
             sortOrder: template.sortOrder || 0,
             metadata: template.metadata as Prisma.InputJsonValue | undefined,
             createdBy,
-          },
+          } as any,
         })
       )
     );
