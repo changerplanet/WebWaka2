@@ -167,9 +167,7 @@ export async function POST(request: NextRequest) {
           actorEmail: authResult.user.email || 'unknown',
           targetType: 'Partner',
           targetId: partnerId,
-          metadata: { partnerName: partner.name },
-          ipAddress,
-          userAgent
+          metadata: { partnerName: partner.name, ipAddress, userAgent }
         })
 
         return NextResponse.json({ success: true, message: 'Partner approved' })
@@ -194,9 +192,7 @@ export async function POST(request: NextRequest) {
           actorEmail: authResult.user.email || 'unknown',
           targetType: 'Partner',
           targetId: partnerId,
-          metadata: { partnerName: partner.name, reason: reason || 'No reason provided' },
-          ipAddress,
-          userAgent
+          metadata: { partnerName: partner.name, reason: reason || 'No reason provided', ipAddress, userAgent }
         })
 
         return NextResponse.json({ success: true, message: 'Partner suspended' })
@@ -221,9 +217,7 @@ export async function POST(request: NextRequest) {
           actorEmail: authResult.user.email || 'unknown',
           targetType: 'Partner',
           targetId: partnerId,
-          metadata: { partnerName: partner.name, action: 'reinstated' },
-          ipAddress,
-          userAgent
+          metadata: { partnerName: partner.name, action: 'reinstated', ipAddress, userAgent }
         })
 
         return NextResponse.json({ success: true, message: 'Partner reinstated' })
