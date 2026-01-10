@@ -90,7 +90,7 @@ export async function GET(request: NextRequest) {
     });
 
     // Check 5: Double-entry integrity (sample check)
-    const unbalancedJournals = await prisma.acctJournalEntry.findMany({
+    const unbalancedJournals = await prisma.acct_journal_entries.findMany({
       where: {
         tenantId: session.activeTenantId,
         status: 'POSTED',

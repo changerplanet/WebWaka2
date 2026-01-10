@@ -55,7 +55,7 @@ export async function isCapabilityActive(
     return true;
   }
 
-  const activation = await prisma.tenantCapabilityActivation.findUnique({
+  const activation = await prisma.core_tenant_capability_activations.findUnique({
     where: {
       tenantId_capabilityKey: {
         tenantId,
@@ -94,7 +94,7 @@ export async function checkCapability(
     };
   }
 
-  const activation = await prisma.tenantCapabilityActivation.findUnique({
+  const activation = await prisma.core_tenant_capability_activations.findUnique({
     where: {
       tenantId_capabilityKey: {
         tenantId,
@@ -290,7 +290,7 @@ export async function checkMultipleCapabilities(
   const results = new Map<string, boolean>();
 
   // Get all activations in one query
-  const activations = await prisma.tenantCapabilityActivation.findMany({
+  const activations = await prisma.core_tenant_capability_activations.findMany({
     where: {
       tenantId,
       capabilityKey: { in: capabilityKeys },
@@ -322,7 +322,7 @@ export async function getActiveCapabilities(
   tenantId: string
 ): Promise<string[]> {
   // Get explicitly activated capabilities
-  const activations = await prisma.tenantCapabilityActivation.findMany({
+  const activations = await prisma.core_tenant_capability_activations.findMany({
     where: {
       tenantId,
       status: 'ACTIVE',

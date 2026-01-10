@@ -87,13 +87,13 @@ export class ProcEntitlementsService {
 
     // Get current usage
     const [poCount, prCount] = await Promise.all([
-      prisma.procPurchaseOrder.count({
+      prisma.proc_purchase_orders.count({
         where: {
           tenantId,
           createdAt: { gte: new Date(new Date().getFullYear(), new Date().getMonth(), 1) },
         },
       }),
-      prisma.procPurchaseRequest.count({
+      prisma.proc_purchase_requests.count({
         where: {
           tenantId,
           createdAt: { gte: new Date(new Date().getFullYear(), new Date().getMonth(), 1) },
@@ -205,15 +205,15 @@ export class ProcEntitlementsService {
       totalReceipts,
       totalSuppliers,
     ] = await Promise.all([
-      prisma.procPurchaseOrder.count({ where: { tenantId } }),
-      prisma.procPurchaseOrder.count({
+      prisma.proc_purchase_orders.count({ where: { tenantId } }),
+      prisma.proc_purchase_orders.count({
         where: { tenantId, createdAt: { gte: startOfMonth } },
       }),
-      prisma.procPurchaseRequest.count({ where: { tenantId } }),
-      prisma.procPurchaseRequest.count({
+      prisma.proc_purchase_requests.count({ where: { tenantId } }),
+      prisma.proc_purchase_requests.count({
         where: { tenantId, createdAt: { gte: startOfMonth } },
       }),
-      prisma.procGoodsReceipt.count({ where: { tenantId } }),
+      prisma.proc_goods_receipts.count({ where: { tenantId } }),
       prisma.supplier.count({ where: { tenantId, status: 'ACTIVE' } }),
     ])
 

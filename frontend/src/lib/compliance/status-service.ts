@@ -32,7 +32,7 @@ export async function createComplianceStatus(input: CreateStatusInput): Promise<
   error?: string;
 }> {
   try {
-    const status = await prisma.complianceStatus.create({
+    const status = await prisma.compliance_statuses.create({
       data: {
         tenantId: input.tenantId,
         statusType: input.statusType,
@@ -67,7 +67,7 @@ export async function resolveComplianceStatus(statusId: string): Promise<{
   error?: string;
 }> {
   try {
-    await prisma.complianceStatus.update({
+    await prisma.compliance_statuses.update({
       where: { id: statusId },
       data: {
         isResolved: true,
@@ -85,7 +85,7 @@ export async function dismissComplianceStatus(statusId: string): Promise<{
   error?: string;
 }> {
   try {
-    const status = await prisma.complianceStatus.findUnique({
+    const status = await prisma.compliance_statuses.findUnique({
       where: { id: statusId },
     });
     
@@ -97,7 +97,7 @@ export async function dismissComplianceStatus(statusId: string): Promise<{
       return { success: false, error: 'This status cannot be dismissed' };
     }
     
-    await prisma.complianceStatus.update({
+    await prisma.compliance_statuses.update({
       where: { id: statusId },
       data: { dismissedAt: new Date() },
     });
@@ -130,7 +130,7 @@ export async function listComplianceStatuses(params: {
   if (!includeResolved) where.isResolved = false;
   if (!includeDismissed) where.dismissedAt = null;
   
-  return prisma.complianceStatus.findMany({
+  return prisma.compliance_statuses.findMany({
     where,
     orderBy: [{ severity: 'desc' }, { createdAt: 'desc' }],
   });
@@ -235,7 +235,7 @@ export async function generatePeriodCloseReminder(tenantId: string): Promise<voi
   const now = new Date();
   const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
   
-  const existingReminder = await prisma.complianceStatus.findFirst({
+  const existingReminder = await prisma.compliance_statuses.findFirst({
     where: {
       tenantId,
       statusType: 'PERIOD_REMINDER',

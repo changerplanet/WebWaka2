@@ -174,7 +174,7 @@ export class SegmentationService {
 
     for (const segment of DEFAULT_SEGMENTS) {
       // Check if already exists
-      const existing = await prisma.crmCustomerSegment.findUnique({
+      const existing = await prisma.crm_customer_segments.findUnique({
         where: { tenantId_slug: { tenantId, slug: segment.slug! } },
       });
 
@@ -196,7 +196,7 @@ export class SegmentationService {
     // Generate slug if not provided
     const slug = input.slug || this.generateSlug(input.name);
 
-    return prisma.crmCustomerSegment.create({
+    return prisma.crm_customer_segments.create({
       data: {
         tenantId,
         name: input.name,
@@ -216,7 +216,7 @@ export class SegmentationService {
    * Update a segment
    */
   static async update(tenantId: string, segmentId: string, input: SegmentUpdate) {
-    const segment = await prisma.crmCustomerSegment.findFirst({
+    const segment = await prisma.crm_customer_segments.findFirst({
       where: { id: segmentId, tenantId },
     });
 
@@ -224,7 +224,7 @@ export class SegmentationService {
       throw new Error('Segment not found');
     }
 
-    return prisma.crmCustomerSegment.update({
+    return prisma.crm_customer_segments.update({
       where: { id: segmentId },
       data: {
         name: input.name,
@@ -242,7 +242,7 @@ export class SegmentationService {
    * Delete a segment
    */
   static async delete(tenantId: string, segmentId: string) {
-    const segment = await prisma.crmCustomerSegment.findFirst({
+    const segment = await prisma.crm_customer_segments.findFirst({
       where: { id: segmentId, tenantId },
     });
 
@@ -251,7 +251,7 @@ export class SegmentationService {
     }
 
     // Check if used by campaigns
-    const campaignUse = await prisma.crmCampaignAudience.count({
+    const campaignUse = await prisma.crm_campaign_audiences.count({
       where: { segmentId },
     });
 
@@ -259,7 +259,7 @@ export class SegmentationService {
       throw new Error(`Segment is used by ${campaignUse} campaign(s). Archive it instead.`);
     }
 
-    await prisma.crmCustomerSegment.delete({
+    await prisma.crm_customer_segments.delete({
       where: { id: segmentId },
     });
 
@@ -288,13 +288,13 @@ export class SegmentationService {
     }
 
     const [segments, total] = await Promise.all([
-      prisma.crmCustomerSegment.findMany({
+      prisma.crm_customer_segments.findMany({
         where,
         orderBy: [{ priority: 'desc' }, { name: 'asc' }],
         take: options?.limit || 50,
         skip: options?.offset || 0,
       }),
-      prisma.crmCustomerSegment.count({ where }),
+      prisma.crm_customer_segments.count({ where }),
     ]);
 
     return { segments, total };
@@ -304,7 +304,7 @@ export class SegmentationService {
    * Get segment by ID
    */
   static async getById(tenantId: string, segmentId: string) {
-    return prisma.crmCustomerSegment.findFirst({
+    return prisma.crm_customer_segments.findFirst({
       where: { id: segmentId, tenantId },
       include: {
         _count: {
@@ -323,7 +323,7 @@ export class SegmentationService {
     customerId: string,
     addedBy?: string
   ) {
-    const segment = await prisma.crmCustomerSegment.findFirst({
+    const segment = await prisma.crm_customer_segments.findFirst({
       where: { id: segmentId, tenantId },
     });
 
@@ -332,7 +332,7 @@ export class SegmentationService {
     }
 
     // Check if already member
-    const existing = await prisma.crmSegmentMembership.findUnique({
+    const existing = await prisma.crm_segment_memberships.findUnique({
       where: { segmentId_customerId: { segmentId, customerId } },
     });
 
@@ -340,7 +340,7 @@ export class SegmentationService {
       return { action: 'exists', membership: existing };
     }
 
-    const membership = await prisma.crmSegmentMembership.create({
+    const membership = await prisma.crm_segment_memberships.create({
       data: {
         tenantId,
         segmentId,
@@ -351,7 +351,7 @@ export class SegmentationService {
     });
 
     // Update member count
-    await prisma.crmCustomerSegment.update({
+    await prisma.crm_customer_segments.update({
       where: { id: segmentId },
       data: { memberCount: { increment: 1 } },
     });
@@ -363,7 +363,7 @@ export class SegmentationService {
    * Remove customer from segment
    */
   static async removeCustomer(tenantId: string, segmentId: string, customerId: string) {
-    const membership = await prisma.crmSegmentMembership.findUnique({
+    const membership = await prisma.crm_segment_memberships.findUnique({
       where: { segmentId_customerId: { segmentId, customerId } },
     });
 
@@ -371,12 +371,12 @@ export class SegmentationService {
       throw new Error('Customer is not a member of this segment');
     }
 
-    await prisma.crmSegmentMembership.delete({
+    await prisma.crm_segment_memberships.delete({
       where: { id: membership.id },
     });
 
     // Update member count
-    await prisma.crmCustomerSegment.update({
+    await prisma.crm_customer_segments.update({
       where: { id: segmentId },
       data: { memberCount: { decrement: 1 } },
     });
@@ -392,7 +392,7 @@ export class SegmentationService {
     segmentId: string,
     options?: { limit?: number; offset?: number }
   ) {
-    const memberships = await prisma.crmSegmentMembership.findMany({
+    const memberships = await prisma.crm_segment_memberships.findMany({
       where: { segmentId, tenantId },
       orderBy: { addedAt: 'desc' },
       take: options?.limit || 50,
@@ -427,7 +427,7 @@ export class SegmentationService {
    * This is called by a scheduled job or event processor
    */
   static async computeSegment(tenantId: string, segmentId: string) {
-    const segment = await prisma.crmCustomerSegment.findFirst({
+    const segment = await prisma.crm_customer_segments.findFirst({
       where: { id: segmentId, tenantId },
     });
 
@@ -457,7 +457,7 @@ export class SegmentationService {
       const matchingIds = new Set(matchingCustomers.map(c => c.id));
 
       // Get current memberships
-      const currentMemberships = await prisma.crmSegmentMembership.findMany({
+      const currentMemberships = await prisma.crm_segment_memberships.findMany({
         where: { segmentId, isManual: false },
         select: { id: true, customerId: true },
       });
@@ -470,7 +470,7 @@ export class SegmentationService {
 
       // Add new members
       if (toAdd.length > 0) {
-        await prisma.crmSegmentMembership.createMany({
+        await prisma.crm_segment_memberships.createMany({
           data: toAdd.map(customerId => ({
             tenantId,
             segmentId,
@@ -483,14 +483,14 @@ export class SegmentationService {
 
       // Remove old members (non-manual only)
       if (toRemove.length > 0) {
-        await prisma.crmSegmentMembership.deleteMany({
+        await prisma.crm_segment_memberships.deleteMany({
           where: { id: { in: toRemove.map(m => m.id) } },
         });
       }
 
       // Update segment metadata
-      const finalCount = await prisma.crmSegmentMembership.count({ where: { segmentId } });
-      await prisma.crmCustomerSegment.update({
+      const finalCount = await prisma.crm_segment_memberships.count({ where: { segmentId } });
+      await prisma.crm_customer_segments.update({
         where: { id: segmentId },
         data: {
           memberCount: finalCount,
@@ -507,7 +507,7 @@ export class SegmentationService {
       };
     } catch (error) {
       // Log error to segment
-      await prisma.crmCustomerSegment.update({
+      await prisma.crm_customer_segments.update({
         where: { id: segmentId },
         data: {
           computeError: error instanceof Error ? error.message : 'Unknown error',
@@ -521,7 +521,7 @@ export class SegmentationService {
    * Get customer's segments
    */
   static async getCustomerSegments(tenantId: string, customerId: string) {
-    const memberships = await prisma.crmSegmentMembership.findMany({
+    const memberships = await prisma.crm_segment_memberships.findMany({
       where: { tenantId, customerId },
       include: {
         segment: {

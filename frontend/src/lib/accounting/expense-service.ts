@@ -143,12 +143,12 @@ export class ExpenseService {
     }
 
     // Get or create ledger account
-    let ledgerAccount = await prisma.acctLedgerAccount.findFirst({
+    let ledgerAccount = await prisma.acct_ledger_accounts.findFirst({
       where: { tenantId, chartOfAccountId: account.id },
     });
 
     if (!ledgerAccount) {
-      ledgerAccount = await prisma.acctLedgerAccount.create({
+      ledgerAccount = await prisma.acct_ledger_accounts.create({
         data: {
           tenantId,
           chartOfAccountId: account.id,
@@ -163,7 +163,7 @@ export class ExpenseService {
     // Get financial period
     const period = await this.getOrCreatePeriod(tenantId, input.expenseDate);
 
-    return prisma.acctExpenseRecord.create({
+    return prisma.acct_expense_records.create({
       data: {
         tenantId,
         expenseNumber,
@@ -206,7 +206,7 @@ export class ExpenseService {
     input: ExpenseUpdate,
     updatedBy?: string
   ) {
-    const expense = await prisma.acctExpenseRecord.findFirst({
+    const expense = await prisma.acct_expense_records.findFirst({
       where: { id: expenseId, tenantId },
     });
 
@@ -226,12 +226,12 @@ export class ExpenseService {
         throw new Error(`Account code '${input.accountCode}' not found`);
       }
 
-      let ledgerAccount = await prisma.acctLedgerAccount.findFirst({
+      let ledgerAccount = await prisma.acct_ledger_accounts.findFirst({
         where: { tenantId, chartOfAccountId: account.id },
       });
 
       if (!ledgerAccount) {
-        ledgerAccount = await prisma.acctLedgerAccount.create({
+        ledgerAccount = await prisma.acct_ledger_accounts.create({
           data: {
             tenantId,
             chartOfAccountId: account.id,
@@ -249,7 +249,7 @@ export class ExpenseService {
       periodId = period?.id || null;
     }
 
-    return prisma.acctExpenseRecord.update({
+    return prisma.acct_expense_records.update({
       where: { id: expenseId },
       data: {
         expenseDate: input.expenseDate,
@@ -291,7 +291,7 @@ export class ExpenseService {
     expenseId: string,
     submittedBy: string
   ) {
-    const expense = await prisma.acctExpenseRecord.findFirst({
+    const expense = await prisma.acct_expense_records.findFirst({
       where: { id: expenseId, tenantId },
     });
 
@@ -303,7 +303,7 @@ export class ExpenseService {
       throw new Error(`Cannot submit expense in ${expense.status} status`);
     }
 
-    return prisma.acctExpenseRecord.update({
+    return prisma.acct_expense_records.update({
       where: { id: expenseId },
       data: {
         status: 'SUBMITTED',
@@ -321,7 +321,7 @@ export class ExpenseService {
     expenseId: string,
     approvedBy: string
   ) {
-    const expense = await prisma.acctExpenseRecord.findFirst({
+    const expense = await prisma.acct_expense_records.findFirst({
       where: { id: expenseId, tenantId },
     });
 
@@ -333,7 +333,7 @@ export class ExpenseService {
       throw new Error(`Cannot approve expense in ${expense.status} status`);
     }
 
-    return prisma.acctExpenseRecord.update({
+    return prisma.acct_expense_records.update({
       where: { id: expenseId },
       data: {
         status: 'APPROVED',
@@ -352,7 +352,7 @@ export class ExpenseService {
     rejectedBy: string,
     reason: string
   ) {
-    const expense = await prisma.acctExpenseRecord.findFirst({
+    const expense = await prisma.acct_expense_records.findFirst({
       where: { id: expenseId, tenantId },
     });
 
@@ -364,7 +364,7 @@ export class ExpenseService {
       throw new Error(`Cannot reject expense in ${expense.status} status`);
     }
 
-    return prisma.acctExpenseRecord.update({
+    return prisma.acct_expense_records.update({
       where: { id: expenseId },
       data: {
         status: 'REJECTED',
@@ -384,7 +384,7 @@ export class ExpenseService {
     expenseId: string,
     postedBy: string
   ) {
-    const expense = await prisma.acctExpenseRecord.findFirst({
+    const expense = await prisma.acct_expense_records.findFirst({
       where: { id: expenseId, tenantId },
       include: {
         period: true,
@@ -406,7 +406,7 @@ export class ExpenseService {
     }
 
     // Get expense account details
-    const ledgerAccount = await prisma.acctLedgerAccount.findUnique({
+    const ledgerAccount = await prisma.acct_ledger_accounts.findUnique({
       where: { id: expense.ledgerAccountId },
       include: { chartOfAccount: true },
     });
@@ -510,7 +510,7 @@ export class ExpenseService {
     }
 
     // Update expense record
-    return prisma.acctExpenseRecord.update({
+    return prisma.acct_expense_records.update({
       where: { id: expenseId },
       data: {
         status: 'POSTED',
@@ -527,7 +527,7 @@ export class ExpenseService {
    * Delete expense (only DRAFT)
    */
   static async delete(tenantId: string, expenseId: string) {
-    const expense = await prisma.acctExpenseRecord.findFirst({
+    const expense = await prisma.acct_expense_records.findFirst({
       where: { id: expenseId, tenantId },
     });
 
@@ -539,7 +539,7 @@ export class ExpenseService {
       throw new Error(`Cannot delete expense in ${expense.status} status. Only DRAFT expenses can be deleted.`);
     }
 
-    await prisma.acctExpenseRecord.delete({
+    await prisma.acct_expense_records.delete({
       where: { id: expenseId },
     });
 
@@ -570,7 +570,7 @@ export class ExpenseService {
     }
 
     const [expenses, total] = await Promise.all([
-      prisma.acctExpenseRecord.findMany({
+      prisma.acct_expense_records.findMany({
         where,
         orderBy: { expenseDate: 'desc' },
         take: options?.limit || 50,
@@ -579,12 +579,12 @@ export class ExpenseService {
           period: { select: { id: true, name: true, code: true } },
         },
       }),
-      prisma.acctExpenseRecord.count({ where }),
+      prisma.acct_expense_records.count({ where }),
     ]);
 
     // Get account details for each expense
     const ledgerAccountIds = [...new Set(expenses.map(e => e.ledgerAccountId))];
-    const ledgerAccounts = await prisma.acctLedgerAccount.findMany({
+    const ledgerAccounts = await prisma.acct_ledger_accounts.findMany({
       where: { id: { in: ledgerAccountIds } },
       include: { chartOfAccount: { select: { code: true, name: true, accountType: true } } },
     });
@@ -609,7 +609,7 @@ export class ExpenseService {
    * Get single expense by ID
    */
   static async getById(tenantId: string, expenseId: string) {
-    const expense = await prisma.acctExpenseRecord.findFirst({
+    const expense = await prisma.acct_expense_records.findFirst({
       where: { id: expenseId, tenantId },
       include: {
         period: true,
@@ -619,7 +619,7 @@ export class ExpenseService {
     if (!expense) return null;
 
     // Get account details
-    const ledgerAccount = await prisma.acctLedgerAccount.findUnique({
+    const ledgerAccount = await prisma.acct_ledger_accounts.findUnique({
       where: { id: expense.ledgerAccountId },
       include: { chartOfAccount: true },
     });
@@ -627,7 +627,7 @@ export class ExpenseService {
     // Get journal entry if posted
     let journalEntry = null;
     if (expense.journalEntryId) {
-      journalEntry = await prisma.acctJournalEntry.findUnique({
+      journalEntry = await prisma.acct_journal_entries.findUnique({
         where: { id: expense.journalEntryId },
         select: {
           id: true,
@@ -676,7 +676,7 @@ export class ExpenseService {
       if (endDate) where.expenseDate.lte = endDate;
     }
 
-    const expenses = await prisma.acctExpenseRecord.findMany({
+    const expenses = await prisma.acct_expense_records.findMany({
       where,
       include: {
         period: { select: { id: true, name: true, code: true } },
@@ -685,7 +685,7 @@ export class ExpenseService {
 
     // Get account details
     const ledgerAccountIds = [...new Set(expenses.map(e => e.ledgerAccountId))];
-    const ledgerAccounts = await prisma.acctLedgerAccount.findMany({
+    const ledgerAccounts = await prisma.acct_ledger_accounts.findMany({
       where: { id: { in: ledgerAccountIds } },
       include: { chartOfAccount: { select: { code: true, name: true } } },
     });
@@ -752,7 +752,7 @@ export class ExpenseService {
       if (endDate) where.expenseDate.lte = endDate;
     }
 
-    const expenses = await prisma.acctExpenseRecord.findMany({
+    const expenses = await prisma.acct_expense_records.findMany({
       where,
       select: { paymentMethod: true, amount: true },
     });
@@ -784,7 +784,7 @@ export class ExpenseService {
     const year = new Date().getFullYear();
     const prefix = `EXP-${year}-`;
 
-    const lastExpense = await prisma.acctExpenseRecord.findFirst({
+    const lastExpense = await prisma.acct_expense_records.findFirst({
       where: {
         tenantId,
         expenseNumber: { startsWith: prefix },
@@ -806,7 +806,7 @@ export class ExpenseService {
     const month = date.getMonth();
     const code = `${year}-${String(month + 1).padStart(2, '0')}`;
 
-    let period = await prisma.acctFinancialPeriod.findUnique({
+    let period = await prisma.acct_financial_periods.findUnique({
       where: { tenantId_code: { tenantId, code } },
     });
 
@@ -815,7 +815,7 @@ export class ExpenseService {
       const endDate = new Date(year, month + 1, 0, 23, 59, 59, 999);
       const name = date.toLocaleString('en-US', { month: 'long', year: 'numeric' });
 
-      period = await prisma.acctFinancialPeriod.create({
+      period = await prisma.acct_financial_periods.create({
         data: {
           tenantId,
           name,

@@ -1,15 +1,142 @@
 {
-  "timestamp": "2026-01-05T21:03:38.842Z",
+  "timestamp": "2026-01-10T15:54:34.159Z",
   "mode": "check",
   "summary": {
-    "totalFiles": 542,
-    "totalReferences": 2037,
-    "validModels": 193,
-    "totalErrors": 235,
-    "legacyIssues": 966,
-    "newErrors": 0,
+    "totalFiles": 1175,
+    "totalReferences": 4174,
+    "validModels": 365,
+    "totalErrors": 114,
+    "legacyIssues": 78,
+    "newErrors": 14,
     "baselinedIssues": 1201
   },
-  "newErrors": [],
-  "status": "PASSED"
+  "newErrors": [
+    {
+      "model": "contact",
+      "method": "findMany",
+      "line": 57,
+      "file": "/app/frontend/src/app/api/education/attendance/route.ts",
+      "key": "src/app/api/education/attendance/route.ts:57:contact",
+      "type": "UNKNOWN_MODEL",
+      "suggestion": null
+    },
+    {
+      "model": "contact",
+      "method": "findMany",
+      "line": 120,
+      "file": "/app/frontend/src/app/api/education/attendance/route.ts",
+      "key": "src/app/api/education/attendance/route.ts:120:contact",
+      "type": "UNKNOWN_MODEL",
+      "suggestion": null
+    },
+    {
+      "model": "contact",
+      "method": "findFirst",
+      "line": 158,
+      "file": "/app/frontend/src/app/api/education/attendance/route.ts",
+      "key": "src/app/api/education/attendance/route.ts:158:contact",
+      "type": "UNKNOWN_MODEL",
+      "suggestion": null
+    },
+    {
+      "model": "contact",
+      "method": "findFirst",
+      "line": 246,
+      "file": "/app/frontend/src/app/api/education/attendance/route.ts",
+      "key": "src/app/api/education/attendance/route.ts:246:contact",
+      "type": "UNKNOWN_MODEL",
+      "suggestion": null
+    },
+    {
+      "model": "contact",
+      "method": "update",
+      "line": 267,
+      "file": "/app/frontend/src/app/api/education/attendance/route.ts",
+      "key": "src/app/api/education/attendance/route.ts:267:contact",
+      "type": "UNKNOWN_MODEL",
+      "suggestion": null
+    },
+    {
+      "model": "contact",
+      "method": "findFirst",
+      "line": 303,
+      "file": "/app/frontend/src/app/api/education/attendance/route.ts",
+      "key": "src/app/api/education/attendance/route.ts:303:contact",
+      "type": "UNKNOWN_MODEL",
+      "suggestion": null
+    },
+    {
+      "model": "contact",
+      "method": "update",
+      "line": 323,
+      "file": "/app/frontend/src/app/api/education/attendance/route.ts",
+      "key": "src/app/api/education/attendance/route.ts:323:contact",
+      "type": "UNKNOWN_MODEL",
+      "suggestion": null
+    },
+    {
+      "model": "contact",
+      "method": "findFirst",
+      "line": 89,
+      "file": "/app/frontend/src/app/api/education/fees/route.ts",
+      "key": "src/app/api/education/fees/route.ts:89:contact",
+      "type": "UNKNOWN_MODEL",
+      "suggestion": null
+    },
+    {
+      "model": "contact",
+      "method": "findMany",
+      "line": 110,
+      "file": "/app/frontend/src/app/api/education/fees/route.ts",
+      "key": "src/app/api/education/fees/route.ts:110:contact",
+      "type": "UNKNOWN_MODEL",
+      "suggestion": null
+    },
+    {
+      "model": "contact",
+      "method": "findMany",
+      "line": 169,
+      "file": "/app/frontend/src/app/api/education/fees/route.ts",
+      "key": "src/app/api/education/fees/route.ts:169:contact",
+      "type": "UNKNOWN_MODEL",
+      "suggestion": null
+    },
+    {
+      "model": "contact",
+      "method": "findFirst",
+      "line": 292,
+      "file": "/app/frontend/src/app/api/education/fees/route.ts",
+      "key": "src/app/api/education/fees/route.ts:292:contact",
+      "type": "UNKNOWN_MODEL",
+      "suggestion": null
+    },
+    {
+      "model": "contact",
+      "method": "update",
+      "line": 355,
+      "file": "/app/frontend/src/app/api/education/fees/route.ts",
+      "key": "src/app/api/education/fees/route.ts:355:contact",
+      "type": "UNKNOWN_MODEL",
+      "suggestion": null
+    },
+    {
+      "model": "contact",
+      "method": "findFirst",
+      "line": 379,
+      "file": "/app/frontend/src/app/api/education/fees/route.ts",
+      "key": "src/app/api/education/fees/route.ts:379:contact",
+      "type": "UNKNOWN_MODEL",
+      "suggestion": null
+    },
+    {
+      "model": "contact",
+      "method": "update",
+      "line": 421,
+      "file": "/app/frontend/src/app/api/education/fees/route.ts",
+      "key": "src/app/api/education/fees/route.ts:421:contact",
+      "type": "UNKNOWN_MODEL",
+      "suggestion": null
+    }
+  ],
+  "status": "FAILED"
 }

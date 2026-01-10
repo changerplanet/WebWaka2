@@ -65,7 +65,7 @@ export class PaymentService {
    * Generate transaction number
    */
   private static async generateTransactionNumber(tenantId: string): Promise<string> {
-    const count = await prisma.payPaymentTransaction.count({ where: { tenantId } })
+    const count = await prisma.pay_payment_transactions.count({ where: { tenantId } })
     const date = new Date()
     const year = date.getFullYear().toString().slice(-2)
     const month = (date.getMonth() + 1).toString().padStart(2, '0')
@@ -92,7 +92,7 @@ export class PaymentService {
   ): Promise<PaymentIntent> {
     // Check idempotency
     if (input.idempotencyKey) {
-      const existing = await prisma.payPaymentIntent.findFirst({
+      const existing = await prisma.pay_payment_intents.findFirst({
         where: { tenantId, idempotencyKey: input.idempotencyKey },
       })
       if (existing) {
@@ -105,7 +105,7 @@ export class PaymentService {
       ? new Date(Date.now() + input.expiresInMinutes * 60 * 1000)
       : null
 
-    const intent = await prisma.payPaymentIntent.create({
+    const intent = await prisma.pay_payment_intents.create({
       data: {
         tenantId,
         intentId,
@@ -151,7 +151,7 @@ export class PaymentService {
   ): Promise<PaymentTransaction> {
     // Check idempotency for transaction
     if (options.idempotencyKey) {
-      const existing = await prisma.payPaymentTransaction.findFirst({
+      const existing = await prisma.pay_payment_transactions.findFirst({
         where: { tenantId, idempotencyKey: options.idempotencyKey },
       })
       if (existing) {
@@ -160,7 +160,7 @@ export class PaymentService {
     }
 
     // Get intent
-    const intent = await prisma.payPaymentIntent.findFirst({
+    const intent = await prisma.pay_payment_intents.findFirst({
       where: { tenantId, intentId },
     })
 
@@ -168,7 +168,7 @@ export class PaymentService {
     if (intent.status === 'SUCCEEDED') throw new Error('Payment already confirmed')
     if (intent.status === 'CANCELLED') throw new Error('Payment was cancelled')
     if (intent.expiresAt && intent.expiresAt < new Date()) {
-      await prisma.payPaymentIntent.update({
+      await prisma.pay_payment_intents.update({
         where: { id: intent.id },
         data: { status: 'EXPIRED' },
       })
@@ -176,7 +176,7 @@ export class PaymentService {
     }
 
     // Update intent to processing
-    await prisma.payPaymentIntent.update({
+    await prisma.pay_payment_intents.update({
       where: { id: intent.id },
       data: { status: 'PROCESSING', paymentMethod: options.paymentMethod },
     })
@@ -198,7 +198,7 @@ export class PaymentService {
     // Create transaction
     const transactionNumber = await this.generateTransactionNumber(tenantId)
     
-    const transaction = await prisma.payPaymentTransaction.create({
+    const transaction = await prisma.pay_payment_transactions.create({
       data: {
         tenantId,
         transactionNumber,
@@ -250,7 +250,7 @@ export class PaymentService {
     }
 
     // Update intent to succeeded
-    await prisma.payPaymentIntent.update({
+    await prisma.pay_payment_intents.update({
       where: { id: intent.id },
       data: { status: 'SUCCEEDED', paymentId: transaction.id },
     })
@@ -271,7 +271,7 @@ export class PaymentService {
    * Cancel payment intent
    */
   static async cancelIntent(tenantId: string, intentId: string): Promise<PaymentIntent> {
-    const intent = await prisma.payPaymentIntent.update({
+    const intent = await prisma.pay_payment_intents.update({
       where: { intentId, tenantId },
       data: { status: 'CANCELLED' },
     })
@@ -315,7 +315,7 @@ export class PaymentService {
    * Get payment by transaction number
    */
   static async getPayment(tenantId: string, transactionNumber: string): Promise<PaymentTransaction | null> {
-    const tx = await prisma.payPaymentTransaction.findFirst({
+    const tx = await prisma.pay_payment_transactions.findFirst({
       where: { tenantId, transactionNumber },
     })
 
@@ -349,13 +349,13 @@ export class PaymentService {
     }
 
     const [payments, total] = await Promise.all([
-      prisma.payPaymentTransaction.findMany({
+      prisma.pay_payment_transactions.findMany({
         where,
         orderBy: { createdAt: 'desc' },
         skip,
         take: limit,
       }),
-      prisma.payPaymentTransaction.count({ where }),
+      prisma.pay_payment_transactions.count({ where }),
     ])
 
     return {
@@ -372,19 +372,19 @@ export class PaymentService {
     startDate.setDate(startDate.getDate() - days)
 
     const [byStatus, byMethod, totals, dailyVolume] = await Promise.all([
-      prisma.payPaymentTransaction.groupBy({
+      prisma.pay_payment_transactions.groupBy({
         by: ['status'],
         where: { tenantId },
         _count: { id: true },
         _sum: { amount: true },
       }),
-      prisma.payPaymentTransaction.groupBy({
+      prisma.pay_payment_transactions.groupBy({
         by: ['paymentMethod'],
         where: { tenantId, status: 'CONFIRMED', createdAt: { gte: startDate } },
         _count: { id: true },
         _sum: { amount: true },
       }),
-      prisma.payPaymentTransaction.aggregate({
+      prisma.pay_payment_transactions.aggregate({
         where: { tenantId, status: 'CONFIRMED', createdAt: { gte: startDate } },
         _sum: { amount: true, netAmount: true, platformFee: true },
         _count: { id: true },

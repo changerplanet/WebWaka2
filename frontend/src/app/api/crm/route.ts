@@ -24,7 +24,7 @@ export async function GET(request: NextRequest) {
     const guardResult = await checkCapabilityForSession(session.activeTenantId, 'crm');
     if (guardResult) return guardResult;
 
-    const config = await prisma.crmConfiguration.findUnique({
+    const config = await prisma.crm_configurations.findUnique({
       where: { tenantId: session.activeTenantId },
     });
 
@@ -63,7 +63,7 @@ export async function POST(request: NextRequest) {
 
     if (action === 'initialize') {
       // Check if already initialized
-      const existing = await prisma.crmConfiguration.findUnique({
+      const existing = await prisma.crm_configurations.findUnique({
         where: { tenantId: session.activeTenantId },
       });
 
@@ -98,7 +98,7 @@ export async function POST(request: NextRequest) {
       }
 
       // Create configuration
-      const config = await prisma.crmConfiguration.create({
+      const config = await prisma.crm_configurations.create({
         data: {
           tenantId: session.activeTenantId,
           loyaltyEnabled: !!loyaltyResult,
@@ -144,7 +144,7 @@ export async function PUT(request: NextRequest) {
 
     const body = await request.json();
 
-    const config = await prisma.crmConfiguration.upsert({
+    const config = await prisma.crm_configurations.upsert({
       where: { tenantId: session.activeTenantId },
       create: {
         tenantId: session.activeTenantId,

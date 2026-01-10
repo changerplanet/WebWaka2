@@ -52,13 +52,13 @@ export class MktEntitlementsService {
     const limits = TIER_LIMITS[tier] || TIER_LIMITS.FREE
 
     // Get current usage
-    const activeWorkflows = await prisma.mktAutomationWorkflow.count({
+    const activeWorkflows = await prisma.mkt_automation_workflows.count({
       where: { tenantId, status: 'ACTIVE', isTemplate: false },
     })
 
     const todayStart = new Date()
     todayStart.setHours(0, 0, 0, 0)
-    const messagesToday = await prisma.mktAutomationRun.count({
+    const messagesToday = await prisma.mkt_automation_runs.count({
       where: { tenantId, createdAt: { gte: todayStart } },
     })
 

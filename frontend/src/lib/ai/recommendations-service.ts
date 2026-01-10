@@ -61,7 +61,7 @@ export async function createRecommendation(input: CreateRecommendationInput): Pr
       return { success: false, error: 'Data sources must be documented' };
     }
     
-    const recommendation = await prisma.aIRecommendation.create({
+    const recommendation = await prisma.ai_recommendations.create({
       data: {
         tenantId: input.tenantId,
         recommendationType: input.recommendationType,
@@ -102,7 +102,7 @@ export async function createRecommendation(input: CreateRecommendationInput): Pr
 // ============================================================================
 
 export async function getRecommendation(recommendationId: string) {
-  return prisma.aIRecommendation.findUnique({
+  return prisma.ai_recommendations.findUnique({
     where: { id: recommendationId },
   });
 }
@@ -122,13 +122,13 @@ export async function listRecommendations(params: {
   if (status) where.status = status;
   
   const [recommendations, total] = await Promise.all([
-    prisma.aIRecommendation.findMany({
+    prisma.ai_recommendations.findMany({
       where,
       skip: (page - 1) * limit,
       take: limit,
       orderBy: [{ confidence: 'desc' }, { createdAt: 'desc' }],
     }),
-    prisma.aIRecommendation.count({ where }),
+    prisma.ai_recommendations.count({ where }),
   ]);
   
   return {
@@ -151,7 +151,7 @@ export async function acceptRecommendation(
   acceptedBy: string
 ): Promise<{ success: boolean; error?: string }> {
   try {
-    const recommendation = await prisma.aIRecommendation.findUnique({
+    const recommendation = await prisma.ai_recommendations.findUnique({
       where: { id: recommendationId },
     });
     
@@ -165,14 +165,14 @@ export async function acceptRecommendation(
     
     // Check expiry
     if (recommendation.expiresAt && recommendation.expiresAt < new Date()) {
-      await prisma.aIRecommendation.update({
+      await prisma.ai_recommendations.update({
         where: { id: recommendationId },
         data: { status: 'EXPIRED' },
       });
       return { success: false, error: 'Recommendation has expired' };
     }
     
-    await prisma.aIRecommendation.update({
+    await prisma.ai_recommendations.update({
       where: { id: recommendationId },
       data: {
         status: 'ACCEPTED',
@@ -204,7 +204,7 @@ export async function rejectRecommendation(
   reason?: string
 ): Promise<{ success: boolean; error?: string }> {
   try {
-    const recommendation = await prisma.aIRecommendation.findUnique({
+    const recommendation = await prisma.ai_recommendations.findUnique({
       where: { id: recommendationId },
     });
     
@@ -216,7 +216,7 @@ export async function rejectRecommendation(
       return { success: false, error: 'Recommendation is not pending' };
     }
     
-    await prisma.aIRecommendation.update({
+    await prisma.ai_recommendations.update({
       where: { id: recommendationId },
       data: {
         status: 'REJECTED',

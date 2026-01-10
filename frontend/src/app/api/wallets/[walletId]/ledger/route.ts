@@ -41,7 +41,7 @@ export async function GET(
     }
 
     // Verify wallet belongs to tenant
-    const wallet = await prisma.commerceWallet.findUnique({
+    const wallet = await prisma.commerce_wallets.findUnique({
       where: { id: walletId }
     })
 

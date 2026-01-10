@@ -74,7 +74,7 @@ export async function computeTaxForPeriod(input: ComputeTaxInput): Promise<{
     const netVatPayable = outputVat - inputVat;
     
     // Create computation record (append-only)
-    const computation = await prisma.taxComputationRecord.create({
+    const computation = await prisma.tax_computation_records.create({
       data: {
         tenantId: input.tenantId,
         periodStart: input.periodStart,
@@ -120,7 +120,7 @@ export async function computeTaxForPeriod(input: ComputeTaxInput): Promise<{
 // ============================================================================
 
 export async function getComputationRecord(computationId: string) {
-  return prisma.taxComputationRecord.findUnique({
+  return prisma.tax_computation_records.findUnique({
     where: { id: computationId },
   });
 }
@@ -148,13 +148,13 @@ export async function listComputations(params: {
   }
   
   const [records, total] = await Promise.all([
-    prisma.taxComputationRecord.findMany({
+    prisma.tax_computation_records.findMany({
       where,
       skip: (page - 1) * limit,
       take: limit,
       orderBy: { periodStart: 'desc' },
     }),
-    prisma.taxComputationRecord.count({ where }),
+    prisma.tax_computation_records.count({ where }),
   ]);
   
   return {
@@ -184,7 +184,7 @@ export async function getComputationSummary(tenantId: string, year: number): Pro
   const startOfYear = new Date(year, 0, 1);
   const endOfYear = new Date(year + 1, 0, 1);
   
-  const records = await prisma.taxComputationRecord.findMany({
+  const records = await prisma.tax_computation_records.findMany({
     where: {
       tenantId,
       periodStart: { gte: startOfYear },

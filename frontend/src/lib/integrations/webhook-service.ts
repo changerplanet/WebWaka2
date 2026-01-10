@@ -27,9 +27,9 @@ export async function createWebhook(data: {
   maxRetries?: number
   retryDelayMs?: number
 }) {
-  const instance = await prisma.integrationInstance.findUnique({
+  const instance = await prisma.integration_instances.findUnique({
     where: { id: data.instanceId },
-    include: { provider: true },
+    include: { integration_providers: true },
   })
   
   if (!instance) {
@@ -39,7 +39,7 @@ export async function createWebhook(data: {
   // Encrypt secret key if provided
   const secretKey = data.secretKey || crypto.randomBytes(32).toString('hex')
   
-  const webhook = await prisma.integrationWebhook.create({
+  const webhook = await prisma.integration_webhooks.create({
     data: {
       instanceId: data.instanceId,
       name: data.name,
@@ -55,7 +55,7 @@ export async function createWebhook(data: {
   })
   
   // Log event
-  await prisma.integrationEventLog.create({
+  await prisma.integration_event_logs.create({
     data: {
       tenantId: instance.tenantId,
       eventType: 'WEBHOOK_CREATED',
@@ -76,7 +76,7 @@ export async function createWebhook(data: {
  * List webhooks for instance
  */
 export async function listWebhooksForInstance(instanceId: string) {
-  return prisma.integrationWebhook.findMany({
+  return prisma.integration_webhooks.findMany({
     where: { instanceId },
     orderBy: { createdAt: 'desc' },
   })
@@ -86,11 +86,11 @@ export async function listWebhooksForInstance(instanceId: string) {
  * Get webhook by ID
  */
 export async function getWebhookById(webhookId: string) {
-  return prisma.integrationWebhook.findUnique({
+  return prisma.integration_webhooks.findUnique({
     where: { id: webhookId },
     include: {
-      instance: {
-        include: { provider: true },
+      integration_instances: {
+        include: { integration_providers: true },
       },
     },
   })
@@ -104,11 +104,11 @@ export async function verifyWebhookSignature(
   payload: string,
   signature: string
 ): Promise<boolean> {
-  const webhook = await prisma.integrationWebhook.findUnique({
+  const webhook = await prisma.integration_webhooks.findUnique({
     where: { id: webhookId },
     include: {
-      instance: {
-        include: { provider: true },
+      integration_instances: {
+        include: { integration_providers: true },
       },
     },
   })
@@ -140,11 +140,11 @@ export async function processInboundWebhook(
 ): Promise<{ success: boolean; eventEmitted: string | null; error?: string }> {
   const startedAt = new Date()
   
-  const webhook = await prisma.integrationWebhook.findUnique({
+  const webhook = await prisma.integration_webhooks.findUnique({
     where: { id: webhookId },
     include: {
-      instance: {
-        include: { provider: true },
+      integration_instances: {
+        include: { integration_providers: true },
       },
     },
   })
@@ -165,7 +165,7 @@ export async function processInboundWebhook(
   }
   
   // Log the webhook call
-  const log = await prisma.integrationLog.create({
+  const log = await prisma.integration_logs.create({
     data: {
       tenantId: webhook.instance.tenantId,
       instanceId: webhook.instanceId,
@@ -181,7 +181,7 @@ export async function processInboundWebhook(
   })
   
   // Update webhook metrics
-  await prisma.integrationWebhook.update({
+  await prisma.integration_webhooks.update({
     where: { id: webhookId },
     data: {
       totalCalls: { increment: 1 },
@@ -195,7 +195,7 @@ export async function processInboundWebhook(
   const emittedEvent = `INTEGRATION_WEBHOOK_${eventType.toUpperCase()}`
   
   // Log the event emission
-  await prisma.integrationEventLog.create({
+  await prisma.integration_event_logs.create({
     data: {
       tenantId: webhook.instance.tenantId,
       eventType: emittedEvent,
@@ -222,11 +222,11 @@ export async function sendOutboundWebhook(
 ): Promise<{ success: boolean; responseStatus?: number; error?: string }> {
   const startedAt = new Date()
   
-  const webhook = await prisma.integrationWebhook.findUnique({
+  const webhook = await prisma.integration_webhooks.findUnique({
     where: { id: webhookId },
     include: {
-      instance: {
-        include: { provider: true },
+      integration_instances: {
+        include: { integration_providers: true },
       },
     },
   })
@@ -258,7 +258,7 @@ export async function sendOutboundWebhook(
     const durationMs = completedAt.getTime() - startedAt.getTime()
     
     // Log the call
-    await prisma.integrationLog.create({
+    await prisma.integration_logs.create({
       data: {
         tenantId: webhook.instance.tenantId,
         instanceId: webhook.instanceId,
@@ -280,7 +280,7 @@ export async function sendOutboundWebhook(
     })
     
     // Update metrics
-    await prisma.integrationWebhook.update({
+    await prisma.integration_webhooks.update({
       where: { id: webhookId },
       data: {
         totalCalls: { increment: 1 },
@@ -302,7 +302,7 @@ export async function sendOutboundWebhook(
     return { success: response.ok, responseStatus: response.status }
   } catch (error) {
     // Log the error
-    await prisma.integrationLog.create({
+    await prisma.integration_logs.create({
       data: {
         tenantId: webhook.instance.tenantId,
         instanceId: webhook.instanceId,
@@ -338,7 +338,7 @@ export async function updateWebhookStatus(
   webhookId: string,
   status: WebhookStatus
 ) {
-  return prisma.integrationWebhook.update({
+  return prisma.integration_webhooks.update({
     where: { id: webhookId },
     data: { status },
   })
@@ -348,21 +348,21 @@ export async function updateWebhookStatus(
  * Delete webhook
  */
 export async function deleteWebhook(webhookId: string) {
-  const webhook = await prisma.integrationWebhook.findUnique({
+  const webhook = await prisma.integration_webhooks.findUnique({
     where: { id: webhookId },
-    include: { instance: true },
+    include: { integration_instances: true },
   })
   
   if (!webhook) {
     throw new Error('Webhook not found')
   }
   
-  await prisma.integrationWebhook.delete({
+  await prisma.integration_webhooks.delete({
     where: { id: webhookId },
   })
   
   // Log event
-  await prisma.integrationEventLog.create({
+  await prisma.integration_event_logs.create({
     data: {
       tenantId: webhook.instance.tenantId,
       eventType: 'WEBHOOK_DELETED',

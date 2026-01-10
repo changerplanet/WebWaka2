@@ -233,7 +233,7 @@ export class ReorderSuggestionEngine {
     startDate.setDate(startDate.getDate() - periodDays);
 
     // Get sales movements (negative quantities = sold)
-    const movements = await prisma.stockMovement.findMany({
+    const movements = await prisma.wh_stock_movement.findMany({
       where: {
         tenantId,
         productId,

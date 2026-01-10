@@ -179,7 +179,7 @@ export class ProcEventService {
     })
 
     // Check if supplier has active POs that might be affected
-    const activePOs = await prisma.procPurchaseOrder.count({
+    const activePOs = await prisma.proc_purchase_orders.count({
       where: {
         tenantId,
         supplierId: eventData.supplierId,

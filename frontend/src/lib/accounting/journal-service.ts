@@ -160,7 +160,7 @@ export class JournalEntryService {
   ): Promise<PostingResult> {
     // Check idempotency
     if (input.idempotencyKey) {
-      const existing = await prisma.acctJournalEntry.findUnique({
+      const existing = await prisma.acct_journal_entries.findUnique({
         where: { idempotencyKey: input.idempotencyKey },
       });
 
@@ -372,7 +372,7 @@ export class JournalEntryService {
     }
 
     // Get or create ledger account
-    let ledgerAccount = await prisma.acctLedgerAccount.findFirst({
+    let ledgerAccount = await prisma.acct_ledger_accounts.findFirst({
       where: {
         tenantId,
         chartOfAccountId: chartAccount.id,
@@ -381,7 +381,7 @@ export class JournalEntryService {
 
     if (!ledgerAccount) {
       // Create ledger account
-      ledgerAccount = await prisma.acctLedgerAccount.create({
+      ledgerAccount = await prisma.acct_ledger_accounts.create({
         data: {
           tenantId,
           chartOfAccountId: chartAccount.id,
@@ -404,7 +404,7 @@ export class JournalEntryService {
     const month = date.getMonth();
     const code = `${year}-${String(month + 1).padStart(2, '0')}`;
 
-    let period = await prisma.acctFinancialPeriod.findUnique({
+    let period = await prisma.acct_financial_periods.findUnique({
       where: {
         tenantId_code: { tenantId, code },
       },
@@ -415,7 +415,7 @@ export class JournalEntryService {
       const endDate = new Date(year, month + 1, 0, 23, 59, 59, 999);
       const name = date.toLocaleString('en-US', { month: 'long', year: 'numeric' });
 
-      period = await prisma.acctFinancialPeriod.create({
+      period = await prisma.acct_financial_periods.create({
         data: {
           tenantId,
           name,
@@ -439,7 +439,7 @@ export class JournalEntryService {
     const year = new Date().getFullYear();
     const prefix = `JE-${year}-`;
 
-    const lastJournal = await prisma.acctJournalEntry.findFirst({
+    const lastJournal = await prisma.acct_journal_entries.findFirst({
       where: {
         tenantId,
         journalNumber: { startsWith: prefix },
@@ -465,7 +465,7 @@ export class JournalEntryService {
     reason: string,
     voidedBy?: string
   ): Promise<PostingResult> {
-    const journal = await prisma.acctJournalEntry.findFirst({
+    const journal = await prisma.acct_journal_entries.findFirst({
       where: { id: journalId, tenantId },
       include: { lines: true },
     });
@@ -495,7 +495,7 @@ export class JournalEntryService {
     // Get account codes for the reversal
     for (let i = 0; i < journal.lines.length; i++) {
       const line = journal.lines[i];
-      const ledgerAccount = await prisma.acctLedgerAccount.findUnique({
+      const ledgerAccount = await prisma.acct_ledger_accounts.findUnique({
         where: { id: line.ledgerAccountId },
         include: { chartOfAccount: true },
       });
@@ -523,7 +523,7 @@ export class JournalEntryService {
     }
 
     // Mark original as voided
-    await prisma.acctJournalEntry.update({
+    await prisma.acct_journal_entries.update({
       where: { id: journalId },
       data: {
         status: 'VOIDED',
@@ -564,7 +564,7 @@ export class JournalEntryService {
     }
 
     const [journals, total] = await Promise.all([
-      prisma.acctJournalEntry.findMany({
+      prisma.acct_journal_entries.findMany({
         where,
         orderBy: { entryDate: 'desc' },
         take: options?.limit || 50,
@@ -580,7 +580,7 @@ export class JournalEntryService {
           },
         },
       }),
-      prisma.acctJournalEntry.count({ where }),
+      prisma.acct_journal_entries.count({ where }),
     ]);
 
     return { journals, total };
@@ -590,7 +590,7 @@ export class JournalEntryService {
    * Get a single journal entry with details
    */
   static async getById(tenantId: string, journalId: string) {
-    return prisma.acctJournalEntry.findFirst({
+    return prisma.acct_journal_entries.findFirst({
       where: { id: journalId, tenantId },
       include: {
         period: true,

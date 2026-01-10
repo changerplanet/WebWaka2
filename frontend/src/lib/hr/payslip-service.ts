@@ -28,7 +28,7 @@ export class PayslipService {
    * Generate payslips for a payroll period
    */
   static async generatePayslips(tenantId: string, input: GeneratePayslipsInput, generatedBy: string) {
-    const period = await prisma.hrPayrollPeriod.findFirst({
+    const period = await prisma.hr_payroll_periods.findFirst({
       where: { id: input.periodId, tenantId },
     })
 
@@ -48,10 +48,10 @@ export class PayslipService {
       calculationsWhere.id = { in: input.calculationIds }
     }
 
-    const calculations = await prisma.hrPayrollCalculation.findMany({
+    const calculations = await prisma.hr_payroll_calculations.findMany({
       where: calculationsWhere,
       include: {
-        employeeProfile: true,
+        hr_employee_profiles: true,
       },
     })
 
@@ -71,7 +71,7 @@ export class PayslipService {
 
     for (const calc of calculations) {
       // Check if payslip already exists
-      const existing = await prisma.hrPayslip.findFirst({
+      const existing = await prisma.hr_payslips.findFirst({
         where: {
           payrollPeriodId: input.periodId,
           employeeProfileId: calc.employeeProfileId,
@@ -93,7 +93,7 @@ export class PayslipService {
         ? `****${profile.bankAccountNumber.slice(-4)}`
         : null
 
-      const payslip = await prisma.hrPayslip.create({
+      const payslip = await prisma.hr_payslips.create({
         data: {
           tenantId,
           payrollPeriodId: input.periodId,
@@ -168,7 +168,7 @@ export class PayslipService {
     const month = String(periodStart.getMonth() + 1).padStart(2, '0')
 
     // Count existing payslips for this month
-    const count = await prisma.hrPayslip.count({
+    const count = await prisma.hr_payslips.count({
       where: {
         tenantId,
         periodStart: {
@@ -186,7 +186,7 @@ export class PayslipService {
    * Get payslips for a period
    */
   static async getPayslipsByPeriod(tenantId: string, periodId: string) {
-    return prisma.hrPayslip.findMany({
+    return prisma.hr_payslips.findMany({
       where: { tenantId, payrollPeriodId: periodId },
       orderBy: { employeeName: 'asc' },
     })
@@ -214,13 +214,13 @@ export class PayslipService {
     }
 
     const [payslips, total] = await Promise.all([
-      prisma.hrPayslip.findMany({
+      prisma.hr_payslips.findMany({
         where,
         orderBy: { periodStart: 'desc' },
         take: options.limit || 50,
         skip: options.offset || 0,
       }),
-      prisma.hrPayslip.count({ where }),
+      prisma.hr_payslips.count({ where }),
     ])
 
     return { payslips, total }
@@ -230,7 +230,7 @@ export class PayslipService {
    * Get payslip by ID
    */
   static async getPayslipById(tenantId: string, payslipId: string) {
-    return prisma.hrPayslip.findFirst({
+    return prisma.hr_payslips.findFirst({
       where: { id: payslipId, tenantId },
     })
   }
@@ -239,7 +239,7 @@ export class PayslipService {
    * Get payslip by number
    */
   static async getPayslipByNumber(tenantId: string, payslipNumber: string) {
-    return prisma.hrPayslip.findFirst({
+    return prisma.hr_payslips.findFirst({
       where: { payslipNumber, tenantId },
     })
   }
@@ -257,14 +257,14 @@ export class PayslipService {
       paidBy?: string
     } = {}
   ) {
-    const payslip = await prisma.hrPayslip.findFirst({
+    const payslip = await prisma.hr_payslips.findFirst({
       where: { id: payslipId, tenantId },
     })
 
     if (!payslip) throw new Error('Payslip not found')
 
     // Only update payment status fields, not the payslip data itself
-    return prisma.hrPayslip.update({
+    return prisma.hr_payslips.update({
       where: { id: payslipId },
       data: {
         paymentStatus: status,
@@ -285,7 +285,7 @@ export class PayslipService {
     payslipId: string,
     method: 'EMAIL' | 'PRINT' | 'PORTAL'
   ) {
-    return prisma.hrPayslip.update({
+    return prisma.hr_payslips.update({
       where: { id: payslipId },
       data: {
         deliveredAt: new Date(),
@@ -298,14 +298,14 @@ export class PayslipService {
    * Mark payslip as viewed by employee
    */
   static async markAsViewed(tenantId: string, payslipId: string) {
-    const payslip = await prisma.hrPayslip.findFirst({
+    const payslip = await prisma.hr_payslips.findFirst({
       where: { id: payslipId, tenantId },
     })
 
     if (!payslip) throw new Error('Payslip not found')
     if (payslip.viewedAt) return payslip // Already viewed
 
-    return prisma.hrPayslip.update({
+    return prisma.hr_payslips.update({
       where: { id: payslipId },
       data: { viewedAt: new Date() },
     })
@@ -331,7 +331,7 @@ export class PayslipService {
     }
 
     const [totals, byStatus, count] = await Promise.all([
-      prisma.hrPayslip.aggregate({
+      prisma.hr_payslips.aggregate({
         where,
         _sum: {
           grossPay: true,
@@ -339,13 +339,13 @@ export class PayslipService {
           netPay: true,
         },
       }),
-      prisma.hrPayslip.groupBy({
+      prisma.hr_payslips.groupBy({
         by: ['paymentStatus'],
         where,
         _count: true,
         _sum: { netPay: true },
       }),
-      prisma.hrPayslip.count({ where }),
+      prisma.hr_payslips.count({ where }),
     ])
 
     const statusCounts: Record<string, { count: number; amount: number }> = {}

@@ -630,7 +630,7 @@ export class ChartOfAccountService {
     createdBy?: string
   ): Promise<{ success: boolean; accountCount: number }> {
     // Check if already initialized
-    const existing = await prisma.acctChartOfAccount.findFirst({
+    const existing = await prisma.acct_chart_of_accounts.findFirst({
       where: { tenantId },
     });
 
@@ -641,7 +641,7 @@ export class ChartOfAccountService {
     // Create all accounts from template
     const accounts = await prisma.$transaction(
       NIGERIA_SME_COA_TEMPLATE.map((template) =>
-        prisma.acctChartOfAccount.create({
+        prisma.acct_chart_of_accounts.create({
           data: {
             tenantId,
             code: template.code,
@@ -686,7 +686,7 @@ export class ChartOfAccountService {
       where.isActive = options.isActive;
     }
 
-    const accounts = await prisma.acctChartOfAccount.findMany({
+    const accounts = await prisma.acct_chart_of_accounts.findMany({
       where,
       orderBy: [{ sortOrder: 'asc' }, { code: 'asc' }],
       include: options?.includeChildren
@@ -705,7 +705,7 @@ export class ChartOfAccountService {
    * Get a single account by code
    */
   static async getByCode(tenantId: string, code: string) {
-    return prisma.acctChartOfAccount.findUnique({
+    return prisma.acct_chart_of_accounts.findUnique({
       where: {
         tenantId_code: { tenantId, code },
       },
@@ -716,7 +716,7 @@ export class ChartOfAccountService {
    * Get a single account by ID
    */
   static async getById(tenantId: string, id: string) {
-    return prisma.acctChartOfAccount.findFirst({
+    return prisma.acct_chart_of_accounts.findFirst({
       where: { id, tenantId },
     });
   }
@@ -732,7 +732,7 @@ export class ChartOfAccountService {
     createdBy?: string
   ) {
     // Validate code uniqueness
-    const existing = await prisma.acctChartOfAccount.findUnique({
+    const existing = await prisma.acct_chart_of_accounts.findUnique({
       where: {
         tenantId_code: { tenantId, code: input.code },
       },
@@ -744,7 +744,7 @@ export class ChartOfAccountService {
 
     // Validate parent exists if specified
     if (input.parentId) {
-      const parent = await prisma.acctChartOfAccount.findFirst({
+      const parent = await prisma.acct_chart_of_accounts.findFirst({
         where: { id: input.parentId, tenantId },
       });
       if (!parent) {
@@ -752,7 +752,7 @@ export class ChartOfAccountService {
       }
     }
 
-    return prisma.acctChartOfAccount.create({
+    return prisma.acct_chart_of_accounts.create({
       data: {
         tenantId,
         code: input.code,
@@ -787,7 +787,7 @@ export class ChartOfAccountService {
     input: ChartOfAccountUpdate,
     updatedBy?: string
   ) {
-    const account = await prisma.acctChartOfAccount.findFirst({
+    const account = await prisma.acct_chart_of_accounts.findFirst({
       where: { id: accountId, tenantId },
     });
 
@@ -795,7 +795,7 @@ export class ChartOfAccountService {
       throw new Error('Account not found');
     }
 
-    return prisma.acctChartOfAccount.update({
+    return prisma.acct_chart_of_accounts.update({
       where: { id: accountId },
       data: {
         name: input.name,
@@ -813,7 +813,7 @@ export class ChartOfAccountService {
    * CONSTRAINT: Cannot deactivate if account has unposted entries
    */
   static async deactivate(tenantId: string, accountId: string) {
-    const account = await prisma.acctChartOfAccount.findFirst({
+    const account = await prisma.acct_chart_of_accounts.findFirst({
       where: { id: accountId, tenantId },
       include: {
         ledgerAccounts: {
@@ -846,7 +846,7 @@ export class ChartOfAccountService {
       );
     }
 
-    return prisma.acctChartOfAccount.update({
+    return prisma.acct_chart_of_accounts.update({
       where: { id: accountId },
       data: { isActive: false },
     });
@@ -860,7 +860,7 @@ export class ChartOfAccountService {
    * - Cannot delete if account has any ledger entries
    */
   static async delete(tenantId: string, accountId: string) {
-    const account = await prisma.acctChartOfAccount.findFirst({
+    const account = await prisma.acct_chart_of_accounts.findFirst({
       where: { id: accountId, tenantId },
       include: {
         ledgerAccounts: {
@@ -894,10 +894,10 @@ export class ChartOfAccountService {
 
     // Delete ledger accounts first, then chart of account
     await prisma.$transaction([
-      prisma.acctLedgerAccount.deleteMany({
+      prisma.acct_ledger_accounts.deleteMany({
         where: { chartOfAccountId: accountId },
       }),
-      prisma.acctChartOfAccount.delete({
+      prisma.acct_chart_of_accounts.delete({
         where: { id: accountId },
       }),
     ]);
@@ -909,7 +909,7 @@ export class ChartOfAccountService {
    * Get accounts by type for dropdowns
    */
   static async getByType(tenantId: string, accountType: AcctAccountType) {
-    return prisma.acctChartOfAccount.findMany({
+    return prisma.acct_chart_of_accounts.findMany({
       where: {
         tenantId,
         accountType,
@@ -929,7 +929,7 @@ export class ChartOfAccountService {
    * Get tax accounts
    */
   static async getTaxAccounts(tenantId: string) {
-    return prisma.acctChartOfAccount.findMany({
+    return prisma.acct_chart_of_accounts.findMany({
       where: {
         tenantId,
         isTaxAccount: true,
@@ -943,7 +943,7 @@ export class ChartOfAccountService {
    * Get bank accounts
    */
   static async getBankAccounts(tenantId: string) {
-    return prisma.acctChartOfAccount.findMany({
+    return prisma.acct_chart_of_accounts.findMany({
       where: {
         tenantId,
         isBankAccount: true,
@@ -957,7 +957,7 @@ export class ChartOfAccountService {
    * Get account tree (hierarchical)
    */
   static async getTree(tenantId: string) {
-    const accounts = await prisma.acctChartOfAccount.findMany({
+    const accounts = await prisma.acct_chart_of_accounts.findMany({
       where: { tenantId, isActive: true },
       orderBy: [{ sortOrder: 'asc' }, { code: 'asc' }],
     });

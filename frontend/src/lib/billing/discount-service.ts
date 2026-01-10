@@ -41,7 +41,7 @@ export async function createDiscountRule(input: CreateDiscountRuleInput): Promis
   try {
     // Check for duplicate code
     if (input.code) {
-      const existing = await prisma.billingDiscountRule.findUnique({
+      const existing = await prisma.billing_discount_rules.findUnique({
         where: { code: input.code },
       });
       
@@ -50,7 +50,7 @@ export async function createDiscountRule(input: CreateDiscountRuleInput): Promis
       }
     }
     
-    const rule = await prisma.billingDiscountRule.create({
+    const rule = await prisma.billing_discount_rules.create({
       data: {
         tenantId: input.tenantId,
         name: input.name,
@@ -92,13 +92,13 @@ export async function createDiscountRule(input: CreateDiscountRuleInput): Promis
 }
 
 export async function getDiscountRule(ruleId: string) {
-  return prisma.billingDiscountRule.findUnique({
+  return prisma.billing_discount_rules.findUnique({
     where: { id: ruleId },
   });
 }
 
 export async function getDiscountByCode(code: string) {
-  return prisma.billingDiscountRule.findUnique({
+  return prisma.billing_discount_rules.findUnique({
     where: { code },
   });
 }
@@ -127,7 +127,7 @@ export async function listDiscountRules(params: {
     where.partnerId = partnerId;
   }
   
-  return prisma.billingDiscountRule.findMany({
+  return prisma.billing_discount_rules.findMany({
     where,
     orderBy: { createdAt: 'desc' },
   });
@@ -138,7 +138,7 @@ export async function deactivateDiscountRule(ruleId: string): Promise<{
   error?: string;
 }> {
   try {
-    await prisma.billingDiscountRule.update({
+    await prisma.billing_discount_rules.update({
       where: { id: ruleId },
       data: { isActive: false },
     });
@@ -283,14 +283,14 @@ export async function recordDiscountUsage(code: string): Promise<{
       return { success: false, error: 'Discount code not found' };
     }
     
-    await prisma.billingDiscountRule.update({
+    await prisma.billing_discount_rules.update({
       where: { code },
       data: { currentUses: { increment: 1 } },
     });
     
     // Check if max uses reached, auto-deactivate
     if (rule.maxUses && rule.currentUses + 1 >= rule.maxUses) {
-      await prisma.billingDiscountRule.update({
+      await prisma.billing_discount_rules.update({
         where: { code },
         data: { isActive: false },
       });
@@ -316,7 +316,7 @@ export async function recordDiscountUsage(code: string): Promise<{
 // ============================================================================
 
 export async function getPartnerDiscounts(partnerId: string) {
-  return prisma.billingDiscountRule.findMany({
+  return prisma.billing_discount_rules.findMany({
     where: {
       partnerId,
       isActive: true,

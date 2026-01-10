@@ -118,7 +118,7 @@ export class OfflineProcurementService {
       }),
 
       // Get pending POs for goods receipt
-      prisma.procPurchaseOrder.findMany({
+      prisma.proc_purchase_orders.findMany({
         where: {
           tenantId,
           status: { in: ['CONFIRMED', 'PARTIALLY_RECEIVED'] },
@@ -145,7 +145,7 @@ export class OfflineProcurementService {
       }),
 
       // Get config
-      prisma.procConfiguration.findUnique({
+      prisma.proc_configurations.findUnique({
         where: { tenantId },
         select: {
           defaultCurrency: true,
@@ -192,7 +192,7 @@ export class OfflineProcurementService {
       for (const pr of input.purchaseRequests) {
         try {
           // Check for existing by offlineId
-          const existing = await prisma.procPurchaseRequest.findUnique({
+          const existing = await prisma.proc_purchase_requests.findUnique({
             where: { tenantId_offlineId: { tenantId, offlineId: pr.offlineId } },
           })
 
@@ -217,7 +217,7 @@ export class OfflineProcurementService {
       for (const gr of input.goodsReceipts) {
         try {
           // Check for existing by offlineId
-          const existing = await prisma.procGoodsReceipt.findUnique({
+          const existing = await prisma.proc_goods_receipts.findUnique({
             where: { tenantId_offlineId: { tenantId, offlineId: gr.offlineId } },
           })
 
@@ -246,14 +246,14 @@ export class OfflineProcurementService {
   static async getChangesSince(tenantId: string, lastSyncAt: Date) {
     const [newPRs, updatedPRs, newPOs, updatedPOs, newReceipts] = await Promise.all([
       // New purchase requests
-      prisma.procPurchaseRequest.findMany({
+      prisma.proc_purchase_requests.findMany({
         where: { tenantId, createdAt: { gt: lastSyncAt } },
         include: { items: true },
         orderBy: { createdAt: 'desc' },
       }),
 
       // Updated purchase requests
-      prisma.procPurchaseRequest.findMany({
+      prisma.proc_purchase_requests.findMany({
         where: {
           tenantId,
           createdAt: { lte: lastSyncAt },
@@ -264,14 +264,14 @@ export class OfflineProcurementService {
       }),
 
       // New POs
-      prisma.procPurchaseOrder.findMany({
+      prisma.proc_purchase_orders.findMany({
         where: { tenantId, createdAt: { gt: lastSyncAt } },
         include: { items: true },
         orderBy: { createdAt: 'desc' },
       }),
 
       // Updated POs
-      prisma.procPurchaseOrder.findMany({
+      prisma.proc_purchase_orders.findMany({
         where: {
           tenantId,
           createdAt: { lte: lastSyncAt },
@@ -282,7 +282,7 @@ export class OfflineProcurementService {
       }),
 
       // New goods receipts
-      prisma.procGoodsReceipt.findMany({
+      prisma.proc_goods_receipts.findMany({
         where: { tenantId, createdAt: { gt: lastSyncAt } },
         include: { items: true },
         orderBy: { createdAt: 'desc' },

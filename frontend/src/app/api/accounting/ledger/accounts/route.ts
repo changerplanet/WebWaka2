@@ -46,7 +46,7 @@ export async function GET(request: NextRequest) {
       ];
     }
 
-    const accounts = await prisma.acctLedgerAccount.findMany({
+    const accounts = await prisma.acct_ledger_accounts.findMany({
       where,
       orderBy: [
         { chartOfAccount: { sortOrder: 'asc' } },

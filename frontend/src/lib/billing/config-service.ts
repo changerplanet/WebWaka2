@@ -131,12 +131,12 @@ export async function initializeBillingForTenant(tenantId: string) {
   await getBillingConfiguration(tenantId);
   
   // Create default grace policy
-  const existingPolicy = await prisma.billingGracePolicy.findFirst({
+  const existingPolicy = await prisma.billing_grace_policies.findFirst({
     where: { tenantId, isDefault: true },
   });
   
   if (!existingPolicy) {
-    await prisma.billingGracePolicy.create({
+    await prisma.billing_grace_policies.create({
       data: {
         tenantId,
         name: 'Default Grace Policy',
@@ -170,11 +170,11 @@ export async function getBillingModuleStatus(tenantId?: string) {
     totalDiscountRules,
     totalGracePolicies,
   ] = await Promise.all([
-    prisma.billingBundle.count(),
-    prisma.billingAddOn.count(),
-    prisma.billingUsageMetric.count(),
-    prisma.billingDiscountRule.count(),
-    prisma.billingGracePolicy.count(),
+    prisma.billing_bundles.count(),
+    prisma.billing_addons.count(),
+    prisma.billing_usage_metrics.count(),
+    prisma.billing_discount_rules.count(),
+    prisma.billing_grace_policies.count(),
   ]);
   
   // Get tenant-specific stats if tenantId provided
@@ -183,10 +183,10 @@ export async function getBillingModuleStatus(tenantId?: string) {
     const config = await getBillingConfiguration(tenantId);
     
     const [activeAddOns, pendingAdjustments] = await Promise.all([
-      prisma.billingAddOnSubscription.count({
+      prisma.billing_addon_subscriptions.count({
         where: { tenantId, status: 'ACTIVE' },
       }),
-      prisma.billingAdjustment.count({
+      prisma.billing_adjustments.count({
         where: { tenantId, status: 'PENDING' },
       }),
     ]);

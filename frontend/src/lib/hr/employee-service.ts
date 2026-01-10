@@ -71,7 +71,7 @@ export class EmployeeService {
     }
 
     // Check if profile already exists
-    const existing = await prisma.hrEmployeeProfile.findUnique({
+    const existing = await prisma.hr_employee_profiles.findUnique({
       where: { staffId: input.staffId },
     })
 
@@ -79,7 +79,7 @@ export class EmployeeService {
       throw new Error('Employee profile already exists for this staff')
     }
 
-    const profile = await prisma.hrEmployeeProfile.create({
+    const profile = await prisma.hr_employee_profiles.create({
       data: {
         tenantId,
         staffId: input.staffId,
@@ -142,7 +142,7 @@ export class EmployeeService {
     ]
 
     for (const { type, entitlement } of leaveTypes) {
-      await prisma.hrLeaveBalance.upsert({
+      await prisma.hr_leave_balances.upsert({
         where: {
           employeeProfileId_year_leaveType: {
             employeeProfileId,
@@ -195,13 +195,13 @@ export class EmployeeService {
     }
 
     const [profiles, total] = await Promise.all([
-      prisma.hrEmployeeProfile.findMany({
+      prisma.hr_employee_profiles.findMany({
         where,
         orderBy: { createdAt: 'desc' },
         take: options.limit || 50,
         skip: options.offset || 0,
       }),
-      prisma.hrEmployeeProfile.count({ where }),
+      prisma.hr_employee_profiles.count({ where }),
     ])
 
     // Get staff info for each profile
@@ -224,16 +224,16 @@ export class EmployeeService {
    * Get employee profile by ID
    */
   static async getEmployeeProfileById(tenantId: string, profileId: string) {
-    const profile = await prisma.hrEmployeeProfile.findFirst({
+    const profile = await prisma.hr_employee_profiles.findFirst({
       where: { id: profileId, tenantId },
       include: {
-        contracts: { orderBy: { startDate: 'desc' }, take: 5 },
+        hr_employee_contracts: { orderBy: { startDate: 'desc' }, take: 5 },
         leaveBalances: { where: { year: new Date().getFullYear() } },
         _count: {
           select: {
             attendanceRecords: true,
             leaveRequests: true,
-            payslips: true,
+            hr_payslips: true,
           },
         },
       },
@@ -255,7 +255,7 @@ export class EmployeeService {
    * Get employee profile by staff ID
    */
   static async getEmployeeProfileByStaffId(tenantId: string, staffId: string) {
-    return prisma.hrEmployeeProfile.findFirst({
+    return prisma.hr_employee_profiles.findFirst({
       where: { staffId, tenantId },
     })
   }
@@ -268,7 +268,7 @@ export class EmployeeService {
     profileId: string,
     input: UpdateEmployeeProfileInput
   ) {
-    return prisma.hrEmployeeProfile.update({
+    return prisma.hr_employee_profiles.update({
       where: { id: profileId },
       data: {
         ...(input.employmentType && { employmentType: input.employmentType }),
@@ -315,7 +315,7 @@ export class EmployeeService {
     terminationDate: Date,
     reason: string
   ) {
-    return prisma.hrEmployeeProfile.update({
+    return prisma.hr_employee_profiles.update({
       where: { id: profileId },
       data: {
         terminationDate,
@@ -334,18 +334,18 @@ export class EmployeeService {
       byDepartment,
       terminated,
     ] = await Promise.all([
-      prisma.hrEmployeeProfile.count({ where: { tenantId } }),
-      prisma.hrEmployeeProfile.groupBy({
+      prisma.hr_employee_profiles.count({ where: { tenantId } }),
+      prisma.hr_employee_profiles.groupBy({
         by: ['employmentType'],
         where: { tenantId, terminationDate: null },
         _count: true,
       }),
-      prisma.hrEmployeeProfile.groupBy({
+      prisma.hr_employee_profiles.groupBy({
         by: ['department'],
         where: { tenantId, terminationDate: null },
         _count: true,
       }),
-      prisma.hrEmployeeProfile.count({
+      prisma.hr_employee_profiles.count({
         where: { tenantId, terminationDate: { not: null } },
       }),
     ])

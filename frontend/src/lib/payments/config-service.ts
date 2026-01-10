@@ -90,13 +90,13 @@ export class PayConfigService {
       todayVolume,
       pendingSettlements,
     ] = await Promise.all([
-      prisma.payWallet.count({ where: { tenantId, status: 'ACTIVE' } }),
-      prisma.payWallet.aggregate({
+      prisma.pay_wallets.count({ where: { tenantId, status: 'ACTIVE' } }),
+      prisma.pay_wallets.aggregate({
         where: { tenantId, status: 'ACTIVE' },
         _sum: { balance: true },
       }),
-      prisma.payPaymentIntent.count({ where: { tenantId, status: { in: ['CREATED', 'PROCESSING'] } } }),
-      prisma.payPaymentTransaction.aggregate({
+      prisma.pay_payment_intents.count({ where: { tenantId, status: { in: ['CREATED', 'PROCESSING'] } } }),
+      prisma.pay_payment_transactions.aggregate({
         where: { tenantId, status: 'CONFIRMED', confirmedAt: { gte: todayStart } },
         _sum: { amount: true },
       }),
@@ -239,7 +239,7 @@ export class PayConfigService {
   private static async createBusinessWallet(tenantId: string, currency: string) {
     const walletNumber = `BIZ-${tenantId.slice(0, 8).toUpperCase()}`
     
-    await prisma.payWallet.upsert({
+    await prisma.pay_wallets.upsert({
       where: { tenantId_walletNumber: { tenantId, walletNumber } },
       create: {
         tenantId,
@@ -258,7 +258,7 @@ export class PayConfigService {
   private static async createPlatformWallet(tenantId: string, currency: string) {
     const walletNumber = `PLT-${tenantId.slice(0, 8).toUpperCase()}`
     
-    await prisma.payWallet.upsert({
+    await prisma.pay_wallets.upsert({
       where: { tenantId_walletNumber: { tenantId, walletNumber } },
       create: {
         tenantId,

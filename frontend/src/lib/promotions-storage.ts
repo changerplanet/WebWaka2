@@ -134,7 +134,7 @@ async function seedDefaultPromotions(tenantId: string): Promise<Promotion[]> {
   const now = new Date()
   
   const promotions = await prisma.$transaction([
-    prisma.svmPromotion.create({
+    prisma.svm_promotions.create({
       data: {
         tenantId,
         name: 'Welcome Discount',
@@ -155,7 +155,7 @@ async function seedDefaultPromotions(tenantId: string): Promise<Promotion[]> {
         priority: 0
       }
     }),
-    prisma.svmPromotion.create({
+    prisma.svm_promotions.create({
       data: {
         tenantId,
         name: 'Seasonal Sale',
@@ -178,7 +178,7 @@ async function seedDefaultPromotions(tenantId: string): Promise<Promotion[]> {
         priority: 10
       }
     }),
-    prisma.svmPromotion.create({
+    prisma.svm_promotions.create({
       data: {
         tenantId,
         name: 'Free Delivery',
@@ -200,7 +200,7 @@ async function seedDefaultPromotions(tenantId: string): Promise<Promotion[]> {
         priority: 5
       }
     }),
-    prisma.svmPromotion.create({
+    prisma.svm_promotions.create({
       data: {
         tenantId,
         name: 'Buy 2 Get 1 Free',
@@ -224,7 +224,7 @@ async function seedDefaultPromotions(tenantId: string): Promise<Promotion[]> {
         priority: 0
       }
     }),
-    prisma.svmPromotion.create({
+    prisma.svm_promotions.create({
       data: {
         tenantId,
         name: '₦4,000 Off',
@@ -261,7 +261,7 @@ async function seedDefaultPromotions(tenantId: string): Promise<Promotion[]> {
  * Get or create sample promotions for a tenant
  */
 export async function getOrCreatePromotions(tenantId: string): Promise<Promotion[]> {
-  const existing = await prisma.svmPromotion.findMany({
+  const existing = await prisma.svm_promotions.findMany({
     where: { tenantId }
   })
   
@@ -279,7 +279,7 @@ export async function getPromotions(tenantId: string): Promise<Promotion[]> {
 export async function getActivePromotions(tenantId: string): Promise<Promotion[]> {
   const now = new Date()
   
-  const promotions = await prisma.svmPromotion.findMany({
+  const promotions = await prisma.svm_promotions.findMany({
     where: {
       tenantId,
       isActive: true,
@@ -303,7 +303,7 @@ export async function getAutomaticPromotions(tenantId: string): Promise<Promotio
 }
 
 export async function findByCode(tenantId: string, code: string): Promise<Promotion | null> {
-  const promotion = await prisma.svmPromotion.findFirst({
+  const promotion = await prisma.svm_promotions.findFirst({
     where: {
       tenantId,
       code: { equals: code, mode: 'insensitive' },
@@ -329,7 +329,7 @@ export async function findByCode(tenantId: string, code: string): Promise<Promot
 }
 
 export async function getPromotion(tenantId: string, promotionId: string): Promise<Promotion | null> {
-  const promotion = await prisma.svmPromotion.findFirst({
+  const promotion = await prisma.svm_promotions.findFirst({
     where: { id: promotionId, tenantId }
   })
   
@@ -337,7 +337,7 @@ export async function getPromotion(tenantId: string, promotionId: string): Promi
 }
 
 export async function addPromotion(promotion: Promotion): Promise<void> {
-  await prisma.svmPromotion.create({
+  await prisma.svm_promotions.create({
     data: {
       id: promotion.id,
       tenantId: promotion.tenantId,
@@ -371,13 +371,13 @@ export async function addPromotion(promotion: Promotion): Promise<void> {
 }
 
 export async function updatePromotion(tenantId: string, promotionId: string, updates: Partial<Promotion>): Promise<Promotion | null> {
-  const existing = await prisma.svmPromotion.findFirst({
+  const existing = await prisma.svm_promotions.findFirst({
     where: { id: promotionId, tenantId }
   })
   
   if (!existing) return null
   
-  const updated = await prisma.svmPromotion.update({
+  const updated = await prisma.svm_promotions.update({
     where: { id: promotionId },
     data: {
       name: updates.name,
@@ -408,13 +408,13 @@ export async function updatePromotion(tenantId: string, promotionId: string, upd
 }
 
 export async function deletePromotion(tenantId: string, promotionId: string): Promise<Promotion | null> {
-  const existing = await prisma.svmPromotion.findFirst({
+  const existing = await prisma.svm_promotions.findFirst({
     where: { id: promotionId, tenantId }
   })
   
   if (!existing) return null
   
-  await prisma.svmPromotion.delete({
+  await prisma.svm_promotions.delete({
     where: { id: promotionId }
   })
   
@@ -431,7 +431,7 @@ export async function recordUsage(
   customerId: string | undefined,
   discountApplied: number
 ): Promise<PromotionUsage> {
-  const usage = await prisma.svmPromotionUsage.create({
+  const usage = await prisma.svm_promotion_usages.create({
     data: {
       promotionId,
       orderId,
@@ -441,7 +441,7 @@ export async function recordUsage(
   })
   
   // Increment usage count on promotion
-  await prisma.svmPromotion.update({
+  await prisma.svm_promotions.update({
     where: { id: promotionId },
     data: { usageCount: { increment: 1 } }
   })
@@ -459,7 +459,7 @@ export async function recordUsage(
 export async function getCustomerUsageCount(promotionId: string, customerId?: string): Promise<number> {
   if (!customerId) return 0
   
-  const count = await prisma.svmPromotionUsage.count({
+  const count = await prisma.svm_promotion_usages.count({
     where: { promotionId, customerId }
   })
   

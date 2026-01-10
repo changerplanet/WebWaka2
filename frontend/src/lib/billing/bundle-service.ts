@@ -43,7 +43,7 @@ export async function createBundle(input: CreateBundleInput): Promise<{
 }> {
   try {
     // Check for duplicate slug
-    const existing = await prisma.billingBundle.findFirst({
+    const existing = await prisma.billing_bundles.findFirst({
       where: {
         tenantId: input.tenantId,
         slug: input.slug,
@@ -54,7 +54,7 @@ export async function createBundle(input: CreateBundleInput): Promise<{
       return { success: false, error: 'Bundle with this slug already exists' };
     }
     
-    const bundle = await prisma.billingBundle.create({
+    const bundle = await prisma.billing_bundles.create({
       data: {
         tenantId: input.tenantId,
         name: input.name,
@@ -102,7 +102,7 @@ export async function createBundle(input: CreateBundleInput): Promise<{
 }
 
 export async function getBundle(bundleId: string) {
-  return prisma.billingBundle.findUnique({
+  return prisma.billing_bundles.findUnique({
     where: { id: bundleId },
     include: { items: { orderBy: { displayOrder: 'asc' } } },
   });
@@ -133,7 +133,7 @@ export async function listBundles(params: {
     where.isPromoted = true;
   }
   
-  return prisma.billingBundle.findMany({
+  return prisma.billing_bundles.findMany({
     where,
     include: { items: { orderBy: { displayOrder: 'asc' } } },
     orderBy: [{ displayOrder: 'asc' }, { createdAt: 'desc' }],
@@ -154,7 +154,7 @@ export async function updateBundle(
   }
 ): Promise<{ success: boolean; bundle?: any; error?: string }> {
   try {
-    const bundle = await prisma.billingBundle.update({
+    const bundle = await prisma.billing_bundles.update({
       where: { id: bundleId },
       data,
       include: { items: true },
@@ -170,7 +170,7 @@ export async function deactivateBundle(bundleId: string): Promise<{
   error?: string;
 }> {
   try {
-    await prisma.billingBundle.update({
+    await prisma.billing_bundles.update({
       where: { id: bundleId },
       data: { isActive: false },
     });
@@ -189,7 +189,7 @@ export async function resolveBundleEntitlements(bundleId: string): Promise<{
   modules: string[];
   featureLimits: Record<string, any>;
 }> {
-  const bundle = await prisma.billingBundle.findUnique({
+  const bundle = await prisma.billing_bundles.findUnique({
     where: { id: bundleId },
     include: { items: true },
   });

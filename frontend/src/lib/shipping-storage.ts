@@ -123,7 +123,7 @@ function mapDbRateToInterface(dbRate: any): ShippingRate {
 
 async function seedDefaultZones(tenantId: string): Promise<ShippingZone[]> {
   // Create default US zone
-  const usZone = await prisma.svmShippingZone.create({
+  const usZone = await prisma.svm_shipping_zones.create({
     data: {
       tenantId,
       name: 'US Domestic',
@@ -191,7 +191,7 @@ async function seedDefaultZones(tenantId: string): Promise<ShippingZone[]> {
   })
 
   // Create default Canada zone
-  const caZone = await prisma.svmShippingZone.create({
+  const caZone = await prisma.svm_shipping_zones.create({
     data: {
       tenantId,
       name: 'Canada',
@@ -243,7 +243,7 @@ async function seedDefaultZones(tenantId: string): Promise<ShippingZone[]> {
   })
 
   // Create default International zone
-  const intlZone = await prisma.svmShippingZone.create({
+  const intlZone = await prisma.svm_shipping_zones.create({
     data: {
       tenantId,
       name: 'International',
@@ -305,7 +305,7 @@ async function seedDefaultZones(tenantId: string): Promise<ShippingZone[]> {
  */
 export async function getOrCreateDefaultZones(tenantId: string): Promise<ShippingZone[]> {
   // Check if zones already exist
-  const existingZones = await prisma.svmShippingZone.findMany({
+  const existingZones = await prisma.svm_shipping_zones.findMany({
     where: { tenantId },
     include: { rates: true },
     orderBy: { priority: 'desc' }
@@ -330,7 +330,7 @@ export async function getZones(tenantId: string): Promise<ShippingZone[]> {
  * Get a specific zone by ID
  */
 export async function getZone(tenantId: string, zoneId: string): Promise<ShippingZone | null> {
-  const zone = await prisma.svmShippingZone.findFirst({
+  const zone = await prisma.svm_shipping_zones.findFirst({
     where: { id: zoneId, tenantId },
     include: { rates: true }
   })
@@ -342,7 +342,7 @@ export async function getZone(tenantId: string, zoneId: string): Promise<Shippin
  * Add a zone
  */
 export async function addZone(zone: ShippingZone): Promise<void> {
-  await prisma.svmShippingZone.create({
+  await prisma.svm_shipping_zones.create({
     data: {
       id: zone.id,
       tenantId: zone.tenantId,
@@ -390,13 +390,13 @@ export async function addZone(zone: ShippingZone): Promise<void> {
  * Update a zone
  */
 export async function updateZone(tenantId: string, zoneId: string, updates: Partial<ShippingZone>): Promise<ShippingZone | null> {
-  const existing = await prisma.svmShippingZone.findFirst({
+  const existing = await prisma.svm_shipping_zones.findFirst({
     where: { id: zoneId, tenantId }
   })
   
   if (!existing) return null
   
-  const updated = await prisma.svmShippingZone.update({
+  const updated = await prisma.svm_shipping_zones.update({
     where: { id: zoneId },
     data: {
       name: updates.name,
@@ -419,14 +419,14 @@ export async function updateZone(tenantId: string, zoneId: string, updates: Part
  * Delete a zone
  */
 export async function deleteZone(tenantId: string, zoneId: string): Promise<ShippingZone | null> {
-  const existing = await prisma.svmShippingZone.findFirst({
+  const existing = await prisma.svm_shipping_zones.findFirst({
     where: { id: zoneId, tenantId },
     include: { rates: true }
   })
   
   if (!existing) return null
   
-  await prisma.svmShippingZone.delete({
+  await prisma.svm_shipping_zones.delete({
     where: { id: zoneId }
   })
   
@@ -441,13 +441,13 @@ export async function deleteZone(tenantId: string, zoneId: string): Promise<Ship
  * Get a rate by ID
  */
 export async function getRate(tenantId: string, zoneId: string, rateId: string): Promise<ShippingRate | null> {
-  const zone = await prisma.svmShippingZone.findFirst({
+  const zone = await prisma.svm_shipping_zones.findFirst({
     where: { id: zoneId, tenantId }
   })
   
   if (!zone) return null
   
-  const rate = await prisma.svmShippingRate.findFirst({
+  const rate = await prisma.svm_shipping_rates.findFirst({
     where: { id: rateId, zoneId }
   })
   
@@ -458,13 +458,13 @@ export async function getRate(tenantId: string, zoneId: string, rateId: string):
  * Add a rate to a zone
  */
 export async function addRate(tenantId: string, zoneId: string, rate: ShippingRate): Promise<ShippingRate | null> {
-  const zone = await prisma.svmShippingZone.findFirst({
+  const zone = await prisma.svm_shipping_zones.findFirst({
     where: { id: zoneId, tenantId }
   })
   
   if (!zone) return null
   
-  const created = await prisma.svmShippingRate.create({
+  const created = await prisma.svm_shipping_rates.create({
     data: {
       id: rate.id,
       zoneId,
@@ -500,19 +500,19 @@ export async function addRate(tenantId: string, zoneId: string, rate: ShippingRa
  * Update a rate
  */
 export async function updateRate(tenantId: string, zoneId: string, rateId: string, updates: Partial<ShippingRate>): Promise<ShippingRate | null> {
-  const zone = await prisma.svmShippingZone.findFirst({
+  const zone = await prisma.svm_shipping_zones.findFirst({
     where: { id: zoneId, tenantId }
   })
   
   if (!zone) return null
   
-  const existing = await prisma.svmShippingRate.findFirst({
+  const existing = await prisma.svm_shipping_rates.findFirst({
     where: { id: rateId, zoneId }
   })
   
   if (!existing) return null
   
-  const updated = await prisma.svmShippingRate.update({
+  const updated = await prisma.svm_shipping_rates.update({
     where: { id: rateId },
     data: {
       name: updates.name,
@@ -547,19 +547,19 @@ export async function updateRate(tenantId: string, zoneId: string, rateId: strin
  * Delete a rate
  */
 export async function deleteRate(tenantId: string, zoneId: string, rateId: string): Promise<ShippingRate | null> {
-  const zone = await prisma.svmShippingZone.findFirst({
+  const zone = await prisma.svm_shipping_zones.findFirst({
     where: { id: zoneId, tenantId }
   })
   
   if (!zone) return null
   
-  const existing = await prisma.svmShippingRate.findFirst({
+  const existing = await prisma.svm_shipping_rates.findFirst({
     where: { id: rateId, zoneId }
   })
   
   if (!existing) return null
   
-  await prisma.svmShippingRate.delete({
+  await prisma.svm_shipping_rates.delete({
     where: { id: rateId }
   })
   

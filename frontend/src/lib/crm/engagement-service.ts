@@ -76,7 +76,7 @@ export class EngagementService {
    * Record an engagement event
    */
   static async recordEvent(tenantId: string, input: EngagementInput) {
-    return prisma.crmEngagementEvent.create({
+    return prisma.crm_engagement_events.create({
       data: {
         tenantId,
         customerId: input.customerId,
@@ -105,7 +105,7 @@ export class EngagementService {
    */
   static async processSaleCompleted(tenantId: string, event: SaleEvent) {
     // Check idempotency
-    const existing = await prisma.crmEngagementEvent.findFirst({
+    const existing = await prisma.crm_engagement_events.findFirst({
       where: {
         tenantId,
         sourceType: 'SALE',
@@ -136,7 +136,7 @@ export class EngagementService {
     // Award loyalty points
     let loyaltyResult = null;
     try {
-      const program = await prisma.crmLoyaltyProgram.findUnique({
+      const program = await prisma.crm_loyalty_programs.findUnique({
         where: { tenantId },
       });
 
@@ -191,7 +191,7 @@ export class EngagementService {
    */
   static async processOrderCompleted(tenantId: string, event: OrderEvent) {
     // Check idempotency
-    const existing = await prisma.crmEngagementEvent.findFirst({
+    const existing = await prisma.crm_engagement_events.findFirst({
       where: {
         tenantId,
         sourceType: 'ORDER',
@@ -221,7 +221,7 @@ export class EngagementService {
     // Award loyalty points (similar to sale)
     let loyaltyResult = null;
     try {
-      const program = await prisma.crmLoyaltyProgram.findUnique({
+      const program = await prisma.crm_loyalty_programs.findUnique({
         where: { tenantId },
       });
 
@@ -294,13 +294,13 @@ export class EngagementService {
     }
 
     const [events, total] = await Promise.all([
-      prisma.crmEngagementEvent.findMany({
+      prisma.crm_engagement_events.findMany({
         where,
         orderBy: { occurredAt: 'desc' },
         take: options?.limit || 50,
         skip: options?.offset || 0,
       }),
-      prisma.crmEngagementEvent.count({ where }),
+      prisma.crm_engagement_events.count({ where }),
     ]);
 
     return { events, total };
@@ -317,17 +317,17 @@ export class EngagementService {
       lastEngagement,
       recentEngagements,
     ] = await Promise.all([
-      prisma.crmEngagementEvent.count({ where: { tenantId, customerId } }),
-      prisma.crmEngagementEvent.count({ where: { tenantId, customerId, eventType: 'PURCHASE' } }),
-      prisma.crmEngagementEvent.aggregate({
+      prisma.crm_engagement_events.count({ where: { tenantId, customerId } }),
+      prisma.crm_engagement_events.count({ where: { tenantId, customerId, eventType: 'PURCHASE' } }),
+      prisma.crm_engagement_events.aggregate({
         where: { tenantId, customerId, eventType: 'PURCHASE' },
         _sum: { monetaryValue: true },
       }),
-      prisma.crmEngagementEvent.findFirst({
+      prisma.crm_engagement_events.findFirst({
         where: { tenantId, customerId },
         orderBy: { occurredAt: 'desc' },
       }),
-      prisma.crmEngagementEvent.findMany({
+      prisma.crm_engagement_events.findMany({
         where: { tenantId, customerId },
         orderBy: { occurredAt: 'desc' },
         take: 5,
@@ -368,28 +368,28 @@ export class EngagementService {
     }
 
     // Get counts by event type
-    const byEventType = await prisma.crmEngagementEvent.groupBy({
+    const byEventType = await prisma.crm_engagement_events.groupBy({
       by: ['eventType'],
       where,
       _count: { eventType: true },
     });
 
     // Get counts by channel
-    const byChannel = await prisma.crmEngagementEvent.groupBy({
+    const byChannel = await prisma.crm_engagement_events.groupBy({
       by: ['channel'],
       where,
       _count: { channel: true },
     });
 
     // Get total revenue from purchases
-    const revenue = await prisma.crmEngagementEvent.aggregate({
+    const revenue = await prisma.crm_engagement_events.aggregate({
       where: { ...where, eventType: 'PURCHASE' },
       _sum: { monetaryValue: true },
       _count: true,
     });
 
     // Get unique customers
-    const uniqueCustomers = await prisma.crmEngagementEvent.findMany({
+    const uniqueCustomers = await prisma.crm_engagement_events.findMany({
       where,
       distinct: ['customerId'],
       select: { customerId: true },

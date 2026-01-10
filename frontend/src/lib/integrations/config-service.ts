@@ -235,17 +235,17 @@ export const DEFAULT_SCOPES = [
  */
 export async function getModuleStatus() {
   const [providerCount, instanceCount, appCount, keyCount] = await Promise.all([
-    prisma.integrationProvider.count(),
-    prisma.integrationInstance.count(),
-    prisma.developerApp.count(),
-    prisma.apiKey.count(),
+    prisma.integration_providers.count(),
+    prisma.integration_instances.count(),
+    prisma.developer_apps.count(),
+    prisma.api_keys.count(),
   ])
   
-  const activeInstances = await prisma.integrationInstance.count({
+  const activeInstances = await prisma.integration_instances.count({
     where: { status: IntegrationInstanceStatus.ACTIVE },
   })
   
-  const nigeriaFirstProviders = await prisma.integrationProvider.count({
+  const nigeriaFirstProviders = await prisma.integration_providers.count({
     where: { isNigeriaFirst: true, status: IntegrationProviderStatus.ACTIVE },
   })
   
@@ -286,7 +286,7 @@ export async function initializeModule() {
   // Create default providers
   for (const provider of DEFAULT_PROVIDERS) {
     try {
-      await prisma.integrationProvider.upsert({
+      await prisma.integration_providers.upsert({
         where: { key: provider.key },
         update: {
           name: provider.name,
@@ -429,7 +429,7 @@ export async function validateModule(): Promise<{ valid: boolean; checks: { name
   })
   
   // Check 7: Nigeria-first providers available
-  const nigeriaProviders = await prisma.integrationProvider.count({
+  const nigeriaProviders = await prisma.integration_providers.count({
     where: { isNigeriaFirst: true, status: IntegrationProviderStatus.ACTIVE },
   })
   checks.push({

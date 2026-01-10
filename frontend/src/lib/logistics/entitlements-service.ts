@@ -135,16 +135,16 @@ export class EntitlementsService {
     today.setHours(0, 0, 0, 0)
 
     const [zoneCount, riderCount, todayAssignments, totalStats] = await Promise.all([
-      prisma.logisticsDeliveryZone.count({
+      prisma.logistics_delivery_zones.count({
         where: { tenantId, status: 'ACTIVE' },
       }),
-      prisma.logisticsDeliveryAgent.count({
+      prisma.logistics_delivery_agents.count({
         where: { tenantId, status: { not: 'TERMINATED' } },
       }),
-      prisma.logisticsDeliveryAssignment.count({
+      prisma.logistics_delivery_assignments.count({
         where: { tenantId, createdAt: { gte: today } },
       }),
-      prisma.logisticsDeliveryAssignment.groupBy({
+      prisma.logistics_delivery_assignments.groupBy({
         by: ['status'],
         where: { tenantId },
         _count: true,

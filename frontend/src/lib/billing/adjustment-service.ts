@@ -33,7 +33,7 @@ export async function createAdjustment(input: CreateAdjustmentInput): Promise<{
   error?: string;
 }> {
   try {
-    const adjustment = await prisma.billingAdjustment.create({
+    const adjustment = await prisma.billing_adjustments.create({
       data: {
         tenantId: input.tenantId,
         subscriptionId: input.subscriptionId,
@@ -69,7 +69,7 @@ export async function createAdjustment(input: CreateAdjustmentInput): Promise<{
 }
 
 export async function getAdjustment(adjustmentId: string) {
-  return prisma.billingAdjustment.findUnique({
+  return prisma.billing_adjustments.findUnique({
     where: { id: adjustmentId },
   });
 }
@@ -92,13 +92,13 @@ export async function listAdjustments(params: {
   if (status) where.status = status;
   
   const [adjustments, total] = await Promise.all([
-    prisma.billingAdjustment.findMany({
+    prisma.billing_adjustments.findMany({
       where,
       skip: (page - 1) * limit,
       take: limit,
       orderBy: { createdAt: 'desc' },
     }),
-    prisma.billingAdjustment.count({ where }),
+    prisma.billing_adjustments.count({ where }),
   ]);
   
   return {
@@ -121,7 +121,7 @@ export async function approveAdjustment(
   approvedBy: string
 ): Promise<{ success: boolean; error?: string }> {
   try {
-    const adjustment = await prisma.billingAdjustment.findUnique({
+    const adjustment = await prisma.billing_adjustments.findUnique({
       where: { id: adjustmentId },
     });
     
@@ -133,7 +133,7 @@ export async function approveAdjustment(
       return { success: false, error: 'Adjustment is not pending' };
     }
     
-    await prisma.billingAdjustment.update({
+    await prisma.billing_adjustments.update({
       where: { id: adjustmentId },
       data: {
         status: 'APPROVED',
@@ -165,7 +165,7 @@ export async function applyAdjustment(adjustmentId: string): Promise<{
   error?: string;
 }> {
   try {
-    const adjustment = await prisma.billingAdjustment.findUnique({
+    const adjustment = await prisma.billing_adjustments.findUnique({
       where: { id: adjustmentId },
     });
     
@@ -179,14 +179,14 @@ export async function applyAdjustment(adjustmentId: string): Promise<{
     
     // Check if expired
     if (adjustment.expiresAt && adjustment.expiresAt < new Date()) {
-      await prisma.billingAdjustment.update({
+      await prisma.billing_adjustments.update({
         where: { id: adjustmentId },
         data: { status: 'EXPIRED' },
       });
       return { success: false, error: 'Adjustment has expired' };
     }
     
-    await prisma.billingAdjustment.update({
+    await prisma.billing_adjustments.update({
       where: { id: adjustmentId },
       data: {
         status: 'APPLIED',
@@ -216,7 +216,7 @@ export async function cancelAdjustment(
   cancelledBy?: string
 ): Promise<{ success: boolean; error?: string }> {
   try {
-    const adjustment = await prisma.billingAdjustment.findUnique({
+    const adjustment = await prisma.billing_adjustments.findUnique({
       where: { id: adjustmentId },
     });
     
@@ -228,7 +228,7 @@ export async function cancelAdjustment(
       return { success: false, error: 'Cannot cancel applied adjustment' };
     }
     
-    await prisma.billingAdjustment.update({
+    await prisma.billing_adjustments.update({
       where: { id: adjustmentId },
       data: { status: 'CANCELLED' },
     });
@@ -260,7 +260,7 @@ export async function getAdjustmentBalance(tenantId: string): Promise<{
   appliedCredits: number;
   byType: Record<string, { count: number; amount: number }>;
 }> {
-  const adjustments = await prisma.billingAdjustment.findMany({
+  const adjustments = await prisma.billing_adjustments.findMany({
     where: { tenantId },
   });
   

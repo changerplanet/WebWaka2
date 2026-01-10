@@ -98,7 +98,7 @@ export class CrmOfflineService {
         take: 1000,
         orderBy: { updatedAt: 'desc' },
       }),
-      prisma.crmLoyaltyProgram.findUnique({
+      prisma.crm_loyalty_programs.findUnique({
         where: { tenantId },
         select: {
           name: true,
@@ -106,7 +106,7 @@ export class CrmOfflineService {
           pointsPerCurrency: true,
         },
       }),
-      prisma.crmCustomerSegment.findMany({
+      prisma.crm_customer_segments.findMany({
         where: { tenantId, status: 'ACTIVE' },
         select: {
           id: true,
@@ -149,7 +149,7 @@ export class CrmOfflineService {
     for (const earn of request.loyaltyEarns) {
       try {
         // Check for duplicate by clientId
-        const existingTransaction = await prisma.crmLoyaltyTransaction.findFirst({
+        const existingTransaction = await prisma.crm_loyalty_transactions.findFirst({
           where: {
             tenantId,
             metadata: {
@@ -178,14 +178,14 @@ export class CrmOfflineService {
 
         if (calculation.points > 0) {
           // Award points with offline metadata
-          const program = await prisma.crmLoyaltyProgram.findUnique({
+          const program = await prisma.crm_loyalty_programs.findUnique({
             where: { tenantId },
           });
 
           if (program) {
             const currentBalance = await LoyaltyService.getCustomerBalance(tenantId, earn.customerId);
 
-            await prisma.crmLoyaltyTransaction.create({
+            await prisma.crm_loyalty_transactions.create({
               data: {
                 tenantId,
                 programId: program.id,
@@ -258,7 +258,7 @@ export class CrmOfflineService {
           updatedAt: true,
         },
       }),
-      prisma.crmCustomerSegment.findMany({
+      prisma.crm_customer_segments.findMany({
         where: { tenantId, updatedAt: { gt: lastSyncAt } },
         select: {
           id: true,
@@ -268,7 +268,7 @@ export class CrmOfflineService {
           updatedAt: true,
         },
       }),
-      prisma.crmLoyaltyTransaction.findMany({
+      prisma.crm_loyalty_transactions.findMany({
         where: { tenantId, createdAt: { gt: lastSyncAt } },
         select: {
           id: true,

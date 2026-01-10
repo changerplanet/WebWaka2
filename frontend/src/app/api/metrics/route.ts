@@ -100,9 +100,9 @@ export async function GET(request: NextRequest) {
     // Database stats (if available)
     try {
       const [walletCount, orderCount, cartCount] = await Promise.all([
-        prisma.commerceWallet.count(),
-        prisma.svmOrder.count(),
-        prisma.svmCart.count()
+        prisma.commerce_wallets.count(),
+        prisma.svm_orders.count(),
+        prisma.svm_carts.count()
       ])
       
       response.metrics = {

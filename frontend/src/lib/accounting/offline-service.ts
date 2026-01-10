@@ -118,7 +118,7 @@ export class OfflineService {
    */
   static async getOfflinePackage(tenantId: string): Promise<OfflineDataPackage> {
     // Get COA
-    const coa = await prisma.acctChartOfAccount.findMany({
+    const coa = await prisma.acct_chart_of_accounts.findMany({
       where: { tenantId, isActive: true },
       select: {
         code: true,
@@ -130,7 +130,7 @@ export class OfflineService {
     });
 
     // Get recent expenses (last 50)
-    const expenses = await prisma.acctExpenseRecord.findMany({
+    const expenses = await prisma.acct_expense_records.findMany({
       where: { tenantId },
       select: {
         id: true,
@@ -147,7 +147,7 @@ export class OfflineService {
     // Get current period
     const now = new Date();
     const periodCode = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
-    const currentPeriod = await prisma.acctFinancialPeriod.findUnique({
+    const currentPeriod = await prisma.acct_financial_periods.findUnique({
       where: { tenantId_code: { tenantId, code: periodCode } },
       select: { code: true, name: true, status: true },
     });
@@ -187,7 +187,7 @@ export class OfflineService {
     for (const offlineExpense of request.offlineExpenses) {
       try {
         // Check for duplicate by clientId (idempotency)
-        const existing = await prisma.acctExpenseRecord.findFirst({
+        const existing = await prisma.acct_expense_records.findFirst({
           where: {
             tenantId,
             metadata: {
@@ -208,7 +208,7 @@ export class OfflineService {
         }
 
         // Validate account code
-        const account = await prisma.acctChartOfAccount.findFirst({
+        const account = await prisma.acct_chart_of_accounts.findFirst({
           where: { tenantId, code: offlineExpense.accountCode, isActive: true },
         });
 
@@ -222,12 +222,12 @@ export class OfflineService {
         }
 
         // Get or create ledger account
-        let ledgerAccount = await prisma.acctLedgerAccount.findFirst({
+        let ledgerAccount = await prisma.acct_ledger_accounts.findFirst({
           where: { tenantId, chartOfAccountId: account.id },
         });
 
         if (!ledgerAccount) {
-          ledgerAccount = await prisma.acctLedgerAccount.create({
+          ledgerAccount = await prisma.acct_ledger_accounts.create({
             data: {
               tenantId,
               chartOfAccountId: account.id,
@@ -242,14 +242,14 @@ export class OfflineService {
         // Get financial period
         const expenseDate = new Date(offlineExpense.expenseDate);
         const periodCode = `${expenseDate.getFullYear()}-${String(expenseDate.getMonth() + 1).padStart(2, '0')}`;
-        let period = await prisma.acctFinancialPeriod.findUnique({
+        let period = await prisma.acct_financial_periods.findUnique({
           where: { tenantId_code: { tenantId, code: periodCode } },
         });
 
         if (!period) {
           const startDate = new Date(expenseDate.getFullYear(), expenseDate.getMonth(), 1);
           const endDate = new Date(expenseDate.getFullYear(), expenseDate.getMonth() + 1, 0, 23, 59, 59, 999);
-          period = await prisma.acctFinancialPeriod.create({
+          period = await prisma.acct_financial_periods.create({
             data: {
               tenantId,
               name: expenseDate.toLocaleString('en-US', { month: 'long', year: 'numeric' }),
@@ -273,7 +273,7 @@ export class OfflineService {
         }
 
         // Create expense
-        const expense = await prisma.acctExpenseRecord.create({
+        const expense = await prisma.acct_expense_records.create({
           data: {
             tenantId,
             expenseNumber,
@@ -334,7 +334,7 @@ export class OfflineService {
     lastSyncAt: Date
   ) {
     // Get expenses created/updated since last sync
-    const expenses = await prisma.acctExpenseRecord.findMany({
+    const expenses = await prisma.acct_expense_records.findMany({
       where: {
         tenantId,
         updatedAt: { gt: lastSyncAt },
@@ -353,7 +353,7 @@ export class OfflineService {
     });
 
     // Get any period changes
-    const periods = await prisma.acctFinancialPeriod.findMany({
+    const periods = await prisma.acct_financial_periods.findMany({
       where: {
         tenantId,
         updatedAt: { gt: lastSyncAt },
@@ -394,7 +394,7 @@ export class OfflineService {
     const year = new Date().getFullYear();
     const prefix = `EXP-${year}-`;
 
-    const lastExpense = await prisma.acctExpenseRecord.findFirst({
+    const lastExpense = await prisma.acct_expense_records.findFirst({
       where: {
         tenantId,
         expenseNumber: { startsWith: prefix },

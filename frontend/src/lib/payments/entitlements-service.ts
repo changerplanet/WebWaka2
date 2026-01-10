@@ -55,7 +55,7 @@ export class PayEntitlementsService {
     const todayStart = new Date()
     todayStart.setHours(0, 0, 0, 0)
     
-    const todayVolume = await prisma.payPaymentTransaction.aggregate({
+    const todayVolume = await prisma.pay_payment_transactions.aggregate({
       where: { tenantId, status: 'CONFIRMED', confirmedAt: { gte: todayStart } },
       _sum: { amount: true },
     })

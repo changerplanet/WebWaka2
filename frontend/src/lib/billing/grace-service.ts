@@ -41,13 +41,13 @@ export async function createGracePolicy(input: CreateGracePolicyInput): Promise<
   try {
     // If setting as default, unset other defaults
     if (input.isDefault) {
-      await prisma.billingGracePolicy.updateMany({
+      await prisma.billing_grace_policies.updateMany({
         where: { tenantId: input.tenantId, isDefault: true },
         data: { isDefault: false },
       });
     }
     
-    const policy = await prisma.billingGracePolicy.create({
+    const policy = await prisma.billing_grace_policies.create({
       data: {
         tenantId: input.tenantId,
         name: input.name,
@@ -82,7 +82,7 @@ export async function createGracePolicy(input: CreateGracePolicyInput): Promise<
 }
 
 export async function getGracePolicy(policyId: string) {
-  return prisma.billingGracePolicy.findUnique({
+  return prisma.billing_grace_policies.findUnique({
     where: { id: policyId },
   });
 }
@@ -90,7 +90,7 @@ export async function getGracePolicy(policyId: string) {
 export async function getDefaultGracePolicy(tenantId?: string | null) {
   // Try tenant-specific default first
   if (tenantId) {
-    const tenantPolicy = await prisma.billingGracePolicy.findFirst({
+    const tenantPolicy = await prisma.billing_grace_policies.findFirst({
       where: { tenantId, isDefault: true, isActive: true },
     });
     
@@ -98,7 +98,7 @@ export async function getDefaultGracePolicy(tenantId?: string | null) {
   }
   
   // Fall back to global default
-  return prisma.billingGracePolicy.findFirst({
+  return prisma.billing_grace_policies.findFirst({
     where: { tenantId: null, isDefault: true, isActive: true },
   });
 }
@@ -122,7 +122,7 @@ export async function listGracePolicies(params: {
     where.isActive = true;
   }
   
-  return prisma.billingGracePolicy.findMany({
+  return prisma.billing_grace_policies.findMany({
     where,
     orderBy: [{ isDefault: 'desc' }, { createdAt: 'desc' }],
   });
@@ -144,7 +144,7 @@ export async function updateGracePolicy(
   }
 ): Promise<{ success: boolean; policy?: any; error?: string }> {
   try {
-    const policy = await prisma.billingGracePolicy.update({
+    const policy = await prisma.billing_grace_policies.update({
       where: { id: policyId },
       data,
     });

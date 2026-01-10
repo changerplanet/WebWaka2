@@ -78,7 +78,7 @@ export class ReportsService {
    * List all report definitions
    */
   static async listReports(tenantId: string): Promise<ReportDefinition[]> {
-    const reports = await prisma.analyticsReportDefinition.findMany({
+    const reports = await prisma.analytics_report_definitions.findMany({
       where: { tenantId, isActive: true },
       orderBy: [{ category: 'asc' }, { name: 'asc' }],
     })
@@ -90,7 +90,7 @@ export class ReportsService {
    * Get report definition
    */
   static async getReportDefinition(tenantId: string, key: string): Promise<ReportDefinition | null> {
-    const report = await prisma.analyticsReportDefinition.findUnique({
+    const report = await prisma.analytics_report_definitions.findUnique({
       where: { tenantId_key: { tenantId, key } },
     })
 
@@ -126,7 +126,7 @@ export class ReportsService {
       }))
 
     // Update last generated
-    await prisma.analyticsReportDefinition.update({
+    await prisma.analytics_report_definitions.update({
       where: { tenantId_key: { tenantId, key } },
       data: { lastGeneratedAt: new Date() },
     })
@@ -263,7 +263,7 @@ export class ReportsService {
     input: ReportInput,
     createdBy: string
   ): Promise<ReportDefinition> {
-    const report = await prisma.analyticsReportDefinition.create({
+    const report = await prisma.analytics_report_definitions.create({
       data: {
         tenantId,
         key: input.key,
@@ -289,7 +289,7 @@ export class ReportsService {
    * Delete report definition
    */
   static async deleteReport(tenantId: string, key: string): Promise<void> {
-    await prisma.analyticsReportDefinition.update({
+    await prisma.analytics_report_definitions.update({
       where: { tenantId_key: { tenantId, key } },
       data: { isActive: false },
     })

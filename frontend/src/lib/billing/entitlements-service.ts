@@ -129,7 +129,7 @@ export async function checkCanCreateBundle(tenantId: string): Promise<{
   
   // Check current bundle count
   if (entitlements.maxBundles !== null) {
-    const currentCount = await prisma.billingBundle.count({
+    const currentCount = await prisma.billing_bundles.count({
       where: { tenantId, isActive: true },
     });
     
@@ -160,7 +160,7 @@ export async function checkCanCreateAddOn(tenantId: string): Promise<{
   
   // Check current add-on count
   if (entitlements.maxAddOns !== null) {
-    const currentCount = await prisma.billingAddOn.count({
+    const currentCount = await prisma.billing_addons.count({
       where: { tenantId, isActive: true },
     });
     
@@ -191,7 +191,7 @@ export async function checkCanCreateUsageMetric(tenantId: string): Promise<{
   
   // Check current metric count
   if (entitlements.maxUsageMetrics !== null) {
-    const currentCount = await prisma.billingUsageMetric.count({
+    const currentCount = await prisma.billing_usage_metrics.count({
       where: { tenantId, isActive: true },
     });
     

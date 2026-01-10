@@ -43,7 +43,7 @@ export async function createDeveloperApp(data: {
   const clientId = `client_${crypto.randomBytes(16).toString('hex')}`
   const clientSecret = `secret_${crypto.randomBytes(32).toString('hex')}`
   
-  const app = await prisma.developerApp.create({
+  const app = await prisma.developer_apps.create({
     data: {
       tenantId: data.tenantId,
       name: data.name,
@@ -62,7 +62,7 @@ export async function createDeveloperApp(data: {
   })
   
   // Log event
-  await prisma.integrationEventLog.create({
+  await prisma.integration_event_logs.create({
     data: {
       tenantId: data.tenantId,
       eventType: 'DEVELOPER_APP_CREATED',
@@ -107,7 +107,7 @@ export async function listDeveloperApps(options?: {
   const skip = (page - 1) * limit
   
   const [apps, total] = await Promise.all([
-    prisma.developerApp.findMany({
+    prisma.developer_apps.findMany({
       where,
       select: {
         id: true,
@@ -124,14 +124,14 @@ export async function listDeveloperApps(options?: {
         lastRequestAt: true,
         createdAt: true,
         _count: {
-          select: { apiKeys: true },
+          select: { api_keys: true },
         },
       },
       orderBy: { createdAt: 'desc' },
       skip,
       take: limit,
     }),
-    prisma.developerApp.count({ where }),
+    prisma.developer_apps.count({ where }),
   ])
   
   return {
@@ -149,10 +149,10 @@ export async function listDeveloperApps(options?: {
  * Get developer app by ID
  */
 export async function getDeveloperApp(appId: string) {
-  return prisma.developerApp.findUnique({
+  return prisma.developer_apps.findUnique({
     where: { id: appId },
     include: {
-      apiKeys: {
+      api_keys: {
         select: {
           id: true,
           name: true,
@@ -176,7 +176,7 @@ export async function verifyDeveloperApp(
   appId: string,
   verifiedBy: string
 ) {
-  const app = await prisma.developerApp.update({
+  const app = await prisma.developer_apps.update({
     where: { id: appId },
     data: {
       isVerified: true,
@@ -186,7 +186,7 @@ export async function verifyDeveloperApp(
   })
   
   // Log event
-  await prisma.integrationEventLog.create({
+  await prisma.integration_event_logs.create({
     data: {
       eventType: 'DEVELOPER_APP_VERIFIED',
       eventData: { appId, verifiedBy },
@@ -213,7 +213,7 @@ export async function generateApiKeyForApp(
     allowedIps?: string[]
   }
 ) {
-  const app = await prisma.developerApp.findUnique({
+  const app = await prisma.developer_apps.findUnique({
     where: { id: appId },
   })
   
@@ -234,7 +234,7 @@ export async function generateApiKeyForApp(
   // Generate key
   const { key, prefix, hash } = generateApiKey()
   
-  const apiKey = await prisma.apiKey.create({
+  const apiKey = await prisma.api_keys.create({
     data: {
       appId,
       tenantId: data.tenantId,
@@ -250,7 +250,7 @@ export async function generateApiKeyForApp(
   })
   
   // Log event
-  await prisma.integrationEventLog.create({
+  await prisma.integration_event_logs.create({
     data: {
       tenantId: data.tenantId,
       eventType: 'API_KEY_GENERATED',
@@ -292,13 +292,13 @@ export async function validateApiKey(
   const hash = crypto.createHash('sha256').update(key).digest('hex')
   
   // Find key by hash
-  const apiKey = await prisma.apiKey.findFirst({
+  const apiKey = await prisma.api_keys.findFirst({
     where: {
       keyPrefix: prefix,
       keyHash: hash,
     },
     include: {
-      app: true,
+      developer_apps: true,
     },
   })
   
@@ -313,7 +313,7 @@ export async function validateApiKey(
   
   // Check expiration
   if (apiKey.expiresAt && apiKey.expiresAt < new Date()) {
-    await prisma.apiKey.update({
+    await prisma.api_keys.update({
       where: { id: apiKey.id },
       data: { status: ApiKeyStatus.EXPIRED },
     })
@@ -340,14 +340,14 @@ export async function validateApiKey(
   
   // Update usage tracking
   await Promise.all([
-    prisma.apiKey.update({
+    prisma.api_keys.update({
       where: { id: apiKey.id },
       data: {
         lastUsedAt: new Date(),
         usageCount: { increment: 1 },
       },
     }),
-    prisma.developerApp.update({
+    prisma.developer_apps.update({
       where: { id: apiKey.appId },
       data: {
         totalRequests: { increment: 1 },
@@ -373,7 +373,7 @@ export async function revokeApiKey(
   reason: string,
   revokedBy: string
 ) {
-  const apiKey = await prisma.apiKey.update({
+  const apiKey = await prisma.api_keys.update({
     where: { id: keyId },
     data: {
       status: ApiKeyStatus.REVOKED,
@@ -384,7 +384,7 @@ export async function revokeApiKey(
   })
   
   // Log event
-  await prisma.integrationEventLog.create({
+  await prisma.integration_event_logs.create({
     data: {
       tenantId: apiKey.tenantId,
       eventType: 'API_KEY_REVOKED',
@@ -423,7 +423,7 @@ export async function listApiKeysForApp(
   const skip = (page - 1) * limit
   
   const [keys, total] = await Promise.all([
-    prisma.apiKey.findMany({
+    prisma.api_keys.findMany({
       where,
       select: {
         id: true,
@@ -441,7 +441,7 @@ export async function listApiKeysForApp(
       skip,
       take: limit,
     }),
-    prisma.apiKey.count({ where }),
+    prisma.api_keys.count({ where }),
   ])
   
   return {
@@ -498,9 +498,9 @@ export async function checkRateLimit(keyId: string): Promise<{
   remaining: number
   resetAt: Date
 }> {
-  const apiKey = await prisma.apiKey.findUnique({
+  const apiKey = await prisma.api_keys.findUnique({
     where: { id: keyId },
-    include: { app: true },
+    include: { developer_apps: true },
   })
   
   if (!apiKey) {
@@ -512,7 +512,7 @@ export async function checkRateLimit(keyId: string): Promise<{
   const windowStart = new Date(Date.now() - windowMs)
   
   // Count requests in window (from integration logs)
-  const requestCount = await prisma.integrationLog.count({
+  const requestCount = await prisma.integration_logs.count({
     where: {
       createdAt: { gte: windowStart },
       // Would need to add keyId to IntegrationLog for accurate tracking

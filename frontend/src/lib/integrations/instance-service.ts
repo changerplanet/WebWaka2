@@ -67,10 +67,10 @@ export async function listInstancesForTenant(
   const skip = (page - 1) * limit
   
   const [instances, total] = await Promise.all([
-    prisma.integrationInstance.findMany({
+    prisma.integration_instances.findMany({
       where,
       include: {
-        provider: {
+        integration_providers: {
           select: {
             key: true,
             name: true,
@@ -101,7 +101,7 @@ export async function listInstancesForTenant(
       skip,
       take: limit,
     }),
-    prisma.integrationInstance.count({ where }),
+    prisma.integration_instances.count({ where }),
   ])
   
   return {
@@ -124,10 +124,10 @@ export async function getInstanceById(instanceId: string, tenantId?: string) {
     where.tenantId = tenantId
   }
   
-  return prisma.integrationInstance.findFirst({
+  return prisma.integration_instances.findFirst({
     where,
     include: {
-      provider: true,
+      integration_providers: true,
       credentials: {
         select: {
           id: true,
@@ -159,7 +159,7 @@ export async function enableIntegration(
   }
 ) {
   // Get provider
-  const provider = await prisma.integrationProvider.findUnique({
+  const provider = await prisma.integration_providers.findUnique({
     where: { key: data.providerKey },
   })
   
@@ -172,7 +172,7 @@ export async function enableIntegration(
   }
   
   // Check if instance already exists
-  const existing = await prisma.integrationInstance.findUnique({
+  const existing = await prisma.integration_instances.findUnique({
     where: {
       tenantId_providerId_environment: {
         tenantId,
@@ -193,7 +193,7 @@ export async function enableIntegration(
   }
   
   // Create instance
-  const instance = await prisma.integrationInstance.create({
+  const instance = await prisma.integration_instances.create({
     data: {
       tenantId,
       providerId: provider.id,
@@ -204,12 +204,12 @@ export async function enableIntegration(
       configuration: data.configuration,
     },
     include: {
-      provider: true,
+      integration_providers: true,
     },
   })
   
   // Log event
-  await prisma.integrationEventLog.create({
+  await prisma.integration_event_logs.create({
     data: {
       tenantId,
       eventType: 'INTEGRATION_ENABLED',
@@ -236,9 +236,9 @@ export async function configureCredentials(
   credentials: Record<string, string>,
   configuredBy: string
 ) {
-  const instance = await prisma.integrationInstance.findUnique({
+  const instance = await prisma.integration_instances.findUnique({
     where: { id: instanceId },
-    include: { provider: true },
+    include: { integration_providers: true },
   })
   
   if (!instance) {
@@ -280,7 +280,7 @@ export async function configureCredentials(
   }
   
   // Update instance status to ACTIVE
-  const updated = await prisma.integrationInstance.update({
+  const updated = await prisma.integration_instances.update({
     where: { id: instanceId },
     data: {
       status: IntegrationInstanceStatus.ACTIVE,
@@ -288,7 +288,7 @@ export async function configureCredentials(
       activatedBy: configuredBy,
     },
     include: {
-      provider: true,
+      integration_providers: true,
       credentials: {
         select: {
           key: true,
@@ -299,7 +299,7 @@ export async function configureCredentials(
   })
   
   // Log event
-  await prisma.integrationEventLog.create({
+  await prisma.integration_event_logs.create({
     data: {
       tenantId: instance.tenantId,
       eventType: 'CREDENTIALS_CONFIGURED',
@@ -344,7 +344,7 @@ export async function suspendInstance(
   reason: string,
   suspendedBy: string
 ) {
-  const instance = await prisma.integrationInstance.update({
+  const instance = await prisma.integration_instances.update({
     where: { id: instanceId },
     data: {
       status: IntegrationInstanceStatus.SUSPENDED,
@@ -352,11 +352,11 @@ export async function suspendInstance(
       suspendedBy,
       suspensionReason: reason,
     },
-    include: { provider: true },
+    include: { integration_providers: true },
   })
   
   // Log event
-  await prisma.integrationEventLog.create({
+  await prisma.integration_event_logs.create({
     data: {
       tenantId: instance.tenantId,
       eventType: 'INTEGRATION_SUSPENDED',
@@ -377,7 +377,7 @@ export async function reactivateInstance(
   instanceId: string,
   reactivatedBy: string
 ) {
-  const instance = await prisma.integrationInstance.update({
+  const instance = await prisma.integration_instances.update({
     where: { id: instanceId },
     data: {
       status: IntegrationInstanceStatus.ACTIVE,
@@ -385,11 +385,11 @@ export async function reactivateInstance(
       suspendedBy: null,
       suspensionReason: null,
     },
-    include: { provider: true },
+    include: { integration_providers: true },
   })
   
   // Log event
-  await prisma.integrationEventLog.create({
+  await prisma.integration_event_logs.create({
     data: {
       tenantId: instance.tenantId,
       eventType: 'INTEGRATION_REACTIVATED',
@@ -411,7 +411,7 @@ export async function revokeInstance(
   reason: string,
   revokedBy: string
 ) {
-  const instance = await prisma.integrationInstance.update({
+  const instance = await prisma.integration_instances.update({
     where: { id: instanceId },
     data: {
       status: IntegrationInstanceStatus.REVOKED,
@@ -419,7 +419,7 @@ export async function revokeInstance(
       revokedBy,
       revocationReason: reason,
     },
-    include: { provider: true },
+    include: { integration_providers: true },
   })
   
   // Delete credentials for security
@@ -428,7 +428,7 @@ export async function revokeInstance(
   })
   
   // Log event
-  await prisma.integrationEventLog.create({
+  await prisma.integration_event_logs.create({
     data: {
       tenantId: instance.tenantId,
       eventType: 'INTEGRATION_REVOKED',
@@ -450,7 +450,7 @@ export async function updateHealthStatus(
   status: 'healthy' | 'degraded' | 'unhealthy',
   error?: string
 ) {
-  return prisma.integrationInstance.update({
+  return prisma.integration_instances.update({
     where: { id: instanceId },
     data: {
       lastHealthCheck: new Date(),

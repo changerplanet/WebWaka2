@@ -1,0 +1,96 @@
+{
+  "export_id": "exp_2026010912345",
+  "entries": [
+    {
+      "id": "aud_00001",
+      "timestamp": "2026-01-09T10:30:00Z",
+      "actor_id": "usr_staff_001",
+      "actor_role": "STAFF",
+      "action": "transaction.create",
+      "resource_type": "transaction",
+      "resource_id": "txn_abc123",
+      "metadata": {
+        "amount": 15000,
+        "currency": "NGN",
+        "payment_method": "cash",
+        "items_count": 3
+      },
+      "ip_address": "[REDACTED]",
+      "session_id": "ses_xyz789"
+    },
+    {
+      "id": "aud_00002",
+      "timestamp": "2026-01-09T10:32:15Z",
+      "actor_id": "usr_staff_001",
+      "actor_role": "STAFF",
+      "action": "inventory.adjust",
+      "resource_type": "inventory_item",
+      "resource_id": "inv_def456",
+      "metadata": {
+        "adjustment_type": "sale",
+        "quantity_change": -3,
+        "previous_quantity": 50,
+        "new_quantity": 47
+      },
+      "ip_address": "[REDACTED]",
+      "session_id": "ses_xyz789"
+    },
+    {
+      "id": "aud_00003",
+      "timestamp": "2026-01-09T11:00:00Z",
+      "actor_id": "usr_manager_001",
+      "actor_role": "MANAGER",
+      "action": "transaction.void",
+      "resource_type": "transaction",
+      "resource_id": "txn_abc123",
+      "metadata": {
+        "void_reason": "Customer refund request",
+        "original_amount": 15000,
+        "refund_method": "cash",
+        "approved_by": "usr_manager_001"
+      },
+      "ip_address": "[REDACTED]",
+      "session_id": "ses_mno456"
+    },
+    {
+      "id": "aud_00004",
+      "timestamp": "2026-01-09T11:00:30Z",
+      "actor_id": "usr_manager_001",
+      "actor_role": "MANAGER",
+      "action": "inventory.adjust",
+      "resource_type": "inventory_item",
+      "resource_id": "inv_def456",
+      "metadata": {
+        "adjustment_type": "return",
+        "quantity_change": 3,
+        "previous_quantity": 47,
+        "new_quantity": 50,
+        "related_transaction": "txn_abc123"
+      },
+      "ip_address": "[REDACTED]",
+      "session_id": "ses_mno456"
+    },
+    {
+      "id": "aud_00005",
+      "timestamp": "2026-01-09T14:00:00Z",
+      "actor_id": "usr_admin_001",
+      "actor_role": "ADMIN",
+      "action": "user.login",
+      "resource_type": "session",
+      "resource_id": "ses_pqr789",
+      "metadata": {
+        "login_method": "password",
+        "mfa_used": false
+      },
+      "ip_address": "[REDACTED]",
+      "session_id": "ses_pqr789"
+    }
+  ],
+  "pagination": {
+    "total": 1247,
+    "page": 1,
+    "per_page": 5,
+    "pages": 250
+  },
+  "note": "This is a sample with 5 entries. Full export contains 1,247 entries."
+}

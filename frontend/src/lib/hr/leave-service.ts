@@ -47,7 +47,7 @@ export class LeaveService {
   static async createLeaveRequest(tenantId: string, input: CreateLeaveRequestInput) {
     // Check for duplicate offline submission
     if (input.offlineId) {
-      const existing = await prisma.hrLeaveRequest.findFirst({
+      const existing = await prisma.hr_leave_requests.findFirst({
         where: { offlineId: input.offlineId },
       })
       if (existing) return existing
@@ -70,7 +70,7 @@ export class LeaveService {
 
     // Check leave balance
     const year = startDate.getFullYear()
-    const balance = await prisma.hrLeaveBalance.findUnique({
+    const balance = await prisma.hr_leave_balances.findUnique({
       where: {
         employeeProfileId_year_leaveType: {
           employeeProfileId: input.employeeProfileId,
@@ -86,7 +86,7 @@ export class LeaveService {
     }
 
     // Get HR config for approval requirements
-    const config = await prisma.hrConfiguration.findUnique({
+    const config = await prisma.hr_configurations.findUnique({
       where: { tenantId },
     })
 
@@ -94,7 +94,7 @@ export class LeaveService {
     const initialStatus = requiresApproval ? 'PENDING' : 'APPROVED'
 
     // Create leave request
-    const leaveRequest = await prisma.hrLeaveRequest.create({
+    const leaveRequest = await prisma.hr_leave_requests.create({
       data: {
         tenantId,
         employeeProfileId: input.employeeProfileId,
@@ -117,7 +117,7 @@ export class LeaveService {
 
     // Update pending balance
     if (balance && input.leaveType !== 'UNPAID') {
-      await prisma.hrLeaveBalance.update({
+      await prisma.hr_leave_balances.update({
         where: { id: balance.id },
         data: {
           pending: { increment: totalDays },
@@ -139,7 +139,7 @@ export class LeaveService {
    * Approve leave request
    */
   static async approveLeaveRequest(tenantId: string, requestId: string, approvedBy: string) {
-    const request = await prisma.hrLeaveRequest.findFirst({
+    const request = await prisma.hr_leave_requests.findFirst({
       where: { id: requestId, tenantId },
     })
 
@@ -151,7 +151,7 @@ export class LeaveService {
       throw new Error(`Cannot approve leave request in ${request.status} status`)
     }
 
-    const updated = await prisma.hrLeaveRequest.update({
+    const updated = await prisma.hr_leave_requests.update({
       where: { id: requestId },
       data: {
         status: 'APPROVED',
@@ -178,7 +178,7 @@ export class LeaveService {
     rejectedBy: string,
     reason: string
   ) {
-    const request = await prisma.hrLeaveRequest.findFirst({
+    const request = await prisma.hr_leave_requests.findFirst({
       where: { id: requestId, tenantId },
     })
 
@@ -190,7 +190,7 @@ export class LeaveService {
       throw new Error(`Cannot reject leave request in ${request.status} status`)
     }
 
-    const updated = await prisma.hrLeaveRequest.update({
+    const updated = await prisma.hr_leave_requests.update({
       where: { id: requestId },
       data: {
         status: 'REJECTED',
@@ -203,7 +203,7 @@ export class LeaveService {
     // Restore pending balance
     if (request.leaveType !== 'UNPAID') {
       const year = request.startDate.getFullYear()
-      await prisma.hrLeaveBalance.update({
+      await prisma.hr_leave_balances.update({
         where: {
           employeeProfileId_year_leaveType: {
             employeeProfileId: request.employeeProfileId,
@@ -230,7 +230,7 @@ export class LeaveService {
     cancelledBy: string,
     reason: string
   ) {
-    const request = await prisma.hrLeaveRequest.findFirst({
+    const request = await prisma.hr_leave_requests.findFirst({
       where: { id: requestId, tenantId },
     })
 
@@ -245,7 +245,7 @@ export class LeaveService {
     const wasPending = request.status === 'PENDING'
     const wasApproved = request.status === 'APPROVED'
 
-    const updated = await prisma.hrLeaveRequest.update({
+    const updated = await prisma.hr_leave_requests.update({
       where: { id: requestId },
       data: {
         status: 'CANCELLED',
@@ -258,7 +258,7 @@ export class LeaveService {
     // Restore balance
     if (request.leaveType !== 'UNPAID') {
       const year = request.startDate.getFullYear()
-      await prisma.hrLeaveBalance.update({
+      await prisma.hr_leave_balances.update({
         where: {
           employeeProfileId_year_leaveType: {
             employeeProfileId: request.employeeProfileId,
@@ -316,7 +316,7 @@ export class LeaveService {
     tenantId: string,
     request: { id: string; startDate: Date; endDate: Date }
   ) {
-    await prisma.hrAttendanceRecord.updateMany({
+    await prisma.hr_attendance_records.updateMany({
       where: {
         tenantId,
         leaveRequestId: request.id,
@@ -337,7 +337,7 @@ export class LeaveService {
     if (request.leaveType === 'UNPAID') return
 
     const year = request.startDate.getFullYear()
-    await prisma.hrLeaveBalance.update({
+    await prisma.hr_leave_balances.update({
       where: {
         employeeProfileId_year_leaveType: {
           employeeProfileId: request.employeeProfileId,
@@ -380,13 +380,13 @@ export class LeaveService {
     }
 
     const [requests, total] = await Promise.all([
-      prisma.hrLeaveRequest.findMany({
+      prisma.hr_leave_requests.findMany({
         where,
         orderBy: { createdAt: 'desc' },
         take: options.limit || 50,
         skip: options.offset || 0,
       }),
-      prisma.hrLeaveRequest.count({ where }),
+      prisma.hr_leave_requests.count({ where }),
     ])
 
     return { requests, total }
@@ -396,7 +396,7 @@ export class LeaveService {
    * Get leave request by ID
    */
   static async getLeaveRequestById(tenantId: string, requestId: string) {
-    return prisma.hrLeaveRequest.findFirst({
+    return prisma.hr_leave_requests.findFirst({
       where: { id: requestId, tenantId },
     })
   }
@@ -407,7 +407,7 @@ export class LeaveService {
   static async getLeaveBalances(tenantId: string, employeeProfileId: string, year?: number) {
     const currentYear = year || new Date().getFullYear()
 
-    return prisma.hrLeaveBalance.findMany({
+    return prisma.hr_leave_balances.findMany({
       where: {
         tenantId,
         employeeProfileId,
@@ -420,7 +420,7 @@ export class LeaveService {
    * Adjust leave balance
    */
   static async adjustLeaveBalance(tenantId: string, input: LeaveBalanceAdjustment) {
-    return prisma.hrLeaveBalance.upsert({
+    return prisma.hr_leave_balances.upsert({
       where: {
         employeeProfileId_year_leaveType: {
           employeeProfileId: input.employeeProfileId,
@@ -449,14 +449,14 @@ export class LeaveService {
    * Carry forward leave balances to new year
    */
   static async carryForwardBalances(tenantId: string, fromYear: number, toYear: number) {
-    const config = await prisma.hrConfiguration.findUnique({
+    const config = await prisma.hr_configurations.findUnique({
       where: { tenantId },
     })
 
     const carryForwardLimit = config?.leaveCarryForwardLimit || 5
 
     // Get all annual leave balances from previous year
-    const balances = await prisma.hrLeaveBalance.findMany({
+    const balances = await prisma.hr_leave_balances.findMany({
       where: {
         tenantId,
         year: fromYear,
@@ -470,11 +470,11 @@ export class LeaveService {
       
       if (carryForward > 0) {
         // Get employee profile for default entitlement
-        const profile = await prisma.hrEmployeeProfile.findUnique({
+        const profile = await prisma.hr_employee_profiles.findUnique({
           where: { id: balance.employeeProfileId },
         })
 
-        const newBalance = await prisma.hrLeaveBalance.upsert({
+        const newBalance = await prisma.hr_leave_balances.upsert({
           where: {
             employeeProfileId_year_leaveType: {
               employeeProfileId: balance.employeeProfileId,
@@ -512,7 +512,7 @@ export class LeaveService {
    * Get leave calendar for a period
    */
   static async getLeaveCalendar(tenantId: string, startDate: Date, endDate: Date) {
-    const requests = await prisma.hrLeaveRequest.findMany({
+    const requests = await prisma.hr_leave_requests.findMany({
       where: {
         tenantId,
         status: 'APPROVED',
@@ -523,7 +523,7 @@ export class LeaveService {
         ],
       },
       include: {
-        employeeProfile: {
+        hr_employee_profiles: {
           select: { id: true, staffId: true, jobTitle: true, department: true },
         },
       },

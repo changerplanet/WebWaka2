@@ -71,7 +71,7 @@ export class PayrollService {
    */
   static async createPayrollPeriod(tenantId: string, input: CreatePayrollPeriodInput) {
     // Check for overlapping period
-    const existing = await prisma.hrPayrollPeriod.findFirst({
+    const existing = await prisma.hr_payroll_periods.findFirst({
       where: {
         tenantId,
         payFrequency: input.payFrequency,
@@ -88,7 +88,7 @@ export class PayrollService {
       throw new Error('A payroll period already exists for this date range')
     }
 
-    return prisma.hrPayrollPeriod.create({
+    return prisma.hr_payroll_periods.create({
       data: {
         tenantId,
         name: input.name,
@@ -127,16 +127,16 @@ export class PayrollService {
     }
 
     const [periods, total] = await Promise.all([
-      prisma.hrPayrollPeriod.findMany({
+      prisma.hr_payroll_periods.findMany({
         where,
         include: {
-          _count: { select: { calculations: true, payslips: true } },
+          _count: { select: { hr_payroll_calculations: true, hr_payslips: true } },
         },
         orderBy: { periodStart: 'desc' },
         take: options.limit || 50,
         skip: options.offset || 0,
       }),
-      prisma.hrPayrollPeriod.count({ where }),
+      prisma.hr_payroll_periods.count({ where }),
     ])
 
     return { periods, total }
@@ -146,13 +146,13 @@ export class PayrollService {
    * Get payroll period by ID
    */
   static async getPayrollPeriodById(tenantId: string, periodId: string) {
-    return prisma.hrPayrollPeriod.findFirst({
+    return prisma.hr_payroll_periods.findFirst({
       where: { id: periodId, tenantId },
       include: {
-        calculations: {
+        hr_payroll_calculations: {
           orderBy: { createdAt: 'desc' },
         },
-        _count: { select: { payslips: true } },
+        _count: { select: { hr_payslips: true } },
       },
     })
   }
@@ -161,7 +161,7 @@ export class PayrollService {
    * Open payroll period for processing
    */
   static async openPayrollPeriod(tenantId: string, periodId: string) {
-    const period = await prisma.hrPayrollPeriod.findFirst({
+    const period = await prisma.hr_payroll_periods.findFirst({
       where: { id: periodId, tenantId },
     })
 
@@ -170,7 +170,7 @@ export class PayrollService {
       throw new Error('Only DRAFT periods can be opened')
     }
 
-    return prisma.hrPayrollPeriod.update({
+    return prisma.hr_payroll_periods.update({
       where: { id: periodId },
       data: { status: 'OPEN' },
     })
@@ -180,7 +180,7 @@ export class PayrollService {
    * Calculate payroll for all employees in a period
    */
   static async calculatePayroll(tenantId: string, periodId: string, calculatedBy: string) {
-    const period = await prisma.hrPayrollPeriod.findFirst({
+    const period = await prisma.hr_payroll_periods.findFirst({
       where: { id: periodId, tenantId },
     })
 
@@ -190,14 +190,14 @@ export class PayrollService {
     }
 
     // Update status to processing
-    await prisma.hrPayrollPeriod.update({
+    await prisma.hr_payroll_periods.update({
       where: { id: periodId },
       data: { status: 'PROCESSING' },
     })
 
     try {
       // Get all active employees with matching pay frequency
-      const employees = await prisma.hrEmployeeProfile.findMany({
+      const employees = await prisma.hr_employee_profiles.findMany({
         where: {
           tenantId,
           terminationDate: null,
@@ -206,7 +206,7 @@ export class PayrollService {
       })
 
       // Get HR config for calculations
-      const config = await prisma.hrConfiguration.findUnique({
+      const config = await prisma.hr_configurations.findUnique({
         where: { tenantId },
       })
 
@@ -231,7 +231,7 @@ export class PayrollService {
       }
 
       // Update period summary
-      await prisma.hrPayrollPeriod.update({
+      await prisma.hr_payroll_periods.update({
         where: { id: periodId },
         data: {
           status: 'FINALIZED',
@@ -254,7 +254,7 @@ export class PayrollService {
       }
     } catch (error) {
       // Revert to OPEN on error
-      await prisma.hrPayrollPeriod.update({
+      await prisma.hr_payroll_periods.update({
         where: { id: periodId },
         data: { status: 'OPEN' },
       })
@@ -368,7 +368,7 @@ export class PayrollService {
     const netPay = grossPay - totalDeductions
 
     // Create or update calculation record
-    await prisma.hrPayrollCalculation.upsert({
+    await prisma.hr_payroll_calculations.upsert({
       where: {
         payrollPeriodId_employeeProfileId: {
           payrollPeriodId: periodId,
@@ -481,7 +481,7 @@ export class PayrollService {
    * Approve a payroll calculation
    */
   static async approveCalculation(tenantId: string, calculationId: string, approvedBy: string) {
-    return prisma.hrPayrollCalculation.update({
+    return prisma.hr_payroll_calculations.update({
       where: { id: calculationId },
       data: {
         status: 'APPROVED',
@@ -495,7 +495,7 @@ export class PayrollService {
    * Finalize payroll period (locks calculations)
    */
   static async finalizePayrollPeriod(tenantId: string, periodId: string, finalizedBy: string) {
-    const period = await prisma.hrPayrollPeriod.findFirst({
+    const period = await prisma.hr_payroll_periods.findFirst({
       where: { id: periodId, tenantId },
     })
 
@@ -505,12 +505,12 @@ export class PayrollService {
     }
 
     // Update all calculations to FINALIZED
-    await prisma.hrPayrollCalculation.updateMany({
+    await prisma.hr_payroll_calculations.updateMany({
       where: { payrollPeriodId: periodId },
       data: { status: 'FINALIZED' },
     })
 
-    return prisma.hrPayrollPeriod.update({
+    return prisma.hr_payroll_periods.update({
       where: { id: periodId },
       data: {
         finalizedAt: new Date(),
@@ -523,7 +523,7 @@ export class PayrollService {
    * Mark payroll period as paid (external payment tracking)
    */
   static async markPeriodAsPaid(tenantId: string, periodId: string, paidBy: string) {
-    const period = await prisma.hrPayrollPeriod.findFirst({
+    const period = await prisma.hr_payroll_periods.findFirst({
       where: { id: periodId, tenantId },
     })
 
@@ -532,7 +532,7 @@ export class PayrollService {
       throw new Error('Payroll must be finalized before marking as paid')
     }
 
-    return prisma.hrPayrollPeriod.update({
+    return prisma.hr_payroll_periods.update({
       where: { id: periodId },
       data: {
         status: 'PAID',
@@ -546,7 +546,7 @@ export class PayrollService {
    * Close payroll period (archive)
    */
   static async closePayrollPeriod(tenantId: string, periodId: string) {
-    return prisma.hrPayrollPeriod.update({
+    return prisma.hr_payroll_periods.update({
       where: { id: periodId },
       data: { status: 'CLOSED' },
     })
@@ -556,14 +556,14 @@ export class PayrollService {
    * Get payroll calculations for a period
    */
   static async getPayrollCalculations(tenantId: string, periodId: string) {
-    const calculations = await prisma.hrPayrollCalculation.findMany({
+    const calculations = await prisma.hr_payroll_calculations.findMany({
       where: { tenantId, payrollPeriodId: periodId },
       orderBy: { createdAt: 'desc' },
     })
 
     // Get employee info
     const profileIds = calculations.map(c => c.employeeProfileId)
-    const profiles = await prisma.hrEmployeeProfile.findMany({
+    const profiles = await prisma.hr_employee_profiles.findMany({
       where: { id: { in: profileIds } },
       select: { id: true, staffId: true, department: true, jobTitle: true },
     })

@@ -87,7 +87,7 @@ export class CampaignService {
   static async create(tenantId: string, input: CampaignInput, createdBy?: string) {
     const slug = input.slug || this.generateSlug(input.name);
 
-    return prisma.crmCampaign.create({
+    return prisma.crm_campaigns.create({
       data: {
         tenantId,
         name: input.name,
@@ -117,7 +117,7 @@ export class CampaignService {
    * Update campaign
    */
   static async update(tenantId: string, campaignId: string, input: Partial<CampaignInput>) {
-    const campaign = await prisma.crmCampaign.findFirst({
+    const campaign = await prisma.crm_campaigns.findFirst({
       where: { id: campaignId, tenantId },
     });
 
@@ -129,7 +129,7 @@ export class CampaignService {
       throw new Error(`Cannot update ${campaign.status} campaign`);
     }
 
-    return prisma.crmCampaign.update({
+    return prisma.crm_campaigns.update({
       where: { id: campaignId },
       data: {
         name: input.name,
@@ -156,7 +156,7 @@ export class CampaignService {
    * Delete campaign (DRAFT only)
    */
   static async delete(tenantId: string, campaignId: string) {
-    const campaign = await prisma.crmCampaign.findFirst({
+    const campaign = await prisma.crm_campaigns.findFirst({
       where: { id: campaignId, tenantId },
     });
 
@@ -168,7 +168,7 @@ export class CampaignService {
       throw new Error('Can only delete DRAFT campaigns');
     }
 
-    await prisma.crmCampaign.delete({
+    await prisma.crm_campaigns.delete({
       where: { id: campaignId },
     });
 
@@ -197,7 +197,7 @@ export class CampaignService {
     }
 
     const [campaigns, total] = await Promise.all([
-      prisma.crmCampaign.findMany({
+      prisma.crm_campaigns.findMany({
         where,
         orderBy: [{ updatedAt: 'desc' }],
         take: options?.limit || 50,
@@ -210,7 +210,7 @@ export class CampaignService {
           },
         },
       }),
-      prisma.crmCampaign.count({ where }),
+      prisma.crm_campaigns.count({ where }),
     ]);
 
     return { campaigns, total };
@@ -220,7 +220,7 @@ export class CampaignService {
    * Get campaign by ID
    */
   static async getById(tenantId: string, campaignId: string) {
-    return prisma.crmCampaign.findFirst({
+    return prisma.crm_campaigns.findFirst({
       where: { id: campaignId, tenantId },
       include: {
         audiences: {
@@ -236,7 +236,7 @@ export class CampaignService {
    * Set campaign audience
    */
   static async setAudience(tenantId: string, campaignId: string, audience: AudienceInput) {
-    const campaign = await prisma.crmCampaign.findFirst({
+    const campaign = await prisma.crm_campaigns.findFirst({
       where: { id: campaignId, tenantId },
     });
 
@@ -245,12 +245,12 @@ export class CampaignService {
     }
 
     // Delete existing audiences
-    await prisma.crmCampaignAudience.deleteMany({
+    await prisma.crm_campaign_audiences.deleteMany({
       where: { campaignId },
     });
 
     // Create new audience
-    const created = await prisma.crmCampaignAudience.create({
+    const created = await prisma.crm_campaign_audiences.create({
       data: {
         tenantId,
         campaignId,
@@ -264,7 +264,7 @@ export class CampaignService {
 
     // Calculate estimated reach
     const reach = await this.calculateReach(tenantId, created);
-    await prisma.crmCampaignAudience.update({
+    await prisma.crm_campaign_audiences.update({
       where: { id: created.id },
       data: { estimatedReach: reach },
     });
@@ -276,7 +276,7 @@ export class CampaignService {
    * Publish campaign (DRAFT → SCHEDULED/ACTIVE)
    */
   static async publish(tenantId: string, campaignId: string, publishedBy: string) {
-    const campaign = await prisma.crmCampaign.findFirst({
+    const campaign = await prisma.crm_campaigns.findFirst({
       where: { id: campaignId, tenantId },
       include: { audiences: true },
     });
@@ -301,7 +301,7 @@ export class CampaignService {
       newStatus = 'SCHEDULED';
     }
 
-    return prisma.crmCampaign.update({
+    return prisma.crm_campaigns.update({
       where: { id: campaignId },
       data: {
         status: newStatus,
@@ -315,7 +315,7 @@ export class CampaignService {
    * Pause campaign
    */
   static async pause(tenantId: string, campaignId: string) {
-    const campaign = await prisma.crmCampaign.findFirst({
+    const campaign = await prisma.crm_campaigns.findFirst({
       where: { id: campaignId, tenantId },
     });
 
@@ -327,7 +327,7 @@ export class CampaignService {
       throw new Error('Can only pause ACTIVE or SCHEDULED campaigns');
     }
 
-    return prisma.crmCampaign.update({
+    return prisma.crm_campaigns.update({
       where: { id: campaignId },
       data: { status: 'PAUSED' },
     });
@@ -337,7 +337,7 @@ export class CampaignService {
    * Resume campaign
    */
   static async resume(tenantId: string, campaignId: string) {
-    const campaign = await prisma.crmCampaign.findFirst({
+    const campaign = await prisma.crm_campaigns.findFirst({
       where: { id: campaignId, tenantId },
     });
 
@@ -356,7 +356,7 @@ export class CampaignService {
       newStatus = 'SCHEDULED';
     }
 
-    return prisma.crmCampaign.update({
+    return prisma.crm_campaigns.update({
       where: { id: campaignId },
       data: { status: newStatus },
     });
@@ -366,7 +366,7 @@ export class CampaignService {
    * Cancel campaign
    */
   static async cancel(tenantId: string, campaignId: string) {
-    const campaign = await prisma.crmCampaign.findFirst({
+    const campaign = await prisma.crm_campaigns.findFirst({
       where: { id: campaignId, tenantId },
     });
 
@@ -378,7 +378,7 @@ export class CampaignService {
       throw new Error(`Campaign is already ${campaign.status}`);
     }
 
-    return prisma.crmCampaign.update({
+    return prisma.crm_campaigns.update({
       where: { id: campaignId },
       data: { status: 'CANCELLED' },
     });
@@ -388,7 +388,7 @@ export class CampaignService {
    * Complete campaign (mark as finished)
    */
   static async complete(tenantId: string, campaignId: string) {
-    const campaign = await prisma.crmCampaign.findFirst({
+    const campaign = await prisma.crm_campaigns.findFirst({
       where: { id: campaignId, tenantId },
     });
 
@@ -396,7 +396,7 @@ export class CampaignService {
       throw new Error('Campaign not found');
     }
 
-    return prisma.crmCampaign.update({
+    return prisma.crm_campaigns.update({
       where: { id: campaignId },
       data: { status: 'COMPLETED' },
     });
@@ -415,7 +415,7 @@ export class CampaignService {
       converted?: number;
     }
   ) {
-    return prisma.crmCampaign.update({
+    return prisma.crm_campaigns.update({
       where: { id: campaignId },
       data: {
         sentCount: metrics.sent ? { increment: metrics.sent } : undefined,
@@ -432,7 +432,7 @@ export class CampaignService {
    * Get campaign performance
    */
   static async getPerformance(tenantId: string, campaignId: string) {
-    const campaign = await prisma.crmCampaign.findFirst({
+    const campaign = await prisma.crm_campaigns.findFirst({
       where: { id: campaignId, tenantId },
     });
 
@@ -478,7 +478,7 @@ export class CampaignService {
    * This returns customerIds to send to, NOT the actual sending
    */
   static async getRecipients(tenantId: string, campaignId: string) {
-    const campaign = await prisma.crmCampaign.findFirst({
+    const campaign = await prisma.crm_campaigns.findFirst({
       where: { id: campaignId, tenantId },
       include: { audiences: true },
     });
@@ -498,7 +498,7 @@ export class CampaignService {
 
       // Get excluded segment members
       for (const segId of audience.excludeSegmentIds) {
-        const members = await prisma.crmSegmentMembership.findMany({
+        const members = await prisma.crm_segment_memberships.findMany({
           where: { segmentId: segId },
           select: { customerId: true },
         });
@@ -521,7 +521,7 @@ export class CampaignService {
 
         case 'SEGMENT':
           if (audience.segmentId) {
-            const members = await prisma.crmSegmentMembership.findMany({
+            const members = await prisma.crm_segment_memberships.findMany({
               where: { segmentId: audience.segmentId },
               select: { customerId: true },
             });
@@ -576,7 +576,7 @@ export class CampaignService {
       
       case 'SEGMENT':
         if (audience.segmentId) {
-          return prisma.crmSegmentMembership.count({ where: { segmentId: audience.segmentId } });
+          return prisma.crm_segment_memberships.count({ where: { segmentId: audience.segmentId } });
         }
         return 0;
       

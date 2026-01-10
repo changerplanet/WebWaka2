@@ -1,0 +1,46 @@
+{
+  "platform": {
+    "name": "WebWaka",
+    "version": "2.0.0",
+    "environment": "production"
+  },
+  "governance_model": {
+    "name": "v2-FROZEN",
+    "description": "Version 2, behavior locked. Business logic is immutable.",
+    "effective_date": "2026-01-01T00:00:00Z"
+  },
+  "assertions": {
+    "business_logic_immutable": {
+      "status": true,
+      "description": "Business logic cannot be modified at runtime or by configuration"
+    },
+    "commerce_boundary_enforced": {
+      "status": true,
+      "description": "Verticals record facts; Commerce module handles execution"
+    },
+    "append_only_discipline": {
+      "status": true,
+      "description": "Financial facts and audit logs cannot be modified or deleted"
+    },
+    "tenant_isolation_active": {
+      "status": true,
+      "description": "Cross-tenant data access is architecturally prevented"
+    },
+    "audit_logging_enabled": {
+      "status": true,
+      "description": "All data mutations are logged with actor, action, and timestamp"
+    }
+  },
+  "vertical": {
+    "name": "Commerce",
+    "key": "commerce",
+    "status": "v2-FROZEN",
+    "freeze_date": "2026-01-01T00:00:00Z",
+    "classification": "Standard"
+  },
+  "compliance_posture": {
+    "ndpr_aligned": true,
+    "vat_compliant": true,
+    "audit_ready": true
+  }
+}

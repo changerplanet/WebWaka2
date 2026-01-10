@@ -86,7 +86,7 @@ export class PurchaseOrderService {
   static async createPurchaseOrder(tenantId: string, input: PurchaseOrderInput) {
     // Check for duplicate offline ID
     if (input.offlineId) {
-      const existing = await prisma.procPurchaseOrder.findUnique({
+      const existing = await prisma.proc_purchase_orders.findUnique({
         where: { tenantId_offlineId: { tenantId, offlineId: input.offlineId } },
       })
       if (existing) {
@@ -121,7 +121,7 @@ export class PurchaseOrderService {
     const totalAmount = subtotal + taxAmount + (0) // No shipping by default
 
     // Create PO with items
-    const po = await prisma.procPurchaseOrder.create({
+    const po = await prisma.proc_purchase_orders.create({
       data: {
         tenantId,
         poNumber,
@@ -171,7 +171,7 @@ export class PurchaseOrderService {
 
     // If created from PR, update PR status
     if (input.purchaseRequestId) {
-      await prisma.procPurchaseRequest.update({
+      await prisma.proc_purchase_requests.update({
         where: { id: input.purchaseRequestId },
         data: {
           status: 'CONVERTED',
@@ -217,7 +217,7 @@ export class PurchaseOrderService {
     }
 
     const [orders, total] = await Promise.all([
-      prisma.procPurchaseOrder.findMany({
+      prisma.proc_purchase_orders.findMany({
         where,
         include: { 
           items: { orderBy: { lineNumber: 'asc' } },
@@ -227,7 +227,7 @@ export class PurchaseOrderService {
         skip: (page - 1) * limit,
         take: limit,
       }),
-      prisma.procPurchaseOrder.count({ where }),
+      prisma.proc_purchase_orders.count({ where }),
     ])
 
     return {
@@ -245,7 +245,7 @@ export class PurchaseOrderService {
    * Get purchase order by ID
    */
   static async getPurchaseOrderById(tenantId: string, id: string) {
-    const po = await prisma.procPurchaseOrder.findFirst({
+    const po = await prisma.proc_purchase_orders.findFirst({
       where: { id, tenantId },
       include: {
         items: { orderBy: { lineNumber: 'asc' } },
@@ -263,14 +263,14 @@ export class PurchaseOrderService {
    * Send PO to supplier (change status to PENDING)
    */
   static async sendToSupplier(tenantId: string, id: string, sentBy: string) {
-    const po = await prisma.procPurchaseOrder.findFirst({
+    const po = await prisma.proc_purchase_orders.findFirst({
       where: { id, tenantId },
     })
 
     if (!po) throw new Error('Purchase order not found')
     if (po.status !== 'DRAFT') throw new Error('Only draft orders can be sent')
 
-    const updated = await prisma.procPurchaseOrder.update({
+    const updated = await prisma.proc_purchase_orders.update({
       where: { id },
       data: { status: 'PENDING' },
       include: { items: true },
@@ -297,7 +297,7 @@ export class PurchaseOrderService {
     confirmedBy: string,
     confirmedDeliveryDate?: Date
   ) {
-    const po = await prisma.procPurchaseOrder.findFirst({
+    const po = await prisma.proc_purchase_orders.findFirst({
       where: { id, tenantId },
     })
 
@@ -306,7 +306,7 @@ export class PurchaseOrderService {
       throw new Error('Only draft or pending orders can be confirmed')
     }
 
-    const updated = await prisma.procPurchaseOrder.update({
+    const updated = await prisma.proc_purchase_orders.update({
       where: { id },
       data: {
         status: 'CONFIRMED',
@@ -338,7 +338,7 @@ export class PurchaseOrderService {
     cancelledBy: string,
     reason: string
   ) {
-    const po = await prisma.procPurchaseOrder.findFirst({
+    const po = await prisma.proc_purchase_orders.findFirst({
       where: { id, tenantId },
     })
 
@@ -347,7 +347,7 @@ export class PurchaseOrderService {
       throw new Error('Cannot cancel order in current status')
     }
 
-    const updated = await prisma.procPurchaseOrder.update({
+    const updated = await prisma.proc_purchase_orders.update({
       where: { id },
       data: {
         status: 'CANCELLED',
@@ -374,7 +374,7 @@ export class PurchaseOrderService {
    * Close PO
    */
   static async closePurchaseOrder(tenantId: string, id: string, closedBy: string) {
-    const po = await prisma.procPurchaseOrder.findFirst({
+    const po = await prisma.proc_purchase_orders.findFirst({
       where: { id, tenantId },
     })
 
@@ -383,7 +383,7 @@ export class PurchaseOrderService {
       throw new Error('Only received orders can be closed')
     }
 
-    const updated = await prisma.procPurchaseOrder.update({
+    const updated = await prisma.proc_purchase_orders.update({
       where: { id },
       data: {
         status: 'CLOSED',
@@ -408,9 +408,9 @@ export class PurchaseOrderService {
    * Update PO item received quantity (called by goods receipt)
    */
   static async updateItemReceivedQuantity(itemId: string, receivedQuantity: number) {
-    const item = await prisma.procPurchaseOrderItem.findUnique({
+    const item = await prisma.proc_purchase_order_items.findUnique({
       where: { id: itemId },
-      include: { purchaseOrder: true },
+      include: { proc_purchase_orders: true },
     })
 
     if (!item) throw new Error('PO item not found')
@@ -418,7 +418,7 @@ export class PurchaseOrderService {
     const newReceivedQty = Number(item.receivedQuantity) + receivedQuantity
     const newPendingQty = Number(item.orderedQuantity) - newReceivedQty
 
-    await prisma.procPurchaseOrderItem.update({
+    await prisma.proc_purchase_order_items.update({
       where: { id: itemId },
       data: {
         receivedQuantity: newReceivedQty,
@@ -435,7 +435,7 @@ export class PurchaseOrderService {
    * Update PO status based on item fulfillment
    */
   private static async updatePOStatus(poId: string) {
-    const po = await prisma.procPurchaseOrder.findUnique({
+    const po = await prisma.proc_purchase_orders.findUnique({
       where: { id: poId },
       include: { items: true },
     })
@@ -453,7 +453,7 @@ export class PurchaseOrderService {
     }
 
     if (newStatus !== po.status) {
-      await prisma.procPurchaseOrder.update({
+      await prisma.proc_purchase_orders.update({
         where: { id: poId },
         data: { status: newStatus },
       })
@@ -465,17 +465,17 @@ export class PurchaseOrderService {
    */
   static async getStatistics(tenantId: string) {
     const [statusCounts, totalValue, supplierCounts] = await Promise.all([
-      prisma.procPurchaseOrder.groupBy({
+      prisma.proc_purchase_orders.groupBy({
         by: ['status'],
         where: { tenantId },
         _count: true,
         _sum: { totalAmount: true },
       }),
-      prisma.procPurchaseOrder.aggregate({
+      prisma.proc_purchase_orders.aggregate({
         where: { tenantId, status: { in: ['PENDING', 'CONFIRMED', 'PARTIALLY_RECEIVED'] } },
         _sum: { totalAmount: true },
       }),
-      prisma.procPurchaseOrder.groupBy({
+      prisma.proc_purchase_orders.groupBy({
         by: ['supplierId'],
         where: { tenantId, createdAt: { gte: new Date(Date.now() - 90 * 24 * 60 * 60 * 1000) } },
         _count: true,

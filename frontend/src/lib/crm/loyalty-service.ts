@@ -97,7 +97,7 @@ export class LoyaltyService {
    */
   static async initialize(tenantId: string, input: LoyaltyProgramInput, createdBy?: string) {
     // Check if already exists
-    const existing = await prisma.crmLoyaltyProgram.findUnique({
+    const existing = await prisma.crm_loyalty_programs.findUnique({
       where: { tenantId },
     });
 
@@ -105,7 +105,7 @@ export class LoyaltyService {
       return { action: 'exists', program: existing };
     }
 
-    const program = await prisma.crmLoyaltyProgram.create({
+    const program = await prisma.crm_loyalty_programs.create({
       data: {
         tenantId,
         name: input.name,
@@ -121,7 +121,7 @@ export class LoyaltyService {
     });
 
     // Update CRM config
-    await prisma.crmConfiguration.upsert({
+    await prisma.crm_configurations.upsert({
       where: { tenantId },
       create: {
         tenantId,
@@ -141,7 +141,7 @@ export class LoyaltyService {
    * Get loyalty program
    */
   static async getProgram(tenantId: string) {
-    return prisma.crmLoyaltyProgram.findUnique({
+    return prisma.crm_loyalty_programs.findUnique({
       where: { tenantId },
       include: {
         rules: { where: { isActive: true }, orderBy: { priority: 'desc' } },
@@ -154,7 +154,7 @@ export class LoyaltyService {
    * Update loyalty program
    */
   static async updateProgram(tenantId: string, input: Partial<LoyaltyProgramInput>) {
-    const program = await prisma.crmLoyaltyProgram.findUnique({
+    const program = await prisma.crm_loyalty_programs.findUnique({
       where: { tenantId },
     });
 
@@ -162,7 +162,7 @@ export class LoyaltyService {
       throw new Error('Loyalty program not found. Initialize it first.');
     }
 
-    return prisma.crmLoyaltyProgram.update({
+    return prisma.crm_loyalty_programs.update({
       where: { tenantId },
       data: {
         name: input.name,
@@ -181,7 +181,7 @@ export class LoyaltyService {
    * Create loyalty rule
    */
   static async createRule(tenantId: string, input: LoyaltyRuleInput) {
-    const program = await prisma.crmLoyaltyProgram.findUnique({
+    const program = await prisma.crm_loyalty_programs.findUnique({
       where: { tenantId },
     });
 
@@ -214,7 +214,7 @@ export class LoyaltyService {
    * Get loyalty rules
    */
   static async getRules(tenantId: string, options?: { ruleType?: string; isActive?: boolean }) {
-    const program = await prisma.crmLoyaltyProgram.findUnique({
+    const program = await prisma.crm_loyalty_programs.findUnique({
       where: { tenantId },
     });
 
@@ -240,7 +240,7 @@ export class LoyaltyService {
    * Earn points for customer
    */
   static async earnPoints(tenantId: string, input: EarnInput, createdBy?: string) {
-    const program = await prisma.crmLoyaltyProgram.findUnique({
+    const program = await prisma.crm_loyalty_programs.findUnique({
       where: { tenantId },
     });
 
@@ -259,7 +259,7 @@ export class LoyaltyService {
     }
 
     // Create transaction
-    const transaction = await prisma.crmLoyaltyTransaction.create({
+    const transaction = await prisma.crm_loyalty_transactions.create({
       data: {
         tenantId,
         programId: program.id,
@@ -292,7 +292,7 @@ export class LoyaltyService {
    * Redeem points for customer
    */
   static async redeemPoints(tenantId: string, input: RedeemInput, createdBy?: string) {
-    const program = await prisma.crmLoyaltyProgram.findUnique({
+    const program = await prisma.crm_loyalty_programs.findUnique({
       where: { tenantId },
     });
 
@@ -308,7 +308,7 @@ export class LoyaltyService {
     }
 
     // Create transaction
-    const transaction = await prisma.crmLoyaltyTransaction.create({
+    const transaction = await prisma.crm_loyalty_transactions.create({
       data: {
         tenantId,
         programId: program.id,
@@ -345,7 +345,7 @@ export class LoyaltyService {
     reason: string,
     createdBy?: string
   ) {
-    const program = await prisma.crmLoyaltyProgram.findUnique({
+    const program = await prisma.crm_loyalty_programs.findUnique({
       where: { tenantId },
     });
 
@@ -355,7 +355,7 @@ export class LoyaltyService {
 
     const currentBalance = await this.getCustomerBalance(tenantId, customerId);
 
-    const transaction = await prisma.crmLoyaltyTransaction.create({
+    const transaction = await prisma.crm_loyalty_transactions.create({
       data: {
         tenantId,
         programId: program.id,
@@ -390,7 +390,7 @@ export class LoyaltyService {
     reason: string,
     createdBy: string
   ) {
-    const program = await prisma.crmLoyaltyProgram.findUnique({
+    const program = await prisma.crm_loyalty_programs.findUnique({
       where: { tenantId },
     });
 
@@ -405,7 +405,7 @@ export class LoyaltyService {
       throw new Error('Adjustment would result in negative balance');
     }
 
-    const transaction = await prisma.crmLoyaltyTransaction.create({
+    const transaction = await prisma.crm_loyalty_transactions.create({
       data: {
         tenantId,
         programId: program.id,
@@ -455,7 +455,7 @@ export class LoyaltyService {
       where.transactionType = options.transactionType;
     }
 
-    return prisma.crmLoyaltyTransaction.findMany({
+    return prisma.crm_loyalty_transactions.findMany({
       where,
       orderBy: { createdAt: 'desc' },
       take: options?.limit || 50,
@@ -467,7 +467,7 @@ export class LoyaltyService {
    * Get customer loyalty summary
    */
   static async getCustomerSummary(tenantId: string, customerId: string) {
-    const program = await prisma.crmLoyaltyProgram.findUnique({
+    const program = await prisma.crm_loyalty_programs.findUnique({
       where: { tenantId },
     });
 
@@ -493,15 +493,15 @@ export class LoyaltyService {
 
     // Get transaction stats
     const [totalEarned, totalRedeemed, transactionCount] = await Promise.all([
-      prisma.crmLoyaltyTransaction.aggregate({
+      prisma.crm_loyalty_transactions.aggregate({
         where: { tenantId, customerId, transactionType: 'EARN' },
         _sum: { points: true },
       }),
-      prisma.crmLoyaltyTransaction.aggregate({
+      prisma.crm_loyalty_transactions.aggregate({
         where: { tenantId, customerId, transactionType: 'REDEEM' },
         _sum: { points: true },
       }),
-      prisma.crmLoyaltyTransaction.count({
+      prisma.crm_loyalty_transactions.count({
         where: { tenantId, customerId },
       }),
     ]);
@@ -547,7 +547,7 @@ export class LoyaltyService {
     purchaseAmount: number,
     channel: string
   ): Promise<{ points: number; ruleId?: string; breakdown: string }> {
-    const program = await prisma.crmLoyaltyProgram.findUnique({
+    const program = await prisma.crm_loyalty_programs.findUnique({
       where: { tenantId },
       include: {
         rules: {

@@ -11,7 +11,7 @@ import requests
 import os
 import time
 
-BASE_URL = os.environ.get('NEXT_PUBLIC_APP_URL', 'https://site-funnels.preview.emergentagent.com')
+BASE_URL = os.environ.get('NEXT_PUBLIC_APP_URL', 'https://nextbuild-repair.preview.emergentagent.com')
 
 # Test tenant ID from previous iterations
 TEST_TENANT_ID = "67846c4f-9b38-47c7-86d9-fff55aa4afda"

@@ -65,7 +65,7 @@ export async function GET(
       )
     }
 
-    const order = await prisma.svmOrder.findUnique({
+    const order = await prisma.svm_orders.findUnique({
       where: { id: orderId },
       include: { items: true }
     })
@@ -191,7 +191,7 @@ export async function PUT(
       )
     }
 
-    const order = await prisma.svmOrder.findUnique({
+    const order = await prisma.svm_orders.findUnique({
       where: { id: orderId }
     })
 
@@ -302,7 +302,7 @@ export async function PUT(
       )
     }
 
-    const updatedOrder = await prisma.svmOrder.update({
+    const updatedOrder = await prisma.svm_orders.update({
       where: { id: orderId },
       data: updateData,
       include: { items: true }
@@ -423,7 +423,7 @@ export async function DELETE(
       )
     }
 
-    const order = await prisma.svmOrder.findUnique({
+    const order = await prisma.svm_orders.findUnique({
       where: { id: orderId }
     })
 
@@ -453,7 +453,7 @@ export async function DELETE(
       )
     }
 
-    const updatedOrder = await prisma.svmOrder.update({
+    const updatedOrder = await prisma.svm_orders.update({
       where: { id: orderId },
       data: {
         status: 'CANCELLED',

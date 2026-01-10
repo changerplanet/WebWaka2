@@ -138,7 +138,7 @@ export class EventService {
    */
   private static async handleOrderReady(event: OrderReadyEvent) {
     // Check if assignment already exists
-    const existing = await prisma.logisticsDeliveryAssignment.findUnique({
+    const existing = await prisma.logistics_delivery_assignments.findUnique({
       where: {
         orderId_orderType: { orderId: event.orderId, orderType: event.orderType },
       },
@@ -150,7 +150,7 @@ export class EventService {
     }
 
     // Get logistics config
-    const config = await prisma.logisticsConfiguration.findUnique({
+    const config = await prisma.logistics_configurations.findUnique({
       where: { tenantId: event.tenantId },
     })
 
@@ -208,7 +208,7 @@ export class EventService {
    * Handle ORDER_CANCELLED event
    */
   private static async handleOrderCancelled(event: OrderCancelledEvent) {
-    const assignment = await prisma.logisticsDeliveryAssignment.findUnique({
+    const assignment = await prisma.logistics_delivery_assignments.findUnique({
       where: {
         orderId_orderType: { orderId: event.orderId, orderType: event.orderType },
       },
@@ -259,7 +259,7 @@ export class EventService {
    */
   private static async triggerNotifications(tenantId: string, event: LogisticsEvent) {
     // Get config for notification preferences
-    const config = await prisma.logisticsConfiguration.findUnique({
+    const config = await prisma.logistics_configurations.findUnique({
       where: { tenantId },
     })
 

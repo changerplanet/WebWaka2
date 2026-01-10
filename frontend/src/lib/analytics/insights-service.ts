@@ -119,7 +119,7 @@ export class InsightsService {
       ],
     }
 
-    const insights = await prisma.analyticsInsight.findMany({
+    const insights = await prisma.analytics_insights.findMany({
       where,
       orderBy: [
         { severity: 'desc' },
@@ -279,7 +279,7 @@ export class InsightsService {
    * Acknowledge insight
    */
   static async acknowledgeInsight(tenantId: string, insightId: string, userId: string): Promise<InsightOutput> {
-    const insight = await prisma.analyticsInsight.update({
+    const insight = await prisma.analytics_insights.update({
       where: { id: insightId },
       data: {
         status: 'ACKNOWLEDGED',
@@ -295,7 +295,7 @@ export class InsightsService {
    * Dismiss insight
    */
   static async dismissInsight(tenantId: string, insightId: string): Promise<void> {
-    await prisma.analyticsInsight.update({
+    await prisma.analytics_insights.update({
       where: { id: insightId },
       data: { status: 'DISMISSED' },
     })
@@ -305,7 +305,7 @@ export class InsightsService {
    * Resolve insight
    */
   static async resolveInsight(tenantId: string, insightId: string): Promise<InsightOutput> {
-    const insight = await prisma.analyticsInsight.update({
+    const insight = await prisma.analytics_insights.update({
       where: { id: insightId },
       data: {
         status: 'RESOLVED',
@@ -321,17 +321,17 @@ export class InsightsService {
    */
   static async getStatistics(tenantId: string) {
     const [bySeverity, byCategory, byStatus] = await Promise.all([
-      prisma.analyticsInsight.groupBy({
+      prisma.analytics_insights.groupBy({
         by: ['severity'],
         where: { tenantId },
         _count: true,
       }),
-      prisma.analyticsInsight.groupBy({
+      prisma.analytics_insights.groupBy({
         by: ['category'],
         where: { tenantId },
         _count: true,
       }),
-      prisma.analyticsInsight.groupBy({
+      prisma.analytics_insights.groupBy({
         by: ['status'],
         where: { tenantId },
         _count: true,
@@ -361,7 +361,7 @@ export class InsightsService {
     validUntil?: Date
   }): Promise<InsightOutput> {
     // Check for existing similar insight
-    const existing = await prisma.analyticsInsight.findFirst({
+    const existing = await prisma.analytics_insights.findFirst({
       where: {
         tenantId,
         type: input.type,
@@ -374,7 +374,7 @@ export class InsightsService {
       return this.formatInsight(existing)
     }
 
-    const insight = await prisma.analyticsInsight.create({
+    const insight = await prisma.analytics_insights.create({
       data: {
         tenantId,
         type: input.type,

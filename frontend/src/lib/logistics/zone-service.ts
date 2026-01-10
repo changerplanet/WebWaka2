@@ -104,7 +104,7 @@ export class ZoneService {
   static async createZone(tenantId: string, input: CreateZoneInput) {
     const code = input.code || this.generateZoneCode(input.name, input.city, input.state)
     
-    return prisma.logisticsDeliveryZone.create({
+    return prisma.logistics_delivery_zones.create({
       data: {
         tenantId,
         name: input.name,
@@ -148,7 +148,7 @@ export class ZoneService {
     if (options.city) where.city = options.city
     if (options.state) where.state = options.state
 
-    return prisma.logisticsDeliveryZone.findMany({
+    return prisma.logistics_delivery_zones.findMany({
       where,
       include: {
         pricingRules: options.includeRules ? { where: { isActive: true } } : false,
@@ -162,7 +162,7 @@ export class ZoneService {
    * Get zone by ID
    */
   static async getZoneById(tenantId: string, zoneId: string) {
-    return prisma.logisticsDeliveryZone.findFirst({
+    return prisma.logistics_delivery_zones.findFirst({
       where: { id: zoneId, tenantId },
       include: {
         pricingRules: { orderBy: { priority: 'desc' } },
@@ -175,7 +175,7 @@ export class ZoneService {
    * Update a zone
    */
   static async updateZone(tenantId: string, zoneId: string, input: UpdateZoneInput) {
-    return prisma.logisticsDeliveryZone.update({
+    return prisma.logistics_delivery_zones.update({
       where: { id: zoneId },
       data: {
         ...(input.name && { name: input.name }),
@@ -205,7 +205,7 @@ export class ZoneService {
    */
   static async deleteZone(tenantId: string, zoneId: string) {
     // Check for active assignments
-    const activeAssignments = await prisma.logisticsDeliveryAssignment.count({
+    const activeAssignments = await prisma.logistics_delivery_assignments.count({
       where: {
         zoneId,
         status: { notIn: ['DELIVERED', 'CANCELLED', 'RETURNED'] },
@@ -216,7 +216,7 @@ export class ZoneService {
       throw new Error(`Cannot delete zone with ${activeAssignments} active deliveries`)
     }
 
-    return prisma.logisticsDeliveryZone.delete({
+    return prisma.logistics_delivery_zones.delete({
       where: { id: zoneId },
     })
   }
@@ -228,7 +228,7 @@ export class ZoneService {
     tenantId: string,
     address: { city?: string; state?: string; lga?: string; postalCode?: string }
   ) {
-    const zones = await prisma.logisticsDeliveryZone.findMany({
+    const zones = await prisma.logistics_delivery_zones.findMany({
       where: {
         tenantId,
         status: 'ACTIVE',
@@ -276,7 +276,7 @@ export class ZoneService {
    */
   static async createPricingRule(tenantId: string, input: CreatePricingRuleInput) {
     // Verify zone belongs to tenant
-    const zone = await prisma.logisticsDeliveryZone.findFirst({
+    const zone = await prisma.logistics_delivery_zones.findFirst({
       where: { id: input.zoneId, tenantId },
     })
 
@@ -378,7 +378,7 @@ export class ZoneService {
   static async calculateDeliveryQuote(input: DeliveryQuoteInput): Promise<DeliveryQuote | null> {
     // Find applicable zone
     let zone = input.zoneId
-      ? await prisma.logisticsDeliveryZone.findFirst({
+      ? await prisma.logistics_delivery_zones.findFirst({
           where: { id: input.zoneId, tenantId: input.tenantId, status: 'ACTIVE' },
           include: { pricingRules: { where: { isActive: true }, orderBy: { priority: 'desc' } } },
         })

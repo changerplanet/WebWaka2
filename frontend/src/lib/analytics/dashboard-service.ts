@@ -81,7 +81,7 @@ export class DashboardService {
    * List all dashboards for tenant
    */
   static async listDashboards(tenantId: string): Promise<DashboardOutput[]> {
-    const dashboards = await prisma.analyticsDashboard.findMany({
+    const dashboards = await prisma.analytics_dashboards.findMany({
       where: { tenantId, isActive: true },
       include: {
         widgets: {
@@ -99,7 +99,7 @@ export class DashboardService {
    * Get dashboard by key
    */
   static async getDashboard(tenantId: string, key: string): Promise<DashboardOutput | null> {
-    const dashboard = await prisma.analyticsDashboard.findUnique({
+    const dashboard = await prisma.analytics_dashboards.findUnique({
       where: { tenantId_key: { tenantId, key } },
       include: {
         widgets: {
@@ -151,7 +151,7 @@ export class DashboardService {
    * Get default dashboard
    */
   static async getDefaultDashboard(tenantId: string): Promise<DashboardOutput | null> {
-    const dashboard = await prisma.analyticsDashboard.findFirst({
+    const dashboard = await prisma.analytics_dashboards.findFirst({
       where: { tenantId, isDefault: true, isActive: true },
       include: {
         widgets: {
@@ -172,7 +172,7 @@ export class DashboardService {
     input: DashboardInput,
     createdBy: string
   ): Promise<DashboardOutput> {
-    const dashboard = await prisma.analyticsDashboard.create({
+    const dashboard = await prisma.analytics_dashboards.create({
       data: {
         tenantId,
         key: input.key,
@@ -197,7 +197,7 @@ export class DashboardService {
     key: string,
     input: Partial<DashboardInput>
   ): Promise<DashboardOutput> {
-    const dashboard = await prisma.analyticsDashboard.update({
+    const dashboard = await prisma.analytics_dashboards.update({
       where: { tenantId_key: { tenantId, key } },
       data: {
         ...(input.name && { name: input.name }),
@@ -215,7 +215,7 @@ export class DashboardService {
    * Delete dashboard (soft delete)
    */
   static async deleteDashboard(tenantId: string, key: string): Promise<void> {
-    await prisma.analyticsDashboard.update({
+    await prisma.analytics_dashboards.update({
       where: { tenantId_key: { tenantId, key } },
       data: { isActive: false },
     })
@@ -225,12 +225,12 @@ export class DashboardService {
    * Add widget to dashboard
    */
   static async addWidget(dashboardId: string, input: WidgetInput): Promise<WidgetOutput> {
-    const maxOrder = await prisma.analyticsDashboardWidget.aggregate({
+    const maxOrder = await prisma.analytics_dashboard_widgets.aggregate({
       where: { dashboardId },
       _max: { sortOrder: true },
     })
 
-    const widget = await prisma.analyticsDashboardWidget.create({
+    const widget = await prisma.analytics_dashboard_widgets.create({
       data: {
         dashboardId,
         title: input.title,
@@ -253,7 +253,7 @@ export class DashboardService {
    * Update widget
    */
   static async updateWidget(widgetId: string, input: Partial<WidgetInput>): Promise<WidgetOutput> {
-    const widget = await prisma.analyticsDashboardWidget.update({
+    const widget = await prisma.analytics_dashboard_widgets.update({
       where: { id: widgetId },
       data: {
         ...(input.title && { title: input.title }),
@@ -275,7 +275,7 @@ export class DashboardService {
    * Remove widget
    */
   static async removeWidget(widgetId: string): Promise<void> {
-    await prisma.analyticsDashboardWidget.update({
+    await prisma.analytics_dashboard_widgets.update({
       where: { id: widgetId },
       data: { isActive: false },
     })

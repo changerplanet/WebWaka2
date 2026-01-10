@@ -41,14 +41,14 @@ export async function GET(request: NextRequest) {
     // Filter by account code (requires join)
     let ledgerAccountIdFilter: string | undefined;
     if (accountCode) {
-      const chartAccount = await prisma.acctChartOfAccount.findFirst({
+      const chartAccount = await prisma.acct_chart_of_accounts.findFirst({
         where: { tenantId: session.activeTenantId, code: accountCode },
       });
       if (!chartAccount) {
         return NextResponse.json({ error: `Account code '${accountCode}' not found` }, { status: 404 });
       }
       
-      const ledgerAccount = await prisma.acctLedgerAccount.findFirst({
+      const ledgerAccount = await prisma.acct_ledger_accounts.findFirst({
         where: { tenantId: session.activeTenantId, chartOfAccountId: chartAccount.id },
       });
       if (!ledgerAccount) {
@@ -78,7 +78,7 @@ export async function GET(request: NextRequest) {
     }
 
     const [entries, total] = await Promise.all([
-      prisma.acctLedgerEntry.findMany({
+      prisma.acct_ledger_entries.findMany({
         where,
         orderBy: [{ entryDate: 'desc' }, { createdAt: 'desc' }],
         take: limit ? parseInt(limit) : 100,
@@ -102,7 +102,7 @@ export async function GET(request: NextRequest) {
           },
         },
       }),
-      prisma.acctLedgerEntry.count({ where }),
+      prisma.acct_ledger_entries.count({ where }),
     ]);
 
     // Transform for response

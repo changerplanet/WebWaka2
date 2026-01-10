@@ -114,7 +114,7 @@ export class HrEventService {
    */
   private static async handleStaffCreated(event: StaffCreatedEvent) {
     // Check if HR is enabled for tenant
-    const config = await prisma.hrConfiguration.findUnique({
+    const config = await prisma.hr_configurations.findUnique({
       where: { tenantId: event.tenantId },
     })
 
@@ -124,7 +124,7 @@ export class HrEventService {
     }
 
     // Check if profile already exists
-    const existing = await prisma.hrEmployeeProfile.findUnique({
+    const existing = await prisma.hr_employee_profiles.findUnique({
       where: { staffId: event.staffId },
     })
 

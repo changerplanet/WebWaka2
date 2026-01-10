@@ -69,7 +69,7 @@ export class ConfigurationService {
    */
   static async initialize(tenantId: string, input: InitializeLogisticsInput = {}) {
     // Check if already initialized
-    const existing = await prisma.logisticsConfiguration.findUnique({
+    const existing = await prisma.logistics_configurations.findUnique({
       where: { tenantId },
     })
 
@@ -78,7 +78,7 @@ export class ConfigurationService {
     }
 
     // Create configuration
-    const config = await prisma.logisticsConfiguration.create({
+    const config = await prisma.logistics_configurations.create({
       data: {
         tenantId,
         deliveryEnabled: input.deliveryEnabled ?? true,
@@ -110,7 +110,7 @@ export class ConfigurationService {
    * Get logistics configuration
    */
   static async getConfiguration(tenantId: string) {
-    const config = await prisma.logisticsConfiguration.findUnique({
+    const config = await prisma.logistics_configurations.findUnique({
       where: { tenantId },
     })
 
@@ -124,7 +124,7 @@ export class ConfigurationService {
    * Update logistics configuration
    */
   static async updateConfiguration(tenantId: string, input: UpdateConfigInput) {
-    return prisma.logisticsConfiguration.update({
+    return prisma.logistics_configurations.update({
       where: { tenantId },
       data: {
         ...(input.deliveryEnabled !== undefined && { deliveryEnabled: input.deliveryEnabled }),
@@ -162,7 +162,7 @@ export class ConfigurationService {
    * Check if logistics is initialized and enabled
    */
   static async isEnabled(tenantId: string): Promise<boolean> {
-    const config = await prisma.logisticsConfiguration.findUnique({
+    const config = await prisma.logistics_configurations.findUnique({
       where: { tenantId },
       select: { deliveryEnabled: true },
     })
@@ -174,7 +174,7 @@ export class ConfigurationService {
    * Get notification settings
    */
   static async getNotificationSettings(tenantId: string) {
-    const config = await prisma.logisticsConfiguration.findUnique({
+    const config = await prisma.logistics_configurations.findUnique({
       where: { tenantId },
       select: {
         notifyCustomerOnAssignment: true,

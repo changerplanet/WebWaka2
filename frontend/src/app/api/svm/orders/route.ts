@@ -87,7 +87,7 @@ export async function POST(request: NextRequest) {
 
     // If cartId provided, get items from cart
     if (cartId) {
-      const cart = await prisma.svmCart.findUnique({
+      const cart = await prisma.svm_carts.findUnique({
         where: { id: cartId },
         include: { items: true }
       })
@@ -333,10 +333,10 @@ export async function GET(request: NextRequest) {
     if (orderNumber) where.orderNumber = { contains: orderNumber, mode: 'insensitive' }
 
     // Get total count
-    const total = await prisma.svmOrder.count({ where })
+    const total = await prisma.svm_orders.count({ where })
 
     // Get orders with items
-    const orders = await prisma.svmOrder.findMany({
+    const orders = await prisma.svm_orders.findMany({
       where,
       include: { items: true },
       orderBy: { createdAt: 'desc' },

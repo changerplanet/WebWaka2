@@ -90,7 +90,7 @@ export class B2BPricingService {
     // Get customer's price tier if provided
     let tierId = options?.priceTierId
     if (!tierId && options?.customerId) {
-      const profile = await prisma.b2BCustomerProfile.findFirst({
+      const profile = await prisma.b2b_customer_profiles.findFirst({
         where: { tenantId, customerId: options.customerId },
         select: { priceTierId: true },
       })
@@ -123,7 +123,7 @@ export class B2BPricingService {
     let tierDiscount = 0
     let tierName: string | null = null
     if (tierId) {
-      const tier = await prisma.b2BPriceTier.findUnique({
+      const tier = await prisma.b2b_price_tiers.findUnique({
         where: { id: tierId },
         select: { name: true, defaultDiscount: true },
       })
@@ -187,7 +187,7 @@ export class B2BPricingService {
     tenantId: string,
     activeOnly: boolean = true
   ): Promise<PriceTier[]> {
-    const tiers = await prisma.b2BPriceTier.findMany({
+    const tiers = await prisma.b2b_price_tiers.findMany({
       where: {
         tenantId,
         ...(activeOnly && { isActive: true }),
@@ -225,7 +225,7 @@ export class B2BPricingService {
       priority?: number
     }
   ): Promise<PriceTier> {
-    const tier = await prisma.b2BPriceTier.create({
+    const tier = await prisma.b2b_price_tiers.create({
       data: {
         tenantId,
         name: input.name,

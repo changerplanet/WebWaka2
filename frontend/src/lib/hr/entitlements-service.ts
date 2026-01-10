@@ -137,15 +137,15 @@ export class HrEntitlementsService {
       attendanceRecords,
       leaveRequests,
     ] = await Promise.all([
-      prisma.hrEmployeeProfile.count({ where: { tenantId } }),
-      prisma.hrEmployeeProfile.count({ where: { tenantId, terminationDate: null } }),
-      prisma.hrPayrollPeriod.count({
+      prisma.hr_employee_profiles.count({ where: { tenantId } }),
+      prisma.hr_employee_profiles.count({ where: { tenantId, terminationDate: null } }),
+      prisma.hr_payroll_periods.count({
         where: { tenantId, calculatedAt: { gte: startOfMonth } },
       }),
-      prisma.hrAttendanceRecord.count({
+      prisma.hr_attendance_records.count({
         where: { tenantId, createdAt: { gte: startOfMonth } },
       }),
-      prisma.hrLeaveRequest.count({
+      prisma.hr_leave_requests.count({
         where: { tenantId, createdAt: { gte: startOfMonth } },
       }),
     ])

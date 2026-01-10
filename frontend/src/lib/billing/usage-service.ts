@@ -38,7 +38,7 @@ export async function createUsageMetric(input: CreateUsageMetricInput): Promise<
 }> {
   try {
     // Check for duplicate key
-    const existing = await prisma.billingUsageMetric.findFirst({
+    const existing = await prisma.billing_usage_metrics.findFirst({
       where: {
         tenantId: input.tenantId,
         key: input.key,
@@ -49,7 +49,7 @@ export async function createUsageMetric(input: CreateUsageMetricInput): Promise<
       return { success: false, error: 'Metric with this key already exists' };
     }
     
-    const metric = await prisma.billingUsageMetric.create({
+    const metric = await prisma.billing_usage_metrics.create({
       data: {
         tenantId: input.tenantId,
         key: input.key,
@@ -72,13 +72,13 @@ export async function createUsageMetric(input: CreateUsageMetricInput): Promise<
 }
 
 export async function getUsageMetric(metricId: string) {
-  return prisma.billingUsageMetric.findUnique({
+  return prisma.billing_usage_metrics.findUnique({
     where: { id: metricId },
   });
 }
 
 export async function getUsageMetricByKey(key: string, tenantId?: string | null) {
-  return prisma.billingUsageMetric.findFirst({
+  return prisma.billing_usage_metrics.findFirst({
     where: {
       key,
       OR: [
@@ -108,7 +108,7 @@ export async function listUsageMetrics(params: {
     where.isActive = true;
   }
   
-  return prisma.billingUsageMetric.findMany({
+  return prisma.billing_usage_metrics.findMany({
     where,
     orderBy: { createdAt: 'desc' },
   });
@@ -196,7 +196,7 @@ export async function getTotalUsageForPeriod(
   periodStart: Date,
   periodEnd: Date
 ): Promise<number> {
-  const metric = await prisma.billingUsageMetric.findUnique({
+  const metric = await prisma.billing_usage_metrics.findUnique({
     where: { id: metricId },
   });
   

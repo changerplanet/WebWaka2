@@ -54,7 +54,7 @@ export async function GET(
 
     const wallet = includeLedger 
       ? await getWalletWithLedger(walletId, ledgerLimit)
-      : await prisma.commerceWallet.findUnique({ where: { id: walletId } })
+      : await prisma.commerce_wallets.findUnique({ where: { id: walletId } })
 
     if (!wallet) {
       return NextResponse.json(
@@ -153,7 +153,7 @@ export async function PUT(
       )
     }
 
-    const wallet = await prisma.commerceWallet.findUnique({
+    const wallet = await prisma.commerce_wallets.findUnique({
       where: { id: walletId }
     })
 
@@ -202,7 +202,7 @@ export async function PUT(
         )
       }
 
-      const updatedWallet = await prisma.commerceWallet.update({
+      const updatedWallet = await prisma.commerce_wallets.update({
         where: { id: walletId },
         data: { status }
       })
@@ -278,7 +278,7 @@ export async function POST(
     }
 
     // Verify wallet belongs to tenant
-    const wallet = await prisma.commerceWallet.findUnique({
+    const wallet = await prisma.commerce_wallets.findUnique({
       where: { id: walletId }
     })
 

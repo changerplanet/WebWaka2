@@ -100,7 +100,7 @@ export class WorkflowService {
     }
 
     const [workflows, total] = await Promise.all([
-      prisma.mktAutomationWorkflow.findMany({
+      prisma.mkt_automation_workflows.findMany({
         where,
         include: {
           triggers: { orderBy: { sortOrder: 'asc' } },
@@ -110,7 +110,7 @@ export class WorkflowService {
         skip: (page - 1) * limit,
         take: limit,
       }),
-      prisma.mktAutomationWorkflow.count({ where }),
+      prisma.mkt_automation_workflows.count({ where }),
     ])
 
     return {
@@ -123,7 +123,7 @@ export class WorkflowService {
    * Get workflow by ID
    */
   static async getWorkflow(tenantId: string, id: string): Promise<WorkflowOutput | null> {
-    const workflow = await prisma.mktAutomationWorkflow.findFirst({
+    const workflow = await prisma.mkt_automation_workflows.findFirst({
       where: { id, tenantId },
       include: {
         triggers: { orderBy: { sortOrder: 'asc' } },
@@ -140,7 +140,7 @@ export class WorkflowService {
   static async createWorkflow(tenantId: string, input: WorkflowInput, createdBy: string): Promise<WorkflowOutput> {
     // Check for duplicate offline ID
     if (input.offlineId) {
-      const existing = await prisma.mktAutomationWorkflow.findUnique({
+      const existing = await prisma.mkt_automation_workflows.findUnique({
         where: { tenantId_offlineId: { tenantId, offlineId: input.offlineId } },
       })
       if (existing) {
@@ -149,7 +149,7 @@ export class WorkflowService {
       }
     }
 
-    const workflow = await prisma.mktAutomationWorkflow.create({
+    const workflow = await prisma.mkt_automation_workflows.create({
       data: {
         tenantId,
         name: input.name,
@@ -196,7 +196,7 @@ export class WorkflowService {
     overrides?: { name?: string; description?: string },
     createdBy?: string
   ): Promise<WorkflowOutput> {
-    const template = await prisma.mktAutomationWorkflow.findFirst({
+    const template = await prisma.mkt_automation_workflows.findFirst({
       where: { tenantId, templateKey, isTemplate: true },
       include: { triggers: true, actions: true },
     })
@@ -205,7 +205,7 @@ export class WorkflowService {
       throw new Error(`Template '${templateKey}' not found`)
     }
 
-    const workflow = await prisma.mktAutomationWorkflow.create({
+    const workflow = await prisma.mkt_automation_workflows.create({
       data: {
         tenantId,
         name: overrides?.name || template.name,
@@ -244,7 +244,7 @@ export class WorkflowService {
    * Update workflow
    */
   static async updateWorkflow(tenantId: string, id: string, input: Partial<WorkflowInput>): Promise<WorkflowOutput> {
-    const workflow = await prisma.mktAutomationWorkflow.update({
+    const workflow = await prisma.mkt_automation_workflows.update({
       where: { id },
       data: {
         ...(input.name && { name: input.name }),
@@ -266,7 +266,7 @@ export class WorkflowService {
    * Activate workflow
    */
   static async activateWorkflow(tenantId: string, id: string): Promise<WorkflowOutput> {
-    const workflow = await prisma.mktAutomationWorkflow.update({
+    const workflow = await prisma.mkt_automation_workflows.update({
       where: { id },
       data: { status: 'ACTIVE' },
       include: { triggers: true, actions: true },
@@ -279,7 +279,7 @@ export class WorkflowService {
    * Pause workflow
    */
   static async pauseWorkflow(tenantId: string, id: string): Promise<WorkflowOutput> {
-    const workflow = await prisma.mktAutomationWorkflow.update({
+    const workflow = await prisma.mkt_automation_workflows.update({
       where: { id },
       data: { status: 'PAUSED' },
       include: { triggers: true, actions: true },
@@ -292,7 +292,7 @@ export class WorkflowService {
    * Archive workflow
    */
   static async archiveWorkflow(tenantId: string, id: string): Promise<void> {
-    await prisma.mktAutomationWorkflow.update({
+    await prisma.mkt_automation_workflows.update({
       where: { id },
       data: { status: 'ARCHIVED' },
     })
@@ -302,7 +302,7 @@ export class WorkflowService {
    * Get templates
    */
   static async getTemplates(tenantId: string): Promise<WorkflowOutput[]> {
-    const templates = await prisma.mktAutomationWorkflow.findMany({
+    const templates = await prisma.mkt_automation_workflows.findMany({
       where: { tenantId, isTemplate: true },
       include: { triggers: true, actions: true },
       orderBy: { name: 'asc' },
@@ -316,12 +316,12 @@ export class WorkflowService {
    */
   static async getStatistics(tenantId: string) {
     const [byStatus, totals] = await Promise.all([
-      prisma.mktAutomationWorkflow.groupBy({
+      prisma.mkt_automation_workflows.groupBy({
         by: ['status'],
         where: { tenantId, isTemplate: false },
         _count: true,
       }),
-      prisma.mktAutomationWorkflow.aggregate({
+      prisma.mkt_automation_workflows.aggregate({
         where: { tenantId, isTemplate: false },
         _sum: { totalRuns: true, successfulRuns: true, failedRuns: true },
       }),

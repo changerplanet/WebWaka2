@@ -75,7 +75,7 @@ export class AttendanceService {
     today.setHours(0, 0, 0, 0)
 
     // Check for existing record today
-    let record = await prisma.hrAttendanceRecord.findUnique({
+    let record = await prisma.hr_attendance_records.findUnique({
       where: {
         employeeProfileId_date: {
           employeeProfileId: input.employeeProfileId,
@@ -92,7 +92,7 @@ export class AttendanceService {
         throw new Error('Already clocked in today')
       }
       
-      record = await prisma.hrAttendanceRecord.update({
+      record = await prisma.hr_attendance_records.update({
         where: { id: record.id },
         data: {
           clockIn: now,
@@ -107,7 +107,7 @@ export class AttendanceService {
       })
     } else {
       // Create new record
-      record = await prisma.hrAttendanceRecord.create({
+      record = await prisma.hr_attendance_records.create({
         data: {
           tenantId,
           employeeProfileId: input.employeeProfileId,
@@ -140,7 +140,7 @@ export class AttendanceService {
     const today = new Date()
     today.setHours(0, 0, 0, 0)
 
-    const record = await prisma.hrAttendanceRecord.findUnique({
+    const record = await prisma.hr_attendance_records.findUnique({
       where: {
         employeeProfileId_date: {
           employeeProfileId: input.employeeProfileId,
@@ -159,7 +159,7 @@ export class AttendanceService {
 
     const now = input.recordedAt || new Date()
 
-    const updated = await prisma.hrAttendanceRecord.update({
+    const updated = await prisma.hr_attendance_records.update({
       where: { id: record.id },
       data: {
         clockOut: now,
@@ -187,13 +187,13 @@ export class AttendanceService {
 
     // Check for duplicate
     if (input.offlineId) {
-      const existing = await prisma.hrAttendanceRecord.findFirst({
+      const existing = await prisma.hr_attendance_records.findFirst({
         where: { offlineId: input.offlineId },
       })
       if (existing) return existing
     }
 
-    const record = await prisma.hrAttendanceRecord.upsert({
+    const record = await prisma.hr_attendance_records.upsert({
       where: {
         employeeProfileId_date: {
           employeeProfileId: input.employeeProfileId,
@@ -240,15 +240,15 @@ export class AttendanceService {
    * Calculate late minutes based on schedule
    */
   private static async calculateLateMinutes(recordId: string, tenantId: string) {
-    const record = await prisma.hrAttendanceRecord.findUnique({
+    const record = await prisma.hr_attendance_records.findUnique({
       where: { id: recordId },
-      include: { employeeProfile: true },
+      include: { hr_employee_profiles: true },
     })
 
     if (!record?.clockIn) return
 
     // Get HR config for late threshold
-    const config = await prisma.hrConfiguration.findUnique({
+    const config = await prisma.hr_configurations.findUnique({
       where: { tenantId },
     })
 
@@ -287,7 +287,7 @@ export class AttendanceService {
     const lateMinutes = Math.max(0, Math.floor((clockInTime.getTime() - scheduledStart.getTime()) / 60000) - lateThreshold)
 
     // Update record
-    await prisma.hrAttendanceRecord.update({
+    await prisma.hr_attendance_records.update({
       where: { id: recordId },
       data: {
         lateMinutes,
@@ -301,7 +301,7 @@ export class AttendanceService {
    * Calculate worked minutes and overtime
    */
   private static async calculateWorkedMinutes(recordId: string, tenantId: string) {
-    const record = await prisma.hrAttendanceRecord.findUnique({
+    const record = await prisma.hr_attendance_records.findUnique({
       where: { id: recordId },
     })
 
@@ -336,7 +336,7 @@ export class AttendanceService {
     const overtimeMinutes = Math.max(0, workedMinutes - overtimeThreshold)
 
     // Calculate early leave
-    const config = await prisma.hrConfiguration.findUnique({ where: { tenantId } })
+    const config = await prisma.hr_configurations.findUnique({ where: { tenantId } })
     const earlyLeaveThreshold = config?.earlyLeaveThresholdMinutes || 15
 
     // Get scheduled end time
@@ -358,7 +358,7 @@ export class AttendanceService {
     }
 
     // Update record
-    await prisma.hrAttendanceRecord.update({
+    await prisma.hr_attendance_records.update({
       where: { id: recordId },
       data: {
         workedMinutes,
@@ -396,13 +396,13 @@ export class AttendanceService {
     }
 
     const [records, total] = await Promise.all([
-      prisma.hrAttendanceRecord.findMany({
+      prisma.hr_attendance_records.findMany({
         where,
         orderBy: { date: 'desc' },
         take: options.limit || 50,
         skip: options.offset || 0,
       }),
-      prisma.hrAttendanceRecord.count({ where }),
+      prisma.hr_attendance_records.count({ where }),
     ])
 
     return { records, total }
@@ -417,7 +417,7 @@ export class AttendanceService {
     periodStart: Date,
     periodEnd: Date
   ): Promise<AttendanceSummary> {
-    const records = await prisma.hrAttendanceRecord.findMany({
+    const records = await prisma.hr_attendance_records.findMany({
       where: {
         tenantId,
         employeeProfileId,
@@ -481,7 +481,7 @@ export class AttendanceService {
    * Approve manual attendance entry
    */
   static async approveAttendance(tenantId: string, recordId: string, approvedBy: string) {
-    return prisma.hrAttendanceRecord.update({
+    return prisma.hr_attendance_records.update({
       where: { id: recordId },
       data: {
         requiresApproval: false,
@@ -495,7 +495,7 @@ export class AttendanceService {
    * Reject manual attendance entry
    */
   static async rejectAttendance(tenantId: string, recordId: string, rejectedBy: string, reason: string) {
-    return prisma.hrAttendanceRecord.update({
+    return prisma.hr_attendance_records.update({
       where: { id: recordId },
       data: {
         rejectedBy,
@@ -517,7 +517,7 @@ export class AttendanceService {
     const d = new Date(date)
     d.setHours(0, 0, 0, 0)
 
-    return prisma.hrAttendanceRecord.upsert({
+    return prisma.hr_attendance_records.upsert({
       where: {
         employeeProfileId_date: { employeeProfileId, date: d },
       },
@@ -543,10 +543,10 @@ export class AttendanceService {
     today.setHours(0, 0, 0, 0)
 
     const [totalEmployees, attendance] = await Promise.all([
-      prisma.hrEmployeeProfile.count({
+      prisma.hr_employee_profiles.count({
         where: { tenantId, terminationDate: null },
       }),
-      prisma.hrAttendanceRecord.groupBy({
+      prisma.hr_attendance_records.groupBy({
         by: ['status'],
         where: { tenantId, date: today },
         _count: true,

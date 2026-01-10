@@ -62,13 +62,13 @@ export async function queryIntegrationLogs(query: LogQuery) {
   const skip = (page - 1) * limit
   
   const [logs, total] = await Promise.all([
-    prisma.integrationLog.findMany({
+    prisma.integration_logs.findMany({
       where,
       include: {
-        instance: {
+        integration_instances: {
           select: {
             displayName: true,
-            provider: {
+            integration_providers: {
               select: { key: true, name: true },
             },
           },
@@ -78,7 +78,7 @@ export async function queryIntegrationLogs(query: LogQuery) {
       skip,
       take: limit,
     }),
-    prisma.integrationLog.count({ where }),
+    prisma.integration_logs.count({ where }),
   ])
   
   return {
@@ -96,11 +96,11 @@ export async function queryIntegrationLogs(query: LogQuery) {
  * Get log by ID
  */
 export async function getLogById(logId: string) {
-  return prisma.integrationLog.findUnique({
+  return prisma.integration_logs.findUnique({
     where: { id: logId },
     include: {
-      instance: {
-        include: { provider: true },
+      integration_instances: {
+        include: { integration_providers: true },
       },
     },
   })
@@ -152,13 +152,13 @@ export async function queryEventLogs(query: {
   const skip = (page - 1) * limit
   
   const [events, total] = await Promise.all([
-    prisma.integrationEventLog.findMany({
+    prisma.integration_event_logs.findMany({
       where,
       orderBy: { occurredAt: 'desc' },
       skip,
       take: limit,
     }),
-    prisma.integrationEventLog.count({ where }),
+    prisma.integration_event_logs.count({ where }),
   ])
   
   return {
@@ -196,21 +196,21 @@ export async function getIntegrationStatistics(
   }
   
   const [totalCalls, successfulCalls, failedCalls, webhooksReceived, webhooksSent] = await Promise.all([
-    prisma.integrationLog.count({ where }),
-    prisma.integrationLog.count({ where: { ...where, success: true } }),
-    prisma.integrationLog.count({ where: { ...where, success: false } }),
-    prisma.integrationLog.count({ where: { ...where, logType: 'webhook_received' } }),
-    prisma.integrationLog.count({ where: { ...where, logType: 'webhook_sent' } }),
+    prisma.integration_logs.count({ where }),
+    prisma.integration_logs.count({ where: { ...where, success: true } }),
+    prisma.integration_logs.count({ where: { ...where, success: false } }),
+    prisma.integration_logs.count({ where: { ...where, logType: 'webhook_received' } }),
+    prisma.integration_logs.count({ where: { ...where, logType: 'webhook_sent' } }),
   ])
   
   // Get average response time
-  const avgDurationResult = await prisma.integrationLog.aggregate({
+  const avgDurationResult = await prisma.integration_logs.aggregate({
     where: { ...where, durationMs: { not: null } },
     _avg: { durationMs: true },
   })
   
   // Get top error codes
-  const errorLogs = await prisma.integrationLog.groupBy({
+  const errorLogs = await prisma.integration_logs.groupBy({
     by: ['errorCode'],
     where: { ...where, success: false, errorCode: { not: null } },
     _count: true,
@@ -260,8 +260,8 @@ export async function detectSecurityAnomalies(tenantId?: string): Promise<{
   
   // Check for high failure rate
   const [totalCalls, failedCalls] = await Promise.all([
-    prisma.integrationLog.count({ where }),
-    prisma.integrationLog.count({ where: { ...where, success: false } }),
+    prisma.integration_logs.count({ where }),
+    prisma.integration_logs.count({ where: { ...where, success: false } }),
   ])
   
   if (totalCalls > 100 && failedCalls / totalCalls > 0.3) {
@@ -280,7 +280,7 @@ export async function detectSecurityAnomalies(tenantId?: string): Promise<{
   // Check for unusual activity volume
   const previousHour = new Date(Date.now() - 7200000)
   const prevWhere = { ...where, createdAt: { gte: previousHour, lt: hourAgo } }
-  const prevHourCalls = await prisma.integrationLog.count({ where: prevWhere })
+  const prevHourCalls = await prisma.integration_logs.count({ where: prevWhere })
   
   if (prevHourCalls > 0 && totalCalls > prevHourCalls * 3) {
     anomalies.push({
@@ -295,7 +295,7 @@ export async function detectSecurityAnomalies(tenantId?: string): Promise<{
   }
   
   // Check for repeated auth failures
-  const authFailures = await prisma.integrationLog.count({
+  const authFailures = await prisma.integration_logs.count({
     where: {
       ...where,
       responseStatus: 401,
@@ -315,7 +315,7 @@ export async function detectSecurityAnomalies(tenantId?: string): Promise<{
   }
   
   // Check for revoked keys being used
-  const revokedKeyUsage = await prisma.integrationEventLog.count({
+  const revokedKeyUsage = await prisma.integration_event_logs.count({
     where: {
       occurredAt: { gte: hourAgo },
       eventType: 'API_KEY_USAGE_ATTEMPTED_REVOKED',
@@ -357,16 +357,16 @@ export async function getAuditSummary(
     uniqueIntegrations,
     events,
   ] = await Promise.all([
-    prisma.integrationLog.count({ where }),
-    prisma.integrationLog.count({ where: { ...where, success: true } }),
-    prisma.integrationLog.count({ where: { ...where, logType: 'webhook_received' } }),
-    prisma.integrationLog.count({ where: { ...where, logType: 'webhook_sent' } }),
-    prisma.integrationLog.findMany({
+    prisma.integration_logs.count({ where }),
+    prisma.integration_logs.count({ where: { ...where, success: true } }),
+    prisma.integration_logs.count({ where: { ...where, logType: 'webhook_received' } }),
+    prisma.integration_logs.count({ where: { ...where, logType: 'webhook_sent' } }),
+    prisma.integration_logs.findMany({
       where,
       distinct: ['instanceId'],
       select: { instanceId: true },
     }),
-    prisma.integrationEventLog.count({
+    prisma.integration_event_logs.count({
       where: { tenantId, occurredAt: { gte: startDate, lte: endDate } },
     }),
   ])
@@ -399,10 +399,10 @@ export async function cleanupOldLogs(retentionDays: number = 90) {
   cutoffDate.setDate(cutoffDate.getDate() - retentionDays)
   
   const [deletedLogs, deletedEvents] = await Promise.all([
-    prisma.integrationLog.deleteMany({
+    prisma.integration_logs.deleteMany({
       where: { createdAt: { lt: cutoffDate } },
     }),
-    prisma.integrationEventLog.deleteMany({
+    prisma.integration_event_logs.deleteMany({
       where: { occurredAt: { lt: cutoffDate } },
     }),
   ])

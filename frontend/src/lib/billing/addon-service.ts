@@ -40,7 +40,7 @@ export async function createAddOn(input: CreateAddOnInput): Promise<{
 }> {
   try {
     // Check for duplicate slug
-    const existing = await prisma.billingAddOn.findFirst({
+    const existing = await prisma.billing_addons.findFirst({
       where: {
         tenantId: input.tenantId,
         slug: input.slug,
@@ -51,7 +51,7 @@ export async function createAddOn(input: CreateAddOnInput): Promise<{
       return { success: false, error: 'Add-on with this slug already exists' };
     }
     
-    const addOn = await prisma.billingAddOn.create({
+    const addOn = await prisma.billing_addons.create({
       data: {
         tenantId: input.tenantId,
         name: input.name,
@@ -91,7 +91,7 @@ export async function createAddOn(input: CreateAddOnInput): Promise<{
 }
 
 export async function getAddOn(addOnId: string) {
-  return prisma.billingAddOn.findUnique({
+  return prisma.billing_addons.findUnique({
     where: { id: addOnId },
   });
 }
@@ -121,7 +121,7 @@ export async function listAddOns(params: {
     where.addOnType = addOnType;
   }
   
-  return prisma.billingAddOn.findMany({
+  return prisma.billing_addons.findMany({
     where,
     orderBy: { createdAt: 'desc' },
   });
@@ -138,7 +138,7 @@ export async function updateAddOn(
   }
 ): Promise<{ success: boolean; addOn?: any; error?: string }> {
   try {
-    const addOn = await prisma.billingAddOn.update({
+    const addOn = await prisma.billing_addons.update({
       where: { id: addOnId },
       data,
     });
@@ -165,7 +165,7 @@ export async function subscribeToAddOn(input: SubscribeToAddOnInput): Promise<{
   error?: string;
 }> {
   try {
-    const addOn = await prisma.billingAddOn.findUnique({
+    const addOn = await prisma.billing_addons.findUnique({
       where: { id: input.addOnId },
     });
     
@@ -185,7 +185,7 @@ export async function subscribeToAddOn(input: SubscribeToAddOnInput): Promise<{
     }
     
     // Check for existing active subscription
-    const existing = await prisma.billingAddOnSubscription.findFirst({
+    const existing = await prisma.billing_addon_subscriptions.findFirst({
       where: {
         tenantId: input.tenantId,
         subscriptionId: input.subscriptionId,
@@ -198,7 +198,7 @@ export async function subscribeToAddOn(input: SubscribeToAddOnInput): Promise<{
       return { success: false, error: 'Already subscribed to this add-on' };
     }
     
-    const subscription = await prisma.billingAddOnSubscription.create({
+    const subscription = await prisma.billing_addon_subscriptions.create({
       data: {
         tenantId: input.tenantId,
         subscriptionId: input.subscriptionId,
@@ -235,7 +235,7 @@ export async function updateAddOnQuantity(
   newQuantity: number
 ): Promise<{ success: boolean; subscription?: any; error?: string }> {
   try {
-    const existing = await prisma.billingAddOnSubscription.findUnique({
+    const existing = await prisma.billing_addon_subscriptions.findUnique({
       where: { id: subscriptionId },
       include: { addOn: true },
     });
@@ -257,7 +257,7 @@ export async function updateAddOnQuantity(
       return { success: false, error: `Maximum quantity is ${existing.addOn.maxQuantity}` };
     }
     
-    const subscription = await prisma.billingAddOnSubscription.update({
+    const subscription = await prisma.billing_addon_subscriptions.update({
       where: { id: subscriptionId },
       data: { quantity: newQuantity },
     });
@@ -283,7 +283,7 @@ export async function cancelAddOnSubscription(
   subscriptionId: string
 ): Promise<{ success: boolean; error?: string }> {
   try {
-    const existing = await prisma.billingAddOnSubscription.findUnique({
+    const existing = await prisma.billing_addon_subscriptions.findUnique({
       where: { id: subscriptionId },
     });
     
@@ -291,7 +291,7 @@ export async function cancelAddOnSubscription(
       return { success: false, error: 'Add-on subscription not found' };
     }
     
-    await prisma.billingAddOnSubscription.update({
+    await prisma.billing_addon_subscriptions.update({
       where: { id: subscriptionId },
       data: {
         status: 'CANCELLED',
@@ -323,7 +323,7 @@ export async function getActiveAddOns(tenantId: string, subscriptionId?: string)
     where.subscriptionId = subscriptionId;
   }
   
-  return prisma.billingAddOnSubscription.findMany({
+  return prisma.billing_addon_subscriptions.findMany({
     where,
     include: { addOn: true },
   });

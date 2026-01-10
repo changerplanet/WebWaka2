@@ -49,7 +49,7 @@ export async function GET(request: NextRequest) {
     if (eventId) where.eventId = eventId;
     if (idempotencyKey) where.idempotencyKey = idempotencyKey;
 
-    const journals = await prisma.acctJournalEntry.findMany({
+    const journals = await prisma.acct_journal_entries.findMany({
       where,
       orderBy: { entryDate: 'desc' },
       take: 10,

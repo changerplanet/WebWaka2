@@ -48,7 +48,7 @@ export class B2BEntitlementsService {
     const limits = TIER_LIMITS[tier] || TIER_LIMITS.FREE
 
     // Get current usage
-    const b2bCustomerCount = await prisma.b2BCustomerProfile.count({
+    const b2bCustomerCount = await prisma.b2b_customer_profiles.count({
       where: { tenantId, status: 'ACTIVE' },
     })
 

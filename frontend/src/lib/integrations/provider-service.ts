@@ -40,7 +40,7 @@ export async function listProviders(options?: {
   const skip = (page - 1) * limit
   
   const [providers, total] = await Promise.all([
-    prisma.integrationProvider.findMany({
+    prisma.integration_providers.findMany({
       where,
       orderBy: [
         { isNigeriaFirst: 'desc' },
@@ -49,7 +49,7 @@ export async function listProviders(options?: {
       skip,
       take: limit,
     }),
-    prisma.integrationProvider.count({ where }),
+    prisma.integration_providers.count({ where }),
   ])
   
   return {
@@ -67,10 +67,10 @@ export async function listProviders(options?: {
  * Get provider by key
  */
 export async function getProviderByKey(key: string) {
-  const provider = await prisma.integrationProvider.findUnique({
+  const provider = await prisma.integration_providers.findUnique({
     where: { key },
     include: {
-      instances: {
+      integration_instances: {
         select: {
           id: true,
           tenantId: true,
@@ -97,7 +97,7 @@ export async function getProviderByKey(key: string) {
  * Get provider by ID
  */
 export async function getProviderById(id: string) {
-  return prisma.integrationProvider.findUnique({
+  return prisma.integration_providers.findUnique({
     where: { id },
   })
 }
@@ -124,7 +124,7 @@ export async function registerProvider(data: {
   createdBy?: string
 }) {
   // Check if key already exists
-  const existing = await prisma.integrationProvider.findUnique({
+  const existing = await prisma.integration_providers.findUnique({
     where: { key: data.key },
   })
   
@@ -132,7 +132,7 @@ export async function registerProvider(data: {
     throw new Error(`Provider with key '${data.key}' already exists`)
   }
   
-  const provider = await prisma.integrationProvider.create({
+  const provider = await prisma.integration_providers.create({
     data: {
       key: data.key,
       name: data.name,
@@ -155,7 +155,7 @@ export async function registerProvider(data: {
   })
   
   // Log event
-  await prisma.integrationEventLog.create({
+  await prisma.integration_event_logs.create({
     data: {
       eventType: 'PROVIDER_REGISTERED',
       eventData: {
@@ -194,7 +194,7 @@ export async function updateProvider(
     updatedBy?: string
   }
 ) {
-  const provider = await prisma.integrationProvider.update({
+  const provider = await prisma.integration_providers.update({
     where: { id: providerId },
     data: {
       name: data.name,
@@ -213,7 +213,7 @@ export async function updateProvider(
   })
   
   // Log event
-  await prisma.integrationEventLog.create({
+  await prisma.integration_event_logs.create({
     data: {
       eventType: 'PROVIDER_UPDATED',
       eventData: { providerId, changes: data },
@@ -234,13 +234,13 @@ export async function updateProviderStatus(
   status: IntegrationProviderStatus,
   updatedBy?: string
 ) {
-  const provider = await prisma.integrationProvider.update({
+  const provider = await prisma.integration_providers.update({
     where: { id: providerId },
     data: { status },
   })
   
   // Log event
-  await prisma.integrationEventLog.create({
+  await prisma.integration_event_logs.create({
     data: {
       eventType: 'PROVIDER_STATUS_CHANGED',
       eventData: { providerId, newStatus: status },
@@ -257,7 +257,7 @@ export async function updateProviderStatus(
  * List providers by category
  */
 export async function listProvidersByCategory() {
-  const providers = await prisma.integrationProvider.findMany({
+  const providers = await prisma.integration_providers.findMany({
     where: { status: IntegrationProviderStatus.ACTIVE },
     orderBy: { name: 'asc' },
   })
@@ -279,7 +279,7 @@ export async function listProvidersByCategory() {
  * Get Nigeria-first providers
  */
 export async function getNigeriaFirstProviders() {
-  return prisma.integrationProvider.findMany({
+  return prisma.integration_providers.findMany({
     where: {
       isNigeriaFirst: true,
       status: IntegrationProviderStatus.ACTIVE,

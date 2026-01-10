@@ -66,7 +66,7 @@ export async function generateReport(input: GenerateReportInput): Promise<{
     const refNumber = generateReferenceNumber(input.reportType);
     
     // Create immutable report
-    const report = await prisma.regulatoryReport.create({
+    const report = await prisma.regulatory_reports.create({
       data: {
         tenantId: input.tenantId,
         reportType: input.reportType,
@@ -117,7 +117,7 @@ export async function generateReport(input: GenerateReportInput): Promise<{
 
 async function generateVatSummaryReport(tenantId: string, periodStart: Date, periodEnd: Date) {
   // Get computations for period
-  const computations = await prisma.taxComputationRecord.findMany({
+  const computations = await prisma.tax_computation_records.findMany({
     where: {
       tenantId,
       periodStart: { gte: periodStart },
@@ -193,7 +193,7 @@ async function generateComplianceStatusReport(tenantId: string) {
   const profile = await getComplianceProfile(tenantId);
   const taxConfig = await getTaxConfiguration(tenantId);
   
-  const statuses = await prisma.complianceStatus.findMany({
+  const statuses = await prisma.compliance_statuses.findMany({
     where: { tenantId, isResolved: false },
     orderBy: { createdAt: 'desc' },
   });
@@ -246,7 +246,7 @@ function generateRecommendations(profile: any, taxConfig: any): string[] {
 // ============================================================================
 
 export async function getReport(reportId: string) {
-  return prisma.regulatoryReport.findUnique({
+  return prisma.regulatory_reports.findUnique({
     where: { id: reportId },
   });
 }
@@ -274,13 +274,13 @@ export async function listReports(params: {
   }
   
   const [reports, total] = await Promise.all([
-    prisma.regulatoryReport.findMany({
+    prisma.regulatory_reports.findMany({
       where,
       skip: (page - 1) * limit,
       take: limit,
       orderBy: { generatedAt: 'desc' },
     }),
-    prisma.regulatoryReport.count({ where }),
+    prisma.regulatory_reports.count({ where }),
   ]);
   
   return {

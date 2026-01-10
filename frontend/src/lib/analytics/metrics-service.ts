@@ -191,7 +191,7 @@ export class MetricsService {
 
     // Online Sales (from SvmOrder table)
     try {
-      const onlineSales = await prisma.svmOrder.aggregate({
+      const onlineSales = await prisma.svm_orders.aggregate({
         where: {
           tenantId,
           createdAt: { gte: dateRange.start, lte: dateRange.end },
@@ -216,7 +216,7 @@ export class MetricsService {
     limit: number = 10
   ): Promise<Array<{ productId: string; productName: string; quantity: number; revenue: number }>> {
     try {
-      const topProducts = await prisma.svmOrderItem.groupBy({
+      const topProducts = await prisma.svm_order_items.groupBy({
         by: ['productId'],
         where: {
           order: {
@@ -261,7 +261,7 @@ export class MetricsService {
         where: { tenantId, createdAt: { lte: dateRange.end } },
       })
 
-      const repeatCustomers = await prisma.svmOrder.groupBy({
+      const repeatCustomers = await prisma.svm_orders.groupBy({
         by: ['customerId'],
         where: {
           tenantId,
@@ -284,7 +284,7 @@ export class MetricsService {
   private static async calculateSales(tenantId: string, dateRange: DateRange): Promise<number> {
     try {
       // SvmOrder table for online sales
-      const orderSales = await prisma.svmOrder.aggregate({
+      const orderSales = await prisma.svm_orders.aggregate({
         where: {
           tenantId,
           createdAt: { gte: dateRange.start, lte: dateRange.end },
@@ -301,7 +301,7 @@ export class MetricsService {
 
   private static async calculateOrderCount(tenantId: string, dateRange: DateRange): Promise<number> {
     try {
-      const orderCount = await prisma.svmOrder.count({
+      const orderCount = await prisma.svm_orders.count({
         where: {
           tenantId,
           createdAt: { gte: dateRange.start, lte: dateRange.end },

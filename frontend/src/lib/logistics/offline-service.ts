@@ -137,7 +137,7 @@ export class OfflineService {
   static async getOfflinePackage(tenantId: string, agentId?: string): Promise<OfflineDataPackage> {
     const [agents, assignments, zones, config] = await Promise.all([
       // Get agents (limited for offline)
-      prisma.logisticsDeliveryAgent.findMany({
+      prisma.logistics_delivery_agents.findMany({
         where: { tenantId, status: 'ACTIVE' },
         select: {
           id: true,
@@ -153,7 +153,7 @@ export class OfflineService {
       }),
 
       // Get active assignments
-      prisma.logisticsDeliveryAssignment.findMany({
+      prisma.logistics_delivery_assignments.findMany({
         where: {
           tenantId,
           status: { notIn: ['DELIVERED', 'CANCELLED', 'RETURNED'] },
@@ -182,7 +182,7 @@ export class OfflineService {
       }),
 
       // Get active zones
-      prisma.logisticsDeliveryZone.findMany({
+      prisma.logistics_delivery_zones.findMany({
         where: { tenantId, status: 'ACTIVE' },
         select: {
           id: true,
@@ -194,7 +194,7 @@ export class OfflineService {
       }),
 
       // Get config
-      prisma.logisticsConfiguration.findUnique({
+      prisma.logistics_configurations.findUnique({
         where: { tenantId },
         select: {
           proofOfDeliveryRequired: true,
@@ -272,7 +272,7 @@ export class OfflineService {
     if (request.locationUpdates?.length) {
       for (const locUpdate of request.locationUpdates) {
         try {
-          await prisma.logisticsDeliveryAgent.update({
+          await prisma.logistics_delivery_agents.update({
             where: { id: locUpdate.agentId },
             data: {
               lastLatitude: locUpdate.latitude,
@@ -317,7 +317,7 @@ export class OfflineService {
     }
 
     // Get current assignment state
-    const assignment = await prisma.logisticsDeliveryAssignment.findFirst({
+    const assignment = await prisma.logistics_delivery_assignments.findFirst({
       where: { id: update.assignmentId, tenantId },
     })
 
@@ -376,7 +376,7 @@ export class OfflineService {
   ): Promise<OfflineDataChanges> {
     const [newAssignments, updatedAssignments, cancelledAssignments] = await Promise.all([
       // New assignments
-      prisma.logisticsDeliveryAssignment.findMany({
+      prisma.logistics_delivery_assignments.findMany({
         where: {
           tenantId,
           createdAt: { gt: lastSyncAt },
@@ -403,7 +403,7 @@ export class OfflineService {
       }),
 
       // Updated assignments
-      prisma.logisticsDeliveryAssignment.findMany({
+      prisma.logistics_delivery_assignments.findMany({
         where: {
           tenantId,
           updatedAt: { gt: lastSyncAt },
@@ -431,7 +431,7 @@ export class OfflineService {
       }),
 
       // Cancelled/completed assignments
-      prisma.logisticsDeliveryAssignment.findMany({
+      prisma.logistics_delivery_assignments.findMany({
         where: {
           tenantId,
           updatedAt: { gt: lastSyncAt },
@@ -468,7 +468,7 @@ export class OfflineService {
     invalid: string[]
     updated: string[]
   }> {
-    const serverAssignments = await prisma.logisticsDeliveryAssignment.findMany({
+    const serverAssignments = await prisma.logistics_delivery_assignments.findMany({
       where: {
         tenantId,
         id: { in: data.assignmentIds },

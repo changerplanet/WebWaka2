@@ -83,7 +83,7 @@ export class PurchaseRequestService {
   ) {
     // Check for duplicate offline ID
     if (input.offlineId) {
-      const existing = await prisma.procPurchaseRequest.findUnique({
+      const existing = await prisma.proc_purchase_requests.findUnique({
         where: { tenantId_offlineId: { tenantId, offlineId: input.offlineId } },
       })
       if (existing) {
@@ -103,7 +103,7 @@ export class PurchaseRequestService {
     }
 
     // Create PR with items
-    const pr = await prisma.procPurchaseRequest.create({
+    const pr = await prisma.proc_purchase_requests.create({
       data: {
         tenantId,
         requestNumber,
@@ -177,14 +177,14 @@ export class PurchaseRequestService {
     }
 
     const [requests, total] = await Promise.all([
-      prisma.procPurchaseRequest.findMany({
+      prisma.proc_purchase_requests.findMany({
         where,
         include: { items: { orderBy: { lineNumber: 'asc' } } },
         orderBy: { [orderBy]: orderDir },
         skip: (page - 1) * limit,
         take: limit,
       }),
-      prisma.procPurchaseRequest.count({ where }),
+      prisma.proc_purchase_requests.count({ where }),
     ])
 
     return {
@@ -202,7 +202,7 @@ export class PurchaseRequestService {
    * Get purchase request by ID
    */
   static async getPurchaseRequestById(tenantId: string, id: string) {
-    const pr = await prisma.procPurchaseRequest.findFirst({
+    const pr = await prisma.proc_purchase_requests.findFirst({
       where: { id, tenantId },
       include: { items: { orderBy: { lineNumber: 'asc' } } },
     })
@@ -214,7 +214,7 @@ export class PurchaseRequestService {
    * Submit purchase request for approval
    */
   static async submitPurchaseRequest(tenantId: string, id: string, submittedBy: string) {
-    const pr = await prisma.procPurchaseRequest.findFirst({
+    const pr = await prisma.proc_purchase_requests.findFirst({
       where: { id, tenantId },
     })
 
@@ -241,7 +241,7 @@ export class PurchaseRequestService {
       approvedAt = new Date()
     }
 
-    const updated = await prisma.procPurchaseRequest.update({
+    const updated = await prisma.proc_purchase_requests.update({
       where: { id },
       data: {
         status: newStatus,
@@ -271,14 +271,14 @@ export class PurchaseRequestService {
     approvedBy: string,
     notes?: string
   ) {
-    const pr = await prisma.procPurchaseRequest.findFirst({
+    const pr = await prisma.proc_purchase_requests.findFirst({
       where: { id, tenantId },
     })
 
     if (!pr) throw new Error('Purchase request not found')
     if (pr.status !== 'SUBMITTED') throw new Error('Only submitted requests can be approved')
 
-    const updated = await prisma.procPurchaseRequest.update({
+    const updated = await prisma.proc_purchase_requests.update({
       where: { id },
       data: {
         status: 'APPROVED',
@@ -310,14 +310,14 @@ export class PurchaseRequestService {
     rejectedBy: string,
     reason: string
   ) {
-    const pr = await prisma.procPurchaseRequest.findFirst({
+    const pr = await prisma.proc_purchase_requests.findFirst({
       where: { id, tenantId },
     })
 
     if (!pr) throw new Error('Purchase request not found')
     if (pr.status !== 'SUBMITTED') throw new Error('Only submitted requests can be rejected')
 
-    const updated = await prisma.procPurchaseRequest.update({
+    const updated = await prisma.proc_purchase_requests.update({
       where: { id },
       data: {
         status: 'REJECTED',
@@ -344,7 +344,7 @@ export class PurchaseRequestService {
    * Cancel purchase request
    */
   static async cancelPurchaseRequest(tenantId: string, id: string, cancelledBy: string) {
-    const pr = await prisma.procPurchaseRequest.findFirst({
+    const pr = await prisma.proc_purchase_requests.findFirst({
       where: { id, tenantId },
     })
 
@@ -353,7 +353,7 @@ export class PurchaseRequestService {
       throw new Error('Request cannot be cancelled in current status')
     }
 
-    const updated = await prisma.procPurchaseRequest.update({
+    const updated = await prisma.proc_purchase_requests.update({
       where: { id },
       data: { status: 'CANCELLED' },
       include: { items: true },
@@ -379,7 +379,7 @@ export class PurchaseRequestService {
     id: string,
     input: Partial<PurchaseRequestInput>
   ) {
-    const pr = await prisma.procPurchaseRequest.findFirst({
+    const pr = await prisma.proc_purchase_requests.findFirst({
       where: { id, tenantId },
     })
 
@@ -388,12 +388,12 @@ export class PurchaseRequestService {
 
     // If items are provided, delete and recreate
     if (input.items) {
-      await prisma.procPurchaseRequestItem.deleteMany({
+      await prisma.proc_purchase_request_items.deleteMany({
         where: { purchaseRequestId: id },
       })
     }
 
-    const updated = await prisma.procPurchaseRequest.update({
+    const updated = await prisma.proc_purchase_requests.update({
       where: { id },
       data: {
         ...(input.priority && { priority: input.priority }),
@@ -435,17 +435,17 @@ export class PurchaseRequestService {
    */
   static async getStatistics(tenantId: string) {
     const [statusCounts, priorityCounts, totalValue] = await Promise.all([
-      prisma.procPurchaseRequest.groupBy({
+      prisma.proc_purchase_requests.groupBy({
         by: ['status'],
         where: { tenantId },
         _count: true,
       }),
-      prisma.procPurchaseRequest.groupBy({
+      prisma.proc_purchase_requests.groupBy({
         by: ['priority'],
         where: { tenantId, status: { in: ['DRAFT', 'SUBMITTED', 'APPROVED'] } },
         _count: true,
       }),
-      prisma.procPurchaseRequest.aggregate({
+      prisma.proc_purchase_requests.aggregate({
         where: { tenantId, status: { in: ['DRAFT', 'SUBMITTED', 'APPROVED'] } },
         _sum: { estimatedTotal: true },
       }),

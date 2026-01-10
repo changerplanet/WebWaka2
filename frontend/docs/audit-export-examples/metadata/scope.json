@@ -1,0 +1,43 @@
+{
+  "export_id": "exp_2026010912345",
+  "generated_at": "2026-01-09T12:00:00Z",
+  "generator": "WebWaka Audit Export v1.0",
+  "scope": {
+    "tenant_id": "tnt_demo_retail_store",
+    "tenant_name": "Demo Retail Store",
+    "domain": "demo-retail.webwaka.com",
+    "suite": "commerce",
+    "time_range": {
+      "start": "2026-01-01T00:00:00Z",
+      "end": "2026-01-09T00:00:00Z"
+    },
+    "included_actions": [
+      "transaction.create",
+      "transaction.void",
+      "inventory.adjust",
+      "inventory.transfer",
+      "user.login",
+      "user.logout",
+      "settings.update"
+    ],
+    "excluded_data": [
+      "ip_addresses",
+      "user_agents",
+      "session_tokens"
+    ]
+  },
+  "request": {
+    "requested_by": "Regulatory Authority",
+    "request_id": "req_abc123",
+    "purpose": "Compliance verification",
+    "legal_basis": "Regulatory inquiry",
+    "approved_by": "WebWaka Governance Team",
+    "approved_at": "2026-01-09T10:00:00Z"
+  },
+  "statistics": {
+    "total_entries": 1247,
+    "unique_actors": 8,
+    "unique_actions": 7,
+    "date_range_days": 9
+  }
+}

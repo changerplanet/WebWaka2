@@ -80,7 +80,7 @@ export class GoodsReceiptService {
   static async createGoodsReceipt(tenantId: string, input: GoodsReceiptInput) {
     // Check for duplicate offline ID
     if (input.offlineId) {
-      const existing = await prisma.procGoodsReceipt.findUnique({
+      const existing = await prisma.proc_goods_receipts.findUnique({
         where: { tenantId_offlineId: { tenantId, offlineId: input.offlineId } },
       })
       if (existing) {
@@ -89,7 +89,7 @@ export class GoodsReceiptService {
     }
 
     // Verify PO exists
-    const po = await prisma.procPurchaseOrder.findFirst({
+    const po = await prisma.proc_purchase_orders.findFirst({
       where: { id: input.purchaseOrderId, tenantId },
       include: { items: true },
     })
@@ -103,7 +103,7 @@ export class GoodsReceiptService {
     const receiptNumber = await ProcConfigurationService.getNextGRNumber(tenantId)
 
     // Create receipt with items
-    const receipt = await prisma.procGoodsReceipt.create({
+    const receipt = await prisma.proc_goods_receipts.create({
       data: {
         tenantId,
         receiptNumber,
@@ -180,17 +180,17 @@ export class GoodsReceiptService {
     }
 
     const [receipts, total] = await Promise.all([
-      prisma.procGoodsReceipt.findMany({
+      prisma.proc_goods_receipts.findMany({
         where,
         include: {
           items: true,
-          purchaseOrder: { select: { poNumber: true, supplierName: true } },
+          proc_purchase_orders: { select: { poNumber: true, supplierName: true } },
         },
         orderBy: { [orderBy]: orderDir },
         skip: (page - 1) * limit,
         take: limit,
       }),
-      prisma.procGoodsReceipt.count({ where }),
+      prisma.proc_goods_receipts.count({ where }),
     ])
 
     return {
@@ -208,11 +208,11 @@ export class GoodsReceiptService {
    * Get goods receipt by ID
    */
   static async getGoodsReceiptById(tenantId: string, id: string) {
-    const receipt = await prisma.procGoodsReceipt.findFirst({
+    const receipt = await prisma.proc_goods_receipts.findFirst({
       where: { id, tenantId },
       include: {
         items: true,
-        purchaseOrder: {
+        proc_purchase_orders: {
           include: { items: true },
         },
       },
@@ -230,7 +230,7 @@ export class GoodsReceiptService {
     verifiedBy: string,
     qualityNotes?: string
   ) {
-    const receipt = await prisma.procGoodsReceipt.findFirst({
+    const receipt = await prisma.proc_goods_receipts.findFirst({
       where: { id, tenantId },
       include: { items: true },
     })
@@ -239,7 +239,7 @@ export class GoodsReceiptService {
     if (receipt.status !== 'PENDING') throw new Error('Only pending receipts can be verified')
 
     // Update receipt status
-    const updated = await prisma.procGoodsReceipt.update({
+    const updated = await prisma.proc_goods_receipts.update({
       where: { id },
       data: {
         status: 'ACCEPTED',
@@ -260,7 +260,7 @@ export class GoodsReceiptService {
 
     // Emit inventory adjustment event (Core will apply changes)
     const inventoryEventId = `INV-ADJ-${receipt.receiptNumber}`
-    await prisma.procGoodsReceipt.update({
+    await prisma.proc_goods_receipts.update({
       where: { id },
       data: {
         inventoryEventEmitted: true,
@@ -303,14 +303,14 @@ export class GoodsReceiptService {
     rejectedBy: string,
     reason: string
   ) {
-    const receipt = await prisma.procGoodsReceipt.findFirst({
+    const receipt = await prisma.proc_goods_receipts.findFirst({
       where: { id, tenantId },
     })
 
     if (!receipt) throw new Error('Goods receipt not found')
     if (receipt.status !== 'PENDING') throw new Error('Only pending receipts can be rejected')
 
-    const updated = await prisma.procGoodsReceipt.update({
+    const updated = await prisma.proc_goods_receipts.update({
       where: { id },
       data: {
         status: 'REJECTED',
@@ -348,7 +348,7 @@ export class GoodsReceiptService {
       qualityNotes?: string
     }>
   ) {
-    const receipt = await prisma.procGoodsReceipt.findFirst({
+    const receipt = await prisma.proc_goods_receipts.findFirst({
       where: { id: receiptId, tenantId },
     })
 
@@ -357,7 +357,7 @@ export class GoodsReceiptService {
 
     // Update each item
     for (const item of items) {
-      await prisma.procGoodsReceiptItem.update({
+      await prisma.proc_goods_receipt_items.update({
         where: { id: item.itemId },
         data: {
           ...(item.acceptedQuantity !== undefined && { acceptedQuantity: item.acceptedQuantity }),
@@ -377,12 +377,12 @@ export class GoodsReceiptService {
    */
   static async getStatistics(tenantId: string) {
     const [statusCounts, recentReceipts] = await Promise.all([
-      prisma.procGoodsReceipt.groupBy({
+      prisma.proc_goods_receipts.groupBy({
         by: ['status'],
         where: { tenantId },
         _count: true,
       }),
-      prisma.procGoodsReceipt.count({
+      prisma.proc_goods_receipts.count({
         where: {
           tenantId,
           receivedDate: { gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) },

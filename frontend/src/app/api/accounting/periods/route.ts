@@ -38,7 +38,7 @@ export async function GET(request: NextRequest) {
     if (status) where.status = status;
     if (fiscalYear) where.fiscalYear = parseInt(fiscalYear);
 
-    const periods = await prisma.acctFinancialPeriod.findMany({
+    const periods = await prisma.acct_financial_periods.findMany({
       where,
       orderBy: [{ fiscalYear: 'desc' }, { startDate: 'desc' }],
       include: {
@@ -111,7 +111,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Find the period
-    const period = await prisma.acctFinancialPeriod.findUnique({
+    const period = await prisma.acct_financial_periods.findUnique({
       where: {
         tenantId_code: { tenantId: session.activeTenantId, code },
       },
@@ -133,7 +133,7 @@ export async function POST(request: NextRequest) {
       }
 
       // Close the period
-      const updated = await prisma.acctFinancialPeriod.update({
+      const updated = await prisma.acct_financial_periods.update({
         where: { id: period.id },
         data: {
           status: 'CLOSED',
@@ -162,7 +162,7 @@ export async function POST(request: NextRequest) {
       }
 
       // Reopen the period
-      const updated = await prisma.acctFinancialPeriod.update({
+      const updated = await prisma.acct_financial_periods.update({
         where: { id: period.id },
         data: {
           status: 'OPEN',

@@ -7,12 +7,12 @@ async function main() {
     where: { slug: 'acme' },
     include: {
       subscription: {
-        include: { plan: true }
+        include: { SubscriptionPlan: true }
       }
     }
   })
   console.log('Tenant:', tenant?.name, tenant?.id)
-  console.log('Subscription plan:', tenant?.subscription?.plan?.slug)
+  console.log('Subscription plan:', tenant?.subscription?.SubscriptionPlan?.slug)
   
   // Get all plans
   const plans = await prisma.subscriptionPlan.findMany()
@@ -32,15 +32,18 @@ async function main() {
     console.log('Subscription updated!')
   } else if (!tenant?.subscription && professionalPlan && tenant) {
     console.log('Creating subscription with professional plan...')
+    const now = new Date()
     await prisma.subscription.create({
       data: {
+        id: `sub_${Date.now().toString(36)}`,
         tenantId: tenant.id,
         planId: professionalPlan.id,
         status: 'ACTIVE',
         billingInterval: 'MONTHLY',
-        currentPeriodStart: new Date(),
+        currentPeriodStart: now,
         currentPeriodEnd: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
         amount: 0,
+        updatedAt: now,
       }
     })
     console.log('Subscription created!')

@@ -65,7 +65,7 @@ export class B2BCustomerService {
    * Get B2B profile for a customer
    */
   static async getProfile(tenantId: string, customerId: string): Promise<B2BProfile | null> {
-    const profile = await prisma.b2BCustomerProfile.findUnique({
+    const profile = await prisma.b2b_customer_profiles.findUnique({
       where: { tenantId_customerId: { tenantId, customerId } },
     })
 
@@ -93,7 +93,7 @@ export class B2BCustomerService {
 
     const customerName = customer.fullName || `${customer.firstName || ''} ${customer.lastName || ''}`.trim() || 'Unknown'
 
-    const profile = await prisma.b2BCustomerProfile.create({
+    const profile = await prisma.b2b_customer_profiles.create({
       data: {
         tenantId,
         customerId: input.customerId,
@@ -130,7 +130,7 @@ export class B2BCustomerService {
     profileId: string,
     updates: Partial<CreateB2BProfileInput>
   ): Promise<B2BProfile> {
-    const profile = await prisma.b2BCustomerProfile.update({
+    const profile = await prisma.b2b_customer_profiles.update({
       where: { id: profileId, tenantId },
       data: {
         customerType: updates.customerType,
@@ -176,13 +176,13 @@ export class B2BCustomerService {
     }
 
     const [profiles, total] = await Promise.all([
-      prisma.b2BCustomerProfile.findMany({
+      prisma.b2b_customer_profiles.findMany({
         where,
         orderBy: { createdAt: 'desc' },
         skip,
         take: limit,
       }),
-      prisma.b2BCustomerProfile.count({ where }),
+      prisma.b2b_customer_profiles.count({ where }),
     ])
 
     return {
@@ -199,7 +199,7 @@ export class B2BCustomerService {
     profileId: string,
     verifiedBy: string
   ): Promise<B2BProfile> {
-    const profile = await prisma.b2BCustomerProfile.update({
+    const profile = await prisma.b2b_customer_profiles.update({
       where: { id: profileId, tenantId },
       data: {
         status: 'ACTIVE',
@@ -225,7 +225,7 @@ export class B2BCustomerService {
     amount: number,
     operation: 'ADD' | 'SUBTRACT'
   ): Promise<B2BProfile> {
-    const profile = await prisma.b2BCustomerProfile.findUnique({
+    const profile = await prisma.b2b_customer_profiles.findUnique({
       where: { id: profileId, tenantId },
     })
 
@@ -245,7 +245,7 @@ export class B2BCustomerService {
       newStatus = 'ACTIVE'
     }
 
-    const updated = await prisma.b2BCustomerProfile.update({
+    const updated = await prisma.b2b_customer_profiles.update({
       where: { id: profileId },
       data: {
         creditUsed: newUsed,
@@ -261,22 +261,22 @@ export class B2BCustomerService {
    */
   static async getStatistics(tenantId: string) {
     const [byStatus, byType, byTier, creditStats] = await Promise.all([
-      prisma.b2BCustomerProfile.groupBy({
+      prisma.b2b_customer_profiles.groupBy({
         by: ['status'],
         where: { tenantId },
         _count: { id: true },
       }),
-      prisma.b2BCustomerProfile.groupBy({
+      prisma.b2b_customer_profiles.groupBy({
         by: ['customerType'],
         where: { tenantId },
         _count: { id: true },
       }),
-      prisma.b2BCustomerProfile.groupBy({
+      prisma.b2b_customer_profiles.groupBy({
         by: ['priceTierId'],
         where: { tenantId, priceTierId: { not: null } },
         _count: { id: true },
       }),
-      prisma.b2BCustomerProfile.aggregate({
+      prisma.b2b_customer_profiles.aggregate({
         where: { tenantId },
         _sum: { creditLimit: true, creditUsed: true },
       }),

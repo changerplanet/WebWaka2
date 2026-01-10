@@ -62,7 +62,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Find or create cart
-    let cart = await prisma.svmCart.findFirst({
+    let cart = await prisma.svm_carts.findFirst({
       where: {
         tenantId,
         status: 'ACTIVE',
@@ -76,14 +76,14 @@ export async function POST(request: NextRequest) {
 
     // If customer has no cart but session does, try to find session cart
     if (!cart && customerId && sessionId) {
-      const sessionCart = await prisma.svmCart.findFirst({
+      const sessionCart = await prisma.svm_carts.findFirst({
         where: { tenantId, sessionId, status: 'ACTIVE' },
         include: { items: true }
       })
       
       if (sessionCart) {
         // Merge session cart to customer
-        cart = await prisma.svmCart.update({
+        cart = await prisma.svm_carts.update({
           where: { id: sessionCart.id },
           data: { customerId, sessionId: null },
           include: { items: true }
@@ -93,7 +93,7 @@ export async function POST(request: NextRequest) {
 
     // Create new cart if none exists
     if (!cart) {
-      cart = await prisma.svmCart.create({
+      cart = await prisma.svm_carts.create({
         data: {
           tenantId,
           customerId: customerId || null,
@@ -119,7 +119,7 @@ export async function POST(request: NextRequest) {
         }
 
         // Check if item already exists
-        const existingItem = await prisma.svmCartItem.findFirst({
+        const existingItem = await prisma.svm_cart_items.findFirst({
           where: {
             cartId: cart.id,
             productId,
@@ -129,7 +129,7 @@ export async function POST(request: NextRequest) {
 
         if (existingItem) {
           // Update quantity
-          await prisma.svmCartItem.update({
+          await prisma.svm_cart_items.update({
             where: { id: existingItem.id },
             data: {
               quantity: existingItem.quantity + quantity,
@@ -138,7 +138,7 @@ export async function POST(request: NextRequest) {
           })
         } else {
           // Add new item
-          await prisma.svmCartItem.create({
+          await prisma.svm_cart_items.create({
             data: {
               cartId: cart.id,
               productId,
@@ -159,7 +159,7 @@ export async function POST(request: NextRequest) {
       case 'UPDATE_QUANTITY': {
         const { productId, variantId, quantity } = body
         
-        const item = await prisma.svmCartItem.findFirst({
+        const item = await prisma.svm_cart_items.findFirst({
           where: {
             cartId: cart.id,
             productId,
@@ -175,9 +175,9 @@ export async function POST(request: NextRequest) {
         }
 
         if (quantity <= 0) {
-          await prisma.svmCartItem.delete({ where: { id: item.id } })
+          await prisma.svm_cart_items.delete({ where: { id: item.id } })
         } else {
-          await prisma.svmCartItem.update({
+          await prisma.svm_cart_items.update({
             where: { id: item.id },
             data: {
               quantity,
@@ -191,7 +191,7 @@ export async function POST(request: NextRequest) {
       case 'REMOVE_ITEM': {
         const { productId, variantId } = body
         
-        await prisma.svmCartItem.deleteMany({
+        await prisma.svm_cart_items.deleteMany({
           where: {
             cartId: cart.id,
             productId,
@@ -212,7 +212,7 @@ export async function POST(request: NextRequest) {
         }
 
         // Validate promotion code
-        const promotion = await prisma.svmPromotion.findFirst({
+        const promotion = await prisma.svm_promotions.findFirst({
           where: {
             tenantId,
             code: promotionCode.toUpperCase(),
@@ -232,7 +232,7 @@ export async function POST(request: NextRequest) {
           )
         }
 
-        await prisma.svmCart.update({
+        await prisma.svm_carts.update({
           where: { id: cart.id },
           data: {
             promotionCode: promotionCode.toUpperCase(),
@@ -243,7 +243,7 @@ export async function POST(request: NextRequest) {
       }
 
       case 'REMOVE_PROMO': {
-        await prisma.svmCart.update({
+        await prisma.svm_carts.update({
           where: { id: cart.id },
           data: {
             promotionCode: null,
@@ -257,7 +257,7 @@ export async function POST(request: NextRequest) {
       case 'SET_SHIPPING': {
         const { shippingAddress, shippingZoneId, shippingRateId, shippingMethod, shippingTotal } = body
         
-        await prisma.svmCart.update({
+        await prisma.svm_carts.update({
           where: { id: cart.id },
           data: {
             shippingAddress: shippingAddress || undefined,
@@ -273,7 +273,7 @@ export async function POST(request: NextRequest) {
       case 'SET_EMAIL': {
         const { email: cartEmail } = body
         
-        await prisma.svmCart.update({
+        await prisma.svm_carts.update({
           where: { id: cart.id },
           data: { email: cartEmail }
         })
@@ -288,7 +288,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Reload cart with updated items
-    const updatedCart = await prisma.svmCart.findUnique({
+    const updatedCart = await prisma.svm_carts.findUnique({
       where: { id: cart.id },
       include: { items: true }
     })
@@ -305,7 +305,7 @@ export async function POST(request: NextRequest) {
     const totals = calculateCartTotals(updatedCart.items, discountRate)
 
     // Update cart totals
-    await prisma.svmCart.update({
+    await prisma.svm_carts.update({
       where: { id: updatedCart.id },
       data: {
         itemCount: totals.itemCount,
@@ -389,7 +389,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Find active cart
-    const cart = await prisma.svmCart.findFirst({
+    const cart = await prisma.svm_carts.findFirst({
       where: {
         tenantId,
         status: 'ACTIVE',
@@ -503,7 +503,7 @@ export async function DELETE(request: NextRequest) {
       )
     }
 
-    const cart = await prisma.svmCart.findFirst({
+    const cart = await prisma.svm_carts.findFirst({
       where: {
         tenantId,
         status: 'ACTIVE',
@@ -517,14 +517,14 @@ export async function DELETE(request: NextRequest) {
     if (cart) {
       if (markAbandoned) {
         // Mark as abandoned for potential recovery
-        await prisma.svmCart.update({
+        await prisma.svm_carts.update({
           where: { id: cart.id },
           data: { status: 'ABANDONED' }
         })
       } else {
         // Delete cart and items
-        await prisma.svmCartItem.deleteMany({ where: { cartId: cart.id } })
-        await prisma.svmCart.delete({ where: { id: cart.id } })
+        await prisma.svm_cart_items.deleteMany({ where: { cartId: cart.id } })
+        await prisma.svm_carts.delete({ where: { id: cart.id } })
       }
     }
 

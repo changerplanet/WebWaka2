@@ -61,7 +61,7 @@ export async function createAutomationRule(input: CreateRuleInput): Promise<{
       return { success: false, error: `Invalid action type. Allowed: ${Object.values(ACTION_TYPES).join(', ')}` };
     }
     
-    const rule = await prisma.automationRule.create({
+    const rule = await prisma.automation_rules.create({
       data: {
         tenantId: input.tenantId,
         name: input.name,
@@ -98,7 +98,7 @@ export async function createAutomationRule(input: CreateRuleInput): Promise<{
 }
 
 export async function getAutomationRule(ruleId: string) {
-  return prisma.automationRule.findUnique({
+  return prisma.automation_rules.findUnique({
     where: { id: ruleId },
   });
 }
@@ -117,7 +117,7 @@ export async function listAutomationRules(params: {
   if (triggerType) where.triggerType = triggerType;
   if (actionType) where.actionType = actionType;
   
-  return prisma.automationRule.findMany({
+  return prisma.automation_rules.findMany({
     where,
     orderBy: { createdAt: 'desc' },
   });
@@ -137,7 +137,7 @@ export async function updateAutomationRule(
   }
 ): Promise<{ success: boolean; rule?: any; error?: string }> {
   try {
-    const rule = await prisma.automationRule.update({
+    const rule = await prisma.automation_rules.update({
       where: { id: ruleId },
       data,
     });
@@ -152,7 +152,7 @@ export async function deactivateRule(ruleId: string): Promise<{
   error?: string;
 }> {
   try {
-    await prisma.automationRule.update({
+    await prisma.automation_rules.update({
       where: { id: ruleId },
       data: { isActive: false },
     });
@@ -177,7 +177,7 @@ export async function triggerAutomationRule(input: TriggerRuleInput): Promise<{
   error?: string;
 }> {
   try {
-    const rule = await prisma.automationRule.findUnique({
+    const rule = await prisma.automation_rules.findUnique({
       where: { id: input.ruleId },
     });
     
@@ -202,7 +202,7 @@ export async function triggerAutomationRule(input: TriggerRuleInput): Promise<{
       const today = new Date();
       today.setHours(0, 0, 0, 0);
       
-      const todayTriggers = await prisma.automationRun.count({
+      const todayTriggers = await prisma.automation_runs.count({
         where: {
           ruleId: rule.id,
           triggeredAt: { gte: today },
@@ -221,7 +221,7 @@ export async function triggerAutomationRule(input: TriggerRuleInput): Promise<{
     const actionResult = await executeAction(rule.actionType, rule.actionConfig, input.triggerData);
     
     // Create run record
-    const run = await prisma.automationRun.create({
+    const run = await prisma.automation_runs.create({
       data: {
         tenantId: rule.tenantId,
         ruleId: rule.id,
@@ -235,7 +235,7 @@ export async function triggerAutomationRule(input: TriggerRuleInput): Promise<{
     });
     
     // Update rule stats
-    await prisma.automationRule.update({
+    await prisma.automation_rules.update({
       where: { id: rule.id },
       data: {
         lastTriggeredAt: new Date(),
@@ -323,14 +323,14 @@ export async function listAutomationRuns(params: {
   if (status) where.status = status;
   
   const [runs, total] = await Promise.all([
-    prisma.automationRun.findMany({
+    prisma.automation_runs.findMany({
       where,
       skip: (page - 1) * limit,
       take: limit,
       orderBy: { triggeredAt: 'desc' },
       include: { rule: true },
     }),
-    prisma.automationRun.count({ where }),
+    prisma.automation_runs.count({ where }),
   ]);
   
   return {
@@ -349,7 +349,7 @@ export async function approveRun(
   approvedBy: string
 ): Promise<{ success: boolean; error?: string }> {
   try {
-    const run = await prisma.automationRun.findUnique({
+    const run = await prisma.automation_runs.findUnique({
       where: { id: runId },
     });
     
@@ -361,7 +361,7 @@ export async function approveRun(
       return { success: false, error: 'Run is not pending approval' };
     }
     
-    await prisma.automationRun.update({
+    await prisma.automation_runs.update({
       where: { id: runId },
       data: {
         status: 'COMPLETED',
@@ -381,7 +381,7 @@ export async function rejectRun(
   rejectedBy: string
 ): Promise<{ success: boolean; error?: string }> {
   try {
-    await prisma.automationRun.update({
+    await prisma.automation_runs.update({
       where: { id: runId },
       data: {
         status: 'FAILED',

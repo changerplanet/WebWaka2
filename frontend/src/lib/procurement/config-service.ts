@@ -87,7 +87,7 @@ export class ProcConfigurationService {
    * Get procurement configuration status
    */
   static async getStatus(tenantId: string): Promise<ProcConfigStatus> {
-    const config = await prisma.procConfiguration.findUnique({
+    const config = await prisma.proc_configurations.findUnique({
       where: { tenantId },
     })
 
@@ -105,7 +105,7 @@ export class ProcConfigurationService {
    * Get procurement configuration
    */
   static async getConfig(tenantId: string): Promise<ProcConfigOutput | null> {
-    const config = await prisma.procConfiguration.findUnique({
+    const config = await prisma.proc_configurations.findUnique({
       where: { tenantId },
     })
 
@@ -116,7 +116,7 @@ export class ProcConfigurationService {
    * Initialize procurement module for tenant
    */
   static async initialize(tenantId: string, input?: ProcConfigInput): Promise<ProcConfigOutput> {
-    const existing = await prisma.procConfiguration.findUnique({
+    const existing = await prisma.proc_configurations.findUnique({
       where: { tenantId },
     })
 
@@ -126,7 +126,7 @@ export class ProcConfigurationService {
     }
 
     // Create new config with Nigeria-first defaults
-    const config = await prisma.procConfiguration.create({
+    const config = await prisma.proc_configurations.create({
       data: {
         tenantId,
         procurementEnabled: input?.procurementEnabled ?? true,
@@ -156,7 +156,7 @@ export class ProcConfigurationService {
    * Update procurement configuration
    */
   static async updateConfig(tenantId: string, input: ProcConfigInput): Promise<ProcConfigOutput> {
-    const config = await prisma.procConfiguration.update({
+    const config = await prisma.proc_configurations.update({
       where: { tenantId },
       data: {
         ...(input.procurementEnabled !== undefined && { procurementEnabled: input.procurementEnabled }),
@@ -201,7 +201,7 @@ export class ProcConfigurationService {
     const year = new Date().getFullYear()
     
     // Increment and get sequence
-    const updated = await prisma.procConfiguration.update({
+    const updated = await prisma.proc_configurations.update({
       where: { tenantId },
       data: { poNumberSequence: { increment: 1 } },
       select: { poNumberSequence: true },
@@ -224,7 +224,7 @@ export class ProcConfigurationService {
    */
   private static async incrementSequence(tenantId: string, type: 'pr' | 'gr'): Promise<number> {
     // Use a simple counter approach - in production, consider a separate sequence table
-    const count = await prisma.procPurchaseRequest.count({ where: { tenantId } })
+    const count = await prisma.proc_purchase_requests.count({ where: { tenantId } })
     return count + 1
   }
 

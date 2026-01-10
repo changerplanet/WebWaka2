@@ -113,7 +113,7 @@ export class AccountingEntitlementsService {
    */
   static async getEntitlements(tenantId: string): Promise<AccountingEntitlements> {
     // Check if accounting capability is active
-    const activation = await prisma.tenantCapabilityActivation.findUnique({
+    const activation = await prisma.core_tenant_capability_activations.findUnique({
       where: {
         tenantId_capabilityKey: {
           tenantId,
@@ -232,7 +232,7 @@ export class AccountingEntitlementsService {
     const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
     const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59, 999);
 
-    return prisma.acctExpenseRecord.count({
+    return prisma.acct_expense_records.count({
       where: {
         tenantId,
         createdAt: {
@@ -247,7 +247,7 @@ export class AccountingEntitlementsService {
    * Get financial period count
    */
   static async getFinancialPeriodCount(tenantId: string): Promise<number> {
-    return prisma.acctFinancialPeriod.count({
+    return prisma.acct_financial_periods.count({
       where: { tenantId },
     });
   }

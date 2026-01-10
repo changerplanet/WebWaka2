@@ -67,7 +67,7 @@ export class AgentService {
    * NOTE: Agents are NOT system users by default
    */
   static async createAgent(tenantId: string, input: CreateAgentInput) {
-    return prisma.logisticsDeliveryAgent.create({
+    return prisma.logistics_delivery_agents.create({
       data: {
         tenantId,
         firstName: input.firstName,
@@ -126,7 +126,7 @@ export class AgentService {
     }
 
     const [agents, total] = await Promise.all([
-      prisma.logisticsDeliveryAgent.findMany({
+      prisma.logistics_delivery_agents.findMany({
         where,
         include: {
           _count: { select: { assignments: true } },
@@ -135,7 +135,7 @@ export class AgentService {
         take: options.limit || 50,
         skip: options.offset || 0,
       }),
-      prisma.logisticsDeliveryAgent.count({ where }),
+      prisma.logistics_delivery_agents.count({ where }),
     ])
 
     return { agents, total }
@@ -145,7 +145,7 @@ export class AgentService {
    * Get agent by ID
    */
   static async getAgentById(tenantId: string, agentId: string) {
-    return prisma.logisticsDeliveryAgent.findFirst({
+    return prisma.logistics_delivery_agents.findFirst({
       where: { id: agentId, tenantId },
       include: {
         assignments: {
@@ -162,7 +162,7 @@ export class AgentService {
    * Get agent by phone
    */
   static async getAgentByPhone(tenantId: string, phone: string) {
-    return prisma.logisticsDeliveryAgent.findUnique({
+    return prisma.logistics_delivery_agents.findUnique({
       where: { tenantId_phone: { tenantId, phone } },
     })
   }
@@ -171,7 +171,7 @@ export class AgentService {
    * Update an agent
    */
   static async updateAgent(tenantId: string, agentId: string, input: UpdateAgentInput) {
-    return prisma.logisticsDeliveryAgent.update({
+    return prisma.logistics_delivery_agents.update({
       where: { id: agentId },
       data: {
         ...(input.firstName && { firstName: input.firstName }),
@@ -205,7 +205,7 @@ export class AgentService {
     agentId: string,
     availability: LogisticsAgentAvailability
   ) {
-    return prisma.logisticsDeliveryAgent.update({
+    return prisma.logistics_delivery_agents.update({
       where: { id: agentId },
       data: { availability },
     })
@@ -219,7 +219,7 @@ export class AgentService {
     agentId: string,
     location: AgentLocationUpdate
   ) {
-    return prisma.logisticsDeliveryAgent.update({
+    return prisma.logistics_delivery_agents.update({
       where: { id: agentId },
       data: {
         lastLatitude: location.latitude,
@@ -234,7 +234,7 @@ export class AgentService {
    */
   static async terminateAgent(tenantId: string, agentId: string) {
     // Check for active deliveries
-    const activeDeliveries = await prisma.logisticsDeliveryAssignment.count({
+    const activeDeliveries = await prisma.logistics_delivery_assignments.count({
       where: {
         agentId,
         status: { notIn: ['DELIVERED', 'CANCELLED', 'RETURNED', 'FAILED'] },
@@ -245,7 +245,7 @@ export class AgentService {
       throw new Error(`Cannot terminate agent with ${activeDeliveries} active deliveries`)
     }
 
-    return prisma.logisticsDeliveryAgent.update({
+    return prisma.logistics_delivery_agents.update({
       where: { id: agentId },
       data: {
         status: 'TERMINATED',
@@ -269,7 +269,7 @@ export class AgentService {
     const maxDeliveries = options.maxConcurrentDeliveries || 5
 
     // Get agents
-    const agents = await prisma.logisticsDeliveryAgent.findMany({
+    const agents = await prisma.logistics_delivery_agents.findMany({
       where: {
         tenantId,
         status: 'ACTIVE',
@@ -305,7 +305,7 @@ export class AgentService {
    * Get agent performance metrics
    */
   static async getAgentPerformance(tenantId: string, agentId: string): Promise<AgentPerformanceMetrics | null> {
-    const agent = await prisma.logisticsDeliveryAgent.findFirst({
+    const agent = await prisma.logistics_delivery_agents.findFirst({
       where: { id: agentId, tenantId },
     })
 
@@ -318,16 +318,16 @@ export class AgentService {
     const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1)
 
     const [deliveriesToday, deliveriesThisWeek, deliveriesThisMonth, avgDuration] = await Promise.all([
-      prisma.logisticsDeliveryAssignment.count({
+      prisma.logistics_delivery_assignments.count({
         where: { agentId, status: 'DELIVERED', actualDeliveryAt: { gte: startOfDay } },
       }),
-      prisma.logisticsDeliveryAssignment.count({
+      prisma.logistics_delivery_assignments.count({
         where: { agentId, status: 'DELIVERED', actualDeliveryAt: { gte: startOfWeek } },
       }),
-      prisma.logisticsDeliveryAssignment.count({
+      prisma.logistics_delivery_assignments.count({
         where: { agentId, status: 'DELIVERED', actualDeliveryAt: { gte: startOfMonth } },
       }),
-      prisma.logisticsDeliveryAssignment.aggregate({
+      prisma.logistics_delivery_assignments.aggregate({
         where: { agentId, status: 'DELIVERED', actualDurationMin: { not: null } },
         _avg: { actualDurationMin: true },
       }),
@@ -356,7 +356,7 @@ export class AgentService {
    * Update agent rating (after customer rates delivery)
    */
   static async updateAgentRating(agentId: string, newRating: number) {
-    const agent = await prisma.logisticsDeliveryAgent.findUnique({
+    const agent = await prisma.logistics_delivery_agents.findUnique({
       where: { id: agentId },
     })
 
@@ -367,7 +367,7 @@ export class AgentService {
     const newTotal = currentTotal + newRating
     const newAverage = newTotal / (agent.totalRatings + 1)
 
-    return prisma.logisticsDeliveryAgent.update({
+    return prisma.logistics_delivery_agents.update({
       where: { id: agentId },
       data: {
         averageRating: Math.round(newAverage * 100) / 100,
@@ -380,7 +380,7 @@ export class AgentService {
    * Increment delivery counts
    */
   static async incrementDeliveryCount(agentId: string, type: 'completed' | 'failed') {
-    return prisma.logisticsDeliveryAgent.update({
+    return prisma.logistics_delivery_agents.update({
       where: { id: agentId },
       data: {
         totalDeliveries: { increment: 1 },

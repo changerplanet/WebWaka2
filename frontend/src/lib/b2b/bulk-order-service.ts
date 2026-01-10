@@ -68,7 +68,7 @@ export class B2BBulkOrderService {
     createdBy?: string
   ): Promise<BulkOrderDraft> {
     // Verify profile exists
-    const profile = await prisma.b2BCustomerProfile.findUnique({
+    const profile = await prisma.b2b_customer_profiles.findUnique({
       where: { id: input.profileId },
     })
 
@@ -113,7 +113,7 @@ export class B2BBulkOrderService {
 
     const estimatedTotal = subtotal - discountTotal
 
-    const draft = await prisma.b2BBulkOrderDraft.create({
+    const draft = await prisma.b2b_bulk_order_drafts.create({
       data: {
         tenantId,
         profileId: input.profileId,
@@ -148,7 +148,7 @@ export class B2BBulkOrderService {
       }>
     }
   ): Promise<BulkOrderDraft> {
-    const existing = await prisma.b2BBulkOrderDraft.findUnique({
+    const existing = await prisma.b2b_bulk_order_drafts.findUnique({
       where: { id: draftId, tenantId },
       include: { profile: true },
     })
@@ -199,7 +199,7 @@ export class B2BBulkOrderService {
       }
     }
 
-    const draft = await prisma.b2BBulkOrderDraft.update({
+    const draft = await prisma.b2b_bulk_order_drafts.update({
       where: { id: draftId },
       data: {
         name: input.name,
@@ -223,7 +223,7 @@ export class B2BBulkOrderService {
     draftId: string,
     submittedBy?: string
   ): Promise<BulkOrderDraft> {
-    const draft = await prisma.b2BBulkOrderDraft.findUnique({
+    const draft = await prisma.b2b_bulk_order_drafts.findUnique({
       where: { id: draftId, tenantId },
     })
 
@@ -242,7 +242,7 @@ export class B2BBulkOrderService {
       })),
     }
 
-    const updated = await prisma.b2BBulkOrderDraft.update({
+    const updated = await prisma.b2b_bulk_order_drafts.update({
       where: { id: draftId },
       data: {
         status: 'SUBMITTED',
@@ -272,7 +272,7 @@ export class B2BBulkOrderService {
     tenantId: string,
     draftId: string
   ): Promise<BulkOrderDraft> {
-    const draft = await prisma.b2BBulkOrderDraft.update({
+    const draft = await prisma.b2b_bulk_order_drafts.update({
       where: { id: draftId, tenantId, status: 'SUBMITTED' },
       data: { status: 'APPROVED' },
     })
@@ -288,7 +288,7 @@ export class B2BBulkOrderService {
     draftId: string,
     reason?: string
   ): Promise<BulkOrderDraft> {
-    const draft = await prisma.b2BBulkOrderDraft.update({
+    const draft = await prisma.b2b_bulk_order_drafts.update({
       where: { id: draftId, tenantId, status: 'SUBMITTED' },
       data: { 
         status: 'REJECTED',
@@ -308,7 +308,7 @@ export class B2BBulkOrderService {
     draftId: string,
     orderId: string
   ): Promise<BulkOrderDraft> {
-    const draft = await prisma.b2BBulkOrderDraft.update({
+    const draft = await prisma.b2b_bulk_order_drafts.update({
       where: { id: draftId, tenantId },
       data: {
         status: 'CONVERTED',
@@ -354,13 +354,13 @@ export class B2BBulkOrderService {
     }
 
     const [drafts, total] = await Promise.all([
-      prisma.b2BBulkOrderDraft.findMany({
+      prisma.b2b_bulk_order_drafts.findMany({
         where,
         orderBy: { createdAt: 'desc' },
         skip,
         take: limit,
       }),
-      prisma.b2BBulkOrderDraft.count({ where }),
+      prisma.b2b_bulk_order_drafts.count({ where }),
     ])
 
     return {
@@ -373,7 +373,7 @@ export class B2BBulkOrderService {
    * Get draft by ID
    */
   static async getDraft(tenantId: string, draftId: string): Promise<BulkOrderDraft | null> {
-    const draft = await prisma.b2BBulkOrderDraft.findUnique({
+    const draft = await prisma.b2b_bulk_order_drafts.findUnique({
       where: { id: draftId, tenantId },
     })
 
@@ -384,7 +384,7 @@ export class B2BBulkOrderService {
    * Cancel draft
    */
   static async cancelDraft(tenantId: string, draftId: string): Promise<BulkOrderDraft> {
-    const draft = await prisma.b2BBulkOrderDraft.update({
+    const draft = await prisma.b2b_bulk_order_drafts.update({
       where: { id: draftId, tenantId },
       data: { status: 'CANCELLED' },
     })
@@ -397,13 +397,13 @@ export class B2BBulkOrderService {
    */
   static async getStatistics(tenantId: string) {
     const [byStatus, totals] = await Promise.all([
-      prisma.b2BBulkOrderDraft.groupBy({
+      prisma.b2b_bulk_order_drafts.groupBy({
         by: ['status'],
         where: { tenantId },
         _count: { id: true },
         _sum: { estimatedTotal: true },
       }),
-      prisma.b2BBulkOrderDraft.aggregate({
+      prisma.b2b_bulk_order_drafts.aggregate({
         where: { tenantId },
         _sum: { estimatedTotal: true },
         _count: { id: true },

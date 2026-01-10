@@ -86,7 +86,7 @@ export class CrmEntitlementsService {
    * Get entitlements for a tenant
    */
   static async getEntitlements(tenantId: string): Promise<CrmEntitlements> {
-    const activation = await prisma.tenantCapabilityActivation.findUnique({
+    const activation = await prisma.core_tenant_capability_activations.findUnique({
       where: {
         tenantId_capabilityKey: {
           tenantId,
@@ -151,11 +151,11 @@ export class CrmEntitlementsService {
     switch (resource) {
       case 'segments':
         limit = entitlements.maxSegments;
-        used = await prisma.crmCustomerSegment.count({ where: { tenantId } });
+        used = await prisma.crm_customer_segments.count({ where: { tenantId } });
         break;
       case 'campaigns':
         limit = entitlements.maxCampaigns;
-        used = await prisma.crmCampaign.count({
+        used = await prisma.crm_campaigns.count({
           where: { tenantId, status: { in: ['DRAFT', 'SCHEDULED', 'ACTIVE'] } },
         });
         break;
@@ -187,8 +187,8 @@ export class CrmEntitlementsService {
     const entitlements = await this.getEntitlements(tenantId);
     
     const [segmentCount, campaignCount, ruleCount] = await Promise.all([
-      prisma.crmCustomerSegment.count({ where: { tenantId } }),
-      prisma.crmCampaign.count({
+      prisma.crm_customer_segments.count({ where: { tenantId } }),
+      prisma.crm_campaigns.count({
         where: { tenantId, status: { in: ['DRAFT', 'SCHEDULED', 'ACTIVE'] } },
       }),
       prisma.crmLoyaltyRule.count({ where: { tenantId } }),

@@ -200,7 +200,7 @@ export class InventoryAuditService {
       },
       include: {
         items: true,
-        warehouse: true,
+        wh_warehouses: true,
       },
     });
 
@@ -232,7 +232,7 @@ export class InventoryAuditService {
       },
       include: {
         items: true,
-        warehouse: true,
+        wh_warehouses: true,
       },
     });
 
@@ -311,7 +311,7 @@ export class InventoryAuditService {
       where: { id: auditId },
       include: {
         items: true,
-        warehouse: true,
+        wh_warehouses: true,
       },
     });
 
@@ -357,7 +357,7 @@ export class InventoryAuditService {
       where: { id: auditId },
       include: {
         items: true,
-        warehouse: true,
+        wh_warehouses: true,
       },
     });
 
@@ -422,7 +422,7 @@ export class InventoryAuditService {
       },
       include: {
         items: true,
-        warehouse: true,
+        wh_warehouses: true,
       },
     });
 
@@ -473,7 +473,7 @@ export class InventoryAuditService {
       },
       include: {
         items: true,
-        warehouse: true,
+        wh_warehouses: true,
       },
     });
 
@@ -513,7 +513,7 @@ export class InventoryAuditService {
 
       // Record stock movements for audit trail
       for (const item of itemsToApprove.filter(i => i.varianceQuantity)) {
-        await prisma.stockMovement.create({
+        await prisma.wh_stock_movement.create({
           data: {
             tenantId,
             productId: item.productId,
@@ -562,7 +562,7 @@ export class InventoryAuditService {
       where: { id: auditId },
       include: {
         items: true,
-        warehouse: true,
+        wh_warehouses: true,
       },
     });
 
@@ -591,7 +591,7 @@ export class InventoryAuditService {
       },
       include: {
         items: true,
-        warehouse: true,
+        wh_warehouses: true,
       },
     });
 
@@ -630,7 +630,7 @@ export class InventoryAuditService {
         where,
         include: {
           items: true,
-          warehouse: true,
+          wh_warehouses: true,
         },
         orderBy: { createdAt: 'desc' },
         take: options?.limit || 50,
@@ -656,7 +656,7 @@ export class InventoryAuditService {
       where: { id: auditId, tenantId },
       include: {
         items: true,
-        warehouse: true,
+        wh_warehouses: true,
       },
     });
 
@@ -754,8 +754,8 @@ export class InventoryAuditService {
         countedQuantity: { not: null },
       },
       include: {
-        audit: {
-          include: { warehouse: true },
+        inv_audits: {
+          include: { wh_warehouses: true },
         },
       },
       orderBy: { audit: { completedAt: 'desc' } },
@@ -782,7 +782,7 @@ export class InventoryAuditService {
       where: { id: auditId, tenantId },
       include: {
         items: true,
-        warehouse: true,
+        wh_warehouses: true,
       },
     });
 

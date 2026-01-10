@@ -41,13 +41,13 @@ export async function GET(request: NextRequest) {
     if (status) where.status = status
 
     const [wallets, total] = await Promise.all([
-      prisma.commerceWallet.findMany({
+      prisma.commerce_wallets.findMany({
         where,
         orderBy: { createdAt: 'desc' },
         skip: offset,
         take: limit
       }),
-      prisma.commerceWallet.count({ where })
+      prisma.commerce_wallets.count({ where })
     ])
 
     return NextResponse.json({

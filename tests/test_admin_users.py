@@ -15,7 +15,7 @@ import pytest
 import requests
 
 # Base URL from environment
-BASE_URL = "https://site-funnels.preview.emergentagent.com"
+BASE_URL = "https://nextbuild-repair.preview.emergentagent.com"
 
 # Test credentials - Super Admin
 SUPER_ADMIN_SESSION = "ddaec89b-cb0c-4a8b-ab73-498b877c0aba-e1a18773-6bcf-40b4-9a04-db0608f9adb3"

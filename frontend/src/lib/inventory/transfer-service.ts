@@ -403,7 +403,7 @@ export class StockTransferService {
 
     // Record stock movements for audit trail
     for (const item of updated.items.filter(i => i.quantityShipped > 0)) {
-      await prisma.stockMovement.create({
+      await prisma.wh_stock_movement.create({
         data: {
           tenantId,
           productId: item.productId,
@@ -534,7 +534,7 @@ export class StockTransferService {
 
     // Record stock movements for audit trail
     for (const item of updated.items.filter(i => i.quantityReceived > 0)) {
-      await prisma.stockMovement.create({
+      await prisma.wh_stock_movement.create({
         data: {
           tenantId,
           productId: item.productId,

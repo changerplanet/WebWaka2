@@ -136,7 +136,7 @@ export class AssignmentService {
    */
   static async createAssignment(tenantId: string, input: CreateAssignmentInput) {
     // Check for existing assignment for this order
-    const existing = await prisma.logisticsDeliveryAssignment.findUnique({
+    const existing = await prisma.logistics_delivery_assignments.findUnique({
       where: {
         orderId_orderType: { orderId: input.orderId, orderType: input.orderType },
       },
@@ -146,7 +146,7 @@ export class AssignmentService {
       throw new Error('Delivery assignment already exists for this order')
     }
 
-    const assignment = await prisma.logisticsDeliveryAssignment.create({
+    const assignment = await prisma.logistics_delivery_assignments.create({
       data: {
         tenantId,
         orderId: input.orderId,
@@ -252,7 +252,7 @@ export class AssignmentService {
     }
 
     const [assignments, total] = await Promise.all([
-      prisma.logisticsDeliveryAssignment.findMany({
+      prisma.logistics_delivery_assignments.findMany({
         where,
         include: {
           agent: { select: { id: true, firstName: true, lastName: true, phone: true } },
@@ -263,7 +263,7 @@ export class AssignmentService {
         take: options.limit || 50,
         skip: options.offset || 0,
       }),
-      prisma.logisticsDeliveryAssignment.count({ where }),
+      prisma.logistics_delivery_assignments.count({ where }),
     ])
 
     return { assignments, total }
@@ -273,7 +273,7 @@ export class AssignmentService {
    * Get assignment by ID
    */
   static async getAssignmentById(tenantId: string, assignmentId: string) {
-    return prisma.logisticsDeliveryAssignment.findFirst({
+    return prisma.logistics_delivery_assignments.findFirst({
       where: { id: assignmentId, tenantId },
       include: {
         agent: true,
@@ -288,7 +288,7 @@ export class AssignmentService {
    * Get assignment by order
    */
   static async getAssignmentByOrder(orderId: string, orderType: string) {
-    return prisma.logisticsDeliveryAssignment.findUnique({
+    return prisma.logistics_delivery_assignments.findUnique({
       where: {
         orderId_orderType: { orderId, orderType },
       },
@@ -304,7 +304,7 @@ export class AssignmentService {
    * Update assignment
    */
   static async updateAssignment(tenantId: string, assignmentId: string, input: UpdateAssignmentInput) {
-    return prisma.logisticsDeliveryAssignment.update({
+    return prisma.logistics_delivery_assignments.update({
       where: { id: assignmentId },
       data: {
         ...(input.agentId !== undefined && { 
@@ -338,7 +338,7 @@ export class AssignmentService {
     assignedBy: string,
     autoAssigned: boolean = false
   ) {
-    const assignment = await prisma.logisticsDeliveryAssignment.findFirst({
+    const assignment = await prisma.logistics_delivery_assignments.findFirst({
       where: { id: assignmentId, tenantId },
     })
 
@@ -347,13 +347,13 @@ export class AssignmentService {
       throw new Error(`Cannot assign agent to delivery in ${assignment.status} status`)
     }
 
-    const agent = await prisma.logisticsDeliveryAgent.findFirst({
+    const agent = await prisma.logistics_delivery_agents.findFirst({
       where: { id: agentId, tenantId, status: 'ACTIVE' },
     })
 
     if (!agent) throw new Error('Agent not found or not active')
 
-    const updated = await prisma.logisticsDeliveryAssignment.update({
+    const updated = await prisma.logistics_delivery_assignments.update({
       where: { id: assignmentId },
       data: {
         agentId,
@@ -399,7 +399,7 @@ export class AssignmentService {
     assignmentId: string,
     input: StatusUpdateInput
   ) {
-    const assignment = await prisma.logisticsDeliveryAssignment.findFirst({
+    const assignment = await prisma.logistics_delivery_assignments.findFirst({
       where: { id: assignmentId, tenantId },
     })
 
@@ -434,7 +434,7 @@ export class AssignmentService {
         break
     }
 
-    const updated = await prisma.logisticsDeliveryAssignment.update({
+    const updated = await prisma.logistics_delivery_assignments.update({
       where: { id: assignmentId },
       data: updateData,
       include: { agent: true },
@@ -511,7 +511,7 @@ export class AssignmentService {
     }
   ) {
     // Get current status for fromStatus
-    const assignment = await prisma.logisticsDeliveryAssignment.findUnique({
+    const assignment = await prisma.logistics_delivery_assignments.findUnique({
       where: { id: assignmentId },
       select: { status: true },
     })
@@ -542,7 +542,7 @@ export class AssignmentService {
     assignmentId: string,
     input: RatingInput
   ) {
-    const assignment = await prisma.logisticsDeliveryAssignment.findFirst({
+    const assignment = await prisma.logistics_delivery_assignments.findFirst({
       where: { id: assignmentId, tenantId, status: 'DELIVERED' },
     })
 
@@ -553,7 +553,7 @@ export class AssignmentService {
       throw new Error('Rating must be between 1 and 5')
     }
 
-    const updated = await prisma.logisticsDeliveryAssignment.update({
+    const updated = await prisma.logistics_delivery_assignments.update({
       where: { id: assignmentId },
       data: {
         customerRating: input.rating,
@@ -596,13 +596,13 @@ export class AssignmentService {
     algorithm: 'NEAREST' | 'ROUND_ROBIN' | 'LEAST_BUSY' = 'NEAREST',
     assignedBy: string
   ) {
-    const assignment = await prisma.logisticsDeliveryAssignment.findFirst({
+    const assignment = await prisma.logistics_delivery_assignments.findFirst({
       where: { id: assignmentId, tenantId, status: 'PENDING' },
     })
 
     if (!assignment) throw new Error('Pending assignment not found')
 
-    const config = await prisma.logisticsConfiguration.findUnique({
+    const config = await prisma.logistics_configurations.findUnique({
       where: { tenantId },
     })
 
@@ -695,18 +695,18 @@ export class AssignmentService {
     }
 
     const [total, byStatus, byPriority, avgRating] = await Promise.all([
-      prisma.logisticsDeliveryAssignment.count({ where }),
-      prisma.logisticsDeliveryAssignment.groupBy({
+      prisma.logistics_delivery_assignments.count({ where }),
+      prisma.logistics_delivery_assignments.groupBy({
         by: ['status'],
         where,
         _count: true,
       }),
-      prisma.logisticsDeliveryAssignment.groupBy({
+      prisma.logistics_delivery_assignments.groupBy({
         by: ['priority'],
         where,
         _count: true,
       }),
-      prisma.logisticsDeliveryAssignment.aggregate({
+      prisma.logistics_delivery_assignments.aggregate({
         where: { ...where, customerRating: { not: null } },
         _avg: { customerRating: true },
       }),

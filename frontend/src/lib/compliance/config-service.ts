@@ -173,10 +173,10 @@ export async function getComplianceModuleStatus(tenantId?: string) {
     pendingStatuses,
   ] = await Promise.all([
     prisma.complianceProfile.count(),
-    prisma.taxComputationRecord.count(),
-    prisma.regulatoryReport.count(),
+    prisma.tax_computation_records.count(),
+    prisma.regulatory_reports.count(),
     prisma.auditArtifact.count(),
-    prisma.complianceStatus.count({ where: { isResolved: false } }),
+    prisma.compliance_statuses.count({ where: { isResolved: false } }),
   ]);
   
   // Get tenant-specific stats if tenantId provided
@@ -185,8 +185,8 @@ export async function getComplianceModuleStatus(tenantId?: string) {
     const profile = await getComplianceProfile(tenantId);
     
     const [tenantComputations, tenantReports] = await Promise.all([
-      prisma.taxComputationRecord.count({ where: { tenantId } }),
-      prisma.regulatoryReport.count({ where: { tenantId } }),
+      prisma.tax_computation_records.count({ where: { tenantId } }),
+      prisma.regulatory_reports.count({ where: { tenantId } }),
     ]);
     
     tenantStats = {

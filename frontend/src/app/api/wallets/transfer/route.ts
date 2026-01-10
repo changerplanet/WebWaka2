@@ -64,8 +64,8 @@ export async function POST(request: NextRequest) {
 
     // Verify both wallets belong to tenant
     const [fromWallet, toWallet] = await Promise.all([
-      prisma.commerceWallet.findUnique({ where: { id: fromWalletId } }),
-      prisma.commerceWallet.findUnique({ where: { id: toWalletId } })
+      prisma.commerce_wallets.findUnique({ where: { id: fromWalletId } }),
+      prisma.commerce_wallets.findUnique({ where: { id: toWalletId } })
     ])
 
     if (!fromWallet) {
@@ -102,8 +102,8 @@ export async function POST(request: NextRequest) {
 
     // Get updated wallet balances
     const [updatedFrom, updatedTo] = await Promise.all([
-      prisma.commerceWallet.findUnique({ where: { id: fromWalletId } }),
-      prisma.commerceWallet.findUnique({ where: { id: toWalletId } })
+      prisma.commerce_wallets.findUnique({ where: { id: fromWalletId } }),
+      prisma.commerce_wallets.findUnique({ where: { id: toWalletId } })
     ])
 
     return NextResponse.json({

@@ -58,7 +58,7 @@ export async function generateInsight(input: GenerateInsightInput): Promise<{
       return { success: false, error: 'Data sources must be documented for transparency' };
     }
     
-    const insight = await prisma.aIInsight.create({
+    const insight = await prisma.ai_insights.create({
       data: {
         tenantId: input.tenantId,
         insightType: input.insightType,
@@ -100,7 +100,7 @@ export async function generateInsight(input: GenerateInsightInput): Promise<{
 // ============================================================================
 
 export async function getInsight(insightId: string) {
-  return prisma.aIInsight.findUnique({
+  return prisma.ai_insights.findUnique({
     where: { id: insightId },
   });
 }
@@ -123,13 +123,13 @@ export async function listInsights(params: {
   else where.status = 'ACTIVE';  // Default to active
   
   const [insights, total] = await Promise.all([
-    prisma.aIInsight.findMany({
+    prisma.ai_insights.findMany({
       where,
       skip: (page - 1) * limit,
       take: limit,
       orderBy: [{ severity: 'desc' }, { createdAt: 'desc' }],
     }),
-    prisma.aIInsight.count({ where }),
+    prisma.ai_insights.count({ where }),
   ]);
   
   return {
@@ -148,7 +148,7 @@ export async function acknowledgeInsight(
   acknowledgedBy: string
 ): Promise<{ success: boolean; error?: string }> {
   try {
-    await prisma.aIInsight.update({
+    await prisma.ai_insights.update({
       where: { id: insightId },
       data: {
         status: 'ACKNOWLEDGED',
@@ -167,7 +167,7 @@ export async function dismissInsight(insightId: string): Promise<{
   error?: string;
 }> {
   try {
-    await prisma.aIInsight.update({
+    await prisma.ai_insights.update({
       where: { id: insightId },
       data: { status: 'DISMISSED' },
     });

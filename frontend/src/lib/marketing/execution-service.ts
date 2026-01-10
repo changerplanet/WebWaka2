@@ -66,7 +66,7 @@ export class ExecutionService {
     }
 
     // Find matching active workflows
-    const workflows = await prisma.mktAutomationWorkflow.findMany({
+    const workflows = await prisma.mkt_automation_workflows.findMany({
       where: {
         tenantId,
         status: 'ACTIVE',
@@ -127,7 +127,7 @@ export class ExecutionService {
     }>
   ): Promise<ExecutionResult> {
     // Create run record
-    const run = await prisma.mktAutomationRun.create({
+    const run = await prisma.mkt_automation_runs.create({
       data: {
         tenantId,
         workflowId,
@@ -184,7 +184,7 @@ export class ExecutionService {
 
     // Update run record
     const status: MktRunStatus = hasErrors ? 'FAILED' : 'COMPLETED'
-    await prisma.mktAutomationRun.update({
+    await prisma.mkt_automation_runs.update({
       where: { id: run.id },
       data: {
         status,
@@ -195,7 +195,7 @@ export class ExecutionService {
     })
 
     // Update workflow statistics
-    await prisma.mktAutomationWorkflow.update({
+    await prisma.mkt_automation_workflows.update({
       where: { id: workflowId },
       data: {
         totalRuns: { increment: 1 },
@@ -337,7 +337,7 @@ export class ExecutionService {
    * Get run history for a workflow
    */
   static async getRunHistory(tenantId: string, workflowId: string, limit: number = 50) {
-    const runs = await prisma.mktAutomationRun.findMany({
+    const runs = await prisma.mkt_automation_runs.findMany({
       where: { tenantId, workflowId },
       orderBy: { createdAt: 'desc' },
       take: limit,
@@ -363,12 +363,12 @@ export class ExecutionService {
     const since = new Date(Date.now() - days * 24 * 60 * 60 * 1000)
 
     const [byStatus, total] = await Promise.all([
-      prisma.mktAutomationRun.groupBy({
+      prisma.mkt_automation_runs.groupBy({
         by: ['status'],
         where: { tenantId, createdAt: { gte: since } },
         _count: true,
       }),
-      prisma.mktAutomationRun.count({
+      prisma.mkt_automation_runs.count({
         where: { tenantId, createdAt: { gte: since } },
       }),
     ])

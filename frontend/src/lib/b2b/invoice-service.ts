@@ -62,7 +62,7 @@ export class B2BInvoiceService {
    * Generate invoice number
    */
   private static async generateInvoiceNumber(tenantId: string): Promise<string> {
-    const count = await prisma.b2BInvoice.count({ where: { tenantId } })
+    const count = await prisma.b2b_invoices.count({ where: { tenantId } })
     const date = new Date()
     const year = date.getFullYear().toString().slice(-2)
     const month = (date.getMonth() + 1).toString().padStart(2, '0')
@@ -94,7 +94,7 @@ export class B2BInvoiceService {
     createdBy?: string
   ): Promise<B2BInvoice> {
     // Get profile and credit terms
-    const profile = await prisma.b2BCustomerProfile.findUnique({
+    const profile = await prisma.b2b_customer_profiles.findUnique({
       where: { id: input.profileId },
       include: { creditTerm: true },
     })
@@ -108,7 +108,7 @@ export class B2BInvoiceService {
     const totalAmount = input.subtotal - (input.discountTotal || 0) + (input.taxTotal || 0)
     const invoiceNumber = await this.generateInvoiceNumber(tenantId)
 
-    const invoice = await prisma.b2BInvoice.create({
+    const invoice = await prisma.b2b_invoices.create({
       data: {
         tenantId,
         invoiceNumber,
@@ -140,7 +140,7 @@ export class B2BInvoiceService {
     tenantId: string,
     invoiceId: string
   ): Promise<B2BInvoice> {
-    const invoice = await prisma.b2BInvoice.update({
+    const invoice = await prisma.b2b_invoices.update({
       where: { id: invoiceId, tenantId },
       data: { status: 'SENT' },
     })
@@ -168,7 +168,7 @@ export class B2BInvoiceService {
     amount: number,
     paymentReference?: string
   ): Promise<B2BInvoice> {
-    const invoice = await prisma.b2BInvoice.findUnique({
+    const invoice = await prisma.b2b_invoices.findUnique({
       where: { id: invoiceId, tenantId },
     })
 
@@ -184,7 +184,7 @@ export class B2BInvoiceService {
       newStatus = 'PARTIAL'
     }
 
-    const updated = await prisma.b2BInvoice.update({
+    const updated = await prisma.b2b_invoices.update({
       where: { id: invoiceId },
       data: {
         amountPaid: newAmountPaid,
@@ -235,13 +235,13 @@ export class B2BInvoiceService {
     }
 
     const [invoices, total] = await Promise.all([
-      prisma.b2BInvoice.findMany({
+      prisma.b2b_invoices.findMany({
         where,
         orderBy: { createdAt: 'desc' },
         skip,
         take: limit,
       }),
-      prisma.b2BInvoice.count({ where }),
+      prisma.b2b_invoices.count({ where }),
     ])
 
     return {
@@ -254,7 +254,7 @@ export class B2BInvoiceService {
    * Get invoice by ID
    */
   static async getInvoice(tenantId: string, invoiceId: string): Promise<B2BInvoice | null> {
-    const invoice = await prisma.b2BInvoice.findUnique({
+    const invoice = await prisma.b2b_invoices.findUnique({
       where: { id: invoiceId, tenantId },
     })
 
@@ -274,7 +274,7 @@ export class B2BInvoiceService {
     dueDate?: Date
   ): Promise<CreditLedgerEntry> {
     // Get current credit balance
-    const profile = await prisma.b2BCustomerProfile.findUnique({
+    const profile = await prisma.b2b_customer_profiles.findUnique({
       where: { id: profileId },
       select: { creditUsed: true },
     })
@@ -300,7 +300,7 @@ export class B2BInvoiceService {
     })
 
     // Update profile's credit used
-    await prisma.b2BCustomerProfile.update({
+    await prisma.b2b_customer_profiles.update({
       where: { id: profileId },
       data: { creditUsed: balanceAfter },
     })
@@ -357,7 +357,7 @@ export class B2BInvoiceService {
    * Check and update overdue invoices
    */
   static async updateOverdueInvoices(tenantId: string): Promise<number> {
-    const result = await prisma.b2BInvoice.updateMany({
+    const result = await prisma.b2b_invoices.updateMany({
       where: {
         tenantId,
         dueDate: { lt: new Date() },
@@ -374,18 +374,18 @@ export class B2BInvoiceService {
    */
   static async getStatistics(tenantId: string) {
     const [byStatus, totals, overdue] = await Promise.all([
-      prisma.b2BInvoice.groupBy({
+      prisma.b2b_invoices.groupBy({
         by: ['status'],
         where: { tenantId },
         _count: { id: true },
         _sum: { totalAmount: true, amountDue: true },
       }),
-      prisma.b2BInvoice.aggregate({
+      prisma.b2b_invoices.aggregate({
         where: { tenantId },
         _sum: { totalAmount: true, amountPaid: true, amountDue: true },
         _count: { id: true },
       }),
-      prisma.b2BInvoice.aggregate({
+      prisma.b2b_invoices.aggregate({
         where: {
           tenantId,
           dueDate: { lt: new Date() },

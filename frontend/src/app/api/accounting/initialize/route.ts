@@ -41,7 +41,7 @@ export async function POST(request: NextRequest) {
     const periodName = now.toLocaleString('en-US', { month: 'long', year: 'numeric' });
 
     // Check if period already exists
-    let period = await prisma.acctFinancialPeriod.findUnique({
+    let period = await prisma.acct_financial_periods.findUnique({
       where: {
         tenantId_code: {
           tenantId: session.activeTenantId,
@@ -51,7 +51,7 @@ export async function POST(request: NextRequest) {
     });
 
     if (!period) {
-      period = await prisma.acctFinancialPeriod.create({
+      period = await prisma.acct_financial_periods.create({
         data: {
           tenantId: session.activeTenantId,
           name: periodName,
@@ -100,11 +100,11 @@ export async function GET(request: NextRequest) {
     if (guardResult) return guardResult;
 
     // Check initialization status
-    const accountCount = await prisma.acctChartOfAccount.count({
+    const accountCount = await prisma.acct_chart_of_accounts.count({
       where: { tenantId: session.activeTenantId },
     });
 
-    const currentPeriod = await prisma.acctFinancialPeriod.findFirst({
+    const currentPeriod = await prisma.acct_financial_periods.findFirst({
       where: {
         tenantId: session.activeTenantId,
         status: 'OPEN',

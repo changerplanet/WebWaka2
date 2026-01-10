@@ -60,7 +60,7 @@ export class ProofService {
    */
   static async captureProof(tenantId: string, input: CaptureProofInput) {
     // Verify assignment exists and is in appropriate status
-    const assignment = await prisma.logisticsDeliveryAssignment.findFirst({
+    const assignment = await prisma.logistics_delivery_assignments.findFirst({
       where: { 
         id: input.assignmentId, 
         tenantId,
@@ -74,7 +74,7 @@ export class ProofService {
 
     // Check for duplicate offline IDs
     if (input.offlineId) {
-      const existing = await prisma.logisticsDeliveryProof.findFirst({
+      const existing = await prisma.logistics_delivery_proofs.findFirst({
         where: { offlineId: input.offlineId },
       })
       if (existing) {
@@ -86,7 +86,7 @@ export class ProofService {
     const hashedPin = input.pinCode ? this.hashCode(input.pinCode) : undefined
     const hashedOtp = input.otpCode ? this.hashCode(input.otpCode) : undefined
 
-    return prisma.logisticsDeliveryProof.create({
+    return prisma.logistics_delivery_proofs.create({
       data: {
         assignmentId: input.assignmentId,
         proofType: input.proofType,
@@ -112,7 +112,7 @@ export class ProofService {
    * Get proofs for an assignment
    */
   static async getProofs(assignmentId: string) {
-    return prisma.logisticsDeliveryProof.findMany({
+    return prisma.logistics_delivery_proofs.findMany({
       where: { assignmentId },
       orderBy: { capturedAt: 'desc' },
     })
@@ -122,7 +122,7 @@ export class ProofService {
    * Verify PIN code
    */
   static async verifyPin(tenantId: string, input: VerifyPinInput): Promise<boolean> {
-    const assignment = await prisma.logisticsDeliveryAssignment.findFirst({
+    const assignment = await prisma.logistics_delivery_assignments.findFirst({
       where: { id: input.assignmentId, tenantId },
     })
 
@@ -131,7 +131,7 @@ export class ProofService {
     }
 
     // Look for existing PIN proof
-    const pinProof = await prisma.logisticsDeliveryProof.findFirst({
+    const pinProof = await prisma.logistics_delivery_proofs.findFirst({
       where: { 
         assignmentId: input.assignmentId, 
         proofType: 'PIN_CODE',
@@ -149,7 +149,7 @@ export class ProofService {
    * Verify OTP code
    */
   static async verifyOtp(tenantId: string, input: VerifyOtpInput): Promise<boolean> {
-    const assignment = await prisma.logisticsDeliveryAssignment.findFirst({
+    const assignment = await prisma.logistics_delivery_assignments.findFirst({
       where: { id: input.assignmentId, tenantId },
     })
 
@@ -158,7 +158,7 @@ export class ProofService {
     }
 
     // Look for existing OTP proof
-    const otpProof = await prisma.logisticsDeliveryProof.findFirst({
+    const otpProof = await prisma.logistics_delivery_proofs.findFirst({
       where: { 
         assignmentId: input.assignmentId, 
         proofType: 'OTP',
@@ -177,7 +177,7 @@ export class ProofService {
    * Generate delivery PIN for customer
    */
   static async generateDeliveryPin(tenantId: string, assignmentId: string): Promise<string> {
-    const assignment = await prisma.logisticsDeliveryAssignment.findFirst({
+    const assignment = await prisma.logistics_delivery_assignments.findFirst({
       where: { id: assignmentId, tenantId },
     })
 
@@ -204,7 +204,7 @@ export class ProofService {
    * Generate delivery OTP for customer
    */
   static async generateDeliveryOtp(tenantId: string, assignmentId: string): Promise<string> {
-    const assignment = await prisma.logisticsDeliveryAssignment.findFirst({
+    const assignment = await prisma.logistics_delivery_assignments.findFirst({
       where: { id: assignmentId, tenantId },
     })
 
@@ -235,11 +235,11 @@ export class ProofService {
     missing: LogisticsProofType[]
     captured: LogisticsProofType[]
   }> {
-    const config = await prisma.logisticsConfiguration.findUnique({
+    const config = await prisma.logistics_configurations.findUnique({
       where: { tenantId },
     })
 
-    const proofs = await prisma.logisticsDeliveryProof.findMany({
+    const proofs = await prisma.logistics_delivery_proofs.findMany({
       where: { assignmentId },
       select: { proofType: true },
     })

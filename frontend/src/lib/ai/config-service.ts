@@ -68,13 +68,13 @@ export async function getAIModuleStatus(tenantId?: string) {
     activeRules,
     totalRuns,
   ] = await Promise.all([
-    prisma.aIInsight.count(),
-    prisma.aIInsight.count({ where: { status: 'ACTIVE' } }),
-    prisma.aIRecommendation.count(),
-    prisma.aIRecommendation.count({ where: { status: 'PENDING' } }),
-    prisma.automationRule.count(),
-    prisma.automationRule.count({ where: { isActive: true } }),
-    prisma.automationRun.count(),
+    prisma.ai_insights.count(),
+    prisma.ai_insights.count({ where: { status: 'ACTIVE' } }),
+    prisma.ai_recommendations.count(),
+    prisma.ai_recommendations.count({ where: { status: 'PENDING' } }),
+    prisma.automation_rules.count(),
+    prisma.automation_rules.count({ where: { isActive: true } }),
+    prisma.automation_runs.count(),
   ]);
   
   // Get tenant-specific stats if tenantId provided
@@ -86,10 +86,10 @@ export async function getAIModuleStatus(tenantId?: string) {
       tenantRules,
       tenantRuns,
     ] = await Promise.all([
-      prisma.aIInsight.count({ where: { tenantId, status: 'ACTIVE' } }),
-      prisma.aIRecommendation.count({ where: { tenantId, status: 'PENDING' } }),
-      prisma.automationRule.count({ where: { tenantId, isActive: true } }),
-      prisma.automationRun.count({ where: { tenantId } }),
+      prisma.ai_insights.count({ where: { tenantId, status: 'ACTIVE' } }),
+      prisma.ai_recommendations.count({ where: { tenantId, status: 'PENDING' } }),
+      prisma.automation_rules.count({ where: { tenantId, isActive: true } }),
+      prisma.automation_runs.count({ where: { tenantId } }),
     ]);
     
     tenantStats = {

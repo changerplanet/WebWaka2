@@ -818,7 +818,7 @@ export class OfflineSyncService {
     };
 
     // Check idempotency
-    const existing = await prisma.stockMovement.findFirst({
+    const existing = await prisma.wh_stock_movement.findFirst({
       where: {
         tenantId,
         offlineId: action.offlineEntityId,
@@ -847,7 +847,7 @@ export class OfflineSyncService {
 
       const quantityBefore = inventory?.quantityOnHand || 0;
 
-      const movement = await prisma.stockMovement.create({
+      const movement = await prisma.wh_stock_movement.create({
         data: {
           tenantId,
           productId: payload.productId,

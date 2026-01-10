@@ -67,7 +67,7 @@ export class AnalyticsConfigService {
    * Get analytics status
    */
   static async getStatus(tenantId: string) {
-    const config = await prisma.analyticsConfiguration.findUnique({
+    const config = await prisma.analytics_configurations.findUnique({
       where: { tenantId },
     })
 
@@ -82,7 +82,7 @@ export class AnalyticsConfigService {
    * Get analytics configuration
    */
   static async getConfig(tenantId: string): Promise<AnalyticsConfigOutput | null> {
-    const config = await prisma.analyticsConfiguration.findUnique({
+    const config = await prisma.analytics_configurations.findUnique({
       where: { tenantId },
     })
 
@@ -93,7 +93,7 @@ export class AnalyticsConfigService {
    * Initialize analytics module
    */
   static async initialize(tenantId: string, input?: AnalyticsConfigInput): Promise<AnalyticsConfigOutput> {
-    const existing = await prisma.analyticsConfiguration.findUnique({
+    const existing = await prisma.analytics_configurations.findUnique({
       where: { tenantId },
     })
 
@@ -101,7 +101,7 @@ export class AnalyticsConfigService {
       return this.updateConfig(tenantId, input || {})
     }
 
-    const config = await prisma.analyticsConfiguration.create({
+    const config = await prisma.analytics_configurations.create({
       data: {
         tenantId,
         analyticsEnabled: input?.analyticsEnabled ?? true,
@@ -132,7 +132,7 @@ export class AnalyticsConfigService {
    * Update analytics configuration
    */
   static async updateConfig(tenantId: string, input: AnalyticsConfigInput): Promise<AnalyticsConfigOutput> {
-    const config = await prisma.analyticsConfiguration.update({
+    const config = await prisma.analytics_configurations.update({
       where: { tenantId },
       data: {
         ...(input.analyticsEnabled !== undefined && { analyticsEnabled: input.analyticsEnabled }),
@@ -157,7 +157,7 @@ export class AnalyticsConfigService {
    * Mark last refresh time
    */
   static async markRefreshed(tenantId: string): Promise<void> {
-    await prisma.analyticsConfiguration.update({
+    await prisma.analytics_configurations.update({
       where: { tenantId },
       data: { lastRefreshedAt: new Date() },
     })
@@ -250,12 +250,12 @@ export class AnalyticsConfigService {
     ]
 
     for (const dashboard of defaultDashboards) {
-      const existing = await prisma.analyticsDashboard.findUnique({
+      const existing = await prisma.analytics_dashboards.findUnique({
         where: { tenantId_key: { tenantId, key: dashboard.key } },
       })
 
       if (!existing) {
-        const created = await prisma.analyticsDashboard.create({
+        const created = await prisma.analytics_dashboards.create({
           data: {
             tenantId,
             key: dashboard.key,
@@ -269,7 +269,7 @@ export class AnalyticsConfigService {
 
         // Create widgets
         for (const widget of dashboard.widgets) {
-          await prisma.analyticsDashboardWidget.create({
+          await prisma.analytics_dashboard_widgets.create({
             data: {
               dashboardId: created.id,
               title: widget.title,

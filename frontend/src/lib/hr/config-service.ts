@@ -54,7 +54,7 @@ export class HrConfigurationService {
    */
   static async initialize(tenantId: string, input: InitializeHrInput = {}) {
     // Check if already initialized
-    const existing = await prisma.hrConfiguration.findUnique({
+    const existing = await prisma.hr_configurations.findUnique({
       where: { tenantId },
     })
 
@@ -62,7 +62,7 @@ export class HrConfigurationService {
       throw new Error('HR already initialized for this tenant')
     }
 
-    return prisma.hrConfiguration.create({
+    return prisma.hr_configurations.create({
       data: {
         tenantId,
         hrEnabled: input.hrEnabled ?? true,
@@ -102,7 +102,7 @@ export class HrConfigurationService {
    * Get HR configuration
    */
   static async getConfiguration(tenantId: string) {
-    const config = await prisma.hrConfiguration.findUnique({
+    const config = await prisma.hr_configurations.findUnique({
       where: { tenantId },
     })
 
@@ -116,7 +116,7 @@ export class HrConfigurationService {
    * Update HR configuration
    */
   static async updateConfiguration(tenantId: string, input: UpdateHrConfigInput) {
-    return prisma.hrConfiguration.update({
+    return prisma.hr_configurations.update({
       where: { tenantId },
       data: {
         ...(input.hrEnabled !== undefined && { hrEnabled: input.hrEnabled }),
@@ -156,7 +156,7 @@ export class HrConfigurationService {
    * Check if HR is initialized and enabled
    */
   static async isEnabled(tenantId: string): Promise<boolean> {
-    const config = await prisma.hrConfiguration.findUnique({
+    const config = await prisma.hr_configurations.findUnique({
       where: { tenantId },
       select: { hrEnabled: true },
     })
@@ -168,7 +168,7 @@ export class HrConfigurationService {
    * Get work schedule settings
    */
   static async getWorkSettings(tenantId: string) {
-    const config = await prisma.hrConfiguration.findUnique({
+    const config = await prisma.hr_configurations.findUnique({
       where: { tenantId },
       select: {
         defaultWorkHoursPerDay: true,
@@ -190,7 +190,7 @@ export class HrConfigurationService {
    * Get leave settings
    */
   static async getLeaveSettings(tenantId: string) {
-    const config = await prisma.hrConfiguration.findUnique({
+    const config = await prisma.hr_configurations.findUnique({
       where: { tenantId },
       select: {
         defaultAnnualLeave: true,
@@ -214,7 +214,7 @@ export class HrConfigurationService {
    * Get payroll/tax settings
    */
   static async getPayrollSettings(tenantId: string) {
-    const config = await prisma.hrConfiguration.findUnique({
+    const config = await prisma.hr_configurations.findUnique({
       where: { tenantId },
       select: {
         defaultPayFrequency: true,

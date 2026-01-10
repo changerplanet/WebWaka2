@@ -65,7 +65,7 @@ export class MktConfigService {
    * Get marketing automation status
    */
   static async getStatus(tenantId: string) {
-    const config = await prisma.mktConfiguration.findUnique({
+    const config = await prisma.mkt_configurations.findUnique({
       where: { tenantId },
     })
 
@@ -80,7 +80,7 @@ export class MktConfigService {
    * Get configuration
    */
   static async getConfig(tenantId: string): Promise<MktConfigOutput | null> {
-    const config = await prisma.mktConfiguration.findUnique({
+    const config = await prisma.mkt_configurations.findUnique({
       where: { tenantId },
     })
 
@@ -91,7 +91,7 @@ export class MktConfigService {
    * Initialize marketing automation
    */
   static async initialize(tenantId: string, input?: MktConfigInput): Promise<MktConfigOutput> {
-    const existing = await prisma.mktConfiguration.findUnique({
+    const existing = await prisma.mkt_configurations.findUnique({
       where: { tenantId },
     })
 
@@ -99,7 +99,7 @@ export class MktConfigService {
       return this.updateConfig(tenantId, input || {})
     }
 
-    const config = await prisma.mktConfiguration.create({
+    const config = await prisma.mkt_configurations.create({
       data: {
         tenantId,
         automationEnabled: input?.automationEnabled ?? true,
@@ -127,7 +127,7 @@ export class MktConfigService {
    * Update configuration
    */
   static async updateConfig(tenantId: string, input: MktConfigInput): Promise<MktConfigOutput> {
-    const config = await prisma.mktConfiguration.update({
+    const config = await prisma.mkt_configurations.update({
       where: { tenantId },
       data: {
         ...(input.automationEnabled !== undefined && { automationEnabled: input.automationEnabled }),
@@ -216,12 +216,12 @@ export class MktConfigService {
 
     for (const template of templates) {
       // Check if exists
-      const existing = await prisma.mktAutomationWorkflow.findFirst({
+      const existing = await prisma.mkt_automation_workflows.findFirst({
         where: { tenantId, templateKey: template.templateKey },
       })
 
       if (!existing) {
-        const workflow = await prisma.mktAutomationWorkflow.create({
+        const workflow = await prisma.mkt_automation_workflows.create({
           data: {
             tenantId,
             name: template.name,

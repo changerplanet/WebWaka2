@@ -213,7 +213,7 @@ export class TaxService {
     periodCode: string
   ): Promise<VATSummary> {
     // Get the financial period
-    const period = await prisma.acctFinancialPeriod.findUnique({
+    const period = await prisma.acct_financial_periods.findUnique({
       where: { tenantId_code: { tenantId, code: periodCode } },
     });
 
@@ -222,7 +222,7 @@ export class TaxService {
     }
 
     // Get all journal entries for this period with VAT
-    const journals = await prisma.acctJournalEntry.findMany({
+    const journals = await prisma.acct_journal_entries.findMany({
       where: {
         tenantId,
         periodId: period.id,
@@ -346,7 +346,7 @@ export class TaxService {
     summary: VATSummary,
     createdBy?: string
   ) {
-    const period = await prisma.acctFinancialPeriod.findUnique({
+    const period = await prisma.acct_financial_periods.findUnique({
       where: { tenantId_code: { tenantId, code: periodCode } },
     });
 
@@ -406,7 +406,7 @@ export class TaxService {
     periodCode: string,
     finalizedBy: string
   ) {
-    const period = await prisma.acctFinancialPeriod.findUnique({
+    const period = await prisma.acct_financial_periods.findUnique({
       where: { tenantId_code: { tenantId, code: periodCode } },
     });
 

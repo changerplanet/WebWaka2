@@ -102,7 +102,7 @@ export class OfflineHrService {
   static async getOfflinePackage(tenantId: string, employeeProfileId?: string): Promise<OfflineHrPackage> {
     const [employees, schedules, leaveBalances, config] = await Promise.all([
       // Get employees
-      prisma.hrEmployeeProfile.findMany({
+      prisma.hr_employee_profiles.findMany({
         where: { 
           tenantId, 
           terminationDate: null,
@@ -130,7 +130,7 @@ export class OfflineHrService {
       }),
 
       // Get leave balances
-      prisma.hrLeaveBalance.findMany({
+      prisma.hr_leave_balances.findMany({
         where: { 
           tenantId, 
           year: new Date().getFullYear(),
@@ -145,7 +145,7 @@ export class OfflineHrService {
       }),
 
       // Get config
-      prisma.hrConfiguration.findUnique({
+      prisma.hr_configurations.findUnique({
         where: { tenantId },
         select: {
           allowManualAttendance: true,
@@ -209,7 +209,7 @@ export class OfflineHrService {
       for (const clockIn of request.clockIns) {
         try {
           // Check for duplicate
-          const existing = await prisma.hrAttendanceRecord.findFirst({
+          const existing = await prisma.hr_attendance_records.findFirst({
             where: { offlineId: clockIn.offlineId },
           })
           
@@ -316,7 +316,7 @@ export class OfflineHrService {
   ): Promise<OfflineDataChanges> {
     const [newLeave, statusChanges] = await Promise.all([
       // New leave requests
-      prisma.hrLeaveRequest.findMany({
+      prisma.hr_leave_requests.findMany({
         where: {
           tenantId,
           createdAt: { gt: lastSyncAt },
@@ -325,7 +325,7 @@ export class OfflineHrService {
       }),
 
       // Leave status changes
-      prisma.hrLeaveRequest.findMany({
+      prisma.hr_leave_requests.findMany({
         where: {
           tenantId,
           updatedAt: { gt: lastSyncAt },
@@ -358,11 +358,11 @@ export class OfflineHrService {
     invalidLeave: string[]
   }> {
     const [attendanceRecords, leaveRecords] = await Promise.all([
-      prisma.hrAttendanceRecord.findMany({
+      prisma.hr_attendance_records.findMany({
         where: { tenantId, offlineId: { in: data.attendanceIds } },
         select: { offlineId: true },
       }),
-      prisma.hrLeaveRequest.findMany({
+      prisma.hr_leave_requests.findMany({
         where: { tenantId, offlineId: { in: data.leaveIds } },
         select: { offlineId: true },
       }),

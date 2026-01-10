@@ -405,7 +405,7 @@ export class ReportsService {
     const netIncome = new Decimal(pnl.netIncome);
 
     // Get cash account movements
-    const cashAccounts = await prisma.acctLedgerEntry.findMany({
+    const cashAccounts = await prisma.acct_ledger_entries.findMany({
       where: {
         tenantId,
         entryDate: { gte: startDate, lte: endDate },
@@ -530,7 +530,7 @@ export class ReportsService {
     filters: ReportFilters
   ): Promise<{ startDate: Date; endDate: Date; periodName: string }> {
     if (filters.periodCode) {
-      const period = await prisma.acctFinancialPeriod.findUnique({
+      const period = await prisma.acct_financial_periods.findUnique({
         where: { tenantId_code: { tenantId, code: filters.periodCode } },
       });
       if (period) {
@@ -543,7 +543,7 @@ export class ReportsService {
     }
 
     if (filters.periodId) {
-      const period = await prisma.acctFinancialPeriod.findUnique({
+      const period = await prisma.acct_financial_periods.findUnique({
         where: { id: filters.periodId },
       });
       if (period) {
@@ -571,7 +571,7 @@ export class ReportsService {
     includeDebitCredit: boolean = false
   ): Promise<ReportLineItem[]> {
     // Get all ledger accounts with their chart of accounts
-    const ledgerAccounts = await prisma.acctLedgerAccount.findMany({
+    const ledgerAccounts = await prisma.acct_ledger_accounts.findMany({
       where: { tenantId },
       include: {
         chartOfAccount: true,
@@ -656,7 +656,7 @@ export class ReportsService {
   }
 
   private static async getCashBalance(tenantId: string, asOfDate: Date): Promise<Decimal> {
-    const cashAccounts = await prisma.acctLedgerAccount.findMany({
+    const cashAccounts = await prisma.acct_ledger_accounts.findMany({
       where: {
         tenantId,
         chartOfAccount: {

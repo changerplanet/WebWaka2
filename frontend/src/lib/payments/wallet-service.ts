@@ -64,7 +64,7 @@ export class WalletService {
    * Generate transaction number
    */
   private static async generateTransactionNumber(tenantId: string): Promise<string> {
-    const count = await prisma.payWalletTransaction.count({ where: { tenantId } })
+    const count = await prisma.pay_wallet_transactions.count({ where: { tenantId } })
     const date = new Date()
     const ts = date.getTime().toString(36).toUpperCase()
     return `TXN-${ts}-${(count + 1).toString().padStart(6, '0')}`
@@ -81,7 +81,7 @@ export class WalletService {
     name?: string
   ): Promise<Wallet> {
     // Try to find existing wallet
-    const existing = await prisma.payWallet.findFirst({
+    const existing = await prisma.pay_wallets.findFirst({
       where: { tenantId, ownerType, ownerId, currency },
     })
 
@@ -92,7 +92,7 @@ export class WalletService {
     // Create new wallet
     const walletNumber = this.generateWalletNumber(ownerType, ownerId || tenantId)
     
-    const wallet = await prisma.payWallet.create({
+    const wallet = await prisma.pay_wallets.create({
       data: {
         tenantId,
         ownerType,
@@ -110,7 +110,7 @@ export class WalletService {
    * Get wallet by ID
    */
   static async getWallet(tenantId: string, walletId: string): Promise<Wallet | null> {
-    const wallet = await prisma.payWallet.findUnique({
+    const wallet = await prisma.pay_wallets.findUnique({
       where: { id: walletId, tenantId },
     })
 
@@ -126,7 +126,7 @@ export class WalletService {
     ownerId: string | null,
     currency: string = 'NGN'
   ): Promise<Wallet | null> {
-    const wallet = await prisma.payWallet.findFirst({
+    const wallet = await prisma.pay_wallets.findFirst({
       where: { tenantId, ownerType, ownerId, currency },
     })
 
@@ -156,13 +156,13 @@ export class WalletService {
     }
 
     const [wallets, total] = await Promise.all([
-      prisma.payWallet.findMany({
+      prisma.pay_wallets.findMany({
         where,
         orderBy: { createdAt: 'desc' },
         skip,
         take: limit,
       }),
-      prisma.payWallet.count({ where }),
+      prisma.pay_wallets.count({ where }),
     ])
 
     return {
@@ -189,7 +189,7 @@ export class WalletService {
     }
   ): Promise<WalletTransaction> {
     // Get wallet and current balance
-    const wallet = await prisma.payWallet.findUnique({
+    const wallet = await prisma.pay_wallets.findUnique({
       where: { id: walletId, tenantId },
     })
 
@@ -202,7 +202,7 @@ export class WalletService {
 
     // Create transaction and update wallet in transaction
     const [transaction] = await prisma.$transaction([
-      prisma.payWalletTransaction.create({
+      prisma.pay_wallet_transactions.create({
         data: {
           tenantId,
           walletId,
@@ -221,7 +221,7 @@ export class WalletService {
           status: 'COMPLETED',
         },
       }),
-      prisma.payWallet.update({
+      prisma.pay_wallets.update({
         where: { id: walletId },
         data: {
           balance: balanceAfter,
@@ -259,7 +259,7 @@ export class WalletService {
     }
   ): Promise<WalletTransaction> {
     // Get wallet and current balance
-    const wallet = await prisma.payWallet.findUnique({
+    const wallet = await prisma.pay_wallets.findUnique({
       where: { id: walletId, tenantId },
     })
 
@@ -283,7 +283,7 @@ export class WalletService {
 
     // Create transaction and update wallet in transaction
     const [transaction] = await prisma.$transaction([
-      prisma.payWalletTransaction.create({
+      prisma.pay_wallet_transactions.create({
         data: {
           tenantId,
           walletId,
@@ -302,7 +302,7 @@ export class WalletService {
           status: 'COMPLETED',
         },
       }),
-      prisma.payWallet.update({
+      prisma.pay_wallets.update({
         where: { id: walletId },
         data: {
           balance: balanceAfter,
@@ -332,7 +332,7 @@ export class WalletService {
     referenceId: string,
     description?: string
   ): Promise<void> {
-    const wallet = await prisma.payWallet.findUnique({
+    const wallet = await prisma.pay_wallets.findUnique({
       where: { id: walletId, tenantId },
     })
 
@@ -343,7 +343,7 @@ export class WalletService {
       throw new Error('Insufficient available balance')
     }
 
-    await prisma.payWallet.update({
+    await prisma.pay_wallets.update({
       where: { id: walletId },
       data: {
         balance: available - amount,
@@ -363,7 +363,7 @@ export class WalletService {
     amount: number,
     referenceId: string
   ): Promise<void> {
-    const wallet = await prisma.payWallet.findUnique({
+    const wallet = await prisma.pay_wallets.findUnique({
       where: { id: walletId, tenantId },
     })
 
@@ -372,7 +372,7 @@ export class WalletService {
     const pending = wallet.pendingBalance.toNumber()
     const releaseAmount = Math.min(amount, pending)
 
-    await prisma.payWallet.update({
+    await prisma.pay_wallets.update({
       where: { id: walletId },
       data: {
         balance: wallet.balance.toNumber() + releaseAmount,
@@ -387,7 +387,7 @@ export class WalletService {
    * Suspend wallet
    */
   static async suspendWallet(tenantId: string, walletId: string, reason: string): Promise<Wallet> {
-    const wallet = await prisma.payWallet.update({
+    const wallet = await prisma.pay_wallets.update({
       where: { id: walletId, tenantId },
       data: {
         status: 'SUSPENDED',
@@ -405,7 +405,7 @@ export class WalletService {
    * Reactivate wallet
    */
   static async reactivateWallet(tenantId: string, walletId: string): Promise<Wallet> {
-    const wallet = await prisma.payWallet.update({
+    const wallet = await prisma.pay_wallets.update({
       where: { id: walletId, tenantId },
       data: {
         status: 'ACTIVE',
@@ -442,13 +442,13 @@ export class WalletService {
     }
 
     const [transactions, total] = await Promise.all([
-      prisma.payWalletTransaction.findMany({
+      prisma.pay_wallet_transactions.findMany({
         where,
         orderBy: { createdAt: 'desc' },
         skip,
         take: limit,
       }),
-      prisma.payWalletTransaction.count({ where }),
+      prisma.pay_wallet_transactions.count({ where }),
     ])
 
     return {

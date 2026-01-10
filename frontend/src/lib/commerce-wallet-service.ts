@@ -65,11 +65,11 @@ export async function getOrCreateWallet(params: CreateWalletParams) {
   }
 
   // Try to find existing wallet
-  let wallet = await prisma.commerceWallet.findFirst({ where: whereClause })
+  let wallet = await prisma.commerce_wallets.findFirst({ where: whereClause })
 
   if (!wallet) {
     // Create new wallet
-    wallet = await prisma.commerceWallet.create({
+    wallet = await prisma.commerce_wallets.create({
       data: {
         tenantId,
         type,
@@ -91,7 +91,7 @@ export async function getOrCreateWallet(params: CreateWalletParams) {
  * Get wallet by ID
  */
 export async function getWallet(walletId: string) {
-  return prisma.commerceWallet.findUnique({
+  return prisma.commerce_wallets.findUnique({
     where: { id: walletId }
   })
 }
@@ -100,7 +100,7 @@ export async function getWallet(walletId: string) {
  * Get wallet with recent ledger entries
  */
 export async function getWalletWithLedger(walletId: string, limit = 50) {
-  const wallet = await prisma.commerceWallet.findUnique({
+  const wallet = await prisma.commerce_wallets.findUnique({
     where: { id: walletId },
     include: {
       ledgerEntries: {
@@ -461,7 +461,7 @@ export async function captureHold(
  * Recalculate wallet balance from ledger (for reconciliation)
  */
 export async function recalculateBalance(walletId: string) {
-  const entries = await prisma.commerceWalletLedger.findMany({
+  const entries = await prisma.commerce_wallet_ledger.findMany({
     where: { 
       walletId,
       status: 'COMPLETED'
@@ -494,7 +494,7 @@ export async function recalculateBalance(walletId: string) {
   const availableBalance = balance - pendingBalance
 
   // Update wallet
-  const wallet = await prisma.commerceWallet.update({
+  const wallet = await prisma.commerce_wallets.update({
     where: { id: walletId },
     data: {
       balance,
@@ -535,13 +535,13 @@ export async function getLedgerEntries(
   }
 
   const [entries, total] = await Promise.all([
-    prisma.commerceWalletLedger.findMany({
+    prisma.commerce_wallet_ledger.findMany({
       where,
       orderBy: { createdAt: 'desc' },
       skip: offset,
       take: limit
     }),
-    prisma.commerceWalletLedger.count({ where })
+    prisma.commerce_wallet_ledger.count({ where })
   ])
 
   return { entries, total, limit, offset }

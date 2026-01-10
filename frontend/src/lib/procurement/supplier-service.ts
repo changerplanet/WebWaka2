@@ -60,7 +60,7 @@ export class SupplierService {
     const validFrom = input.validFrom || new Date()
 
     // Deactivate existing prices for same supplier-product combo
-    await prisma.procSupplierPriceList.updateMany({
+    await prisma.proc_supplier_price_lists.updateMany({
       where: {
         tenantId,
         supplierId: input.supplierId,
@@ -74,7 +74,7 @@ export class SupplierService {
     })
 
     // Create new price entry
-    const price = await prisma.procSupplierPriceList.create({
+    const price = await prisma.proc_supplier_price_lists.create({
       data: {
         tenantId,
         supplierId: input.supplierId,
@@ -98,7 +98,7 @@ export class SupplierService {
    * Get current price for supplier-product combination
    */
   static async getCurrentPrice(tenantId: string, supplierId: string, productId: string) {
-    const price = await prisma.procSupplierPriceList.findFirst({
+    const price = await prisma.proc_supplier_price_lists.findFirst({
       where: {
         tenantId,
         supplierId,
@@ -128,7 +128,7 @@ export class SupplierService {
       ...(filters.currency && { currency: filters.currency }),
     }
 
-    const prices = await prisma.procSupplierPriceList.findMany({
+    const prices = await prisma.proc_supplier_price_lists.findMany({
       where,
       orderBy: [{ supplierId: 'asc' }, { validFrom: 'desc' }],
     })
@@ -140,7 +140,7 @@ export class SupplierService {
    * Get price history for supplier-product
    */
   static async getPriceHistory(tenantId: string, supplierId: string, productId: string) {
-    const prices = await prisma.procSupplierPriceList.findMany({
+    const prices = await prisma.proc_supplier_price_lists.findMany({
       where: { tenantId, supplierId, productId },
       orderBy: { validFrom: 'desc' },
     })
@@ -152,7 +152,7 @@ export class SupplierService {
    * Compare prices across suppliers for a product
    */
   static async comparePrices(tenantId: string, productId: string) {
-    const prices = await prisma.procSupplierPriceList.findMany({
+    const prices = await prisma.proc_supplier_price_lists.findMany({
       where: {
         tenantId,
         productId,
@@ -194,14 +194,14 @@ export class SupplierService {
     periodEnd: Date
   ) {
     // Get all POs for this supplier in the period
-    const orders = await prisma.procPurchaseOrder.findMany({
+    const orders = await prisma.proc_purchase_orders.findMany({
       where: {
         tenantId,
         supplierId,
         orderDate: { gte: periodStart, lte: periodEnd },
       },
       include: {
-        receipts: {
+        proc_goods_receipts: {
           include: { items: true },
         },
       },
@@ -270,7 +270,7 @@ export class SupplierService {
       : qualityScore || deliveryScore || null
 
     // Upsert performance record
-    const performance = await prisma.procSupplierPerformance.upsert({
+    const performance = await prisma.proc_supplier_performance.upsert({
       where: {
         tenantId_supplierId_periodStart_periodEnd: {
           tenantId,
@@ -331,7 +331,7 @@ export class SupplierService {
     const start = periodStart || new Date(Date.now() - 90 * 24 * 60 * 60 * 1000)
     const end = periodEnd || new Date()
 
-    const performance = await prisma.procSupplierPerformance.findFirst({
+    const performance = await prisma.proc_supplier_performance.findFirst({
       where: {
         tenantId,
         supplierId,
@@ -355,7 +355,7 @@ export class SupplierService {
       ...(filters.toDate && { periodEnd: { lte: filters.toDate } }),
     }
 
-    const records = await prisma.procSupplierPerformance.findMany({
+    const records = await prisma.proc_supplier_performance.findMany({
       where,
       orderBy: [{ periodEnd: 'desc' }, { supplierId: 'asc' }],
     })
@@ -380,7 +380,7 @@ export class SupplierService {
   static async getTopSuppliers(tenantId: string, limit: number = 10) {
     const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
 
-    const records = await prisma.procSupplierPerformance.findMany({
+    const records = await prisma.proc_supplier_performance.findMany({
       where: {
         tenantId,
         periodEnd: { gte: thirtyDaysAgo },

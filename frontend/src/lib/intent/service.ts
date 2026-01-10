@@ -233,7 +233,7 @@ export async function captureIntent(data: {
 }) {
   const intentDef = getIntentByKey(data.intentKey)
   
-  const intent = await prisma.userIntent.create({
+  const intent = await prisma.user_intents.create({
     data: {
       intentKey: data.intentKey,
       intentDomain: intentDef?.domain || 'GENERAL',
@@ -255,7 +255,7 @@ export async function captureIntent(data: {
  * Get pending intent for user (before tenant creation)
  */
 export async function getPendingIntentForUser(userId: string) {
-  return prisma.userIntent.findFirst({
+  return prisma.user_intents.findFirst({
     where: {
       userId,
       isProcessed: false,
@@ -269,7 +269,7 @@ export async function getPendingIntentForUser(userId: string) {
  * Attach intent to tenant (after tenant creation)
  */
 export async function attachIntentToTenant(intentId: string, tenantId: string) {
-  return prisma.userIntent.update({
+  return prisma.user_intents.update({
     where: { id: intentId },
     data: { tenantId },
   })
@@ -279,7 +279,7 @@ export async function attachIntentToTenant(intentId: string, tenantId: string) {
  * Get intents for tenant
  */
 export async function getIntentsForTenant(tenantId: string) {
-  return prisma.userIntent.findMany({
+  return prisma.user_intents.findMany({
     where: { tenantId },
     orderBy: { capturedAt: 'desc' },
   })
@@ -289,7 +289,7 @@ export async function getIntentsForTenant(tenantId: string) {
  * Mark intent as processed
  */
 export async function markIntentProcessed(intentId: string) {
-  return prisma.userIntent.update({
+  return prisma.user_intents.update({
     where: { id: intentId },
     data: {
       isProcessed: true,

@@ -45,9 +45,9 @@ export async function makeApiCall(
   let retryCount = 0
   const maxRetries = options.retries ?? 3
   
-  const instance = await prisma.integrationInstance.findUnique({
+  const instance = await prisma.integration_instances.findUnique({
     where: { id: instanceId },
-    include: { provider: true },
+    include: { integration_providers: true },
   })
   
   if (!instance) {
@@ -292,7 +292,7 @@ async function logApiCall(
     retryCount: number
   }
 ) {
-  await prisma.integrationLog.create({
+  await prisma.integration_logs.create({
     data: {
       tenantId,
       instanceId,

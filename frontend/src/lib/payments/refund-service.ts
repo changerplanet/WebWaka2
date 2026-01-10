@@ -41,7 +41,7 @@ export class RefundService {
    * Generate refund number
    */
   private static async generateRefundNumber(tenantId: string): Promise<string> {
-    const count = await prisma.payRefund.count({ where: { tenantId } })
+    const count = await prisma.pay_refunds.count({ where: { tenantId } })
     const date = new Date()
     const year = date.getFullYear().toString().slice(-2)
     const month = (date.getMonth() + 1).toString().padStart(2, '0')
@@ -63,7 +63,7 @@ export class RefundService {
     requestedBy?: string
   ): Promise<Refund> {
     // Get original payment
-    const payment = await prisma.payPaymentTransaction.findUnique({
+    const payment = await prisma.pay_payment_transactions.findUnique({
       where: { id: input.paymentId },
     })
 
@@ -72,7 +72,7 @@ export class RefundService {
     if (payment.status !== 'CONFIRMED') throw new Error('Cannot refund unconfirmed payment')
 
     // Check total refunds don't exceed payment
-    const existingRefunds = await prisma.payRefund.aggregate({
+    const existingRefunds = await prisma.pay_refunds.aggregate({
       where: { paymentId: input.paymentId, status: { in: ['APPROVED', 'PROCESSING', 'COMPLETED'] } },
       _sum: { amount: true },
     })
@@ -86,7 +86,7 @@ export class RefundService {
 
     const refundNumber = await this.generateRefundNumber(tenantId)
 
-    const refund = await prisma.payRefund.create({
+    const refund = await prisma.pay_refunds.create({
       data: {
         tenantId,
         refundNumber,
@@ -116,7 +116,7 @@ export class RefundService {
    * Approve refund
    */
   static async approveRefund(tenantId: string, refundId: string, approvedBy: string): Promise<Refund> {
-    const refund = await prisma.payRefund.update({
+    const refund = await prisma.pay_refunds.update({
       where: { id: refundId, tenantId, status: 'PENDING' },
       data: {
         status: 'APPROVED',
@@ -134,7 +134,7 @@ export class RefundService {
    * 🚨 This is where money moves back
    */
   static async processRefund(tenantId: string, refundId: string): Promise<Refund> {
-    const refund = await prisma.payRefund.findUnique({
+    const refund = await prisma.pay_refunds.findUnique({
       where: { id: refundId, tenantId },
       include: { payment: true },
     })
@@ -152,7 +152,7 @@ export class RefundService {
     }
 
     // Update refund to processing
-    await prisma.payRefund.update({
+    await prisma.pay_refunds.update({
       where: { id: refundId },
       data: { status: 'PROCESSING' },
     })
@@ -166,7 +166,7 @@ export class RefundService {
     })
 
     // Update refund to completed
-    const updated = await prisma.payRefund.update({
+    const updated = await prisma.pay_refunds.update({
       where: { id: refundId },
       data: {
         status: 'COMPLETED',
@@ -175,7 +175,7 @@ export class RefundService {
     })
 
     // Update original payment status
-    const totalRefunded = await prisma.payRefund.aggregate({
+    const totalRefunded = await prisma.pay_refunds.aggregate({
       where: { paymentId: refund.paymentId, status: 'COMPLETED' },
       _sum: { amount: true },
     })
@@ -183,7 +183,7 @@ export class RefundService {
     const paymentAmount = refund.payment.amount.toNumber()
     const refundedAmount = totalRefunded._sum.amount?.toNumber() || 0
 
-    await prisma.payPaymentTransaction.update({
+    await prisma.pay_payment_transactions.update({
       where: { id: refund.paymentId },
       data: {
         status: refundedAmount >= paymentAmount ? 'REFUNDED' : 'PARTIALLY_REFUNDED',
@@ -204,7 +204,7 @@ export class RefundService {
    * Reject refund
    */
   static async rejectRefund(tenantId: string, refundId: string, reason?: string): Promise<Refund> {
-    const refund = await prisma.payRefund.update({
+    const refund = await prisma.pay_refunds.update({
       where: { id: refundId, tenantId, status: 'PENDING' },
       data: {
         status: 'REJECTED',
@@ -240,13 +240,13 @@ export class RefundService {
     }
 
     const [refunds, total] = await Promise.all([
-      prisma.payRefund.findMany({
+      prisma.pay_refunds.findMany({
         where,
         orderBy: { createdAt: 'desc' },
         skip,
         take: limit,
       }),
-      prisma.payRefund.count({ where }),
+      prisma.pay_refunds.count({ where }),
     ])
 
     return {
@@ -260,19 +260,19 @@ export class RefundService {
    */
   static async getStatistics(tenantId: string) {
     const [byStatus, byReason, totals] = await Promise.all([
-      prisma.payRefund.groupBy({
+      prisma.pay_refunds.groupBy({
         by: ['status'],
         where: { tenantId },
         _count: { id: true },
         _sum: { amount: true },
       }),
-      prisma.payRefund.groupBy({
+      prisma.pay_refunds.groupBy({
         by: ['reason'],
         where: { tenantId, status: 'COMPLETED' },
         _count: { id: true },
         _sum: { amount: true },
       }),
-      prisma.payRefund.aggregate({
+      prisma.pay_refunds.aggregate({
         where: { tenantId, status: 'COMPLETED' },
         _sum: { amount: true },
         _count: { id: true },
