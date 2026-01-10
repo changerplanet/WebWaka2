@@ -123,7 +123,7 @@ export class ZoneService {
         metadata: input.metadata as object | undefined,
       },
       include: {
-        pricingRules: true,
+        logistics_delivery_pricing_rules: true,
       },
     })
   }
@@ -141,7 +141,7 @@ export class ZoneService {
       includeRules?: boolean
     } = {}
   ) {
-    const where: Prisma.LogisticsDeliveryZoneWhereInput = { tenantId }
+    const where: Prisma.logistics_delivery_zonesWhereInput = { tenantId }
     
     if (options.status) where.status = options.status
     if (options.zoneType) where.zoneType = options.zoneType
@@ -151,7 +151,7 @@ export class ZoneService {
     return prisma.logistics_delivery_zones.findMany({
       where,
       include: {
-        pricingRules: options.includeRules ? { where: { isActive: true } } : false,
+        logistics_delivery_pricing_rules: options.includeRules ? { where: { isActive: true } } : false,
         _count: { select: { logistics_delivery_assignments: true } },
       },
       orderBy: [{ sortOrder: 'asc' }, { name: 'asc' }],
@@ -165,7 +165,7 @@ export class ZoneService {
     return prisma.logistics_delivery_zones.findFirst({
       where: { id: zoneId, tenantId },
       include: {
-        pricingRules: { orderBy: { priority: 'desc' } },
+        logistics_delivery_pricing_rules: { orderBy: { priority: 'desc' } },
         _count: { select: { logistics_delivery_assignments: true } },
       },
     })
@@ -195,7 +195,7 @@ export class ZoneService {
         ...(input.metadata !== undefined && { metadata: input.metadata as object | undefined }),
       },
       include: {
-        pricingRules: true,
+        logistics_delivery_pricing_rules: true,
       },
     })
   }
@@ -244,7 +244,7 @@ export class ZoneService {
         ],
       },
       include: {
-        pricingRules: { where: { isActive: true }, orderBy: { priority: 'desc' } },
+        logistics_delivery_pricing_rules: { where: { isActive: true }, orderBy: { priority: 'desc' } },
       },
       orderBy: { sortOrder: 'asc' },
     })
@@ -284,7 +284,7 @@ export class ZoneService {
       throw new Error('Zone not found')
     }
 
-    return prisma.logisticsDeliveryPricingRule.create({
+    return prisma.logistics_delivery_pricing_rules.create({
       data: {
         tenantId,
         zoneId: input.zoneId,
@@ -316,7 +316,7 @@ export class ZoneService {
    * Get pricing rules for a zone
    */
   static async getPricingRules(tenantId: string, zoneId: string) {
-    return prisma.logisticsDeliveryPricingRule.findMany({
+    return prisma.logistics_delivery_pricing_rules.findMany({
       where: { tenantId, zoneId },
       orderBy: { priority: 'desc' },
     })
@@ -330,7 +330,7 @@ export class ZoneService {
     ruleId: string,
     input: Partial<CreatePricingRuleInput> & { isActive?: boolean }
   ) {
-    return prisma.logisticsDeliveryPricingRule.update({
+    return prisma.logistics_delivery_pricing_rules.update({
       where: { id: ruleId },
       data: {
         ...(input.name && { name: input.name }),
@@ -362,7 +362,7 @@ export class ZoneService {
    * Delete pricing rule
    */
   static async deletePricingRule(tenantId: string, ruleId: string) {
-    return prisma.logisticsDeliveryPricingRule.delete({
+    return prisma.logistics_delivery_pricing_rules.delete({
       where: { id: ruleId },
     })
   }
@@ -380,7 +380,7 @@ export class ZoneService {
     let zone = input.zoneId
       ? await prisma.logistics_delivery_zones.findFirst({
           where: { id: input.zoneId, tenantId: input.tenantId, status: 'ACTIVE' },
-          include: { pricingRules: { where: { isActive: true }, orderBy: { priority: 'desc' } } },
+          include: { logistics_delivery_pricing_rules: { where: { isActive: true }, orderBy: { priority: 'desc' } } },
         })
       : await this.findZoneForAddress(input.tenantId, {
           city: input.city,
