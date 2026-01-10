@@ -16,7 +16,8 @@
 import { withPrismaDefaults } from '@/lib/db/prismaDefaults'
 import { prisma } from '@/lib/prisma';
 import { Decimal } from '@prisma/client/runtime/library';
-import { createAuditLog, PolAuditAction } from './audit-service';
+import { createAuditLog } from './audit-service';
+import { PolAuditAction } from './types';
 
 // Re-export enums
 export {
