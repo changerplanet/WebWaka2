@@ -287,7 +287,7 @@ export interface Job {
   paidAt?: string;
   
   // Tracking
-  statusHistory: StatusUpdate[];
+  logistics_delivery_status_history: StatusUpdate[];
   
   // POD
   pod?: ProofOfDelivery;

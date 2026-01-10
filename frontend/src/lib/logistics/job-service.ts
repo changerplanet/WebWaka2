@@ -192,7 +192,7 @@ export async function createJob(tenantId: string, data: {
     customerName: data.customerName,
     reference: data.reference,
     tags: data.tags,
-    statusHistory: [{
+    logistics_delivery_status_history: [{
       status: 'CREATED',
       timestamp: new Date().toISOString(),
       updatedBy: data.createdBy,
@@ -257,7 +257,7 @@ export async function assignJob(
     vehicleId,
     vehicleNumber: vehicle.vehicleNumber,
     assignedAt: new Date().toISOString(),
-    statusHistory: [...job.statusHistory, statusUpdate],
+    logistics_delivery_status_history: [...job.statusHistory, statusUpdate],
     updatedAt: new Date().toISOString(),
   };
   
@@ -322,7 +322,7 @@ export async function acceptJob(
     ...job,
     status: 'ACCEPTED',
     acceptedAt: new Date().toISOString(),
-    statusHistory: [...job.statusHistory, statusUpdate],
+    logistics_delivery_status_history: [...job.statusHistory, statusUpdate],
     updatedAt: new Date().toISOString(),
   };
   
@@ -393,7 +393,7 @@ export async function unassignJob(
     vehicleNumber: undefined,
     assignedAt: undefined,
     acceptedAt: undefined,
-    statusHistory: [...job.statusHistory, statusUpdate],
+    logistics_delivery_status_history: [...job.statusHistory, statusUpdate],
     updatedAt: new Date().toISOString(),
   };
   
@@ -462,7 +462,7 @@ export async function cancelJob(
   store[jobIndex] = {
     ...job,
     status: 'CANCELLED',
-    statusHistory: [...job.statusHistory, statusUpdate],
+    logistics_delivery_status_history: [...job.statusHistory, statusUpdate],
     updatedAt: new Date().toISOString(),
   };
   

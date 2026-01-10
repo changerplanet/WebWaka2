@@ -419,7 +419,7 @@ export const DEMO_JOBS: Job[] = [
     paymentMethod: 'TRANSFER',
     isPaid: true,
     paidAt: `${today}T08:00:00Z`,
-    statusHistory: [
+    logistics_delivery_status_history: [
       { status: 'CREATED', timestamp: `${today}T07:30:00Z`, updatedBy: 'system' },
       { status: 'ASSIGNED', timestamp: `${today}T08:00:00Z`, updatedBy: 'dispatcher' },
       { status: 'ACCEPTED', timestamp: `${today}T08:05:00Z`, updatedBy: 'drv_002' },
@@ -479,7 +479,7 @@ export const DEMO_JOBS: Job[] = [
     paymentMethod: 'PREPAID',
     isPaid: true,
     paidAt: `${today}T09:45:00Z`,
-    statusHistory: [
+    logistics_delivery_status_history: [
       { status: 'CREATED', timestamp: `${today}T09:30:00Z`, updatedBy: 'system' },
       { status: 'ASSIGNED', timestamp: `${today}T10:00:00Z`, updatedBy: 'dispatcher' },
       { status: 'ACCEPTED', timestamp: `${today}T10:02:00Z`, updatedBy: 'drv_001' },
@@ -528,7 +528,7 @@ export const DEMO_JOBS: Job[] = [
     amount: 4500,
     paymentMethod: 'COD',
     isPaid: false,
-    statusHistory: [
+    logistics_delivery_status_history: [
       { status: 'CREATED', timestamp: `${today}T09:00:00Z`, updatedBy: 'system' },
       { status: 'ASSIGNED', timestamp: `${today}T09:30:00Z`, updatedBy: 'dispatcher' },
       { status: 'ACCEPTED', timestamp: `${today}T09:35:00Z`, updatedBy: 'drv_003' },
@@ -575,7 +575,7 @@ export const DEMO_JOBS: Job[] = [
     paymentMethod: 'TRANSFER',
     isPaid: true,
     paidAt: `${today}T06:00:00Z`,
-    statusHistory: [
+    logistics_delivery_status_history: [
       { status: 'CREATED', timestamp: `${today}T06:00:00Z`, updatedBy: 'system' },
       { status: 'ASSIGNED', timestamp: `${today}T07:00:00Z`, updatedBy: 'dispatcher' },
       { status: 'ACCEPTED', timestamp: `${today}T07:10:00Z`, updatedBy: 'drv_004' },
@@ -614,7 +614,7 @@ export const DEMO_JOBS: Job[] = [
     amount: 6000,
     paymentMethod: 'TRANSFER',
     isPaid: false,
-    statusHistory: [
+    logistics_delivery_status_history: [
       { status: 'CREATED', timestamp: `${today}T11:00:00Z`, updatedBy: 'system' },
       { status: 'PENDING', timestamp: `${today}T11:00:00Z`, updatedBy: 'system' },
     ],
@@ -653,7 +653,7 @@ export const DEMO_JOBS: Job[] = [
     paymentMethod: 'CARD',
     isPaid: true,
     paidAt: `${today}T12:30:00Z`,
-    statusHistory: [
+    logistics_delivery_status_history: [
       { status: 'CREATED', timestamp: `${today}T12:30:00Z`, updatedBy: 'api' },
     ],
     customerName: 'GlobalTech Inc.',
@@ -685,7 +685,7 @@ export const DEMO_JOBS: Job[] = [
     amount: 2500,
     paymentMethod: 'COD',
     isPaid: false,
-    statusHistory: [
+    logistics_delivery_status_history: [
       { status: 'CREATED', timestamp: `${today}T08:00:00Z`, updatedBy: 'system' },
       { status: 'CANCELLED', timestamp: `${today}T09:00:00Z`, updatedBy: 'customer', note: 'Customer cancelled' },
     ],
@@ -723,7 +723,7 @@ export const DEMO_JOBS: Job[] = [
     amount: 2000,
     paymentMethod: 'COD',
     isPaid: false,
-    statusHistory: [
+    logistics_delivery_status_history: [
       { status: 'CREATED', timestamp: `${today}T06:30:00Z`, updatedBy: 'system' },
       { status: 'ASSIGNED', timestamp: `${today}T07:00:00Z`, updatedBy: 'dispatcher' },
       { status: 'ACCEPTED', timestamp: `${today}T07:05:00Z`, updatedBy: 'drv_002' },

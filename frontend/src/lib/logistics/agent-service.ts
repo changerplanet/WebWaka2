@@ -129,7 +129,7 @@ export class AgentService {
       prisma.logistics_delivery_agents.findMany({
         where,
         include: {
-          _count: { select: { assignments: true } },
+          _count: { select: { logistics_delivery_assignments: true } },
         },
         orderBy: { createdAt: 'desc' },
         take: options.limit || 50,
@@ -153,7 +153,7 @@ export class AgentService {
           orderBy: { createdAt: 'desc' },
           take: 10,
         },
-        _count: { select: { assignments: true } },
+        _count: { select: { logistics_delivery_assignments: true } },
       },
     })
   }

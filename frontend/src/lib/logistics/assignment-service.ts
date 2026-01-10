@@ -186,7 +186,7 @@ export class AssignmentService {
         metadata: input.metadata as Prisma.InputJsonValue,
       },
       include: {
-        agent: true,
+        logistics_delivery_agents: true,
         zone: true,
       },
     })
@@ -255,9 +255,9 @@ export class AssignmentService {
       prisma.logistics_delivery_assignments.findMany({
         where,
         include: {
-          agent: { select: { id: true, firstName: true, lastName: true, phone: true } },
+          logistics_delivery_agents: { select: { id: true, firstName: true, lastName: true, phone: true } },
           zone: { select: { id: true, name: true, city: true } },
-          _count: { select: { statusHistory: true, proofs: true } },
+          _count: { select: { logistics_delivery_status_history: true, proofs: true } },
         },
         orderBy: [{ priority: 'desc' }, { createdAt: 'desc' }],
         take: options.limit || 50,
@@ -276,9 +276,9 @@ export class AssignmentService {
     return prisma.logistics_delivery_assignments.findFirst({
       where: { id: assignmentId, tenantId },
       include: {
-        agent: true,
+        logistics_delivery_agents: true,
         zone: true,
-        statusHistory: { orderBy: { createdAt: 'desc' } },
+        logistics_delivery_status_history: { orderBy: { createdAt: 'desc' } },
         proofs: { orderBy: { capturedAt: 'desc' } },
       },
     })
@@ -293,9 +293,9 @@ export class AssignmentService {
         orderId_orderType: { orderId, orderType },
       },
       include: {
-        agent: true,
+        logistics_delivery_agents: true,
         zone: true,
-        statusHistory: { orderBy: { createdAt: 'desc' }, take: 10 },
+        logistics_delivery_status_history: { orderBy: { createdAt: 'desc' }, take: 10 },
       },
     })
   }
@@ -322,7 +322,7 @@ export class AssignmentService {
         ...(input.metadata !== undefined && { metadata: input.metadata as Prisma.InputJsonValue }),
       },
       include: {
-        agent: true,
+        logistics_delivery_agents: true,
         zone: true,
       },
     })
@@ -362,7 +362,7 @@ export class AssignmentService {
         autoAssigned,
         status: 'ASSIGNED',
       },
-      include: { agent: true },
+      include: { logistics_delivery_agents: true },
     })
 
     // Record status change
@@ -437,7 +437,7 @@ export class AssignmentService {
     const updated = await prisma.logistics_delivery_assignments.update({
       where: { id: assignmentId },
       data: updateData,
-      include: { agent: true },
+      include: { logistics_delivery_agents: true },
     })
 
     // Record status history
@@ -516,7 +516,7 @@ export class AssignmentService {
       select: { status: true },
     })
 
-    return prisma.logisticsDeliveryStatusHistory.create({
+    return prisma.logistics_delivery_status_history.create({
       data: {
         assignmentId,
         fromStatus: assignment?.status !== input.status ? assignment?.status : null,

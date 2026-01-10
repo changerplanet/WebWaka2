@@ -55,7 +55,7 @@ export async function updateJobStatus(
   
   const updates: Partial<Job> = {
     status: newStatus,
-    statusHistory: [...job.statusHistory, statusUpdate],
+    logistics_delivery_status_history: [...job.statusHistory, statusUpdate],
     updatedAt: new Date().toISOString(),
   };
   
@@ -230,7 +230,7 @@ export async function recordProofOfDelivery(
     status: newStatus,
     actualDeliveryTime: pod.deliveredAt,
     pod,
-    statusHistory: [...job.statusHistory, statusUpdate],
+    logistics_delivery_status_history: [...job.statusHistory, statusUpdate],
     updatedAt: new Date().toISOString(),
   };
   

@@ -307,7 +307,7 @@ export class OfflineService {
     update: OfflineStatusUpdate
   ) {
     // Check for duplicate
-    const existingHistory = await prisma.logisticsDeliveryStatusHistory.findFirst({
+    const existingHistory = await prisma.logistics_delivery_status_history.findFirst({
       where: { offlineId: update.offlineId },
     })
 
@@ -334,7 +334,7 @@ export class OfflineService {
     if (currentPrecedence > updatePrecedence && assignment.updatedAt > offlineTime) {
       console.log(`Skipping offline update - server status ${assignment.status} takes precedence`)
       // Still record in history for audit
-      await prisma.logisticsDeliveryStatusHistory.create({
+      await prisma.logistics_delivery_status_history.create({
         data: {
           assignmentId: update.assignmentId,
           fromStatus: assignment.status,

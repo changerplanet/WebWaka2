@@ -152,7 +152,7 @@ export class ZoneService {
       where,
       include: {
         pricingRules: options.includeRules ? { where: { isActive: true } } : false,
-        _count: { select: { assignments: true } },
+        _count: { select: { logistics_delivery_assignments: true } },
       },
       orderBy: [{ sortOrder: 'asc' }, { name: 'asc' }],
     })
@@ -166,7 +166,7 @@ export class ZoneService {
       where: { id: zoneId, tenantId },
       include: {
         pricingRules: { orderBy: { priority: 'desc' } },
-        _count: { select: { assignments: true } },
+        _count: { select: { logistics_delivery_assignments: true } },
       },
     })
   }
