@@ -357,11 +357,11 @@ export async function verifyLoginOtp(request: VerifyLoginOtpRequest): Promise<Lo
   const user = normalized.type === 'phone'
     ? await prisma.user.findUnique({
         where: { phone: normalized.value },
-        include: { memberships: { where: { isActive: true }, include: { Tenant: true } } },
+        include: { memberships: { where: { isActive: true }, include: { tenant: true } } },
       })
     : await prisma.user.findUnique({
         where: { email: normalized.value },
-        include: { memberships: { where: { isActive: true }, include: { Tenant: true } } },
+        include: { memberships: { where: { isActive: true }, include: { tenant: true } } },
       })
   
   if (!user) {
@@ -375,7 +375,7 @@ export async function verifyLoginOtp(request: VerifyLoginOtpRequest): Promise<Lo
   // Create session
   const session = await createSession({
     userId: user.id,
-    tenantId: user.memberships[0]?.tenantId,
+    tenantId: (user as any).memberships[0]?.tenantId,
     authMethod: normalized.type === 'phone' ? 'otp_phone' : 'otp_email',
     rememberDevice: request.rememberDevice,
     ipAddress: request.ipAddress,
@@ -393,9 +393,9 @@ export async function verifyLoginOtp(request: VerifyLoginOtpRequest): Promise<Lo
     success: true,
     sessionToken: session.token,
     userId: user.id,
-    tenantId: user.memberships[0]?.tenantId,
-    tenantSlug: user.memberships[0]?.tenant.slug,
-    hasMultipleTenants: user.memberships.length > 1,
+    tenantId: (user as any).memberships[0]?.tenantId,
+    tenantSlug: (user as any).memberships[0]?.tenant.slug,
+    hasMultipleTenants: (user as any).memberships.length > 1,
   }
 }
 
