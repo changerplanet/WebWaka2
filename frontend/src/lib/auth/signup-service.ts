@@ -307,7 +307,7 @@ export async function startSignup(request: StartSignupRequest): Promise<StartSig
       include: { Partner: true },
     })
     
-    if (referralCode?.isActive && referralCode.partner.status === 'ACTIVE') {
+    if (referralCode?.isActive && referralCode.Partner.status === 'ACTIVE') {
       partnerId = referralCode.partnerId
     }
   }
@@ -333,7 +333,7 @@ export async function startSignup(request: StartSignupRequest): Promise<StartSig
       ipAddress: request.ipAddress,
       userAgent: request.userAgent,
       deviceFingerprint: request.deviceFingerprint,
-    },
+    } as any,
   })
   
   // Send OTP
@@ -650,7 +650,7 @@ export async function completeSignup(request: CompleteSignupRequest): Promise<Co
             phoneVerifiedAt: session.phone ? new Date() : undefined,
             emailVerifiedAt: session.email ? new Date() : undefined,
             globalRole: 'USER',
-          },
+          } as any,
         })
       } else {
         // Update existing user
@@ -686,7 +686,7 @@ export async function completeSignup(request: CompleteSignupRequest): Promise<Co
           requestedModules: session.discoveryChoices,
           // NO activatedModules - starts with zero
           activatedModules: [],
-        },
+        } as any,
       })
       
       // 4. Create tenant membership (user is TENANT_ADMIN)
@@ -697,7 +697,7 @@ export async function completeSignup(request: CompleteSignupRequest): Promise<Co
           tenantId: tenant.id,
           role: 'TENANT_ADMIN',
           isActive: true,
-        },
+        } as any,
       })
       
       // 5. Create business profile
@@ -712,12 +712,12 @@ export async function completeSignup(request: CompleteSignupRequest): Promise<Co
           city: session.city,
           timezone: 'Africa/Lagos',
           currency: 'NGN',
-        },
+        } as any,
       })
       
       // 6. Store intent if marketing intent present
       if (session.marketingIntent) {
-        await tx.userIntent.create({
+        await tx.user_intents.create({
           data: {
             id: uuidv4(),
             userId: user.id,
@@ -727,7 +727,7 @@ export async function completeSignup(request: CompleteSignupRequest): Promise<Co
             intentSource: session.marketingSource === 'PARTNER_LINK' ? 'PARTNER_LINK' : 'MARKETING_PAGE',
             referralCode: session.referralCode,
             isProcessed: false,
-          },
+          } as any,
         })
       }
       
