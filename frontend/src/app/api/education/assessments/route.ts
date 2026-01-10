@@ -118,7 +118,7 @@ export async function GET(request: NextRequest) {
           prisma.edu_student.findFirst({
             where: { id: studentId, tenantId },
             include: {
-              mkt_enrollments: {
+              enrollments: {
                 where: { status: 'ENROLLED' },
                 include: { class: true },
                 take: 1,
