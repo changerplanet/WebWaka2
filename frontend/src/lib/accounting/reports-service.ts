@@ -416,8 +416,8 @@ export class ReportsService {
         },
       },
       include: {
-        ledgerAccount: {
-          include: { chartOfAccount: true },
+        acct_ledger_accounts: {
+          include: { acct_chart_of_accounts: true },
         },
         journalEntry: true,
       },
@@ -574,7 +574,7 @@ export class ReportsService {
     const ledgerAccounts = await prisma.acct_ledger_accounts.findMany({
       where: { tenantId },
       include: {
-        chartOfAccount: true,
+        acct_chart_of_accounts: true,
         entries: {
           where: {
             entryDate: {

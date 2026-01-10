@@ -820,7 +820,7 @@ export class ChartOfAccountService {
           include: {
             entries: {
               where: {
-                journalEntry: {
+                acct_journal_entries: {
                   status: 'DRAFT',
                 },
               },

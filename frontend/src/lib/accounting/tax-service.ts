@@ -232,8 +232,8 @@ export class TaxService {
       include: {
         lines: {
           include: {
-            ledgerAccount: {
-              include: { chartOfAccount: true },
+            acct_ledger_accounts: {
+              include: { acct_chart_of_accounts: true },
             },
           },
         },

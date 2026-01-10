@@ -408,7 +408,7 @@ export class ExpenseService {
     // Get expense account details
     const ledgerAccount = await prisma.acct_ledger_accounts.findUnique({
       where: { id: expense.ledgerAccountId },
-      include: { chartOfAccount: true },
+      include: { acct_chart_of_accounts: true },
     });
 
     if (!ledgerAccount) {
@@ -586,7 +586,7 @@ export class ExpenseService {
     const ledgerAccountIds = [...new Set(expenses.map(e => e.ledgerAccountId))];
     const ledgerAccounts = await prisma.acct_ledger_accounts.findMany({
       where: { id: { in: ledgerAccountIds } },
-      include: { chartOfAccount: { select: { code: true, name: true, accountType: true } } },
+      include: { acct_chart_of_accounts: { select: { code: true, name: true, accountType: true } } },
     });
     const accountMap = new Map(ledgerAccounts.map(a => [a.id, a]));
 
@@ -621,7 +621,7 @@ export class ExpenseService {
     // Get account details
     const ledgerAccount = await prisma.acct_ledger_accounts.findUnique({
       where: { id: expense.ledgerAccountId },
-      include: { chartOfAccount: true },
+      include: { acct_chart_of_accounts: true },
     });
 
     // Get journal entry if posted
@@ -687,7 +687,7 @@ export class ExpenseService {
     const ledgerAccountIds = [...new Set(expenses.map(e => e.ledgerAccountId))];
     const ledgerAccounts = await prisma.acct_ledger_accounts.findMany({
       where: { id: { in: ledgerAccountIds } },
-      include: { chartOfAccount: { select: { code: true, name: true } } },
+      include: { acct_chart_of_accounts: { select: { code: true, name: true } } },
     });
     const accountMap = new Map(ledgerAccounts.map(a => [a.id, a]));
 

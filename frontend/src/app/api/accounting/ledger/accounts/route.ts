@@ -53,7 +53,7 @@ export async function GET(request: NextRequest) {
         { chartOfAccount: { code: 'asc' } },
       ],
       include: {
-        chartOfAccount: {
+        acct_chart_of_accounts: {
           select: {
             id: true,
             code: true,

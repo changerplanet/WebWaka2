@@ -34,7 +34,7 @@ export async function GET(
     const capability = await prisma.core_capabilities.findUnique({
       where: { key },
       include: {
-        activations: {
+        core_tenant_capability_activations: {
           include: {
             capability: false,
           },

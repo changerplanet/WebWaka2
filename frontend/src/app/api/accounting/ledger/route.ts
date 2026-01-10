@@ -84,8 +84,8 @@ export async function GET(request: NextRequest) {
         take: limit ? parseInt(limit) : 100,
         skip: offset ? parseInt(offset) : 0,
         include: {
-          ledgerAccount: {
-            include: { chartOfAccount: true },
+          acct_ledger_accounts: {
+            include: { acct_chart_of_accounts: true },
           },
           journalEntry: {
             select: {

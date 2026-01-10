@@ -497,7 +497,7 @@ export class JournalEntryService {
       const line = journal.lines[i];
       const ledgerAccount = await prisma.acct_ledger_accounts.findUnique({
         where: { id: line.ledgerAccountId },
-        include: { chartOfAccount: true },
+        include: { acct_chart_of_accounts: true },
       });
       if (ledgerAccount) {
         reversalLines[i].accountCode = ledgerAccount.chartOfAccount.code;
@@ -573,8 +573,8 @@ export class JournalEntryService {
           period: true,
           lines: {
             include: {
-              ledgerAccount: {
-                include: { chartOfAccount: true },
+              acct_ledger_accounts: {
+                include: { acct_chart_of_accounts: true },
               },
             },
           },
@@ -596,8 +596,8 @@ export class JournalEntryService {
         period: true,
         lines: {
           include: {
-            ledgerAccount: {
-              include: { chartOfAccount: true },
+            acct_ledger_accounts: {
+              include: { acct_chart_of_accounts: true },
             },
           },
           orderBy: { lineNumber: 'asc' },

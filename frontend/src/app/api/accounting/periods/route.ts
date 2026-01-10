@@ -43,7 +43,7 @@ export async function GET(request: NextRequest) {
       orderBy: [{ fiscalYear: 'desc' }, { startDate: 'desc' }],
       include: {
         _count: {
-          select: { journalEntries: true, ledgerEntries: true },
+          select: { acct_journal_entries: true, ledgerEntries: true },
         },
       },
     });
