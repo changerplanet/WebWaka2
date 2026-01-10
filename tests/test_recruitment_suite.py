@@ -17,7 +17,7 @@ import requests
 import os
 from datetime import datetime, timedelta
 
-BASE_URL = os.environ.get('NEXT_PUBLIC_APP_URL', 'https://prisma-next-fix.preview.emergentagent.com').rstrip('/')
+BASE_URL = os.environ.get('NEXT_PUBLIC_APP_URL', 'https://tscleanup.preview.emergentagent.com').rstrip('/')
 TENANT_ID = "demo-recruitment-tenant"
 
 class TestTenantScoping:
