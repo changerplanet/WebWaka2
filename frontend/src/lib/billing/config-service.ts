@@ -88,12 +88,12 @@ export const DEFAULT_BILLING_CONFIG = {
 // ============================================================================
 
 export async function getBillingConfiguration(tenantId: string) {
-  let config = await prisma.billingConfiguration.findUnique({
+  let config = await prisma.billing_configurations.findUnique({
     where: { tenantId },
   });
   
   if (!config) {
-    config = await prisma.billingConfiguration.create({
+    config = await (prisma.billing_configurations.create as any)({
       data: {
         tenantId,
         ...DEFAULT_BILLING_CONFIG,
@@ -120,7 +120,7 @@ export async function updateBillingConfiguration(
 ) {
   const existing = await getBillingConfiguration(tenantId);
   
-  return prisma.billingConfiguration.update({
+  return prisma.billing_configurations.update({
     where: { id: existing.id },
     data,
   });
@@ -136,7 +136,7 @@ export async function initializeBillingForTenant(tenantId: string) {
   });
   
   if (!existingPolicy) {
-    await prisma.billing_grace_policies.create({
+    await (prisma.billing_grace_policies.create as any)({
       data: {
         tenantId,
         name: 'Default Grace Policy',
