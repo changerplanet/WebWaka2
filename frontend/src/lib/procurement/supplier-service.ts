@@ -202,7 +202,7 @@ export class SupplierService {
       },
       include: {
         proc_goods_receipts: {
-          include: { bill_invoice_items: true },
+          include: { proc_goods_receipt_items: true },
         },
       },
     })
@@ -219,8 +219,8 @@ export class SupplierService {
     const deliveryDays: number[] = []
 
     for (const order of orders) {
-      if (order.receipts.length > 0 && order.expectedDelivery) {
-        const firstReceipt = order.receipts[0]
+      if (order.proc_goods_receipts.length > 0 && order.expectedDelivery) {
+        const firstReceipt = order.proc_goods_receipts[0]
         const deliveryDate = firstReceipt.receivedDate
         const expected = order.expectedDelivery
 
@@ -246,8 +246,8 @@ export class SupplierService {
     let damagedItems = 0
 
     for (const order of orders) {
-      for (const receipt of order.receipts) {
-        for (const item of receipt.items) {
+      for (const receipt of order.proc_goods_receipts) {
+        for (const item of receipt.proc_goods_receipt_items) {
           totalItemsReceived += Number(item.receivedQuantity)
           acceptedItems += Number(item.acceptedQuantity)
           rejectedItems += Number(item.rejectedQuantity)
