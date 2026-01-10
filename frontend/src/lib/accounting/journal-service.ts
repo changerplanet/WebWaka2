@@ -553,7 +553,7 @@ export class JournalEntryService {
       offset?: number;
     }
   ) {
-    const where: Prisma.AcctJournalEntryWhereInput = { tenantId };
+    const where: Prisma.acct_journal_entriesWhereInput = { tenantId };
 
     if (options?.status) where.status = options.status;
     if (options?.sourceType) where.sourceType = options.sourceType;
@@ -571,8 +571,8 @@ export class JournalEntryService {
         take: options?.limit || 50,
         skip: options?.offset || 0,
         include: {
-          period: true,
-          lines: {
+          acct_financial_periods: true,
+          acct_ledger_entries: {
             include: {
               acct_ledger_accounts: {
                 include: { acct_chart_of_accounts: true },
@@ -594,8 +594,8 @@ export class JournalEntryService {
     return prisma.acct_journal_entries.findFirst({
       where: { id: journalId, tenantId },
       include: {
-        period: true,
-        lines: {
+        acct_financial_periods: true,
+        acct_ledger_entries: {
           include: {
             acct_ledger_accounts: {
               include: { acct_chart_of_accounts: true },
@@ -603,8 +603,6 @@ export class JournalEntryService {
           },
           orderBy: { lineNumber: 'asc' },
         },
-        reversalOf: true,
-        reversedJournal: true,
       },
     });
   }
