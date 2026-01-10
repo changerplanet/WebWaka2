@@ -661,12 +661,12 @@ export class ReportsService {
     const cashAccounts = await prisma.acct_ledger_accounts.findMany({
       where: {
         tenantId,
-        chartOfAccount: {
+        acct_chart_of_accounts: {
           code: { in: ['1110', '1120', '1130'] },
         },
       },
       include: {
-        entries: {
+        acct_ledger_entries: {
           where: {
             entryDate: { lte: asOfDate },
           },
@@ -676,7 +676,8 @@ export class ReportsService {
 
     let totalCash = new Decimal(0);
     for (const account of cashAccounts) {
-      for (const entry of account.entries) {
+      const accountAny = account as any;
+      for (const entry of accountAny.acct_ledger_entries) {
         totalCash = totalCash
           .plus(entry.debitAmount.toString())
           .minus(entry.creditAmount.toString());
