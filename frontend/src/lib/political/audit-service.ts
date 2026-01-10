@@ -22,7 +22,7 @@ export async function createAuditLog(
   input: CreateAuditLogInput
 ): Promise<void> {
   await prisma.pol_audit_log.create({
-    data: withPrismaDefaults({
+    data: {
       tenantId,
       action: input.action,
       entityType: input.entityType,
@@ -39,7 +39,7 @@ export async function createAuditLog(
       state: input.state,
       lga: input.lga,
       ward: input.ward,
-    }),
+    },
   });
 }
 
