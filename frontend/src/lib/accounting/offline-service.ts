@@ -232,7 +232,7 @@ export class OfflineService {
               tenantId,
               chartOfAccountId: account.id,
               currency: offlineExpense.currency || 'NGN',
-            },
+            } as any,
           });
         }
 
@@ -259,7 +259,7 @@ export class OfflineService {
               endDate,
               fiscalYear: expenseDate.getFullYear(),
               status: 'OPEN',
-            },
+            } as any,
           });
         }
 
