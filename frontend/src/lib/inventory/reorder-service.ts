@@ -94,7 +94,7 @@ export class ReorderRuleService {
     tenantId: string,
     data: ReorderRuleInput
   ): Promise<{ id: string }> {
-    const rule = await prisma.inv_reorder_rules.create({
+    const rule = await (prisma.inv_reorder_rules.create as any)({
       data: {
         tenantId,
         name: data.name,
@@ -233,12 +233,12 @@ export class ReorderSuggestionEngine {
     startDate.setDate(startDate.getDate() - periodDays);
 
     // Get sales movements (negative quantities = sold)
-    const movements = await prisma.wh_stock_movement.findMany({
+    const movements = await (prisma.wh_stock_movement.findMany as any)({
       where: {
         tenantId,
         productId,
         variantId: variantId || null,
-        locationId,
+        warehouseId: locationId, // wh_stock_movement uses warehouseId
         reason: 'SALE',
         createdAt: { gte: startDate },
       },
@@ -358,7 +358,7 @@ export class ReorderSuggestionEngine {
       where: inventoryWhere,
       include: {
         Product: true,
-        variant: true,
+        ProductVariant: true,
         Location: true,
       },
     });
