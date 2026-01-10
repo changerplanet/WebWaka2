@@ -148,8 +148,8 @@ export class PurchaseOrderService {
         termsAndConditions: input.termsAndConditions,
         createdBy: input.createdBy,
         offlineId: input.offlineId,
-        items: {
-          create: itemsWithTotals.map(item => ({
+        proc_purchase_order_items: {
+          create: itemsWithTotals.map((item: any) => ({
             productId: item.productId,
             productSku: item.productSku,
             productName: item.productName,
@@ -165,7 +165,7 @@ export class PurchaseOrderService {
             lineNumber: item.lineNumber,
           })),
         },
-      },
+      } as any,
       include: { proc_purchase_order_items: { orderBy: { lineNumber: 'asc' } } },
     })
 
@@ -199,7 +199,7 @@ export class PurchaseOrderService {
   static async listPurchaseOrders(tenantId: string, options: PurchaseOrderListOptions = {}) {
     const { filters = {}, page = 1, limit = 20, orderBy = 'createdAt', orderDir = 'desc' } = options
 
-    const where: Prisma.ProcPurchaseOrderWhereInput = {
+    const where: Prisma.proc_purchase_ordersWhereInput = {
       tenantId,
       ...(filters.status && { status: { in: filters.status } }),
       ...(filters.priority && { priority: { in: filters.priority } }),
@@ -221,7 +221,7 @@ export class PurchaseOrderService {
         where,
         include: { 
           proc_purchase_order_items: { orderBy: { lineNumber: 'asc' } },
-          receipts: { select: { id: true, status: true, receivedDate: true } },
+          proc_goods_receipts: { select: { id: true, status: true, receivedDate: true } },
         },
         orderBy: { [orderBy]: orderDir },
         skip: (page - 1) * limit,
@@ -249,8 +249,8 @@ export class PurchaseOrderService {
       where: { id, tenantId },
       include: {
         proc_purchase_order_items: { orderBy: { lineNumber: 'asc' } },
-        receipts: {
-          include: { proc_purchase_order_items: true },
+        proc_goods_receipts: {
+          include: { proc_goods_receipt_items: true },
           orderBy: { receivedDate: 'desc' },
         },
       },
@@ -596,7 +596,7 @@ export class PurchaseOrderService {
       metadata: po.metadata,
       createdAt: po.createdAt,
       updatedAt: po.updatedAt,
-      items: po.proc_purchase_order_items?.map(item => ({
+      items: (po as any).proc_purchase_order_items?.map((item: any) => ({
         id: item.id,
         productId: item.productId,
         productSku: item.productSku,
