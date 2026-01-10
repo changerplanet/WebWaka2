@@ -47,7 +47,7 @@ export async function createGracePolicy(input: CreateGracePolicyInput): Promise<
       });
     }
     
-    const policy = await prisma.billing_grace_policies.create({
+    const policy = await (prisma.billing_grace_policies.create as any)({
       data: {
         tenantId: input.tenantId,
         name: input.name,
