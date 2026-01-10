@@ -451,9 +451,9 @@ export class ExpenseService {
       referenceNumber: string;
     }> = [
       {
-        accountCode: ledgerAccount.chartOfAccount.code,
+        accountCode: (ledgerAccount as any).acct_chart_of_accounts.code,
         debitAmount: expenseAmount.toNumber(),
-        description: `${expense.categoryName || ledgerAccount.chartOfAccount.name}: ${expense.description}`,
+        description: `${expense.categoryName || (ledgerAccount as any).acct_chart_of_accounts.name}: ${expense.description}`,
         referenceType: 'EXPENSE',
         referenceId: expense.id,
         referenceNumber: expense.expenseNumber,
