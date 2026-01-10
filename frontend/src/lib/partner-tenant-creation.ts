@@ -195,7 +195,7 @@ export async function createTenantByPartner(
         appName: input.branding?.appName || input.name,
         primaryColor: input.branding?.primaryColor || '#6366f1',
         secondaryColor: input.branding?.secondaryColor || '#8b5cf6'
-      }
+      } as any
     })
     
     // Create subdomain for the tenant
@@ -206,7 +206,7 @@ export async function createTenantByPartner(
         type: 'SUBDOMAIN',
         status: 'VERIFIED', // Subdomain is auto-verified
         isPrimary: true
-      }
+      } as any
     })
     
     // Create attribution
@@ -227,7 +227,7 @@ export async function createTenantByPartner(
           requestedModules: input.requestedModules,
           partnerMetadata: input.metadata
         }
-      }
+      } as any
     })
     
     // Audit log
@@ -247,7 +247,7 @@ export async function createTenantByPartner(
           contactEmail: input.contactEmail,
           attributionWindowDays: input.attributionWindowDays
         }
-      }
+      } as any
     })
     
     return { tenant, referral }
