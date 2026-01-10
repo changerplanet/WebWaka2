@@ -109,7 +109,7 @@ export class EntitlementsService {
       include: {
         subscription: {
           include: {
-            plan: { select: { slug: true } },
+            SubscriptionPlan: { select: { slug: true } },
           },
         },
       },
@@ -120,7 +120,7 @@ export class EntitlementsService {
     }
 
     // Map plan slug to entitlement key
-    const planSlug = tenant.subscription?.plan?.slug || 'free'
+    const planSlug = tenant.subscription?.SubscriptionPlan?.slug || 'free'
     const planKey = planSlug.toUpperCase().replace(/-/g, '_')
     const baseEntitlements = PLAN_ENTITLEMENTS[planKey] || PLAN_ENTITLEMENTS.FREE
 
