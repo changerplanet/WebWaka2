@@ -246,7 +246,7 @@ export class ReorderSuggestionEngine {
     });
 
     const totalSold = movements.reduce(
-      (sum, m) => sum + Math.abs(m.quantity),
+      (sum: number, m: any) => sum + Math.abs(m.quantity),
       0
     );
     const avgDailySales = totalSold / periodDays;
@@ -257,11 +257,11 @@ export class ReorderSuggestionEngine {
     const secondHalf = movements.slice(midpoint);
 
     const firstHalfTotal = firstHalf.reduce(
-      (sum, m) => sum + Math.abs(m.quantity),
+      (sum: number, m: any) => sum + Math.abs(m.quantity),
       0
     );
     const secondHalfTotal = secondHalf.reduce(
-      (sum, m) => sum + Math.abs(m.quantity),
+      (sum: number, m: any) => sum + Math.abs(m.quantity),
       0
     );
 
