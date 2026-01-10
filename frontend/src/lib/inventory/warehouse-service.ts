@@ -62,7 +62,7 @@ export class WarehouseService {
       });
     }
 
-    const warehouse = await prisma.inv_warehouses.create({
+    const warehouse = await (prisma.inv_warehouses.create as any)({
       data: {
         tenantId,
         locationId: data.locationId,
