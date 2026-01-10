@@ -237,7 +237,7 @@ export async function assignJob(
   
   // Get driver and vehicle
   const driver = driversStore.find((d: any) => d.id === driverId);
-  const vehicle = vehiclesStore.find((v: string) => v.id === vehicleId);
+  const vehicle = vehiclesStore.find((v) => v.id === vehicleId);
   
   if (!driver) throw new Error('Driver not found');
   if (!vehicle) throw new Error('Vehicle not found');
@@ -275,7 +275,7 @@ export async function assignJob(
   }
   
   // Update vehicle status
-  const vehicleIndex = vehiclesStore.findIndex((v: string) => v.id === vehicleId);
+  const vehicleIndex = vehiclesStore.findIndex((v) => v.id === vehicleId);
   if (vehicleIndex !== -1) {
     vehiclesStore[vehicleIndex] = {
       ...vehiclesStore[vehicleIndex],
@@ -365,7 +365,7 @@ export async function unassignJob(
   
   // Release vehicle
   if (job.vehicleId) {
-    const vehicleIndex = vehiclesStore.findIndex((v: string) => v.id === job.vehicleId);
+    const vehicleIndex = vehiclesStore.findIndex((v) => v.id === job.vehicleId);
     if (vehicleIndex !== -1) {
       vehiclesStore[vehicleIndex] = {
         ...vehiclesStore[vehicleIndex],
@@ -440,7 +440,7 @@ export async function cancelJob(
   
   // Release vehicle
   if (job.vehicleId) {
-    const vehicleIndex = vehiclesStore.findIndex((v: string) => v.id === job.vehicleId);
+    const vehicleIndex = vehiclesStore.findIndex((v) => v.id === job.vehicleId);
     if (vehicleIndex !== -1) {
       vehiclesStore[vehicleIndex] = {
         ...vehiclesStore[vehicleIndex],
