@@ -166,7 +166,7 @@ export class PurchaseOrderService {
           })),
         },
       },
-      include: { bill_invoice_items: { orderBy: { lineNumber: 'asc' } } },
+      include: { proc_purchase_order_items: { orderBy: { lineNumber: 'asc' } } },
     })
 
     // If created from PR, update PR status
@@ -220,7 +220,7 @@ export class PurchaseOrderService {
       prisma.proc_purchase_orders.findMany({
         where,
         include: { 
-          bill_invoice_items: { orderBy: { lineNumber: 'asc' } },
+          proc_purchase_order_items: { orderBy: { lineNumber: 'asc' } },
           receipts: { select: { id: true, status: true, receivedDate: true } },
         },
         orderBy: { [orderBy]: orderDir },
@@ -248,9 +248,9 @@ export class PurchaseOrderService {
     const po = await prisma.proc_purchase_orders.findFirst({
       where: { id, tenantId },
       include: {
-        bill_invoice_items: { orderBy: { lineNumber: 'asc' } },
+        proc_purchase_order_items: { orderBy: { lineNumber: 'asc' } },
         receipts: {
-          include: { bill_invoice_items: true },
+          include: { proc_purchase_order_items: true },
           orderBy: { receivedDate: 'desc' },
         },
       },
@@ -273,7 +273,7 @@ export class PurchaseOrderService {
     const updated = await prisma.proc_purchase_orders.update({
       where: { id },
       data: { status: 'PENDING' },
-      include: { bill_invoice_items: true },
+      include: { proc_purchase_order_items: true },
     })
 
     // Emit event
@@ -314,7 +314,7 @@ export class PurchaseOrderService {
         confirmedAt: new Date(),
         ...(confirmedDeliveryDate && { confirmedDelivery: confirmedDeliveryDate }),
       },
-      include: { bill_invoice_items: true },
+      include: { proc_purchase_order_items: true },
     })
 
     // Emit event
@@ -355,7 +355,7 @@ export class PurchaseOrderService {
         cancelledAt: new Date(),
         cancellationReason: reason,
       },
-      include: { bill_invoice_items: true },
+      include: { proc_purchase_order_items: true },
     })
 
     // Emit event
@@ -389,7 +389,7 @@ export class PurchaseOrderService {
         status: 'CLOSED',
         closedAt: new Date(),
       },
-      include: { bill_invoice_items: true },
+      include: { proc_purchase_order_items: true },
     })
 
     // Emit event
@@ -437,13 +437,13 @@ export class PurchaseOrderService {
   private static async updatePOStatus(poId: string) {
     const po = await prisma.proc_purchase_orders.findUnique({
       where: { id: poId },
-      include: { bill_invoice_items: true },
+      include: { proc_purchase_order_items: true },
     })
 
     if (!po) return
 
-    const allFulfilled = po.items.every(item => item.isFulfilled)
-    const anyReceived = po.items.some(item => Number(item.receivedQuantity) > 0)
+    const allFulfilled = po.proc_purchase_order_items.every(item => item.isFulfilled)
+    const anyReceived = po.proc_purchase_order_items.some(item => Number(item.receivedQuantity) > 0)
 
     let newStatus = po.status
     if (allFulfilled) {
@@ -596,7 +596,7 @@ export class PurchaseOrderService {
       metadata: po.metadata,
       createdAt: po.createdAt,
       updatedAt: po.updatedAt,
-      items: po.items?.map(item => ({
+      items: po.proc_purchase_order_items?.map(item => ({
         id: item.id,
         productId: item.productId,
         productSku: item.productSku,
