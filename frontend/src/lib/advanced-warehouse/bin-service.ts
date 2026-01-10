@@ -146,7 +146,7 @@ export class BinService {
         tenantId: ctx.tenantId,
       },
       include: {
-        wh_zones: true,
+        zone: true,
       },
     });
   }
@@ -166,7 +166,7 @@ export class BinService {
         code,
       },
       include: {
-        wh_zones: true,
+        zone: true,
       },
     });
   }
@@ -219,7 +219,7 @@ export class BinService {
           { position: 'asc' },
         ],
         include: {
-          wh_zones: {
+          zone: {
             select: { id: true, name: true, zoneType: true },
           },
         },
@@ -392,7 +392,7 @@ export class BinService {
         },
       },
       include: {
-        wh_zones: true,
+        zone: true,
       },
     });
   }

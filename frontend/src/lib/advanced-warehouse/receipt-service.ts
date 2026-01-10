@@ -108,7 +108,7 @@ export class ReceiptService {
         },
       }),
       include: {
-        inv_audit_items: true,
+        items: true,
       },
     });
 
@@ -128,7 +128,7 @@ export class ReceiptService {
         tenantId: ctx.tenantId,
       },
       include: {
-        inv_audit_items: {
+        items: {
           orderBy: { createdAt: 'asc' },
         },
       },
@@ -148,7 +148,7 @@ export class ReceiptService {
         receiptNumber,
       },
       include: {
-        inv_audit_items: true,
+        items: true,
       },
     });
   }
@@ -198,7 +198,7 @@ export class ReceiptService {
         take: limit,
         orderBy: { createdAt: 'desc' },
         include: {
-          inv_audit_items: {
+          items: {
             select: { id: true, productName: true, expectedQuantity: true, receivedQuantity: true },
           },
         },
@@ -371,7 +371,7 @@ export class ReceiptService {
         tenantId: ctx.tenantId,
       },
       include: {
-        inv_audit_items: true,
+        items: true,
       },
     });
 
@@ -506,7 +506,7 @@ export class ReceiptService {
       },
       orderBy: { expectedDate: 'asc' },
       include: {
-        inv_audit_items: {
+        items: {
           select: { id: true, productName: true, expectedQuantity: true, receivedQuantity: true },
         },
       },

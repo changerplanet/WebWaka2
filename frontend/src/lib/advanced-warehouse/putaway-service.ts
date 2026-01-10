@@ -104,7 +104,7 @@ export class PutawayService {
         tenantId: ctx.tenantId,
       },
       include: {
-        inv_audit_items: {
+        items: {
           where: {
             isComplete: true,
             isPutaway: false,
@@ -131,7 +131,7 @@ export class PutawayService {
           isEmpty: true,
         },
         include: {
-          wh_zones: true,
+          zone: true,
         },
       });
 

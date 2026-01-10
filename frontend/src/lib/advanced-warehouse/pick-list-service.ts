@@ -100,7 +100,7 @@ export class PickListService {
         },
       }),
       include: {
-        inv_audit_items: true,
+        items: true,
       },
     });
 
@@ -120,7 +120,7 @@ export class PickListService {
         tenantId: ctx.tenantId,
       },
       include: {
-        inv_audit_items: {
+        items: {
           orderBy: { createdAt: 'asc' },
           include: {
             suggestedBin: { select: { id: true, code: true, zoneId: true } },
@@ -143,7 +143,7 @@ export class PickListService {
         pickNumber,
       },
       include: {
-        inv_audit_items: true,
+        items: true,
       },
     });
   }
@@ -202,7 +202,7 @@ export class PickListService {
           { createdAt: 'asc' },
         ],
         include: {
-          inv_audit_items: {
+          items: {
             select: { id: true, productName: true, requestedQuantity: true, pickedQuantity: true, isPicked: true },
           },
         },
@@ -409,7 +409,7 @@ export class PickListService {
         tenantId: ctx.tenantId,
       },
       include: {
-        inv_audit_items: true,
+        items: true,
       },
     });
 
@@ -558,7 +558,7 @@ export class PickListService {
         { assignedAt: 'asc' },
       ],
       include: {
-        inv_audit_items: {
+        items: {
           select: { id: true, productName: true, requestedQuantity: true, isPicked: true },
         },
       },
