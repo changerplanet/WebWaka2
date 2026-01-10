@@ -56,9 +56,9 @@ export async function getHousekeepingTasks(tenantId: string, options?: {
   }
   
   // Sort by priority (urgent first) then by scheduled time
-  const priorityOrder = { URGENT: 0, HIGH: 1, MEDIUM: 2, LOW: 3 };
+  const priorityOrder: Record<string, number> = { URGENT: 0, HIGH: 1, MEDIUM: 2, LOW: 3 };
   filtered.sort((a: any, b: any) => {
-    const priorityDiff = priorityOrder[a.priority] - priorityOrder[b.priority];
+    const priorityDiff = (priorityOrder[a.priority] ?? 4) - (priorityOrder[b.priority] ?? 4);
     if (priorityDiff !== 0) return priorityDiff;
     return (a.scheduledTime || '').localeCompare(b.scheduledTime || '');
   });
