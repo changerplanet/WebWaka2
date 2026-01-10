@@ -851,7 +851,7 @@ export class InventoryAuditService {
       completedAt: audit.completedAt || undefined,
       approvedAt: audit.approvedAt || undefined,
       totalItemsCounted: audit.totalItemsCounted,
-      itemsWithVariance: audit.inv_audit_itemsWithVariance,
+      itemsWithVariance: audit.itemsWithVariance,
       totalVarianceValue: audit.totalVarianceValue
         ? Number(audit.totalVarianceValue)
         : undefined,
