@@ -131,7 +131,7 @@ export async function POST(request: NextRequest) {
             verifiedAt: new Date()
           } as any
         }
-      },
+      } as any,
       include: {
         domains: true
       }
