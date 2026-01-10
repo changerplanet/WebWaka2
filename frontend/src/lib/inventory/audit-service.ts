@@ -781,8 +781,8 @@ export class InventoryAuditService {
     const audit = await prisma.inv_audits.findFirst({
       where: { id: auditId, tenantId },
       include: {
-        bill_invoice_items: true,
-        wh_warehouses: true,
+        inv_audit_items: true,
+        inv_warehouses: true,
       },
     });
 
