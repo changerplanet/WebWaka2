@@ -259,7 +259,7 @@ export const VendorService = {
       data: {
         ...input,
         ...slugUpdate,
-        metadata: input.metadata as Prisma.JsonValue
+        metadata: input.metadata as object | undefined
       }
     })
   },
