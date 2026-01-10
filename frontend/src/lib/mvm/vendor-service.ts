@@ -308,7 +308,7 @@ export const VendorService = {
     ])
     
     return {
-      vendors: vendors.map((v: string) => ({
+      vendors: vendors.map((v) => ({
         id: v.id,
         name: v.name,
         slug: v.slug,
