@@ -236,7 +236,7 @@ export class ExpenseService {
             tenantId,
             chartOfAccountId: account.id,
             currency: input.amount !== undefined ? (expense.currency) : 'NGN',
-          },
+          } as any,
         });
       }
       ledgerAccountId = ledgerAccount.id;
@@ -278,7 +278,7 @@ export class ExpenseService {
         rejectionReason: expense.status === 'REJECTED' ? null : expense.rejectionReason,
       },
       include: {
-        period: true,
+        acct_financial_periods: true,
       },
     });
   }
