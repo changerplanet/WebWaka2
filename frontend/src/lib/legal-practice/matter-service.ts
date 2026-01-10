@@ -382,7 +382,7 @@ export async function checkConflict(tenantId: string, partyName: string, exclude
       ...(excludeMatterId && { matterId: { not: excludeMatterId } }),
     },
     include: {
-      leg_matters: {
+      matter: {
         select: {
           id: true,
           matterNumber: true,

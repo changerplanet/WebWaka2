@@ -80,7 +80,7 @@ export async function createFiling(tenantId: string, data: CreateFilingInput) {
       notes: data.notes,
     }),
     include: {
-      leg_matters: {
+      matter: {
         select: { id: true, matterNumber: true, title: true, suitNumber: true },
       },
     },
@@ -96,7 +96,7 @@ export async function getFilingById(tenantId: string, filingId: string) {
       tenantId,
     },
     include: {
-      leg_matters: {
+      matter: {
         select: { id: true, matterNumber: true, title: true, court: true, suitNumber: true },
       },
     },
@@ -132,7 +132,7 @@ export async function getFilings(tenantId: string, filters: FilingFilters = {}) 
     prisma.leg_filing.findMany({
       where,
       include: {
-        leg_matters: {
+        matter: {
           select: { id: true, matterNumber: true, title: true },
         },
       },

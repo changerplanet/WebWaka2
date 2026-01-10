@@ -67,7 +67,7 @@ export async function createParty(tenantId: string, data: CreatePartyInput) {
       isAdverseParty: data.isAdverseParty || false,
     }),
     include: {
-      leg_matters: {
+      matter: {
         select: { id: true, matterNumber: true, title: true },
       },
     },
@@ -83,7 +83,7 @@ export async function getPartyById(tenantId: string, partyId: string) {
       tenantId,
     },
     include: {
-      leg_matters: {
+      matter: {
         select: { id: true, matterNumber: true, title: true, clientName: true },
       },
     },
@@ -114,7 +114,7 @@ export async function getParties(tenantId: string, filters: PartyFilters = {}) {
     prisma.leg_matter_party.findMany({
       where,
       include: {
-        leg_matters: {
+        matter: {
           select: { id: true, matterNumber: true, title: true },
         },
       },

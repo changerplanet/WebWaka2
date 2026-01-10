@@ -81,7 +81,7 @@ export async function createDeadline(tenantId: string, data: CreateDeadlineInput
       notes: data.notes,
     }),
     include: {
-      leg_matters: {
+      matter: {
         select: { id: true, matterNumber: true, title: true, clientName: true },
       },
     },
@@ -97,7 +97,7 @@ export async function getDeadlineById(tenantId: string, deadlineId: string) {
       tenantId,
     },
     include: {
-      leg_matters: {
+      matter: {
         select: { id: true, matterNumber: true, title: true, clientName: true, court: true },
       },
     },
@@ -135,7 +135,7 @@ export async function getDeadlines(tenantId: string, filters: DeadlineFilters = 
     prisma.leg_deadline.findMany({
       where,
       include: {
-        leg_matters: {
+        matter: {
           select: { id: true, matterNumber: true, title: true, clientName: true },
         },
       },
@@ -187,7 +187,7 @@ export async function getUpcomingDeadlines(tenantId: string, days: number = 7) {
       },
     },
     include: {
-      leg_matters: {
+      matter: {
         select: { id: true, matterNumber: true, title: true, clientName: true, court: true },
       },
     },
@@ -210,7 +210,7 @@ export async function getOverdueDeadlines(tenantId: string) {
       dueDate: { lt: now },
     },
     include: {
-      leg_matters: {
+      matter: {
         select: { id: true, matterNumber: true, title: true, clientName: true },
       },
     },

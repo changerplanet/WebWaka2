@@ -76,7 +76,7 @@ export async function createDisbursement(tenantId: string, data: CreateDisbursem
       notes: data.notes,
     }),
     include: {
-      leg_matters: {
+      matter: {
         select: { id: true, matterNumber: true, title: true, clientName: true },
       },
     },
@@ -92,7 +92,7 @@ export async function getDisbursementById(tenantId: string, disbursementId: stri
       tenantId,
     },
     include: {
-      leg_matters: {
+      matter: {
         select: { id: true, matterNumber: true, title: true, clientName: true },
       },
     },
@@ -128,7 +128,7 @@ export async function getDisbursements(tenantId: string, filters: DisbursementFi
     prisma.leg_disbursement.findMany({
       where,
       include: {
-        leg_matters: {
+        matter: {
           select: { id: true, matterNumber: true, title: true },
         },
       },

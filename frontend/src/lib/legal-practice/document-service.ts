@@ -85,7 +85,7 @@ export async function createDocument(tenantId: string, data: CreateDocumentInput
       notes: data.notes,
     }),
     include: {
-      leg_matters: {
+      matter: {
         select: { id: true, matterNumber: true, title: true },
       },
     },
@@ -101,7 +101,7 @@ export async function getDocumentById(tenantId: string, documentId: string) {
       tenantId,
     },
     include: {
-      leg_matters: {
+      matter: {
         select: { id: true, matterNumber: true, title: true, clientName: true },
       },
     },
@@ -141,7 +141,7 @@ export async function getDocuments(tenantId: string, filters: DocumentFilters = 
     prisma.leg_document.findMany({
       where,
       include: {
-        leg_matters: {
+        matter: {
           select: { id: true, matterNumber: true, title: true },
         },
       },

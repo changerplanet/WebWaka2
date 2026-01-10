@@ -75,7 +75,7 @@ export async function createTimeEntry(tenantId: string, data: CreateTimeEntryInp
       staffRole: data.staffRole,
     }),
     include: {
-      leg_matters: {
+      matter: {
         select: { id: true, matterNumber: true, title: true, clientName: true },
       },
     },
@@ -91,7 +91,7 @@ export async function getTimeEntryById(tenantId: string, entryId: string) {
       tenantId,
     },
     include: {
-      leg_matters: {
+      matter: {
         select: { id: true, matterNumber: true, title: true, clientName: true },
       },
     },
@@ -131,7 +131,7 @@ export async function getTimeEntries(tenantId: string, filters: TimeEntryFilters
     prisma.leg_time_entry.findMany({
       where,
       include: {
-        leg_matters: {
+        matter: {
           select: { id: true, matterNumber: true, title: true, clientName: true },
         },
       },

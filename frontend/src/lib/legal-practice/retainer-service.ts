@@ -95,7 +95,7 @@ export async function getRetainerById(tenantId: string, retainerId: string) {
       tenantId,
     },
     include: {
-      leg_matters: {
+      matter: {
         select: { id: true, matterNumber: true, title: true, status: true },
       },
       transactions: {
@@ -115,7 +115,7 @@ export async function getRetainerByMatter(tenantId: string, matterId: string) {
       matterId,
     },
     include: {
-      leg_matters: {
+      matter: {
         select: { id: true, matterNumber: true, title: true },
       },
       transactions: {
@@ -143,7 +143,7 @@ export async function getRetainers(tenantId: string, filters: { clientId?: strin
     prisma.leg_retainer.findMany({
       where,
       include: {
-        leg_matters: {
+        matter: {
           select: { id: true, matterNumber: true, title: true, status: true },
         },
       },
@@ -323,7 +323,7 @@ export async function getLowBalanceRetainers(tenantId: string) {
       exhausted: false,
     },
     include: {
-      leg_matters: {
+      matter: {
         select: { id: true, matterNumber: true, title: true, clientName: true },
       },
     },
