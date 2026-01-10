@@ -588,7 +588,7 @@ export async function enterGracePeriod(
   }
   
   // Calculate grace period end
-  const gracePeriodDays = options?.gracePeriodDays ?? subscription.gracePeriodDays ?? subscription.subscriptionPlan.gracePeriodDays ?? 7
+  const gracePeriodDays = options?.gracePeriodDays ?? subscription.gracePeriodDays ?? subscription.SubscriptionPlan.gracePeriodDays ?? 7
   const gracePeriodStart = new Date()
   const gracePeriodEnd = new Date(gracePeriodStart.getTime() + gracePeriodDays * 24 * 60 * 60 * 1000)
   
