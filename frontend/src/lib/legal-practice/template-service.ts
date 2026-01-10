@@ -20,7 +20,7 @@ export interface MatterTemplate {
   description: string;
   matterType: leg_MatterType;
   practiceArea: string;
-  billingType: leg_BillingType;
+  billingType: BillingType;
   suggestedFee: number;
   suggestedRetainer: number;
   defaultTasks: TemplateTask[];
