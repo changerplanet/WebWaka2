@@ -387,7 +387,7 @@ export async function getBudgetStats(
     where,
     select: { 
       projectId: true, 
-      sf_template_categories: true, 
+      category: true, 
       estimatedAmount: true, 
       actualAmount: true 
     },
