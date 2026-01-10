@@ -143,11 +143,11 @@ export async function declareResults(
 
   // Sort by votes descending
   const sortedResults = votesByAspirant
-    .map((v: string) => ({
+    .map((v: { aspirantId: string; _sum: { voteWeight: number | null } }) => ({
       aspirantId: v.aspirantId,
       votes: v._sum.voteWeight || 0,
     }))
-    .sort((a: any, b: any) => b.votes - a.votes);
+    .sort((a, b) => b.votes - a.votes);
 
   // Create result records (APPEND-ONLY)
   const results = await Promise.all(
