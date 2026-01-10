@@ -49,7 +49,7 @@ export async function createUsageMetric(input: CreateUsageMetricInput): Promise<
       return { success: false, error: 'Metric with this key already exists' };
     }
     
-    const metric = await prisma.billing_usage_metrics.create({
+    const metric = await (prisma.billing_usage_metrics.create as any)({
       data: {
         tenantId: input.tenantId,
         key: input.key,
@@ -143,7 +143,7 @@ export async function recordUsage(input: RecordUsageInput): Promise<{
     }
     
     // Create immutable usage record
-    const record = await prisma.billingUsageRecord.create({
+    const record = await (prisma.billing_usage_records.create as any)({
       data: {
         tenantId: input.tenantId,
         metricId: metric.id,
@@ -202,7 +202,7 @@ export async function getTotalUsageForPeriod(
   
   if (!metric) return 0;
   
-  const records = await prisma.billingUsageRecord.findMany({
+  const records = await prisma.billing_usage_records.findMany({
     where: {
       tenantId,
       metricId,
@@ -214,16 +214,16 @@ export async function getTotalUsageForPeriod(
   // Aggregate based on type
   switch (metric.aggregationType) {
     case 'MAX':
-      return records.reduce((max, r) => Math.max(max, Number(r.quantity)), 0);
+      return records.reduce((max: number, r: any) => Math.max(max, Number(r.quantity)), 0);
     case 'AVG':
       if (records.length === 0) return 0;
-      const sum = records.reduce((s, r) => s + Number(r.quantity), 0);
+      const sum = records.reduce((s: number, r: any) => s + Number(r.quantity), 0);
       return sum / records.length;
     case 'COUNT':
       return records.length;
     case 'SUM':
     default:
-      return records.reduce((s, r) => s + Number(r.quantity), 0);
+      return records.reduce((s: number, r: any) => s + Number(r.quantity), 0);
   }
 }
 
@@ -278,7 +278,7 @@ export async function getUsageHistory(
   
   if (!metric) return [];
   
-  const records = await prisma.billingUsageRecord.findMany({
+  const records = await prisma.billing_usage_records.findMany({
     where: {
       tenantId,
       metricId: metric.id,
