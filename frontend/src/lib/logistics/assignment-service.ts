@@ -234,7 +234,7 @@ export class AssignmentService {
       offset?: number
     } = {}
   ) {
-    const where: Prisma.LogisticsDeliveryAssignmentWhereInput = { tenantId }
+    const where: Prisma.logistics_delivery_assignmentsWhereInput = { tenantId }
 
     if (options.status) {
       where.status = Array.isArray(options.status) ? { in: options.status } : options.status
@@ -412,7 +412,7 @@ export class AssignmentService {
     }
 
     // Prepare update data based on status
-    const updateData: Prisma.LogisticsDeliveryAssignmentUpdateInput = {
+    const updateData: Prisma.logistics_delivery_assignmentsUpdateInput = {
       status: input.status,
     }
 
@@ -686,7 +686,7 @@ export class AssignmentService {
     tenantId: string,
     options: { dateFrom?: Date; dateTo?: Date } = {}
   ) {
-    const where: Prisma.LogisticsDeliveryAssignmentWhereInput = { tenantId }
+    const where: Prisma.logistics_delivery_assignmentsWhereInput = { tenantId }
     if (options.dateFrom || options.dateTo) {
       where.createdAt = {
         ...(options.dateFrom && { gte: options.dateFrom }),

@@ -106,7 +106,7 @@ export class AgentService {
       offset?: number
     } = {}
   ) {
-    const where: Prisma.LogisticsDeliveryAgentWhereInput = { tenantId }
+    const where: Prisma.logistics_delivery_agentsWhereInput = { tenantId }
     
     if (options.status) where.status = options.status
     if (options.availability) where.availability = options.availability
