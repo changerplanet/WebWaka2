@@ -575,7 +575,7 @@ export async function enterGracePeriod(
 ): Promise<SubscriptionResult> {
   const subscription = await prisma.subscription.findUnique({
     where: { id: subscriptionId },
-    include: { Plan: true, Tenant: true }
+    include: { SubscriptionPlan: true, Tenant: true }
   })
   
   if (!subscription) {
@@ -660,7 +660,7 @@ export async function suspendSubscription(
 ): Promise<SubscriptionResult> {
   const subscription = await prisma.subscription.findUnique({
     where: { id: subscriptionId },
-    include: { Plan: true, Tenant: true }
+    include: { SubscriptionPlan: true, Tenant: true }
   })
   
   if (!subscription) {
@@ -742,7 +742,7 @@ export async function recoverSubscription(
 ): Promise<SubscriptionResult> {
   const subscription = await prisma.subscription.findUnique({
     where: { id: subscriptionId },
-    include: { Plan: true, Tenant: true }
+    include: { SubscriptionPlan: true, Tenant: true }
   })
   
   if (!subscription) {
