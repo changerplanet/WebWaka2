@@ -33,8 +33,8 @@ export async function POST(request: NextRequest) {
         const seedResult = await seedHealthDemoData(tenantId)
         return NextResponse.json({
           success: seedResult.success,
-          message: seedResult.message,
-          counts: seedResult.counts,
+          message: 'Demo data seeded successfully',
+          counts: seedResult.summary,
           phase: 'S4'
         })
 
@@ -59,8 +59,8 @@ export async function POST(request: NextRequest) {
         const reseedResult = await seedHealthDemoData(tenantId)
         return NextResponse.json({
           success: reseedResult.success,
-          message: reseedResult.message,
-          counts: reseedResult.counts,
+          message: 'Demo data reset successfully',
+          counts: reseedResult.summary,
           phase: 'S4'
         })
 
