@@ -51,7 +51,7 @@ export async function createAddOn(input: CreateAddOnInput): Promise<{
       return { success: false, error: 'Add-on with this slug already exists' };
     }
     
-    const addOn = await prisma.billing_addons.create({
+    const addOn = await (prisma.billing_addons.create as any)({
       data: {
         tenantId: input.tenantId,
         name: input.name,
@@ -198,7 +198,7 @@ export async function subscribeToAddOn(input: SubscribeToAddOnInput): Promise<{
       return { success: false, error: 'Already subscribed to this add-on' };
     }
     
-    const subscription = await prisma.billing_addon_subscriptions.create({
+    const subscription = await (prisma.billing_addon_subscriptions.create as any)({
       data: {
         tenantId: input.tenantId,
         subscriptionId: input.subscriptionId,
@@ -249,12 +249,13 @@ export async function updateAddOnQuantity(
     }
     
     // Validate quantity
-    if (newQuantity < existing.addOn.minQuantity) {
-      return { success: false, error: `Minimum quantity is ${existing.addOn.minQuantity}` };
+    const addOn = existing.billing_addons;
+    if (newQuantity < addOn.minQuantity) {
+      return { success: false, error: `Minimum quantity is ${addOn.minQuantity}` };
     }
     
-    if (existing.addOn.maxQuantity && newQuantity > existing.addOn.maxQuantity) {
-      return { success: false, error: `Maximum quantity is ${existing.addOn.maxQuantity}` };
+    if (addOn.maxQuantity && newQuantity > addOn.maxQuantity) {
+      return { success: false, error: `Maximum quantity is ${addOn.maxQuantity}` };
     }
     
     const subscription = await prisma.billing_addon_subscriptions.update({
@@ -341,12 +342,12 @@ export async function calculateAddOnTotal(tenantId: string): Promise<{
   const activeAddOns = await getActiveAddOns(tenantId);
   
   let monthlyTotal = 0;
-  const byAddOn = activeAddOns.map(sub => {
+  const byAddOn = activeAddOns.map((sub: any) => {
     const total = Number(sub.priceAtPurchase) * sub.quantity;
     monthlyTotal += total;
     
     return {
-      name: sub.addOn.name,
+      name: sub.billing_addons?.name || 'Unknown',
       quantity: sub.quantity,
       price: Number(sub.priceAtPurchase),
       total,
