@@ -68,7 +68,7 @@ export async function createBundle(input: CreateBundleInput): Promise<{
         isPromoted: input.isPromoted || false,
         displayOrder: input.displayOrder || 0,
         badgeText: input.badgeText,
-        items: {
+        billing_bundle_items: {
           create: input.items.map((item, index) => ({
             moduleKey: item.moduleKey,
             moduleName: item.moduleName,
@@ -77,9 +77,9 @@ export async function createBundle(input: CreateBundleInput): Promise<{
             isHighlighted: item.isHighlighted || false,
           })),
         },
-      },
+      } as any,
       include: {
-        bill_invoice_items: true,
+        billing_bundle_items: true,
       },
     });
     
@@ -104,7 +104,7 @@ export async function createBundle(input: CreateBundleInput): Promise<{
 export async function getBundle(bundleId: string) {
   return prisma.billing_bundles.findUnique({
     where: { id: bundleId },
-    include: { bill_invoice_items: { orderBy: { displayOrder: 'asc' } } },
+    include: { billing_bundle_items: { orderBy: { displayOrder: 'asc' } } },
   });
 }
 
@@ -135,7 +135,7 @@ export async function listBundles(params: {
   
   return prisma.billing_bundles.findMany({
     where,
-    include: { bill_invoice_items: { orderBy: { displayOrder: 'asc' } } },
+    include: { billing_bundle_items: { orderBy: { displayOrder: 'asc' } } },
     orderBy: [{ displayOrder: 'asc' }, { createdAt: 'desc' }],
   });
 }
@@ -157,7 +157,7 @@ export async function updateBundle(
     const bundle = await prisma.billing_bundles.update({
       where: { id: bundleId },
       data,
-      include: { bill_invoice_items: true },
+      include: { billing_bundle_items: true },
     });
     return { success: true, bundle };
   } catch (error: any) {

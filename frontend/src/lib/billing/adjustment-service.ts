@@ -33,7 +33,7 @@ export async function createAdjustment(input: CreateAdjustmentInput): Promise<{
   error?: string;
 }> {
   try {
-    const adjustment = await prisma.billing_adjustments.create({
+    const adjustment = await (prisma.billing_adjustments.create as any)({
       data: {
         tenantId: input.tenantId,
         subscriptionId: input.subscriptionId,
