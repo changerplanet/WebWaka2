@@ -204,7 +204,7 @@ export async function PATCH(
           newRole: globalRole || existingUser.globalRole,
           changes: updateData
         }
-      }
+      } as any
     })
 
     return NextResponse.json({
