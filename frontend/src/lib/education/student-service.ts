@@ -109,7 +109,7 @@ export async function listStudents(
 export async function updateStudent(
   tenantId: string,
   studentId: string,
-  updates: Partial<CreateStudentInput>
+  updates: Partial<CreateStudentServiceInput>
 ): Promise<{ success: boolean; error?: string }> {
   console.log(`[Education Demo] Updating student: ${studentId}`);
   return { success: true };
