@@ -244,7 +244,7 @@ export class InventoryAuditService {
         auditId: audit.id,
         auditNumber: audit.auditNumber,
         warehouseId: audit.warehouseId,
-        itemCount: audit.items.length,
+        itemCount: audit.inv_audit_items.length,
       },
       metadata: { userId: supervisorId, userName: supervisorName },
     });
@@ -270,7 +270,7 @@ export class InventoryAuditService {
 
     for (const count of counts) {
       // Find the audit item
-      const item = audit.items.find(
+      const item = audit.inv_audit_items.find(
         i =>
           i.productId === count.productId &&
           (i.variantId || null) === (count.variantId || null) &&
@@ -378,7 +378,7 @@ export class InventoryAuditService {
     }
 
     // Check all items are counted
-    const uncountedItems = audit.items.filter(i => i.countedQuantity === null);
+    const uncountedItems = audit.inv_audit_items.filter(i => i.countedQuantity === null);
     if (uncountedItems.length > 0) {
       throw new Error(
         `${uncountedItems.length} items have not been counted yet`
@@ -386,7 +386,7 @@ export class InventoryAuditService {
     }
 
     // Check no recounts pending
-    const recountRequired = audit.items.filter(i => i.recountRequired);
+    const recountRequired = audit.inv_audit_items.filter(i => i.recountRequired);
     if (recountRequired.length > 0) {
       throw new Error(
         `${recountRequired.length} items require recount before submitting`
@@ -394,14 +394,14 @@ export class InventoryAuditService {
     }
 
     // Calculate summary statistics
-    const itemsWithVariance = audit.items.filter(
+    const itemsWithVariance = audit.inv_audit_items.filter(
       i => i.varianceQuantity !== null && i.varianceQuantity !== 0
     );
     const totalVarianceValue = itemsWithVariance.reduce(
       (sum, i) => sum + Math.abs(Number(i.varianceValue || 0)),
       0
     );
-    const totalExpectedValue = audit.items.reduce(
+    const totalExpectedValue = audit.inv_audit_items.reduce(
       (sum, i) => sum + i.expectedQuantity * Number(i.unitCost || 0),
       0
     );
@@ -415,7 +415,7 @@ export class InventoryAuditService {
       data: {
         status: 'PENDING_REVIEW',
         completedAt: new Date(),
-        totalItemsCounted: audit.items.length,
+        totalItemsCounted: audit.inv_audit_items.length,
         itemsWithVariance: itemsWithVariance.length,
         totalVarianceValue,
         variancePercentage,
@@ -447,8 +447,8 @@ export class InventoryAuditService {
 
     // Get items to approve
     const itemsToApprove = approveItems
-      ? audit.items.filter(i => approveItems.includes(i.id))
-      : audit.items.filter(i => i.varianceQuantity !== null && i.varianceQuantity !== 0);
+      ? audit.inv_audit_items.filter(i => approveItems.includes(i.id))
+      : audit.inv_audit_items.filter(i => i.varianceQuantity !== null && i.varianceQuantity !== 0);
 
     // Mark items as approved
     await prisma.inv_audit_items.updateMany({
@@ -543,7 +543,7 @@ export class InventoryAuditService {
         auditId: audit.id,
         auditNumber: audit.auditNumber,
         warehouseId: audit.warehouseId,
-        itemsCounted: audit.items.length,
+        itemsCounted: audit.inv_audit_items.length,
         itemsWithVariance: itemsToApprove.length,
         totalVarianceValue: Number(audit.totalVarianceValue || 0),
         adjustmentsApplied: inventoryDeltas.length,
@@ -683,7 +683,7 @@ export class InventoryAuditService {
   }> {
     const audit = await this.getAuditOrThrow(tenantId, auditId);
 
-    const counted = audit.items.filter(i => i.countedQuantity !== null);
+    const counted = audit.inv_audit_items.filter(i => i.countedQuantity !== null);
     const withVariance = counted.filter(
       i => i.varianceQuantity !== null && i.varianceQuantity !== 0
     );
@@ -701,7 +701,7 @@ export class InventoryAuditService {
     }
 
     return {
-      totalItems: audit.items.length,
+      totalItems: audit.inv_audit_items.length,
       itemsCounted: counted.length,
       itemsWithVariance: withVariance.length,
       itemsWithPositiveVariance: positive.length,
@@ -851,7 +851,7 @@ export class InventoryAuditService {
       completedAt: audit.completedAt || undefined,
       approvedAt: audit.approvedAt || undefined,
       totalItemsCounted: audit.totalItemsCounted,
-      itemsWithVariance: audit.itemsWithVariance,
+      itemsWithVariance: audit.inv_audit_itemsWithVariance,
       totalVarianceValue: audit.totalVarianceValue
         ? Number(audit.totalVarianceValue)
         : undefined,
@@ -863,7 +863,7 @@ export class InventoryAuditService {
       supervisorName: audit.supervisorName || undefined,
       approvedByName: audit.approvedByName || undefined,
       notes: audit.notes || undefined,
-      items: audit.items.map(i => ({
+      items: audit.inv_audit_items.map(i => ({
         id: i.id,
         productId: i.productId,
         variantId: i.variantId || undefined,
