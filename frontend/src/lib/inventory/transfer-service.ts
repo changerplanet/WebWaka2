@@ -83,7 +83,7 @@ export class StockTransferService {
     const productIds = data.items.map(i => i.productId);
     const products = await prisma.product.findMany({
       where: { id: { in: productIds }, tenantId },
-      include: { variants: true },
+      include: { ProductVariant: true },
     });
 
     const productMap = new Map(products.map(p => [p.id, p]));
@@ -95,7 +95,8 @@ export class StockTransferService {
         throw new Error(`Product ${item.productId} not found`);
       }
       if (item.variantId) {
-        const variant = product.variants.find(v => v.id === item.variantId);
+        const productAny = product as any;
+        const variant = productAny.ProductVariant.find((v: any) => v.id === item.variantId);
         if (!variant) {
           throw new Error(`Variant ${item.variantId} not found for product ${item.productId}`);
         }
@@ -118,11 +119,12 @@ export class StockTransferService {
         notes: data.notes,
         requestedById: userId,
         requestedByName: userName,
-        items: {
+        inv_stock_transfer_items: {
           create: data.items.map(item => {
             const product = productMap.get(item.productId)!;
+            const productAny = product as any;
             const variant = item.variantId
-              ? product.variants.find(v => v.id === item.variantId)
+              ? productAny.ProductVariant.find((v: any) => v.id === item.variantId)
               : null;
 
             return {
@@ -139,15 +141,19 @@ export class StockTransferService {
             };
           }),
         },
-      },
+      } as any,
       include: {
         inv_stock_transfer_items: true,
-        fromWarehouse: true,
-        toWarehouse: true,
       },
     });
 
-    return this.toResponse(transfer);
+    // Get warehouse names separately
+    const [fromWh, toWh] = await Promise.all([
+      prisma.inv_warehouses.findUnique({ where: { id: transfer.fromWarehouseId } }),
+      prisma.inv_warehouses.findUnique({ where: { id: transfer.toWarehouseId } }),
+    ]);
+
+    return this.toResponse(transfer, fromWh, toWh);
   }
 
   /**
