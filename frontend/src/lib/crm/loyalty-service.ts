@@ -578,7 +578,7 @@ export class LoyaltyService {
     let breakdown = `Base: ${basePoints} pts (₦${purchaseAmount} × ${program.pointsPerCurrency})`;
 
     // Check for applicable rules
-    for (const rule of program.rules) {
+    for (const rule of program.crm_loyalty_rules) {
       const conditions = rule.conditions as Record<string, unknown> | null;
 
       // Check channel condition
