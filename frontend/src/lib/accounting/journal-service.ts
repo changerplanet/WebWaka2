@@ -467,7 +467,7 @@ export class JournalEntryService {
   ): Promise<PostingResult> {
     const journal = await prisma.acct_journal_entries.findFirst({
       where: { id: journalId, tenantId },
-      include: { lines: true },
+      include: { acct_ledger_entries: true },
     });
 
     if (!journal) {
@@ -482,8 +482,9 @@ export class JournalEntryService {
       return { success: false, error: 'Cannot void a reversal entry' };
     }
 
+    const journalAny = journal as any;
     // Create reversal entry with opposite debits/credits
-    const reversalLines: JournalLineInput[] = journal.lines.map((line) => ({
+    const reversalLines: JournalLineInput[] = journalAny.acct_ledger_entries.map((line: any) => ({
       accountCode: '', // Will be resolved from ledger account
       debitAmount: line.creditAmount.toNumber(), // Swap debit/credit
       creditAmount: line.debitAmount.toNumber(),
@@ -493,8 +494,8 @@ export class JournalEntryService {
     }));
 
     // Get account codes for the reversal
-    for (let i = 0; i < journal.lines.length; i++) {
-      const line = journal.lines[i];
+    for (let i = 0; i < journalAny.acct_ledger_entries.length; i++) {
+      const line = journalAny.acct_ledger_entries[i];
       const ledgerAccount = await prisma.acct_ledger_accounts.findUnique({
         where: { id: line.ledgerAccountId },
         include: { acct_chart_of_accounts: true },
