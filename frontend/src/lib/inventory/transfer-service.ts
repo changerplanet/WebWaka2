@@ -508,9 +508,12 @@ export class StockTransferService {
       },
       include: {
         inv_stock_transfer_items: true,
-        
-        
       },
+    });
+
+    // Fetch warehouse info
+    const toWarehouse = await prisma.inv_warehouses.findUnique({
+      where: { id: updated.toWarehouseId },
     });
 
     // Build inventory deltas for destination location (INCREASE)
@@ -519,7 +522,7 @@ export class StockTransferService {
       .map(i => ({
         productId: i.productId,
         variantId: i.variantId || undefined,
-        locationId: updated.toWarehouse.locationId,
+        locationId: toWarehouse?.locationId,
         delta: i.quantityReceived, // Positive = increase
         reason: 'TRANSFER_IN' as const,
       }));
@@ -532,7 +535,7 @@ export class StockTransferService {
         transferId: transfer.id,
         transferNumber: transfer.transferNumber,
         toWarehouseId: transfer.toWarehouseId,
-        toLocationId: updated.toWarehouse.locationId,
+        toLocationId: toWarehouse?.locationId,
         items: updated.inv_stock_transfer_items.map(i => ({
           productId: i.productId,
           variantId: i.variantId || undefined,
@@ -552,7 +555,7 @@ export class StockTransferService {
           tenantId,
           productId: item.productId,
           variantId: item.variantId,
-          locationId: updated.toWarehouse.locationId,
+          warehouseId: updated.toWarehouseId,
           reason: 'TRANSFER_IN',
           quantity: item.quantityReceived,
           quantityBefore: 0, // Would be populated from actual inventory lookup
@@ -565,11 +568,11 @@ export class StockTransferService {
           eventProcessed: true,
           performedBy: userId,
           performedByName: userName,
-        },
+        } as any,
       });
     }
 
-    return this.toResponse(updated);
+    return this.toResponse(updated, null, toWarehouse);
   }
 
   /**
