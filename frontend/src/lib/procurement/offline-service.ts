@@ -248,7 +248,7 @@ export class OfflineProcurementService {
       // New purchase requests
       prisma.proc_purchase_requests.findMany({
         where: { tenantId, createdAt: { gt: lastSyncAt } },
-        include: { proc_purchase_order_items: true },
+        include: { proc_purchase_request_items: true },
         orderBy: { createdAt: 'desc' },
       }),
 
@@ -259,7 +259,7 @@ export class OfflineProcurementService {
           createdAt: { lte: lastSyncAt },
           updatedAt: { gt: lastSyncAt },
         },
-        include: { proc_purchase_order_items: true },
+        include: { proc_purchase_request_items: true },
         orderBy: { updatedAt: 'desc' },
       }),
 
@@ -284,7 +284,7 @@ export class OfflineProcurementService {
       // New goods receipts
       prisma.proc_goods_receipts.findMany({
         where: { tenantId, createdAt: { gt: lastSyncAt } },
-        include: { proc_purchase_order_items: true },
+        include: { proc_goods_receipt_items: true },
         orderBy: { createdAt: 'desc' },
       }),
     ])
