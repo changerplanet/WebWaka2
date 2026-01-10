@@ -251,8 +251,15 @@ export async function getVoteCounts(
     _count: true,
   });
 
+  // Define the type for grouped votes
+  type VoteGroup = {
+    aspirantId: string;
+    _sum: { voteWeight: number | null };
+    _count: number;
+  };
+
   // Get aspirant details
-  const aspirantIds = votesByAspirant.map((v: string) => v.aspirantId);
+  const aspirantIds = votesByAspirant.map((v: VoteGroup) => v.aspirantId);
   const aspirants = await prisma.pol_primary_aspirant.findMany({
     where: { id: { in: aspirantIds } },
     select: {
@@ -263,14 +270,14 @@ export async function getVoteCounts(
     },
   });
 
-  const aspirantMap = new Map(aspirants.map((a: any) => [a.id, a]));
+  const aspirantMap = new Map(aspirants.map((a) => [a.id, a]));
 
   return {
     primaryId,
     scope: scope || 'OVERALL',
     totalVotes: totalVotes._sum.voteWeight || 0,
     totalBallots: totalVotes._count,
-    byAspirant: votesByAspirant.map((v: string) => {
+    byAspirant: votesByAspirant.map((v: VoteGroup) => {
       const aspirant = aspirantMap.get(v.aspirantId);
       return {
         aspirantId: v.aspirantId,
@@ -282,7 +289,7 @@ export async function getVoteCounts(
           ? (((v._sum.voteWeight || 0) / totalVotes._sum.voteWeight) * 100).toFixed(2)
           : '0.00',
       };
-    }).sort((a: any, b: any) => (b.votes as number) - (a.votes as number)),
+    }).sort((a, b) => (b.votes as number) - (a.votes as number)),
     _mandatory_notice: MANDATORY_DISCLAIMER,
     _classification: 'UNOFFICIAL VOTE COUNT - INTERNAL PARTY USE ONLY',
     _legal_notice: 'These counts are provisional and have no legal standing.',
