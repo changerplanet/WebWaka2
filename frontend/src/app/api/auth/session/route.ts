@@ -19,7 +19,7 @@ export async function GET() {
     const partnerUser = await prisma.partnerUser.findUnique({
       where: { userId: session.user.id },
       include: {
-        Partner: {
+        partner: {
           select: {
             id: true,
             name: true,
@@ -29,6 +29,8 @@ export async function GET() {
         }
       }
     })
+    
+    const partnerUserAny = partnerUser as any
     
     return NextResponse.json({
       success: true,
@@ -47,13 +49,13 @@ export async function GET() {
         })),
         // Include partner info if user is a partner user
         isPartner: !!partnerUser,
-        partner: partnerUser ? {
-          id: partnerUser.partner.id,
-          name: partnerUser.partner.name,
-          slug: partnerUser.partner.slug,
-          status: partnerUser.partner.status,
-          role: partnerUser.role,
-          department: partnerUser.department
+        partner: partnerUserAny ? {
+          id: partnerUserAny.partner.id,
+          name: partnerUserAny.partner.name,
+          slug: partnerUserAny.partner.slug,
+          status: partnerUserAny.partner.status,
+          role: partnerUserAny.role,
+          department: partnerUserAny.department
         } : null
       },
       activeTenantId: session.activeTenantId
