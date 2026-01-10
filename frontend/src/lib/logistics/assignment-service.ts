@@ -183,8 +183,8 @@ export class AssignmentService {
         assignedBy: input.assignedBy,
         assignedAt: input.agentId ? new Date() : undefined,
         status: input.agentId ? 'ASSIGNED' : 'PENDING',
-        metadata: input.metadata as any,
-      },
+        ...(input.metadata && { metadata: input.metadata }),
+      } as any,
       include: {
         logistics_delivery_agents: true,
       },
@@ -314,8 +314,8 @@ export class AssignmentService {
         ...(input.deliveryWindowEnd !== undefined && { deliveryWindowEnd: input.deliveryWindowEnd }),
         ...(input.specialInstructions !== undefined && { specialInstructions: input.specialInstructions }),
         ...(input.estimatedFee !== undefined && { estimatedFee: input.estimatedFee }),
-        ...(input.metadata !== undefined && { metadata: input.metadata ?? undefined }),
-      },
+        ...(input.metadata && { metadata: input.metadata }),
+      } as any,
       include: {
         logistics_delivery_agents: true,
       },
