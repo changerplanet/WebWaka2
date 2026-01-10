@@ -364,7 +364,7 @@ export async function renewSubscription(
     subscriptionId: subscription.id,
     tenantId: subscription.tenantId,
     partnerId: subscription.tenant.partnerReferral?.partnerId ?? null,
-    modules: subscription.plan.includedModules,
+    modules: subscription.subscriptionPlan.includedModules,
     billingAmount: Number(amount),
     billingCurrency: subscription.currency,
     billingInterval: subscription.billingInterval,
@@ -456,7 +456,7 @@ export async function cancelSubscription(
     subscriptionId: subscription.id,
     tenantId: subscription.tenantId,
     partnerId: subscription.tenant.partnerReferral?.partnerId ?? null,
-    modules: subscription.plan.includedModules,
+    modules: subscription.subscriptionPlan.includedModules,
     billingAmount: Number(subscription.amount),
     billingCurrency: subscription.currency,
     billingInterval: subscription.billingInterval,
@@ -588,7 +588,7 @@ export async function enterGracePeriod(
   }
   
   // Calculate grace period end
-  const gracePeriodDays = options?.gracePeriodDays ?? subscription.gracePeriodDays ?? subscription.plan.gracePeriodDays ?? 7
+  const gracePeriodDays = options?.gracePeriodDays ?? subscription.gracePeriodDays ?? subscription.subscriptionPlan.gracePeriodDays ?? 7
   const gracePeriodStart = new Date()
   const gracePeriodEnd = new Date(gracePeriodStart.getTime() + gracePeriodDays * 24 * 60 * 60 * 1000)
   
@@ -632,7 +632,7 @@ export async function enterGracePeriod(
     subscriptionId: subscription.id,
     tenantId: subscription.tenantId,
     partnerId: null,
-    modules: subscription.plan.includedModules,
+    modules: subscription.subscriptionPlan.includedModules,
     billingAmount: Number(subscription.amount),
     billingCurrency: subscription.currency,
     billingInterval: subscription.billingInterval,
@@ -717,7 +717,7 @@ export async function suspendSubscription(
     subscriptionId: subscription.id,
     tenantId: subscription.tenantId,
     partnerId: null,
-    modules: subscription.plan.includedModules,
+    modules: subscription.subscriptionPlan.includedModules,
     billingAmount: Number(subscription.amount),
     billingCurrency: subscription.currency,
     billingInterval: subscription.billingInterval,
@@ -815,7 +815,7 @@ export async function recoverSubscription(
     subscriptionId: subscription.id,
     tenantId: subscription.tenantId,
     partnerId: null,
-    modules: subscription.plan.includedModules,
+    modules: subscription.subscriptionPlan.includedModules,
     billingAmount: Number(subscription.amount),
     billingCurrency: subscription.currency,
     billingInterval: subscription.billingInterval,
