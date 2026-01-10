@@ -16,7 +16,7 @@ export * from './fee-fact-service'
 export * from './attendance-service'
 
 // Demo Data (S4)
-export { seedEducationDemoData } from './demo-data'
+export { seedEducationDemoData, clearEducationDemoData } from './demo-data'
 
 // Assessment service - explicit exports to avoid conflicts
 export {
