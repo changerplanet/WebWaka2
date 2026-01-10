@@ -818,8 +818,8 @@ export class InventoryAuditService {
     notes: string | null;
     createdAt: Date;
     updatedAt: Date;
-    warehouse: { name: string };
-    items: Array<{
+    inv_warehouses: { name: string };
+    inv_audit_items: Array<{
       id: string;
       productId: string;
       variantId: string | null;
@@ -843,7 +843,7 @@ export class InventoryAuditService {
       tenantId: audit.tenantId,
       auditNumber: audit.auditNumber,
       warehouseId: audit.warehouseId,
-      warehouseName: audit.warehouse.name,
+      warehouseName: audit.inv_warehouses.name,
       auditType: audit.auditType,
       status: audit.status,
       scheduledDate: audit.scheduledDate || undefined,
