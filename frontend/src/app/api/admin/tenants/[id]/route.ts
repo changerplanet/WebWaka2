@@ -39,11 +39,11 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
             }
           }
         },
-        capabilities: {
+        entitlements: {
           select: {
-            key: true,
-            isActive: true,
-            activatedAt: true
+            module: true,
+            status: true,
+            validUntil: true
           }
         },
         platformInstances: {
