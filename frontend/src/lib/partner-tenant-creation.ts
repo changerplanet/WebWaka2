@@ -399,7 +399,7 @@ export async function activateTenant(
           paymentReference: input.paymentReference,
           partnerId: tenant.partnerReferral?.partnerId
         }
-      }
+      } as any
     })
     
     return updated
