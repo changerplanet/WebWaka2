@@ -422,7 +422,7 @@ export async function getCandidate(tenantId: string, candidateId: string) {
   const candidate = await prisma.pol_candidate.findFirst({
     where: { id: candidateId, tenantId },
     include: {
-      crm_campaigns: {
+      campaign: {
         include: {
           party: true,
         },

@@ -210,7 +210,7 @@ export async function queryDonationFacts(
     prisma.pol_donation_fact.findMany({
       where,
       include: {
-        crm_campaigns: { select: { id: true, name: true } },
+        campaign: { select: { id: true, name: true } },
         party: { select: { id: true, name: true, acronym: true } },
       },
       orderBy: { donationDate: 'desc' },
@@ -299,7 +299,7 @@ export async function getDonationFact(tenantId: string, factId: string) {
   const fact = await prisma.pol_donation_fact.findFirst({
     where: { id: factId, tenantId },
     include: {
-      crm_campaigns: { select: { id: true, name: true } },
+      campaign: { select: { id: true, name: true } },
       party: { select: { id: true, name: true, acronym: true } },
     },
   });

@@ -260,7 +260,7 @@ export async function queryExpenseFacts(
     prisma.pol_expense_fact.findMany({
       where,
       include: {
-        crm_campaigns: { select: { id: true, name: true } },
+        campaign: { select: { id: true, name: true } },
         party: { select: { id: true, name: true, acronym: true } },
       },
       orderBy: { expenseDate: 'desc' },
@@ -338,7 +338,7 @@ export async function getExpenseFact(tenantId: string, factId: string) {
   const fact = await prisma.pol_expense_fact.findFirst({
     where: { id: factId, tenantId },
     include: {
-      crm_campaigns: { select: { id: true, name: true } },
+      campaign: { select: { id: true, name: true } },
       party: { select: { id: true, name: true, acronym: true } },
     },
   });

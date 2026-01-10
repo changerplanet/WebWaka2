@@ -172,7 +172,7 @@ export async function generateDisclosure(
       beneficiaryName: true,
       beneficiaryType: true,
       amount: true,
-      leg_template_categories: true,
+      category: true,
       description: true,
     },
   });
@@ -266,7 +266,7 @@ export async function queryDisclosures(
     prisma.pol_disclosure.findMany({
       where,
       include: {
-        crm_campaigns: { select: { id: true, name: true } },
+        campaign: { select: { id: true, name: true } },
         party: { select: { id: true, name: true, acronym: true } },
       },
       orderBy: { periodStart: 'desc' },
@@ -291,7 +291,7 @@ export async function getDisclosure(tenantId: string, disclosureId: string) {
   const disclosure = await prisma.pol_disclosure.findFirst({
     where: { id: disclosureId, tenantId },
     include: {
-      crm_campaigns: { select: { id: true, name: true } },
+      campaign: { select: { id: true, name: true } },
       party: { select: { id: true, name: true, acronym: true } },
     },
   });
@@ -331,7 +331,7 @@ export async function submitDisclosure(
       submittedTo,
     },
     include: {
-      crm_campaigns: { select: { id: true, name: true } },
+      campaign: { select: { id: true, name: true } },
       party: { select: { id: true, name: true, acronym: true } },
     },
   });

@@ -126,7 +126,7 @@ export async function getEvent(tenantId: string, eventId: string) {
   const event = await prisma.pol_event.findFirst({
     where: { id: eventId, tenantId },
     include: {
-      crm_campaigns: {
+      campaign: {
         include: {
           party: true,
         },
@@ -170,7 +170,7 @@ export async function listEvents(tenantId: string, filters: EventQueryFilters = 
     prisma.pol_event.findMany({
       where,
       include: {
-        crm_campaigns: { select: { id: true, name: true } },
+        campaign: { select: { id: true, name: true } },
         _count: {
           select: { volunteers: true },
         },
@@ -311,7 +311,7 @@ export async function getUpcomingEvents(
   const events = await prisma.pol_event.findMany({
     where,
     include: {
-      crm_campaigns: { select: { id: true, name: true } },
+      campaign: { select: { id: true, name: true } },
       _count: {
         select: { volunteers: true },
       },

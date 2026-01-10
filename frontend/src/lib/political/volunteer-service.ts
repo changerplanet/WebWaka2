@@ -144,7 +144,7 @@ export async function getVolunteer(tenantId: string, volunteerId: string) {
   const volunteer = await prisma.pol_volunteer.findFirst({
     where: { id: volunteerId, tenantId },
     include: {
-      crm_campaigns: {
+      campaign: {
         include: {
           party: true,
         },
@@ -184,7 +184,7 @@ export async function listVolunteers(
     prisma.pol_volunteer.findMany({
       where,
       include: {
-        crm_campaigns: { select: { id: true, name: true } },
+        campaign: { select: { id: true, name: true } },
         member: { select: { id: true, membershipNo: true } },
         event: { select: { id: true, name: true } },
       },
