@@ -59,38 +59,38 @@ export interface OnboardingTaskFilters {
 // Default onboarding checklist for Nigerian context
 const DEFAULT_ONBOARDING_TASKS = [
   // HR Tasks
-  { taskName: 'Collect National ID / Voter\'s Card / Passport', ProductCategory: 'Documents', assignedDepartment: 'HR', requiresDocument: true, documentType: 'Government ID', dueOrder: 1 },
-  { taskName: 'Collect Educational Certificates', ProductCategory: 'Documents', assignedDepartment: 'HR', requiresDocument: true, documentType: 'Educational Certificate', dueOrder: 2 },
-  { taskName: 'Collect NYSC Certificate / Exemption Letter', ProductCategory: 'Documents', assignedDepartment: 'HR', requiresDocument: true, documentType: 'NYSC Certificate', dueOrder: 3 },
-  { taskName: 'Collect Professional Licenses (if applicable)', ProductCategory: 'Documents', assignedDepartment: 'HR', requiresDocument: true, documentType: 'Professional License', dueOrder: 4 },
-  { taskName: 'Collect Guarantor Form (2 guarantors)', ProductCategory: 'Documents', assignedDepartment: 'HR', requiresDocument: true, documentType: 'Guarantor Form', dueOrder: 5 },
-  { taskName: 'Collect Passport Photographs', ProductCategory: 'Documents', assignedDepartment: 'HR', requiresDocument: true, documentType: 'Passport Photo', dueOrder: 6 },
-  { taskName: 'Collect Bank Account Details', ProductCategory: 'Documents', assignedDepartment: 'HR', requiresDocument: true, documentType: 'Bank Details', dueOrder: 7 },
-  { taskName: 'Complete Employee Information Form', ProductCategory: 'Documents', assignedDepartment: 'HR', dueOrder: 8 },
-  { taskName: 'Sign Employment Contract', ProductCategory: 'Documents', assignedDepartment: 'HR', requiresDocument: true, documentType: 'Signed Contract', dueOrder: 9 },
+  { taskName: 'Collect National ID / Voter\'s Card / Passport', category: 'Documents', assignedDepartment: 'HR', requiresDocument: true, documentType: 'Government ID', dueOrder: 1 },
+  { taskName: 'Collect Educational Certificates', category: 'Documents', assignedDepartment: 'HR', requiresDocument: true, documentType: 'Educational Certificate', dueOrder: 2 },
+  { taskName: 'Collect NYSC Certificate / Exemption Letter', category: 'Documents', assignedDepartment: 'HR', requiresDocument: true, documentType: 'NYSC Certificate', dueOrder: 3 },
+  { taskName: 'Collect Professional Licenses (if applicable)', category: 'Documents', assignedDepartment: 'HR', requiresDocument: true, documentType: 'Professional License', dueOrder: 4 },
+  { taskName: 'Collect Guarantor Form (2 guarantors)', category: 'Documents', assignedDepartment: 'HR', requiresDocument: true, documentType: 'Guarantor Form', dueOrder: 5 },
+  { taskName: 'Collect Passport Photographs', category: 'Documents', assignedDepartment: 'HR', requiresDocument: true, documentType: 'Passport Photo', dueOrder: 6 },
+  { taskName: 'Collect Bank Account Details', category: 'Documents', assignedDepartment: 'HR', requiresDocument: true, documentType: 'Bank Details', dueOrder: 7 },
+  { taskName: 'Complete Employee Information Form', category: 'Documents', assignedDepartment: 'HR', dueOrder: 8 },
+  { taskName: 'Sign Employment Contract', category: 'Documents', assignedDepartment: 'HR', requiresDocument: true, documentType: 'Signed Contract', dueOrder: 9 },
   
   // Finance Tasks
-  { taskName: 'Setup Pension (PFA Registration)', ProductCategory: 'Finance', assignedDepartment: 'Finance', dueOrder: 10 },
-  { taskName: 'Setup Tax (PAYE Registration)', ProductCategory: 'Finance', assignedDepartment: 'Finance', dueOrder: 11 },
-  { taskName: 'Setup NHF (if applicable)', ProductCategory: 'Finance', assignedDepartment: 'Finance', dueOrder: 12 },
-  { taskName: 'Add to Payroll System', ProductCategory: 'Finance', assignedDepartment: 'Finance', dueOrder: 13 },
+  { taskName: 'Setup Pension (PFA Registration)', category: 'Finance', assignedDepartment: 'Finance', dueOrder: 10 },
+  { taskName: 'Setup Tax (PAYE Registration)', category: 'Finance', assignedDepartment: 'Finance', dueOrder: 11 },
+  { taskName: 'Setup NHF (if applicable)', category: 'Finance', assignedDepartment: 'Finance', dueOrder: 12 },
+  { taskName: 'Add to Payroll System', category: 'Finance', assignedDepartment: 'Finance', dueOrder: 13 },
   
   // IT Tasks
-  { taskName: 'Create Email Account', ProductCategory: 'IT Setup', assignedDepartment: 'IT', dueOrder: 14 },
-  { taskName: 'Setup Computer / Workstation', ProductCategory: 'IT Setup', assignedDepartment: 'IT', dueOrder: 15 },
-  { taskName: 'Provide System Access / Login Credentials', ProductCategory: 'IT Setup', assignedDepartment: 'IT', dueOrder: 16 },
-  { taskName: 'Issue Access Card / Building Pass', ProductCategory: 'IT Setup', assignedDepartment: 'Admin', dueOrder: 17 },
+  { taskName: 'Create Email Account', category: 'IT Setup', assignedDepartment: 'IT', dueOrder: 14 },
+  { taskName: 'Setup Computer / Workstation', category: 'IT Setup', assignedDepartment: 'IT', dueOrder: 15 },
+  { taskName: 'Provide System Access / Login Credentials', category: 'IT Setup', assignedDepartment: 'IT', dueOrder: 16 },
+  { taskName: 'Issue Access Card / Building Pass', category: 'IT Setup', assignedDepartment: 'Admin', dueOrder: 17 },
   
   // Training & Orientation
-  { taskName: 'Schedule Orientation Session', ProductCategory: 'Training', assignedDepartment: 'HR', dueOrder: 18 },
-  { taskName: 'Complete Health & Safety Training', ProductCategory: 'Training', assignedDepartment: 'HR', dueOrder: 19 },
-  { taskName: 'Complete Company Policy Training', ProductCategory: 'Training', assignedDepartment: 'HR', dueOrder: 20 },
-  { taskName: 'Department Introduction', ProductCategory: 'Training', assignedDepartment: 'Manager', dueOrder: 21 },
+  { taskName: 'Schedule Orientation Session', category: 'Training', assignedDepartment: 'HR', dueOrder: 18 },
+  { taskName: 'Complete Health & Safety Training', category: 'Training', assignedDepartment: 'HR', dueOrder: 19 },
+  { taskName: 'Complete Company Policy Training', category: 'Training', assignedDepartment: 'HR', dueOrder: 20 },
+  { taskName: 'Department Introduction', category: 'Training', assignedDepartment: 'Manager', dueOrder: 21 },
   
   // Administrative
-  { taskName: 'Register for HMO / Health Insurance', ProductCategory: 'Admin', assignedDepartment: 'HR', dueOrder: 22 },
-  { taskName: 'Assign Desk / Workspace', ProductCategory: 'Admin', assignedDepartment: 'Admin', dueOrder: 23 },
-  { taskName: 'Add to Company Directory', ProductCategory: 'Admin', assignedDepartment: 'HR', dueOrder: 24 },
+  { taskName: 'Register for HMO / Health Insurance', category: 'Admin', assignedDepartment: 'HR', dueOrder: 22 },
+  { taskName: 'Assign Desk / Workspace', category: 'Admin', assignedDepartment: 'Admin', dueOrder: 23 },
+  { taskName: 'Add to Company Directory', category: 'Admin', assignedDepartment: 'HR', dueOrder: 24 },
 ];
 
 // ============================================================================
@@ -178,7 +178,7 @@ export async function generateOnboardingChecklist(
           platformInstanceId,
           applicationId,
           taskName: task.taskName,
-          ProductCategory: task.category,
+          category: task.category,
           assignedDepartment: task.assignedDepartment,
           dueDate,
           dueOrder: task.dueOrder,
