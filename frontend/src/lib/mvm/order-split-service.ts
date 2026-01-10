@@ -147,7 +147,7 @@ export const OrderSplitService = {
     
     // Create parent order
     const parentOrder = await prisma.mvm_parent_order.create({
-      data: withPrismaDefaults({
+      data: {
         tenantId: input.tenantId,
         platformInstanceId: input.platformInstanceId,
         orderNumber,
@@ -156,8 +156,8 @@ export const OrderSplitService = {
         customerPhone: input.customerPhone,
         customerName: input.customerName,
         status: 'PENDING',
-        shippingAddress: input.shippingAddress as unknown as Prisma.JsonValue,
-        billingAddress: input.billingAddress as unknown as Prisma.JsonValue,
+        shippingAddress: input.shippingAddress as unknown as object,
+        billingAddress: input.billingAddress as unknown as object,
         currency: 'NGN',
         subtotal,
         discountTotal,
@@ -189,7 +189,7 @@ export const OrderSplitService = {
             lineTotal: (item.unitPrice - (item.discount || 0)) * item.quantity
           }))
         }
-      }) // AUTO-FIX: required by Prisma schema
+      }
     })
     
     // Create sub-orders for each vendor
