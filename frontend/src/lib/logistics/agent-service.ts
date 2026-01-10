@@ -129,7 +129,7 @@ export class AgentService {
       prisma.logistics_delivery_agents.findMany({
         where,
         include: {
-          _count: { select: { logistics_delivery_assignments: true } },
+          _count: { select: { logistics_delivery_logistics_delivery_assignments: true } },
         },
         orderBy: { createdAt: 'desc' },
         take: options.limit || 50,
@@ -148,12 +148,12 @@ export class AgentService {
     return prisma.logistics_delivery_agents.findFirst({
       where: { id: agentId, tenantId },
       include: {
-        assignments: {
+        logistics_delivery_assignments: {
           where: { status: { notIn: ['DELIVERED', 'CANCELLED', 'RETURNED'] } },
           orderBy: { createdAt: 'desc' },
           take: 10,
         },
-        _count: { select: { logistics_delivery_assignments: true } },
+        _count: { select: { logistics_delivery_logistics_delivery_assignments: true } },
       },
     })
   }
@@ -287,7 +287,7 @@ export class AgentService {
       include: {
         _count: {
           select: {
-            assignments: {
+            logistics_delivery_assignments: {
               where: {
                 status: { notIn: ['DELIVERED', 'CANCELLED', 'RETURNED', 'FAILED'] },
               },
