@@ -121,8 +121,8 @@ export class PurchaseRequestService {
         neededByDate: input.neededByDate,
         notes: input.notes,
         offlineId: input.offlineId,
-        items: {
-          create: input.items.map((item, index) => ({
+        proc_purchase_request_items: {
+          create: input.items.map((item: any, index: number) => ({
             productId: item.productId,
             productSku: item.productSku,
             productName: item.productName,
@@ -135,8 +135,8 @@ export class PurchaseRequestService {
             lineNumber: index + 1,
           })),
         },
-      },
-      include: { bill_invoice_items: true },
+      } as any,
+      include: { proc_purchase_request_items: true },
     })
 
     // Emit event
@@ -160,7 +160,7 @@ export class PurchaseRequestService {
   ) {
     const { filters = {}, page = 1, limit = 20, orderBy = 'createdAt', orderDir = 'desc' } = options
 
-    const where: Prisma.ProcPurchaseRequestWhereInput = {
+    const where: Prisma.proc_purchase_requestsWhereInput = {
       tenantId,
       ...(filters.status && { status: { in: filters.status } }),
       ...(filters.priority && { priority: { in: filters.priority } }),
@@ -179,7 +179,7 @@ export class PurchaseRequestService {
     const [requests, total] = await Promise.all([
       prisma.proc_purchase_requests.findMany({
         where,
-        include: { bill_invoice_items: { orderBy: { lineNumber: 'asc' } } },
+        include: { proc_purchase_request_items: { orderBy: { lineNumber: 'asc' } } },
         orderBy: { [orderBy]: orderDir },
         skip: (page - 1) * limit,
         take: limit,
