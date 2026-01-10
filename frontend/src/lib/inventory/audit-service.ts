@@ -486,7 +486,7 @@ export class InventoryAuditService {
       .map(i => ({
         productId: i.productId,
         variantId: i.variantId || undefined,
-        locationId: updated.warehouse.locationId,
+        locationId: (updated as any).inv_warehouses?.locationId,
         delta: i.varianceQuantity!,
         reason: 'AUDIT_CORRECTION' as const,
       }));
@@ -516,15 +516,15 @@ export class InventoryAuditService {
 
       // Record stock movements for audit trail
       for (const item of itemsToApprove.filter(i => i.varianceQuantity)) {
-        await prisma.wh_stock_movement.create({
+        await (prisma.wh_stock_movement.create as any)({
           data: {
             tenantId,
             productId: item.productId,
             variantId: item.variantId,
-            locationId: updated.warehouse.locationId,
+            warehouseId: updated.warehouseId,
             reason: item.varianceQuantity! > 0 ? 'ADJUSTMENT_POSITIVE' : 'ADJUSTMENT_NEGATIVE',
             quantity: item.varianceQuantity!,
-            quantityBefore: item.expectedQuantity,
+            beforeQuantity: item.expectedQuantity,
             referenceType: 'AUDIT',
             referenceId: auditId,
             batchNumber: item.batchNumber,
@@ -750,7 +750,7 @@ export class InventoryAuditService {
       where: {
         productId,
         variantId: variantId || null,
-        audit: {
+        inv_audits: {
           tenantId,
           status: 'COMPLETED',
         },
@@ -761,19 +761,19 @@ export class InventoryAuditService {
           include: { inv_warehouses: true },
         },
       },
-      orderBy: { audit: { completedAt: 'desc' } },
+      orderBy: { inv_audits: { completedAt: 'desc' } },
       take: limit,
     });
 
     return items.map(item => ({
       auditId: item.auditId,
-      auditNumber: item.audit.auditNumber,
-      auditDate: item.audit.completedAt!,
+      auditNumber: item.inv_audits.auditNumber,
+      auditDate: item.inv_audits.completedAt!,
       expectedQuantity: item.expectedQuantity,
       countedQuantity: item.countedQuantity!,
       variance: item.varianceQuantity || 0,
       varianceReason: item.varianceReason || undefined,
-      warehouseName: item.audit.warehouse.name,
+      warehouseName: item.inv_audits.inv_warehouses.name,
     }));
   }
 
