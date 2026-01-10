@@ -180,10 +180,14 @@ export class StockTransferService {
       },
       include: {
         inv_stock_transfer_items: true,
-        fromWarehouse: true,
-        toWarehouse: true,
       },
     });
+
+    // Get warehouse info
+    const [fromWh, toWh] = await Promise.all([
+      prisma.inv_warehouses.findUnique({ where: { id: updated.fromWarehouseId } }),
+      prisma.inv_warehouses.findUnique({ where: { id: updated.toWarehouseId } }),
+    ]);
 
     // Emit event
     await emitInventoryEvent({
@@ -193,10 +197,10 @@ export class StockTransferService {
         transferId: transfer.id,
         transferNumber: transfer.transferNumber,
         fromWarehouseId: transfer.fromWarehouseId,
-        fromLocationId: updated.fromWarehouse.locationId,
+        fromLocationId: fromWh?.locationId,
         toWarehouseId: transfer.toWarehouseId,
-        toLocationId: updated.toWarehouse.locationId,
-        items: updated.inv_stock_transfer_items.map(i => ({
+        toLocationId: toWh?.locationId,
+        items: (updated as any).inv_stock_transfer_items.map((i: any) => ({
           productId: i.productId,
           variantId: i.variantId || undefined,
           sku: i.sku || undefined,
@@ -209,7 +213,7 @@ export class StockTransferService {
       metadata: { userId, userName },
     });
 
-    return this.toResponse(updated);
+    return this.toResponse(updated, fromWh, toWh);
   }
 
   /**
