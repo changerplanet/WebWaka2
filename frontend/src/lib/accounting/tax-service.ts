@@ -303,7 +303,7 @@ export class TaxService {
     const vatRefundable = netVAT.lessThan(0) ? netVAT.abs() : new Decimal(0);
 
     // Check if summary already exists
-    const existingSummary = await prisma.acctTaxSummary.findFirst({
+    const existingSummary = await prisma.acct_tax_summaries.findFirst({
       where: { tenantId, periodId: period.id, taxCode: 'VAT_7.5' },
     });
 
@@ -355,7 +355,7 @@ export class TaxService {
     }
 
     // Check if already finalized
-    const existing = await prisma.acctTaxSummary.findFirst({
+    const existing = await prisma.acct_tax_summaries.findFirst({
       where: { tenantId, periodId: period.id, taxCode: 'VAT_7.5' },
     });
 
@@ -382,12 +382,12 @@ export class TaxService {
     };
 
     if (existing) {
-      return prisma.acctTaxSummary.update({
+      return prisma.acct_tax_summaries.update({
         where: { id: existing.id },
         data: summaryData,
       });
     } else {
-      return prisma.acctTaxSummary.create({
+      return prisma.acct_tax_summaries.create({
         data: {
           tenantId,
           periodId: period.id,
@@ -414,7 +414,7 @@ export class TaxService {
       throw new Error(`Financial period '${periodCode}' not found`);
     }
 
-    const existing = await prisma.acctTaxSummary.findFirst({
+    const existing = await prisma.acct_tax_summaries.findFirst({
       where: { tenantId, periodId: period.id, taxCode: 'VAT_7.5' },
     });
 
@@ -426,7 +426,7 @@ export class TaxService {
       throw new Error('Tax summary is already finalized');
     }
 
-    return prisma.acctTaxSummary.update({
+    return prisma.acct_tax_summaries.update({
       where: { id: existing.id },
       data: {
         reportGeneratedAt: new Date(),
@@ -456,7 +456,7 @@ export class TaxService {
       };
     }
 
-    const summaries = await prisma.acctTaxSummary.findMany({
+    const summaries = await prisma.acct_tax_summaries.findMany({
       where,
       orderBy: { period: { startDate: 'desc' } },
       take: options?.limit || 12,
@@ -492,7 +492,7 @@ export class TaxService {
    * Get annual VAT summary
    */
   static async getAnnualVATSummary(tenantId: string, year: number) {
-    const summaries = await prisma.acctTaxSummary.findMany({
+    const summaries = await prisma.acct_tax_summaries.findMany({
       where: {
         tenantId,
         taxCode: 'VAT_7.5',

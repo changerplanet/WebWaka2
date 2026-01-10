@@ -816,7 +816,7 @@ export class ChartOfAccountService {
     const account = await prisma.acct_chart_of_accounts.findFirst({
       where: { id: accountId, tenantId },
       include: {
-        ledgerAccounts: {
+        acct_ledger_accounts: {
           include: {
             entries: {
               where: {
@@ -836,7 +836,7 @@ export class ChartOfAccountService {
     }
 
     // Check for unposted entries
-    const hasUnpostedEntries = account.ledgerAccounts.some(
+    const hasUnpostedEntries = account.acct_ledger_accounts.some(
       (la) => la.entries.length > 0
     );
 
@@ -863,7 +863,7 @@ export class ChartOfAccountService {
     const account = await prisma.acct_chart_of_accounts.findFirst({
       where: { id: accountId, tenantId },
       include: {
-        ledgerAccounts: {
+        acct_ledger_accounts: {
           include: {
             _count: {
               select: { entries: true },
@@ -882,7 +882,7 @@ export class ChartOfAccountService {
     }
 
     // Check for any entries
-    const hasEntries = account.ledgerAccounts.some(
+    const hasEntries = account.acct_ledger_accounts.some(
       (la) => la._count.entries > 0
     );
 
