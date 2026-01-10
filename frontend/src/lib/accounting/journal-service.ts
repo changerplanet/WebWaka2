@@ -386,7 +386,7 @@ export class JournalEntryService {
           tenantId,
           chartOfAccountId: chartAccount.id,
           currency: 'NGN',
-        },
+        } as any,
       });
     }
 
@@ -425,7 +425,7 @@ export class JournalEntryService {
           endDate,
           fiscalYear: year,
           status: 'OPEN',
-        },
+        } as any,
       });
     }
 
