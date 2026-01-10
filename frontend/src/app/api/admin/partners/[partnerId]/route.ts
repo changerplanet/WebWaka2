@@ -57,7 +57,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
         },
         createdInstances: {
           include: {
-            Tenant: {
+            tenant: {
               select: {
                 name: true,
                 slug: true
@@ -99,6 +99,8 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
       currency: 'USD'
     }
 
+    const partnerAny = partner as any
+    
     return NextResponse.json({
       success: true,
       partner: {
@@ -115,21 +117,21 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
         address: partner.address,
         createdAt: partner.createdAt,
         approvedAt: partner.approvedAt,
-        users: partner.users.map(pu => ({
+        users: partnerAny.users.map((pu: any) => ({
           id: pu.id,
           role: pu.role,
           isActive: pu.isActive,
           joinedAt: pu.joinedAt,
           user: pu.user
         })),
-        tenants: partner.referrals.map(r => ({
-          id: r.tenant.id,
-          name: r.tenant.appName || r.tenant.name,
-          slug: r.tenant.slug,
-          status: r.tenant.status,
+        tenants: partnerAny.referrals.map((r: any) => ({
+          id: r.Tenant.id,
+          name: r.Tenant.appName || r.Tenant.name,
+          slug: r.Tenant.slug,
+          status: r.Tenant.status,
           referredAt: r.referredAt
         })),
-        instances: partner.createdInstances.map(i => ({
+        instances: partnerAny.createdInstances.map((i: any) => ({
           id: i.id,
           name: i.name,
           slug: i.slug,
@@ -137,7 +139,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
           isActive: i.isActive,
           createdAt: i.createdAt
         })),
-        activeAgreement: partner.agreements[0] || null,
+        activeAgreement: partnerAny.agreements[0] || null,
         revenueSummary
       }
     })
