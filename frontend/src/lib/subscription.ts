@@ -211,7 +211,7 @@ export async function activateSubscription(
   const subscription = await prisma.subscription.findUnique({
     where: { id: subscriptionId },
     include: { 
-      Plan: true,
+      SubscriptionPlan: true,
       Tenant: { include: { partnerReferral: true } }
     }
   })
@@ -224,6 +224,7 @@ export async function activateSubscription(
     return { success: true, subscription } // Already active
   }
   
+  const subAny = subscription as any;
   const updatedSubscription = await prisma.$transaction(async (tx) => {
     const sub = await tx.subscription.update({
       where: { id: subscriptionId },
@@ -234,9 +235,9 @@ export async function activateSubscription(
     })
     
     // Lock attribution on first activation
-    if (subscription.tenant.partnerReferral && !subscription.tenant.partnerReferral.attributionLocked) {
+    if (subAny.Tenant?.partnerReferral && !subAny.Tenant.partnerReferral.attributionLocked) {
       await tx.partnerReferral.update({
-        where: { id: subscription.tenant.partnerReferral.id },
+        where: { id: subAny.Tenant.partnerReferral.id },
         data: {
           attributionLocked: true,
           lockedAt: new Date()
@@ -245,7 +246,7 @@ export async function activateSubscription(
     }
     
     // Audit log
-    await tx.auditLog.create({
+    await (tx.auditLog.create as any)({
       data: {
         action: 'SUBSCRIPTION_ACTIVATED',
         actorId: 'system',
