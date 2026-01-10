@@ -27,7 +27,6 @@ export {
   PolPrimaryType,
   PolPrimaryStatus,
   PolVotingMethod,
-  PolPrimaryCapability,
 } from '@prisma/client';
 
 import type {
