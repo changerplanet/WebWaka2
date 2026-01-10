@@ -691,7 +691,7 @@ export class ChartOfAccountService {
       orderBy: [{ sortOrder: 'asc' }, { code: 'asc' }],
       include: options?.includeChildren
         ? {
-            children: {
+            other_acct_chart_of_accounts: {
               orderBy: [{ sortOrder: 'asc' }, { code: 'asc' }],
             },
           }
