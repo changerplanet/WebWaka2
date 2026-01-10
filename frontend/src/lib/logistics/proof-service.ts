@@ -286,7 +286,7 @@ export class ProofService {
   /**
    * Sync offline proofs
    */
-  static async syncOfflineProofs(tenantId: string, logistics_delivery_proofs: CaptureProofInput[]) {
+  static async syncOfflineProofs(tenantId: string, proofs: CaptureProofInput[]) {
     const results = []
     
     for (const proof of proofs) {
