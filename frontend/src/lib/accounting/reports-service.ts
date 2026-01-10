@@ -409,8 +409,8 @@ export class ReportsService {
       where: {
         tenantId,
         entryDate: { gte: startDate, lte: endDate },
-        ledgerAccount: {
-          chartOfAccount: {
+        acct_ledger_accounts: {
+          acct_chart_of_accounts: {
             code: { in: ['1110', '1120', '1130'] },
           },
         },
@@ -419,7 +419,7 @@ export class ReportsService {
         acct_ledger_accounts: {
           include: { acct_chart_of_accounts: true },
         },
-        journalEntry: true,
+        acct_journal_entries: true,
       },
     });
 
@@ -432,11 +432,12 @@ export class ReportsService {
       const netAmount = new Decimal(entry.debitAmount.toString())
         .minus(entry.creditAmount.toString());
       
-      const sourceType = entry.journalEntry?.sourceType;
+      const entryAny = entry as any;
+      const sourceType = entryAny.acct_journal_entries?.sourceType;
       
       if (['POS_SALE', 'SVM_ORDER', 'MVM_ORDER', 'EXPENSE', 'REFUND'].includes(sourceType || '')) {
         operatingCash = operatingCash.plus(netAmount);
-      } else if (entry.ledgerAccount.acct_chart_of_accounts.code.startsWith('15')) {
+      } else if (entryAny.acct_ledger_accounts.acct_chart_of_accounts.code.startsWith('15')) {
         investingCash = investingCash.plus(netAmount);
       } else {
         financingCash = financingCash.plus(netAmount);
