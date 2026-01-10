@@ -192,7 +192,7 @@ export class AgentService {
         ...(input.bankName !== undefined && { bankName: input.bankName }),
         ...(input.bankAccount !== undefined && { bankAccount: input.bankAccount }),
         ...(input.bankAccountName !== undefined && { bankAccountName: input.bankAccountName }),
-        ...(input.metadata !== undefined && { metadata: input.metadata as Prisma.InputJsonValue }),
+        ...(input.metadata !== undefined && { metadata: input.metadata as object | undefined }),
       },
     })
   }

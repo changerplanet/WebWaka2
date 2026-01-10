@@ -86,7 +86,7 @@ export async function updateJobStatus(
         }
       }
       if (job.vehicleId) {
-        const vehicleIndex = vehiclesStore.findIndex((v: string) => v.id === job.vehicleId);
+        const vehicleIndex = vehiclesStore.findIndex((v) => v.id === job.vehicleId);
         if (vehicleIndex !== -1) {
           vehiclesStore[vehicleIndex] = {
             ...vehiclesStore[vehicleIndex],
@@ -115,7 +115,7 @@ export async function updateJobStatus(
         }
       }
       if (job.vehicleId) {
-        const vehicleIndex = vehiclesStore.findIndex((v: string) => v.id === job.vehicleId);
+        const vehicleIndex = vehiclesStore.findIndex((v) => v.id === job.vehicleId);
         if (vehicleIndex !== -1) {
           vehiclesStore[vehicleIndex] = {
             ...vehiclesStore[vehicleIndex],

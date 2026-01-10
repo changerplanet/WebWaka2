@@ -93,8 +93,8 @@ export class ConfigurationService {
         assignmentAlgorithm: input.assignmentAlgorithm || 'NEAREST',
         maxConcurrentDeliveries: input.maxConcurrentDeliveries || 5,
         maxDeliveryAttempts: input.maxDeliveryAttempts || 3,
-        operatingHours: input.operatingHours as Prisma.InputJsonValue,
-        metadata: input.metadata as Prisma.InputJsonValue,
+        operatingHours: input.operatingHours as object | undefined,
+        metadata: input.metadata as object | undefined,
       },
     })
 
@@ -142,7 +142,7 @@ export class ConfigurationService {
         ...(input.defaultDeliveryWindowHours !== undefined && { defaultDeliveryWindowHours: input.defaultDeliveryWindowHours }),
         ...(input.expressDeliveryWindowHours !== undefined && { expressDeliveryWindowHours: input.expressDeliveryWindowHours }),
         ...(input.sameDayDeliveryWindowHours !== undefined && { sameDayDeliveryWindowHours: input.sameDayDeliveryWindowHours }),
-        ...(input.operatingHours !== undefined && { operatingHours: input.operatingHours as Prisma.InputJsonValue }),
+        ...(input.operatingHours !== undefined && { operatingHours: input.operatingHours as object | undefined }),
         ...(input.maxDeliveryAttempts !== undefined && { maxDeliveryAttempts: input.maxDeliveryAttempts }),
         ...(input.retryDelayHours !== undefined && { retryDelayHours: input.retryDelayHours }),
         ...(input.notifyCustomerOnAssignment !== undefined && { notifyCustomerOnAssignment: input.notifyCustomerOnAssignment }),
@@ -153,7 +153,7 @@ export class ConfigurationService {
         ...(input.notifyCustomerOnFailure !== undefined && { notifyCustomerOnFailure: input.notifyCustomerOnFailure }),
         ...(input.supportInformalAddresses !== undefined && { supportInformalAddresses: input.supportInformalAddresses }),
         ...(input.landmarkRequired !== undefined && { landmarkRequired: input.landmarkRequired }),
-        ...(input.metadata !== undefined && { metadata: input.metadata as Prisma.InputJsonValue }),
+        ...(input.metadata !== undefined && { metadata: input.metadata as object | undefined }),
       },
     })
   }
