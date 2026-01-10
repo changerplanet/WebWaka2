@@ -105,7 +105,7 @@ export class LoyaltyService {
       return { action: 'exists', program: existing };
     }
 
-    const program = await prisma.crm_loyalty_programs.create({
+    const program = await (prisma.crm_loyalty_programs.create as any)({
       data: {
         tenantId,
         name: input.name,
@@ -121,7 +121,7 @@ export class LoyaltyService {
     });
 
     // Update CRM config
-    await prisma.crm_configurations.upsert({
+    await (prisma.crm_configurations.upsert as any)({
       where: { tenantId },
       create: {
         tenantId,
@@ -189,7 +189,7 @@ export class LoyaltyService {
       throw new Error('Loyalty program not found. Initialize it first.');
     }
 
-    return prisma.crm_loyalty_rules.create({
+    return (prisma.crm_loyalty_rules.create as any)({
       data: {
         tenantId,
         programId: program.id,
@@ -259,7 +259,7 @@ export class LoyaltyService {
     }
 
     // Create transaction
-    const transaction = await prisma.crm_loyalty_transactions.create({
+    const transaction = await (prisma.crm_loyalty_transactions.create as any)({
       data: {
         tenantId,
         programId: program.id,
@@ -308,7 +308,7 @@ export class LoyaltyService {
     }
 
     // Create transaction
-    const transaction = await prisma.crm_loyalty_transactions.create({
+    const transaction = await (prisma.crm_loyalty_transactions.create as any)({
       data: {
         tenantId,
         programId: program.id,
@@ -355,7 +355,7 @@ export class LoyaltyService {
 
     const currentBalance = await this.getCustomerBalance(tenantId, customerId);
 
-    const transaction = await prisma.crm_loyalty_transactions.create({
+    const transaction = await (prisma.crm_loyalty_transactions.create as any)({
       data: {
         tenantId,
         programId: program.id,
@@ -405,7 +405,7 @@ export class LoyaltyService {
       throw new Error('Adjustment would result in negative balance');
     }
 
-    const transaction = await prisma.crm_loyalty_transactions.create({
+    const transaction = await (prisma.crm_loyalty_transactions.create as any)({
       data: {
         tenantId,
         programId: program.id,
@@ -450,7 +450,7 @@ export class LoyaltyService {
     customerId: string,
     options?: { limit?: number; offset?: number; transactionType?: CrmLoyaltyTransactionType }
   ) {
-    const where: Prisma.CrmLoyaltyTransactionWhereInput = { tenantId, customerId };
+    const where: Prisma.crm_loyalty_transactionsWhereInput = { tenantId, customerId };
     if (options?.transactionType) {
       where.transactionType = options.transactionType;
     }
