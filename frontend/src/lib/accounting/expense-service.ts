@@ -387,7 +387,7 @@ export class ExpenseService {
     const expense = await prisma.acct_expense_records.findFirst({
       where: { id: expenseId, tenantId },
       include: {
-        period: true,
+        acct_financial_periods: true,
       },
     });
 
@@ -400,9 +400,10 @@ export class ExpenseService {
       throw new Error(`Cannot post expense in ${expense.status} status`);
     }
 
+    const expenseAny = expense as any;
     // Check period is open
-    if (expense.period && expense.period.status !== 'OPEN') {
-      throw new Error(`Financial period ${expense.period.name} is ${expense.period.status}. Cannot post expenses.`);
+    if (expenseAny.acct_financial_periods && expenseAny.acct_financial_periods.status !== 'OPEN') {
+      throw new Error(`Financial period ${expenseAny.acct_financial_periods.name} is ${expenseAny.acct_financial_periods.status}. Cannot post expenses.`);
     }
 
     // Get expense account details
