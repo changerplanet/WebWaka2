@@ -77,7 +77,7 @@ export async function getBillingEntitlements(tenantId: string): Promise<BillingE
   // Get tenant's subscription
   const subscription = await prisma.subscription.findUnique({
     where: { tenantId },
-    include: { Plan: true },
+    include: { SubscriptionPlan: true },
   });
   
   if (!subscription || subscription.status !== 'ACTIVE') {
@@ -86,7 +86,7 @@ export async function getBillingEntitlements(tenantId: string): Promise<BillingE
   
   // Map plan to entitlements
   const subscriptionAny = subscription as any;
-  const planSlug = (subscriptionAny.Plan?.slug || '').toUpperCase();
+  const planSlug = (subscriptionAny.SubscriptionPlan?.slug || '').toUpperCase();
   
   if (planSlug.includes('ENTERPRISE')) {
     return PLAN_ENTITLEMENTS.ENTERPRISE;

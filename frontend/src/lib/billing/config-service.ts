@@ -121,7 +121,7 @@ export async function updateBillingConfiguration(
   const existing = await getBillingConfiguration(tenantId);
   
   return prisma.billing_configurations.update({
-    where: { id: existing.id },
+    where: { id: existing!.id },
     data,
   });
 }
@@ -193,10 +193,10 @@ export async function getBillingModuleStatus(tenantId?: string) {
     
     tenantStats = {
       config: {
-        bundlesEnabled: config.bundlesEnabled,
-        addOnsEnabled: config.addOnsEnabled,
-        usageBillingEnabled: config.usageBillingEnabled,
-        gracePeriodsEnabled: config.gracePeriodsEnabled,
+        bundlesEnabled: config?.bundlesEnabled ?? false,
+        addOnsEnabled: config?.addOnsEnabled ?? false,
+        usageBillingEnabled: config?.usageBillingEnabled ?? false,
+        gracePeriodsEnabled: config?.gracePeriodsEnabled ?? true,
       },
       activeAddOns,
       pendingAdjustments,
