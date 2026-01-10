@@ -394,7 +394,7 @@ export class TaxService {
           periodId: period.id,
           taxCode: 'VAT_7.5',
           ...summaryData,
-        },
+        } as any,
       });
     }
   }
