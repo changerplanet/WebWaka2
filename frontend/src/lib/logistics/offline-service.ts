@@ -100,7 +100,7 @@ export interface OfflineSyncRequest {
 export interface OfflineSyncResponse {
   success: boolean
   statusUpdates: Array<{ offlineId: string; success: boolean; error?: string }>
-  proofs: Array<{ offlineId: string; success: boolean; id?: string; error?: string }>
+  logistics_delivery_proofs: Array<{ offlineId: string; success: boolean; id?: string; error?: string }>
   locationUpdates: Array<{ agentId: string; success: boolean; error?: string }>
   changes?: OfflineDataChanges
 }
@@ -236,7 +236,7 @@ export class OfflineService {
     const response: OfflineSyncResponse = {
       success: true,
       statusUpdates: [],
-      proofs: [],
+      logistics_delivery_proofs: [],
       locationUpdates: [],
     }
 

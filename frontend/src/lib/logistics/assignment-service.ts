@@ -275,7 +275,7 @@ export class AssignmentService {
       include: {
         logistics_delivery_agents: true,
         logistics_delivery_status_history: { orderBy: { createdAt: 'desc' } },
-        proofs: { orderBy: { capturedAt: 'desc' } },
+        logistics_delivery_proofs: { orderBy: { capturedAt: 'desc' } },
       },
     })
   }
@@ -619,7 +619,7 @@ export class AssignmentService {
       case 'LEAST_BUSY':
         // Get agent with fewest active deliveries
         selectedAgent = availableAgents.sort((a, b) => 
-          a._count.assignments - b._count.assignments
+          a._count.logistics_delivery_assignments - b._count.logistics_delivery_assignments
         )[0]
         break
       

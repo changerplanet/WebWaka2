@@ -109,7 +109,7 @@ export class EntitlementsService {
       include: {
         subscription: {
           include: {
-            Plan: { select: { slug: true } },
+            plan: { select: { slug: true } },
           },
         },
       },

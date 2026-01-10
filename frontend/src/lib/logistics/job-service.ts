@@ -257,7 +257,7 @@ export async function assignJob(
     vehicleId,
     vehicleNumber: vehicle.vehicleNumber,
     assignedAt: new Date().toISOString(),
-    logistics_delivery_status_history: [...job.statusHistory, statusUpdate],
+    logistics_delivery_status_history: [...job.logistics_delivery_status_history, statusUpdate],
     updatedAt: new Date().toISOString(),
   };
   
@@ -322,7 +322,7 @@ export async function acceptJob(
     ...job,
     status: 'ACCEPTED',
     acceptedAt: new Date().toISOString(),
-    logistics_delivery_status_history: [...job.statusHistory, statusUpdate],
+    logistics_delivery_status_history: [...job.logistics_delivery_status_history, statusUpdate],
     updatedAt: new Date().toISOString(),
   };
   
@@ -393,7 +393,7 @@ export async function unassignJob(
     vehicleNumber: undefined,
     assignedAt: undefined,
     acceptedAt: undefined,
-    logistics_delivery_status_history: [...job.statusHistory, statusUpdate],
+    logistics_delivery_status_history: [...job.logistics_delivery_status_history, statusUpdate],
     updatedAt: new Date().toISOString(),
   };
   
@@ -462,7 +462,7 @@ export async function cancelJob(
   store[jobIndex] = {
     ...job,
     status: 'CANCELLED',
-    logistics_delivery_status_history: [...job.statusHistory, statusUpdate],
+    logistics_delivery_status_history: [...job.logistics_delivery_status_history, statusUpdate],
     updatedAt: new Date().toISOString(),
   };
   

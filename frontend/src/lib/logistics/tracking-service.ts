@@ -55,7 +55,7 @@ export async function updateJobStatus(
   
   const updates: Partial<Job> = {
     status: newStatus,
-    logistics_delivery_status_history: [...job.statusHistory, statusUpdate],
+    logistics_delivery_status_history: [...job.logistics_delivery_status_history, statusUpdate],
     updatedAt: new Date().toISOString(),
   };
   
@@ -144,7 +144,7 @@ export async function getJobStatusHistory(tenantId: string, jobId: string): Prom
     (j.tenantId === tenantId || tenantId === 'demo-logistics')
   );
   
-  return job?.statusHistory || [];
+  return job?.logistics_delivery_status_history || [];
 }
 
 // ============================================================================
@@ -230,7 +230,7 @@ export async function recordProofOfDelivery(
     status: newStatus,
     actualDeliveryTime: pod.deliveredAt,
     pod,
-    logistics_delivery_status_history: [...job.statusHistory, statusUpdate],
+    logistics_delivery_status_history: [...job.logistics_delivery_status_history, statusUpdate],
     updatedAt: new Date().toISOString(),
   };
   
@@ -340,7 +340,7 @@ export async function getTrackingBoard(tenantId: string): Promise<TrackingBoardI
   );
   
   return activeJobs.map(job => {
-    const lastStatusUpdate = job.statusHistory[job.statusHistory.length - 1];
+    const lastStatusUpdate = job.logistics_delivery_status_history[job.logistics_delivery_status_history.length - 1];
     return {
       jobId: job.id,
       jobNumber: job.jobNumber,
