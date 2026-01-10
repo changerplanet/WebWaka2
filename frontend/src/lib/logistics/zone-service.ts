@@ -392,7 +392,7 @@ export class ZoneService {
     if (!zone) return null
 
     // Find applicable pricing rule
-    const rule = this.findApplicablePricingRule(zone.pricingRules, input.orderValue)
+    const rule = this.findApplicablePricingRule(zone.logistics_delivery_pricing_rules, input.orderValue)
     if (!rule) return null
 
     // Calculate base fee
