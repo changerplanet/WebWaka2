@@ -300,7 +300,7 @@ export async function renewSubscription(
   const subscription = await prisma.subscription.findUnique({
     where: { id: subscriptionId },
     include: { 
-      Plan: true,
+      SubscriptionPlan: true,
       Tenant: { include: { partnerReferral: true } }
     }
   })
@@ -398,7 +398,7 @@ export async function cancelSubscription(
   const subscription = await prisma.subscription.findUnique({
     where: { id: subscriptionId },
     include: { 
-      Plan: true,
+      SubscriptionPlan: true,
       Tenant: { include: { partnerReferral: true } }
     }
   })
@@ -485,7 +485,7 @@ export async function getSubscription(tenantId: string): Promise<Subscription | 
   return prisma.subscription.findUnique({
     where: { tenantId },
     include: {
-      Plan: true,
+      SubscriptionPlan: true,
       entitlements: true
     }
   })
@@ -498,7 +498,7 @@ export async function getSubscriptionById(subscriptionId: string): Promise<Subsc
   return prisma.subscription.findUnique({
     where: { id: subscriptionId },
     include: {
-      Plan: true,
+      SubscriptionPlan: true,
       Tenant: true,
       entitlements: true
     }
