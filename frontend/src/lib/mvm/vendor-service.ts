@@ -438,7 +438,7 @@ export const VendorService = {
       where: { vendorId },
       orderBy: { createdAt: 'desc' },
       take: 5,
-      include: { inv_audit_items: true }
+      include: { items: true }
     })
     
     // Get top products by revenue
