@@ -247,7 +247,7 @@ export class JournalEntryService {
     // Create journal entry with lines in a transaction
     const result = await prisma.$transaction(async (tx) => {
       // Create journal entry
-      const journal = await tx.acctJournalEntry.create({
+      const journal = await tx.acct_journal_entries.create({
         data: {
           tenantId,
           journalNumber,
@@ -271,7 +271,7 @@ export class JournalEntryService {
           attachmentUrls: input.attachmentUrls || [],
           metadata: input.metadata as Prisma.InputJsonValue | undefined,
           createdBy,
-        },
+        } as any,
       });
 
       // Create ledger entries
@@ -280,7 +280,7 @@ export class JournalEntryService {
         const account = accountMap.get(line.accountCode)!;
         
         // Get current balance for the ledger account
-        const ledgerAccount = await tx.acctLedgerAccount.findUnique({
+        const ledgerAccount = await tx.acct_ledger_accounts.findUnique({
           where: { id: account.ledgerAccountId },
         });
 
@@ -291,7 +291,7 @@ export class JournalEntryService {
         // Calculate new balance based on account's normal balance
         // For DEBIT normal accounts: balance increases with debits
         // For CREDIT normal accounts: balance increases with credits
-        const chartAccount = await tx.acctChartOfAccount.findUnique({
+        const chartAccount = await tx.acct_chart_of_accounts.findUnique({
           where: { id: account.chartOfAccountId },
         });
 
@@ -303,7 +303,7 @@ export class JournalEntryService {
         }
 
         // Create ledger entry (APPEND-ONLY)
-        await tx.acctLedgerEntry.create({
+        await tx.acct_ledger_entries.create({
           data: {
             tenantId,
             ledgerAccountId: account.ledgerAccountId,
@@ -320,12 +320,12 @@ export class JournalEntryService {
             periodId: period.id,
             lineNumber,
             createdBy,
-          },
+          } as any,
         });
 
         // Update ledger account balance (cached balance)
         if (autoPost) {
-          await tx.acctLedgerAccount.update({
+          await tx.acct_ledger_accounts.update({
             where: { id: account.ledgerAccountId },
             data: {
               currentBalance: new Prisma.Decimal(balanceAfter.toString()),
