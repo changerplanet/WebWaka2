@@ -257,7 +257,7 @@ export const OrderSplitService = {
             }))
           }
         }),
-        include: { inv_audit_items: true }
+        include: { items: true }
       })
       
       subOrders.push({
@@ -298,10 +298,10 @@ export const OrderSplitService = {
     return prisma.mvm_parent_order.findUnique({
       where: { id: orderId },
       include: {
-        inv_audit_items: true,
+        items: true,
         subOrders: {
           include: {
-            inv_audit_items: true,
+            items: true,
             vendor: { select: { id: true, name: true, slug: true } }
           }
         }
@@ -316,10 +316,10 @@ export const OrderSplitService = {
     return prisma.mvm_parent_order.findUnique({
       where: { orderNumber },
       include: {
-        inv_audit_items: true,
+        items: true,
         subOrders: {
           include: {
-            inv_audit_items: true,
+            items: true,
             vendor: { select: { id: true, name: true, slug: true } }
           }
         }
@@ -334,7 +334,7 @@ export const OrderSplitService = {
     return prisma.mvm_sub_order.findUnique({
       where: { id: subOrderId },
       include: {
-        inv_audit_items: true,
+        items: true,
         vendor: { select: { id: true, name: true, slug: true } },
         parentOrder: {
           select: {
@@ -370,7 +370,7 @@ export const OrderSplitService = {
       prisma.mvm_sub_order.findMany({
         where,
         include: {
-          inv_audit_items: true,
+          items: true,
           parentOrder: {
             select: {
               orderNumber: true,
