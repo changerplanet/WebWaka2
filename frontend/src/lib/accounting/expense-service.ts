@@ -519,7 +519,7 @@ export class ExpenseService {
         postedAt: new Date(),
       },
       include: {
-        period: true,
+        acct_financial_periods: true,
       },
     });
   }
@@ -551,7 +551,7 @@ export class ExpenseService {
    * List expenses with filters
    */
   static async list(tenantId: string, options?: ExpenseListOptions) {
-    const where: Prisma.AcctExpenseRecordWhereInput = { tenantId };
+    const where: Prisma.acct_expense_recordsWhereInput = { tenantId };
 
     if (options?.status) where.status = options.status;
     if (options?.paymentMethod) where.paymentMethod = options.paymentMethod;
