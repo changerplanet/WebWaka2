@@ -204,7 +204,7 @@ export class CoreInventoryService {
           Product: {
             include: { ProductCategory: true }
           },
-          inventoryLevels: locationId ? {
+          InventoryLevel: locationId ? {
             where: { locationId }
           } : true
         }
@@ -212,12 +212,12 @@ export class CoreInventoryService {
       
       if (!variant) return null
       
-      const inventoryLevel = variant.inventoryLevels[0]
+      const inventoryLevel = variant.InventoryLevel[0]
       const location = inventoryLevel ? await prisma.location.findUnique({
         where: { id: inventoryLevel.locationId }
       }) : null
       
-      return mapVariantToInventory(variant, variant.product, inventoryLevel, location)
+      return mapVariantToInventory(variant, variant.Product, inventoryLevel, location)
     }
     
     // Get product inventory
@@ -225,7 +225,7 @@ export class CoreInventoryService {
       where: { id: productId, tenantId },
       include: {
         ProductCategory: true,
-        inventoryLevels: locationId ? {
+        InventoryLevel: locationId ? {
           where: { locationId, variantId: null }
         } : {
           where: { variantId: null }
@@ -235,7 +235,7 @@ export class CoreInventoryService {
     
     if (!product) return null
     
-    const inventoryLevel = product.inventoryLevels[0]
+    const inventoryLevel = product.InventoryLevel[0]
     const location = inventoryLevel ? await prisma.location.findUnique({
       where: { id: inventoryLevel.locationId }
     }) : null
@@ -263,14 +263,14 @@ export class CoreInventoryService {
       },
       include: {
         ProductCategory: true,
-        variants: {
+        ProductVariant: {
           include: {
-            inventoryLevels: locationId ? {
+            InventoryLevel: locationId ? {
               where: { locationId }
             } : true
           }
         },
-        inventoryLevels: locationId ? {
+        InventoryLevel: locationId ? {
           where: { locationId }
         } : true
       }
@@ -287,13 +287,13 @@ export class CoreInventoryService {
       const key = req.variantId ? `${req.productId}:${req.variantId}` : req.productId
       
       if (req.variantId) {
-        const variant = product.variants.find(v => v.id === req.variantId)
+        const variant = product.ProductVariant.find((v: any) => v.id === req.variantId)
         if (variant) {
-          const invLevel = variant.inventoryLevels[0]
+          const invLevel = variant.InventoryLevel[0]
           result.set(key, mapVariantToInventory(variant, product, invLevel, location))
         }
       } else {
-        const invLevel = product.inventoryLevels.find(il => !il.variantId)
+        const invLevel = product.InventoryLevel.find((il: any) => !il.variantId)
         result.set(key, mapProductToInventory(product, invLevel, location))
       }
     }
