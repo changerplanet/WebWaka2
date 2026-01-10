@@ -91,7 +91,7 @@ export class GoodsReceiptService {
     // Verify PO exists
     const po = await prisma.proc_purchase_orders.findFirst({
       where: { id: input.purchaseOrderId, tenantId },
-      include: { bill_invoice_items: true },
+      include: { proc_goods_receipt_items: true },
     })
 
     if (!po) throw new Error('Purchase order not found')
@@ -139,7 +139,7 @@ export class GoodsReceiptService {
           })),
         },
       },
-      include: { bill_invoice_items: true },
+      include: { proc_goods_receipt_items: true },
     })
 
     // Emit event
@@ -183,7 +183,7 @@ export class GoodsReceiptService {
       prisma.proc_goods_receipts.findMany({
         where,
         include: {
-          bill_invoice_items: true,
+          proc_goods_receipt_items: true,
           proc_purchase_orders: { select: { poNumber: true, supplierName: true } },
         },
         orderBy: { [orderBy]: orderDir },
@@ -211,9 +211,9 @@ export class GoodsReceiptService {
     const receipt = await prisma.proc_goods_receipts.findFirst({
       where: { id, tenantId },
       include: {
-        bill_invoice_items: true,
+        proc_goods_receipt_items: true,
         proc_purchase_orders: {
-          include: { bill_invoice_items: true },
+          include: { proc_goods_receipt_items: true },
         },
       },
     })
@@ -232,7 +232,7 @@ export class GoodsReceiptService {
   ) {
     const receipt = await prisma.proc_goods_receipts.findFirst({
       where: { id, tenantId },
-      include: { bill_invoice_items: true },
+      include: { proc_goods_receipt_items: true },
     })
 
     if (!receipt) throw new Error('Goods receipt not found')
@@ -247,11 +247,11 @@ export class GoodsReceiptService {
         qualityCheckedAt: new Date(),
         qualityNotes,
       },
-      include: { bill_invoice_items: true },
+      include: { proc_goods_receipt_items: true },
     })
 
     // Update PO item quantities
-    for (const item of receipt.items) {
+    for (const item of receipt.proc_goods_receipt_items) {
       await PurchaseOrderService.updateItemReceivedQuantity(
         item.purchaseOrderItemId,
         Number(item.acceptedQuantity)
@@ -278,7 +278,7 @@ export class GoodsReceiptService {
       data: {
         receiptNumber: receipt.receiptNumber,
         inventoryEventId,
-        adjustments: receipt.items.map(item => ({
+        adjustments: receipt.proc_goods_receipt_items.map(item => ({
           productId: item.productId,
           locationId: receipt.locationId,
           quantity: Number(item.acceptedQuantity),
@@ -318,7 +318,7 @@ export class GoodsReceiptService {
         qualityCheckedAt: new Date(),
         qualityNotes: reason,
       },
-      include: { bill_invoice_items: true },
+      include: { proc_goods_receipt_items: true },
     })
 
     // Emit event
@@ -472,7 +472,7 @@ export class GoodsReceiptService {
       metadata: receipt.metadata,
       createdAt: receipt.createdAt,
       updatedAt: receipt.updatedAt,
-      items: receipt.items?.map(item => ({
+      items: receipt.proc_goods_receipt_items?.map(item => ({
         id: item.id,
         purchaseOrderItemId: item.purchaseOrderItemId,
         productId: item.productId,
