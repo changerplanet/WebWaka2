@@ -120,7 +120,7 @@ export class ZoneService {
         radiusKm: input.radiusKm,
         polygon: input.polygon,
         sortOrder: input.sortOrder || 0,
-        metadata: input.metadata ?? undefined,
+        metadata: input.metadata,
       },
       include: {
         logistics_delivery_pricing_rules: true,

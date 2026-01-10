@@ -94,7 +94,7 @@ export class ConfigurationService {
         maxConcurrentDeliveries: input.maxConcurrentDeliveries || 5,
         maxDeliveryAttempts: input.maxDeliveryAttempts || 3,
         operatingHours: input.operatingHours,
-        metadata: input.metadata ?? undefined,
+        metadata: input.metadata,
       },
     })
 

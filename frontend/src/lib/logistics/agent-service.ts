@@ -86,7 +86,7 @@ export class AgentService {
         bankName: input.bankName,
         bankAccount: input.bankAccount,
         bankAccountName: input.bankAccountName,
-        metadata: input.metadata ?? undefined,
+        metadata: input.metadata,
       },
     })
   }

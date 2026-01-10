@@ -183,7 +183,7 @@ export class AssignmentService {
         assignedBy: input.assignedBy,
         assignedAt: input.agentId ? new Date() : undefined,
         status: input.agentId ? 'ASSIGNED' : 'PENDING',
-        metadata: input.metadata ?? undefined,
+        metadata: input.metadata,
       },
       include: {
         logistics_delivery_agents: true,
