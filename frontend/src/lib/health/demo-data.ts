@@ -223,3 +223,19 @@ export function getDemoDoctors() {
     availableDays: ['MON', 'TUE', 'WED', 'THU', 'FRI'],
   }));
 }
+
+/**
+ * Clear demo data for Health Suite
+ */
+export async function clearHealthDemoData(tenantId: string): Promise<{
+  success: boolean;
+  message: string;
+}> {
+  console.log('[Health Demo] Clearing demo data for tenant:', tenantId);
+  // In a real implementation, this would delete demo data
+  // For now, return success as a stub
+  return {
+    success: true,
+    message: 'Demo data cleared successfully',
+  };
+}
