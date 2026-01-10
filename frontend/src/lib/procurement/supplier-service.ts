@@ -202,7 +202,7 @@ export class SupplierService {
       },
       include: {
         proc_goods_receipts: {
-          include: { items: true },
+          include: { bill_invoice_items: true },
         },
       },
     })

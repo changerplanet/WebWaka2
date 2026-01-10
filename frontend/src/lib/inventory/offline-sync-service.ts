@@ -407,7 +407,7 @@ export class OfflineSyncService {
         ],
         tenantId,
       },
-      include: { items: true },
+      include: { bill_invoice_items: true },
     });
 
     if (!transfer) {
@@ -509,7 +509,7 @@ export class OfflineSyncService {
         ],
         tenantId,
       },
-      include: { items: true },
+      include: { bill_invoice_items: true },
     });
 
     if (!transfer) {
@@ -709,7 +709,7 @@ export class OfflineSyncService {
         ],
         tenantId,
       },
-      include: { items: true },
+      include: { bill_invoice_items: true },
     });
 
     if (!audit) {

@@ -79,7 +79,7 @@ export async function createBundle(input: CreateBundleInput): Promise<{
         },
       },
       include: {
-        items: true,
+        bill_invoice_items: true,
       },
     });
     
@@ -104,7 +104,7 @@ export async function createBundle(input: CreateBundleInput): Promise<{
 export async function getBundle(bundleId: string) {
   return prisma.billing_bundles.findUnique({
     where: { id: bundleId },
-    include: { items: { orderBy: { displayOrder: 'asc' } } },
+    include: { bill_invoice_items: { orderBy: { displayOrder: 'asc' } } },
   });
 }
 
@@ -135,7 +135,7 @@ export async function listBundles(params: {
   
   return prisma.billing_bundles.findMany({
     where,
-    include: { items: { orderBy: { displayOrder: 'asc' } } },
+    include: { bill_invoice_items: { orderBy: { displayOrder: 'asc' } } },
     orderBy: [{ displayOrder: 'asc' }, { createdAt: 'desc' }],
   });
 }
@@ -157,7 +157,7 @@ export async function updateBundle(
     const bundle = await prisma.billing_bundles.update({
       where: { id: bundleId },
       data,
-      include: { items: true },
+      include: { bill_invoice_items: true },
     });
     return { success: true, bundle };
   } catch (error: any) {
@@ -191,7 +191,7 @@ export async function resolveBundleEntitlements(bundleId: string): Promise<{
 }> {
   const bundle = await prisma.billing_bundles.findUnique({
     where: { id: bundleId },
-    include: { items: true },
+    include: { bill_invoice_items: true },
   });
   
   if (!bundle) {

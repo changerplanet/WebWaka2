@@ -199,7 +199,7 @@ export class InventoryAuditService {
         },
       },
       include: {
-        items: true,
+        bill_invoice_items: true,
         wh_warehouses: true,
       },
     });
@@ -231,7 +231,7 @@ export class InventoryAuditService {
         supervisorName,
       },
       include: {
-        items: true,
+        bill_invoice_items: true,
         wh_warehouses: true,
       },
     });
@@ -310,7 +310,7 @@ export class InventoryAuditService {
     const updated = await prisma.inventoryAudit.findUnique({
       where: { id: auditId },
       include: {
-        items: true,
+        bill_invoice_items: true,
         wh_warehouses: true,
       },
     });
@@ -356,7 +356,7 @@ export class InventoryAuditService {
     const updated = await prisma.inventoryAudit.findUnique({
       where: { id: auditId },
       include: {
-        items: true,
+        bill_invoice_items: true,
         wh_warehouses: true,
       },
     });
@@ -421,7 +421,7 @@ export class InventoryAuditService {
         variancePercentage,
       },
       include: {
-        items: true,
+        bill_invoice_items: true,
         wh_warehouses: true,
       },
     });
@@ -472,7 +472,7 @@ export class InventoryAuditService {
         approvedByName: userName,
       },
       include: {
-        items: true,
+        bill_invoice_items: true,
         wh_warehouses: true,
       },
     });
@@ -561,7 +561,7 @@ export class InventoryAuditService {
     const final = await prisma.inventoryAudit.findUnique({
       where: { id: auditId },
       include: {
-        items: true,
+        bill_invoice_items: true,
         wh_warehouses: true,
       },
     });
@@ -590,7 +590,7 @@ export class InventoryAuditService {
         internalNotes: `Cancelled: ${reason}`,
       },
       include: {
-        items: true,
+        bill_invoice_items: true,
         wh_warehouses: true,
       },
     });
@@ -629,7 +629,7 @@ export class InventoryAuditService {
       prisma.inventoryAudit.findMany({
         where,
         include: {
-          items: true,
+          bill_invoice_items: true,
           wh_warehouses: true,
         },
         orderBy: { createdAt: 'desc' },
@@ -655,7 +655,7 @@ export class InventoryAuditService {
     const audit = await prisma.inventoryAudit.findFirst({
       where: { id: auditId, tenantId },
       include: {
-        items: true,
+        bill_invoice_items: true,
         wh_warehouses: true,
       },
     });
@@ -781,7 +781,7 @@ export class InventoryAuditService {
     const audit = await prisma.inventoryAudit.findFirst({
       where: { id: auditId, tenantId },
       include: {
-        items: true,
+        bill_invoice_items: true,
         wh_warehouses: true,
       },
     });

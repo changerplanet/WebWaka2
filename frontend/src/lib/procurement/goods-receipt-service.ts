@@ -91,7 +91,7 @@ export class GoodsReceiptService {
     // Verify PO exists
     const po = await prisma.proc_purchase_orders.findFirst({
       where: { id: input.purchaseOrderId, tenantId },
-      include: { items: true },
+      include: { bill_invoice_items: true },
     })
 
     if (!po) throw new Error('Purchase order not found')
@@ -139,7 +139,7 @@ export class GoodsReceiptService {
           })),
         },
       },
-      include: { items: true },
+      include: { bill_invoice_items: true },
     })
 
     // Emit event
@@ -183,7 +183,7 @@ export class GoodsReceiptService {
       prisma.proc_goods_receipts.findMany({
         where,
         include: {
-          items: true,
+          bill_invoice_items: true,
           proc_purchase_orders: { select: { poNumber: true, supplierName: true } },
         },
         orderBy: { [orderBy]: orderDir },
@@ -211,9 +211,9 @@ export class GoodsReceiptService {
     const receipt = await prisma.proc_goods_receipts.findFirst({
       where: { id, tenantId },
       include: {
-        items: true,
+        bill_invoice_items: true,
         proc_purchase_orders: {
-          include: { items: true },
+          include: { bill_invoice_items: true },
         },
       },
     })
@@ -232,7 +232,7 @@ export class GoodsReceiptService {
   ) {
     const receipt = await prisma.proc_goods_receipts.findFirst({
       where: { id, tenantId },
-      include: { items: true },
+      include: { bill_invoice_items: true },
     })
 
     if (!receipt) throw new Error('Goods receipt not found')
@@ -247,7 +247,7 @@ export class GoodsReceiptService {
         qualityCheckedAt: new Date(),
         qualityNotes,
       },
-      include: { items: true },
+      include: { bill_invoice_items: true },
     })
 
     // Update PO item quantities
@@ -318,7 +318,7 @@ export class GoodsReceiptService {
         qualityCheckedAt: new Date(),
         qualityNotes: reason,
       },
-      include: { items: true },
+      include: { bill_invoice_items: true },
     })
 
     // Emit event

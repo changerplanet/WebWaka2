@@ -175,7 +175,7 @@ export class InvoicePaymentService {
   ): Promise<InvoicePayment | null> {
     const payment = await prisma.bill_invoice_payments.findFirst({
       where: { id: paymentId },
-      include: { bill_invoices: true }
+      include: { invoice: true }
     })
 
     if (!payment || payment.invoice.tenantId !== tenantId) {
@@ -206,7 +206,7 @@ export class InvoicePaymentService {
     // Get payment with invoice
     const payment = await prisma.bill_invoice_payments.findFirst({
       where: { id: paymentId },
-      include: { bill_invoices: true }
+      include: { invoice: true }
     })
 
     if (!payment || payment.invoice.tenantId !== tenantId) {
@@ -276,7 +276,7 @@ export class InvoicePaymentService {
   ): Promise<InvoicePayment> {
     const payment = await prisma.bill_invoice_payments.findFirst({
       where: { id: paymentId },
-      include: { bill_invoices: true }
+      include: { invoice: true }
     })
 
     if (!payment || payment.invoice.tenantId !== tenantId) {

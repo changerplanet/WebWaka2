@@ -103,7 +103,7 @@ export class MktEntitlementsService {
   private static async getTenantTier(tenantId: string): Promise<keyof typeof TIER_LIMITS> {
     const tenant = await prisma.tenant.findUnique({
       where: { id: tenantId },
-      include: { Subscription: { include: { Plan: true } } },
+      include: { Subscription: { include: { plan: true } } },
     })
 
     if (!tenant?.subscription?.plan) return 'FREE'

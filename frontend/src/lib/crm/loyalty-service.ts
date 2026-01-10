@@ -144,8 +144,8 @@ export class LoyaltyService {
     return prisma.crm_loyalty_programs.findUnique({
       where: { tenantId },
       include: {
-        rules: { where: { isActive: true }, orderBy: { priority: 'desc' } },
-        _count: { select: { transactions: true } },
+        crm_loyalty_rules: { where: { isActive: true }, orderBy: { priority: 'desc' } },
+        _count: { select: { crm_loyalty_transactions: true } },
       },
     });
   }
@@ -231,7 +231,7 @@ export class LoyaltyService {
       },
       orderBy: { priority: 'desc' },
       include: {
-        segment: { select: { id: true, name: true, slug: true } },
+        crm_customer_segments: { select: { id: true, name: true, slug: true } },
       },
     });
   }
@@ -550,7 +550,7 @@ export class LoyaltyService {
     const program = await prisma.crm_loyalty_programs.findUnique({
       where: { tenantId },
       include: {
-        rules: {
+        crm_loyalty_rules: {
           where: {
             isActive: true,
             ruleType: { in: ['EARN', 'MULTIPLIER'] },

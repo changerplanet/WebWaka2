@@ -173,7 +173,7 @@ export class ProcEntitlementsService {
       where: { id: tenantId },
       include: {
         Subscription: {
-          include: { Plan: true },
+          include: { plan: true },
         },
       },
     })

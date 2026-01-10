@@ -253,7 +253,7 @@ export class InvoiceService {
           }))
         }
       },
-      include: { inv_audit_items: true }
+      include: { bill_invoice_items: true }
     })
 
     return this.formatInvoice(invoice)
@@ -268,7 +268,7 @@ export class InvoiceService {
   ): Promise<Invoice | null> {
     const invoice = await prisma.bill_invoices.findFirst({
       where: { id: invoiceId, tenantId },
-      include: { inv_audit_items: true }
+      include: { bill_invoice_items: true }
     })
 
     return invoice ? this.formatInvoice(invoice) : null
@@ -283,7 +283,7 @@ export class InvoiceService {
   ): Promise<Invoice | null> {
     const invoice = await prisma.bill_invoices.findUnique({
       where: { tenantId_invoiceNumber: { tenantId, invoiceNumber } },
-      include: { inv_audit_items: true }
+      include: { bill_invoice_items: true }
     })
 
     return invoice ? this.formatInvoice(invoice) : null
@@ -310,7 +310,7 @@ export class InvoiceService {
         status: 'SENT',
         sentAt: new Date()
       },
-      include: { inv_audit_items: true }
+      include: { bill_invoice_items: true }
     })
 
     return this.formatInvoice(updated)
@@ -339,7 +339,7 @@ export class InvoiceService {
           viewedAt: new Date(),
           status: invoice.status === 'SENT' ? 'VIEWED' : invoice.status
         },
-        include: { inv_audit_items: true }
+        include: { bill_invoice_items: true }
       })
       return this.formatInvoice(updated)
     }
@@ -380,7 +380,7 @@ export class InvoiceService {
         cancelledAt: new Date(),
         cancellationReason: reason
       },
-      include: { inv_audit_items: true }
+      include: { bill_invoice_items: true }
     })
 
     return this.formatInvoice(updated)
@@ -420,7 +420,7 @@ export class InvoiceService {
     const [invoices, total] = await Promise.all([
       prisma.bill_invoices.findMany({
         where,
-        include: { inv_audit_items: true },
+        include: { bill_invoice_items: true },
         orderBy: { createdAt: 'desc' },
         skip,
         take: limit

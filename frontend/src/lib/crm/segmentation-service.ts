@@ -308,7 +308,7 @@ export class SegmentationService {
       where: { id: segmentId, tenantId },
       include: {
         _count: {
-          select: { memberships: true, campaigns: true },
+          select: { crm_segment_memberships: true, campaigns: true },
         },
       },
     });
@@ -524,7 +524,7 @@ export class SegmentationService {
     const memberships = await prisma.crm_segment_memberships.findMany({
       where: { tenantId, customerId },
       include: {
-        segment: {
+        crm_customer_segments: {
           select: {
             id: true,
             name: true,

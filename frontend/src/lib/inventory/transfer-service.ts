@@ -141,7 +141,7 @@ export class StockTransferService {
         },
       },
       include: {
-        items: true,
+        bill_invoice_items: true,
         fromWarehouse: true,
         toWarehouse: true,
       },
@@ -173,7 +173,7 @@ export class StockTransferService {
         requestedByName: userName || transfer.requestedByName,
       },
       include: {
-        items: true,
+        bill_invoice_items: true,
         fromWarehouse: true,
         toWarehouse: true,
       },
@@ -230,7 +230,7 @@ export class StockTransferService {
         approvedByName: userName,
       },
       include: {
-        items: true,
+        bill_invoice_items: true,
         fromWarehouse: true,
         toWarehouse: true,
       },
@@ -282,7 +282,7 @@ export class StockTransferService {
         rejectionReason: reason,
       },
       include: {
-        items: true,
+        bill_invoice_items: true,
         fromWarehouse: true,
         toWarehouse: true,
       },
@@ -355,7 +355,7 @@ export class StockTransferService {
         shippingCost: data.shippingCost,
       },
       include: {
-        items: true,
+        bill_invoice_items: true,
         fromWarehouse: true,
         toWarehouse: true,
       },
@@ -494,7 +494,7 @@ export class StockTransferService {
         receivingNotes: data.receivingNotes,
       },
       include: {
-        items: true,
+        bill_invoice_items: true,
         fromWarehouse: true,
         toWarehouse: true,
       },
@@ -585,7 +585,7 @@ export class StockTransferService {
         notes: `${transfer.notes || ''}\n\nCancelled by ${userName}: ${reason}`.trim(),
       },
       include: {
-        items: true,
+        bill_invoice_items: true,
         fromWarehouse: true,
         toWarehouse: true,
       },
@@ -661,7 +661,7 @@ export class StockTransferService {
       prisma.stockTransfer.findMany({
         where,
         include: {
-          items: true,
+          bill_invoice_items: true,
           fromWarehouse: true,
           toWarehouse: true,
         },
@@ -688,7 +688,7 @@ export class StockTransferService {
     const transfer = await prisma.stockTransfer.findFirst({
       where: { id: transferId, tenantId },
       include: {
-        items: true,
+        bill_invoice_items: true,
         fromWarehouse: true,
         toWarehouse: true,
       },
@@ -707,7 +707,7 @@ export class StockTransferService {
     const transfer = await prisma.stockTransfer.findFirst({
       where: { id: transferId, tenantId },
       include: {
-        items: true,
+        bill_invoice_items: true,
         fromWarehouse: true,
         toWarehouse: true,
       },

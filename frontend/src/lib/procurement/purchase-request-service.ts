@@ -136,7 +136,7 @@ export class PurchaseRequestService {
           })),
         },
       },
-      include: { items: true },
+      include: { bill_invoice_items: true },
     })
 
     // Emit event
@@ -179,7 +179,7 @@ export class PurchaseRequestService {
     const [requests, total] = await Promise.all([
       prisma.proc_purchase_requests.findMany({
         where,
-        include: { items: { orderBy: { lineNumber: 'asc' } } },
+        include: { bill_invoice_items: { orderBy: { lineNumber: 'asc' } } },
         orderBy: { [orderBy]: orderDir },
         skip: (page - 1) * limit,
         take: limit,
@@ -204,7 +204,7 @@ export class PurchaseRequestService {
   static async getPurchaseRequestById(tenantId: string, id: string) {
     const pr = await prisma.proc_purchase_requests.findFirst({
       where: { id, tenantId },
-      include: { items: { orderBy: { lineNumber: 'asc' } } },
+      include: { bill_invoice_items: { orderBy: { lineNumber: 'asc' } } },
     })
 
     return pr ? this.formatPurchaseRequest(pr) : null
@@ -247,7 +247,7 @@ export class PurchaseRequestService {
         status: newStatus,
         ...(approvedBy && { approvedBy, approvedAt }),
       },
-      include: { items: true },
+      include: { bill_invoice_items: true },
     })
 
     // Emit event
@@ -286,7 +286,7 @@ export class PurchaseRequestService {
         approvedAt: new Date(),
         ...(notes && { notes: pr.notes ? `${pr.notes}\n\nApproval Notes: ${notes}` : `Approval Notes: ${notes}` }),
       },
-      include: { items: true },
+      include: { bill_invoice_items: true },
     })
 
     // Emit event
@@ -325,7 +325,7 @@ export class PurchaseRequestService {
         rejectedAt: new Date(),
         rejectionReason: reason,
       },
-      include: { items: true },
+      include: { bill_invoice_items: true },
     })
 
     // Emit event
@@ -356,7 +356,7 @@ export class PurchaseRequestService {
     const updated = await prisma.proc_purchase_requests.update({
       where: { id },
       data: { status: 'CANCELLED' },
-      include: { items: true },
+      include: { bill_invoice_items: true },
     })
 
     // Emit event
@@ -424,7 +424,7 @@ export class PurchaseRequestService {
           },
         }),
       },
-      include: { items: { orderBy: { lineNumber: 'asc' } } },
+      include: { bill_invoice_items: { orderBy: { lineNumber: 'asc' } } },
     })
 
     return this.formatPurchaseRequest(updated)

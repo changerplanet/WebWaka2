@@ -203,9 +203,9 @@ export class CampaignService {
         take: options?.limit || 50,
         skip: options?.offset || 0,
         include: {
-          audiences: {
+          crm_campaign_audiences: {
             include: {
-              segment: { select: { id: true, name: true, memberCount: true } },
+              crm_customer_segments: { select: { id: true, name: true, memberCount: true } },
             },
           },
         },
@@ -223,9 +223,9 @@ export class CampaignService {
     return prisma.crm_campaigns.findFirst({
       where: { id: campaignId, tenantId },
       include: {
-        audiences: {
+        crm_campaign_audiences: {
           include: {
-            segment: { select: { id: true, name: true, slug: true, memberCount: true } },
+            crm_customer_segments: { select: { id: true, name: true, slug: true, memberCount: true } },
           },
         },
       },
@@ -278,7 +278,7 @@ export class CampaignService {
   static async publish(tenantId: string, campaignId: string, publishedBy: string) {
     const campaign = await prisma.crm_campaigns.findFirst({
       where: { id: campaignId, tenantId },
-      include: { audiences: true },
+      include: { crm_campaign_audiences: true },
     });
 
     if (!campaign) {
@@ -480,7 +480,7 @@ export class CampaignService {
   static async getRecipients(tenantId: string, campaignId: string) {
     const campaign = await prisma.crm_campaigns.findFirst({
       where: { id: campaignId, tenantId },
-      include: { audiences: true },
+      include: { crm_campaign_audiences: true },
     });
 
     if (!campaign) {
