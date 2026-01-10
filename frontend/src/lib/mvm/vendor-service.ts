@@ -160,7 +160,7 @@ export const VendorService = {
     })
     
     const vendor = await prisma.mvm_vendor.create({
-      data: withPrismaDefaults({
+      data: {
         tenantId: input.tenantId,
         platformInstanceId: input.platformInstanceId,
         name: input.name,
@@ -183,7 +183,7 @@ export const VendorService = {
         onboardingStep: 'REGISTERED',
         tierId: defaultTier?.id,
         metadata: input.metadata as Prisma.JsonValue
-      }),
+      },
       select: { id: true, slug: true }
     })
     
