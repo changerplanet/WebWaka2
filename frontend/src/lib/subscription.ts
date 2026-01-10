@@ -62,7 +62,7 @@ export async function createSubscription(
   const tenant = await prisma.tenant.findUnique({
     where: { id: input.tenantId },
     include: { 
-      Subscription: true,
+      subscription: true,
       partnerReferral: true 
     }
   })
@@ -71,7 +71,8 @@ export async function createSubscription(
     return { success: false, error: 'Tenant not found', code: 'NOT_FOUND' }
   }
   
-  if (tenant.subscription) {
+  const tenantAny = tenant as any;
+  if (tenantAny.subscription) {
     return { success: false, error: 'Tenant already has a subscription', code: 'ALREADY_EXISTS' }
   }
   
@@ -113,7 +114,7 @@ export async function createSubscription(
   // 5. Create subscription and entitlements in transaction
   const subscription = await prisma.$transaction(async (tx) => {
     // Create subscription
-    const sub = await tx.subscription.create({
+    const sub = await (tx.subscription.create as any)({
       data: {
         tenantId: input.tenantId,
         planId: input.planId,
@@ -127,14 +128,14 @@ export async function createSubscription(
         trialEnd,
         externalId: input.externalId,
         paymentProvider: input.paymentProvider,
-        partnerReferralId: tenant.partnerReferral?.id, // OPTIONAL partner link
+        partnerReferralId: tenantAny.partnerReferral?.id, // OPTIONAL partner link
         metadata: input.metadata
       }
     })
     
     // Grant entitlements for included modules
     for (const moduleName of plan.includedModules) {
-      await tx.entitlement.create({
+      await (tx.entitlement.create as any)({
         data: {
           tenantId: input.tenantId,
           subscriptionId: sub.id,
@@ -147,7 +148,7 @@ export async function createSubscription(
     }
     
     // Audit log
-    await tx.auditLog.create({
+    await (tx.auditLog.create as any)({
       data: {
         action: 'SUBSCRIPTION_CREATED',
         actorId: 'system',
@@ -162,8 +163,8 @@ export async function createSubscription(
           amount: amount.toString(),
           currency: plan.currency,
           billingInterval,
-          hasPartner: !!tenant.partnerReferral,
-          partnerId: tenant.partnerReferral?.partnerId
+          hasPartner: !!tenantAny.partnerReferral,
+          partnerId: tenantAny.partnerReferral?.partnerId
         }
       }
     })
@@ -176,7 +177,7 @@ export async function createSubscription(
     eventType: 'SUBSCRIPTION_CREATED',
     subscriptionId: subscription.id,
     tenantId: input.tenantId,
-    partnerId: tenant.partnerReferral?.partnerId ?? null, // OPTIONAL
+    partnerId: tenantAny.partnerReferral?.partnerId ?? null, // OPTIONAL
     modules: plan.includedModules,
     billingAmount: Number(amount),
     billingCurrency: plan.currency,
