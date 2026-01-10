@@ -187,7 +187,6 @@ export class AssignmentService {
       },
       include: {
         logistics_delivery_agents: true,
-        zone: true,
       },
     })
 
@@ -256,9 +255,6 @@ export class AssignmentService {
         where,
         include: {
           logistics_delivery_agents: { select: { id: true, firstName: true, lastName: true, phone: true } },
-          zone: { select: { id: true, name: true, city: true } },
-          _count: { select: { logistics_delivery_status_history: true, proofs: true } },
-        },
         orderBy: [{ priority: 'desc' }, { createdAt: 'desc' }],
         take: options.limit || 50,
         skip: options.offset || 0,
@@ -277,7 +273,6 @@ export class AssignmentService {
       where: { id: assignmentId, tenantId },
       include: {
         logistics_delivery_agents: true,
-        zone: true,
         logistics_delivery_status_history: { orderBy: { createdAt: 'desc' } },
         proofs: { orderBy: { capturedAt: 'desc' } },
       },
@@ -294,7 +289,6 @@ export class AssignmentService {
       },
       include: {
         logistics_delivery_agents: true,
-        zone: true,
         logistics_delivery_status_history: { orderBy: { createdAt: 'desc' }, take: 10 },
       },
     })
@@ -323,7 +317,6 @@ export class AssignmentService {
       },
       include: {
         logistics_delivery_agents: true,
-        zone: true,
       },
     })
   }
