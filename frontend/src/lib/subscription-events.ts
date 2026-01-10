@@ -172,7 +172,7 @@ export async function emitSubscriptionEvent(
   payload: SubscriptionEventPayload
 ): Promise<SubscriptionEvent> {
   // Store event in database
-  const event = await prisma.subscriptionEvent.create({
+  const event = await (prisma.subscriptionEvent.create as any)({
     data: {
       subscriptionId: payload.subscriptionId,
       eventType: payload.eventType,
