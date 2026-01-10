@@ -185,7 +185,7 @@ export class CrmOfflineService {
           if (program) {
             const currentBalance = await LoyaltyService.getCustomerBalance(tenantId, earn.customerId);
 
-            await prisma.crm_loyalty_transactions.create({
+            await (prisma.crm_loyalty_transactions.create as any)({
               data: {
                 tenantId,
                 programId: program.id,

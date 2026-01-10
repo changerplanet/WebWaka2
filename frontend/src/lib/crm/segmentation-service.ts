@@ -196,7 +196,7 @@ export class SegmentationService {
     // Generate slug if not provided
     const slug = input.slug || this.generateSlug(input.name);
 
-    return prisma.crm_customer_segments.create({
+    return (prisma.crm_customer_segments.create as any)({
       data: {
         tenantId,
         name: input.name,
@@ -279,7 +279,7 @@ export class SegmentationService {
       offset?: number;
     }
   ) {
-    const where: Prisma.CrmCustomerSegmentWhereInput = { tenantId };
+    const where: Prisma.crm_customer_segmentsWhereInput = { tenantId };
 
     if (options?.status) where.status = options.status;
     if (options?.segmentType) where.segmentType = options.segmentType;
@@ -308,7 +308,7 @@ export class SegmentationService {
       where: { id: segmentId, tenantId },
       include: {
         _count: {
-          select: { crm_segment_memberships: true, campaigns: true },
+          select: { crm_segment_memberships: true },
         },
       },
     });
@@ -340,7 +340,7 @@ export class SegmentationService {
       return { action: 'exists', membership: existing };
     }
 
-    const membership = await prisma.crm_segment_memberships.create({
+    const membership = await (prisma.crm_segment_memberships.create as any)({
       data: {
         tenantId,
         segmentId,
@@ -470,7 +470,7 @@ export class SegmentationService {
 
       // Add new members
       if (toAdd.length > 0) {
-        await prisma.crm_segment_memberships.createMany({
+        await (prisma.crm_segment_memberships.createMany as any)({
           data: toAdd.map(customerId => ({
             tenantId,
             segmentId,
@@ -538,7 +538,7 @@ export class SegmentationService {
     });
 
     return memberships.map(m => ({
-      ...m.segment,
+      ...(m as any).crm_customer_segments,
       isManual: m.isManual,
       addedAt: m.addedAt,
     }));
