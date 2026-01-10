@@ -43,7 +43,7 @@ export async function POST(request: NextRequest) {
             createdAt: new Date().toISOString(),
             purpose: 'Demos, pilots, government projects, direct enterprise deals',
           }
-        }
+        } as any
       })
       results.webwakaPartnerCreated = true
     }
@@ -107,7 +107,7 @@ export async function POST(request: NextRequest) {
           timestamp: new Date().toISOString(),
           phase: 'PHASE_4A_WEBWAKA_PARTNER_MIGRATION',
         }
-      }
+      } as any
     })
     
     return NextResponse.json({
