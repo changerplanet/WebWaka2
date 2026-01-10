@@ -120,8 +120,8 @@ export class ZoneService {
         radiusKm: input.radiusKm,
         polygon: input.polygon,
         sortOrder: input.sortOrder || 0,
-        metadata: input.metadata as any,
-      },
+        ...(input.metadata && { metadata: input.metadata }),
+      } as any,
       include: {
         logistics_delivery_pricing_rules: true,
       },
@@ -192,8 +192,8 @@ export class ZoneService {
         ...(input.polygon !== undefined && { polygon: input.polygon }),
         ...(input.status && { status: input.status }),
         ...(input.sortOrder !== undefined && { sortOrder: input.sortOrder }),
-        ...(input.metadata !== undefined && { metadata: input.metadata ?? undefined }),
-      },
+        ...(input.metadata && { metadata: input.metadata }),
+      } as any,
       include: {
         logistics_delivery_pricing_rules: true,
       },
@@ -308,7 +308,7 @@ export class ZoneService {
         priority: input.priority || 0,
         validFrom: input.validFrom,
         validUntil: input.validUntil,
-      },
+      } as any,
     })
   }
 
