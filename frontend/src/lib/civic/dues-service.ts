@@ -233,7 +233,9 @@ export async function getOverdueConstituents(tenantId: string): Promise<{
     return acc;
   }, {} as Record<string, { constituentId: string; constituentName: string; totalOverdue: number; overdueCount: number }>);
   
-  return Object.values(grouped).sort((a: any, b: any) => b.totalOverdue - a.totalOverdue);
+  const result: { constituentId: string; constituentName: string; totalOverdue: number; overdueCount: number }[] = 
+    Object.values(grouped).sort((a, b) => b.totalOverdue - a.totalOverdue);
+  return result;
 }
 
 // ============================================================================
