@@ -357,11 +357,11 @@ export async function verifyLoginOtp(request: VerifyLoginOtpRequest): Promise<Lo
   const user = normalized.type === 'phone'
     ? await prisma.user.findUnique({
         where: { phone: normalized.value },
-        include: { memberships: { where: { isActive: true }, include: { tenant: true } } },
+        include: { memberships: { where: { isActive: true }, include: { Tenant: true } } },
       })
     : await prisma.user.findUnique({
         where: { email: normalized.value },
-        include: { memberships: { where: { isActive: true }, include: { tenant: true } } },
+        include: { memberships: { where: { isActive: true }, include: { Tenant: true } } },
       })
   
   if (!user) {
@@ -422,14 +422,14 @@ export async function loginWithPassword(request: LoginWithPasswordRequest): Prom
     ? await prisma.user.findUnique({
         where: { phone: normalized.value },
         include: { 
-          memberships: { where: { isActive: true }, include: { tenant: true } },
+          memberships: { where: { isActive: true }, include: { Tenant: true } },
           PartnerUser: true,
         },
       })
     : await prisma.user.findUnique({
         where: { email: normalized.value },
         include: { 
-          memberships: { where: { isActive: true }, include: { tenant: true } },
+          memberships: { where: { isActive: true }, include: { Tenant: true } },
           PartnerUser: true,
         },
       })

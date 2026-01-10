@@ -43,7 +43,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
         },
         referrals: {
           include: {
-            tenant: {
+            Tenant: {
               select: {
                 id: true,
                 name: true,
@@ -57,7 +57,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
         },
         createdInstances: {
           include: {
-            tenant: {
+            Tenant: {
               select: {
                 name: true,
                 slug: true

@@ -29,7 +29,7 @@ export async function GET(request: NextRequest) {
     // Get partner for this user
     const partnerUser = await prisma.partnerUser.findUnique({
       where: { userId: user.id },
-      include: { partner: true }
+      include: { Partner: true }
     })
     
     if (!partnerUser) {

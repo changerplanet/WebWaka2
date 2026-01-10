@@ -168,7 +168,7 @@ export function getPartnerPermissions(role: PartnerRole | 'SUPER_ADMIN'): Partne
 export async function getPartnerMembership(userId: string): Promise<(PartnerUser & { partner: Partner }) | null> {
   return prisma.partnerUser.findUnique({
     where: { userId },
-    include: { partner: true }
+    include: { Partner: true }
   })
 }
 
@@ -244,7 +244,7 @@ export async function requirePartnerUser(): Promise<PartnerAuthorizationResult> 
   // Get partner membership
   const partnerUser = await prisma.partnerUser.findUnique({
     where: { userId: session.user.id },
-    include: { partner: true }
+    include: { Partner: true }
   })
   
   if (!partnerUser) {
@@ -351,7 +351,7 @@ export async function requirePartnerAccess(partnerId: string): Promise<PartnerAu
   // Regular user must be a partner user of this specific partner
   const partnerUser = await prisma.partnerUser.findUnique({
     where: { userId: session.user.id },
-    include: { partner: true }
+    include: { Partner: true }
   })
   
   if (!partnerUser) {

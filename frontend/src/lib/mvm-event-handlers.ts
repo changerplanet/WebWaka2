@@ -705,7 +705,7 @@ export async function getMVMEntitlements(tenantId: string): Promise<{
         }
       },
       include: {
-        subscription: true
+        Subscription: true
       }
     })
 

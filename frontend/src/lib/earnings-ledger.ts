@@ -602,7 +602,7 @@ export async function getPartnerEarnings(
       include: {
         referral: {
           include: {
-            tenant: {
+            Tenant: {
               select: { id: true, name: true, slug: true }
             }
           }

@@ -77,7 +77,7 @@ export async function startImpersonation(
     } else if (targetType === 'INSTANCE') {
       const instance = await prisma.platformInstance.findUnique({
         where: { id: targetId },
-        include: { tenant: { select: { name: true } } }
+        include: { Tenant: { select: { name: true } } }
       })
       if (!instance) return { success: false, error: 'Instance not found' }
       targetName = `${instance.name} (${instance.tenant.name})`

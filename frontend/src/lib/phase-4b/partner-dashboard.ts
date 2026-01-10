@@ -269,7 +269,7 @@ export async function getChurnIndicators(
         select: {
           id: true,
           name: true,
-          tenant: { select: { name: true } }
+          Tenant: { select: { name: true } }
         }
       }
     },
@@ -296,7 +296,7 @@ export async function getChurnIndicators(
       suspendedAt: { not: null }
     },
     include: {
-      tenant: { select: { name: true } }
+      Tenant: { select: { name: true } }
     },
     orderBy: { suspendedAt: 'desc' },
     take: limit

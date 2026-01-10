@@ -258,7 +258,7 @@ export async function createAttributionByCode(
     select: { 
       id: true, 
       partnerId: true,
-      partner: {
+      Partner: {
         select: {
           agreements: {
             where: { status: 'ACTIVE' },
@@ -352,7 +352,7 @@ export async function getAttributionForTenant(tenantId: string): Promise<Partner
   return prisma.partnerReferral.findUnique({
     where: { tenantId },
     include: {
-      partner: {
+      Partner: {
         select: { id: true, name: true, slug: true, status: true }
       },
       referralCode: {
@@ -387,7 +387,7 @@ export async function getAttributionsForPartner(
     prisma.partnerReferral.findMany({
       where,
       include: {
-        tenant: {
+        Tenant: {
           select: { id: true, name: true, slug: true, status: true, createdAt: true }
         }
       },
@@ -409,7 +409,7 @@ export async function isAttributionValidForEarnings(tenantId: string): Promise<b
     where: { tenantId },
     select: { 
       attributionExpiresAt: true,
-      partner: { select: { status: true } }
+      Partner: { select: { status: true } }
     }
   })
   

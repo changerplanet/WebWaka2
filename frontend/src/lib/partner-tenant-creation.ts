@@ -433,7 +433,7 @@ export async function getPendingTenantsByPartner(
       }
     },
     include: {
-      tenant: true
+      Tenant: true
     }
   })
   
@@ -470,7 +470,7 @@ export async function getTenantsByPartner(
     prisma.partnerReferral.findMany({
       where,
       include: {
-        tenant: true
+        Tenant: true
       },
       take: options?.limit || 50,
       skip: options?.offset || 0,

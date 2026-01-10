@@ -82,7 +82,7 @@ export async function startClientSubscription(
     const instance = await prisma.platformInstance.findUnique({
       where: { id: input.platformInstanceId },
       include: {
-        tenant: { select: { id: true, name: true } },
+        Tenant: { select: { id: true, name: true } },
         subscriptions: { where: { status: { not: 'CANCELLED' } } }
       }
     })

@@ -63,14 +63,14 @@ export async function GET(request: NextRequest) {
         include: {
           memberships: {
             include: {
-              tenant: {
+              Tenant: {
                 select: { id: true, name: true, slug: true, status: true }
               }
             }
           },
           partnerMembership: {
             include: {
-              partner: {
+              Partner: {
                 select: { id: true, name: true, slug: true, status: true }
               }
             }

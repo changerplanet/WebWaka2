@@ -206,7 +206,7 @@ export async function listTemplates(options: {
   const [templates, total] = await Promise.all([
     prisma.sf_templates.findMany({
       where,
-      include: { category: true },
+      include: { ProductCategory: true },
       orderBy: [{ isPremium: 'desc' }, { name: 'asc' }],
       skip: (page - 1) * limit,
       take: limit,
@@ -255,7 +255,7 @@ export async function getTemplate(idOrSlug: string): Promise<Template | null> {
       ],
       isActive: true,
     },
-    include: { category: true },
+    include: { ProductCategory: true },
   });
 
   if (!template) return null;

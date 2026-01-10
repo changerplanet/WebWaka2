@@ -129,7 +129,7 @@ export async function verifyMagicLink(token: string): Promise<{ user: SessionUse
     include: {
       memberships: {
         where: { isActive: true },
-        include: { tenant: true }
+        include: { Tenant: true }
       }
     }
   })
@@ -152,7 +152,7 @@ export async function getSessionByToken(token: string): Promise<AuthSession | nu
         include: {
           memberships: {
             where: { isActive: true },
-            include: { tenant: true }
+            include: { Tenant: true }
           }
         }
       }

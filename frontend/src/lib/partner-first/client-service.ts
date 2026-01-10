@@ -333,7 +333,7 @@ export async function getClientPlatforms(
     prisma.partnerReferral.findMany({
       where,
       include: {
-        tenant: {
+        Tenant: {
           include: {
             domains: {
               select: {
@@ -412,7 +412,7 @@ export async function getClientPlatform(
       tenantId,
     },
     include: {
-      tenant: {
+      Tenant: {
         include: {
           domains: {
             select: {
@@ -527,7 +527,7 @@ export async function resendClientInvitation(
   // Verify this tenant belongs to this partner
   const referral = await prisma.partnerReferral.findFirst({
     where: { partnerId, tenantId },
-    include: { tenant: true }
+    include: { Tenant: true }
   })
   
   if (!referral) {

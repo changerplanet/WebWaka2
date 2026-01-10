@@ -200,7 +200,7 @@ export class ReportsService {
     try {
       const items = await prisma.inventoryLevel.findMany({
         where: { tenantId },
-        include: { product: { select: { name: true } } },
+        include: { Product: { select: { name: true } } },
         take: 50,
       })
 

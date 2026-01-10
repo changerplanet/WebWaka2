@@ -61,7 +61,7 @@ export async function POST(
         role: 'PARTNER_OWNER',
       },
       include: {
-        partner: { select: { id: true, status: true } }
+        Partner: { select: { id: true, status: true } }
       }
     })
     

@@ -237,7 +237,7 @@ export async function updateAddOnQuantity(
   try {
     const existing = await prisma.billing_addon_subscriptions.findUnique({
       where: { id: subscriptionId },
-      include: { addOn: true },
+      include: { billing_addons: true },
     });
     
     if (!existing) {
@@ -325,7 +325,7 @@ export async function getActiveAddOns(tenantId: string, subscriptionId?: string)
   
   return prisma.billing_addon_subscriptions.findMany({
     where,
-    include: { addOn: true },
+    include: { billing_addons: true },
   });
 }
 

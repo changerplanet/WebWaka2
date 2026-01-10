@@ -189,7 +189,7 @@ export class LoyaltyService {
       throw new Error('Loyalty program not found. Initialize it first.');
     }
 
-    return prisma.crmLoyaltyRule.create({
+    return prisma.crm_loyalty_rules.create({
       data: {
         tenantId,
         programId: program.id,
@@ -222,7 +222,7 @@ export class LoyaltyService {
       return [];
     }
 
-    return prisma.crmLoyaltyRule.findMany({
+    return prisma.crm_loyalty_rules.findMany({
       where: {
         tenantId,
         programId: program.id,

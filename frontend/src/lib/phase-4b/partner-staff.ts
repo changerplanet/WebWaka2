@@ -452,7 +452,7 @@ export async function getAccessibleClients(
   if (hasPermission(staff.role, 'canViewAllClients')) {
     const instances = await prisma.platformInstance.findMany({
       where: { createdByPartnerId: staff.partnerId },
-      include: { tenant: { select: { id: true, name: true } } },
+      include: { Tenant: { select: { id: true, name: true } } },
       distinct: ['tenantId']
     })
     

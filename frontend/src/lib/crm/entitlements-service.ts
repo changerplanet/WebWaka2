@@ -161,7 +161,7 @@ export class CrmEntitlementsService {
         break;
       case 'loyaltyRules':
         limit = entitlements.maxLoyaltyRules;
-        used = await prisma.crmLoyaltyRule.count({ where: { tenantId } });
+        used = await prisma.crm_loyalty_rules.count({ where: { tenantId } });
         break;
       default:
         limit = -1;
@@ -191,7 +191,7 @@ export class CrmEntitlementsService {
       prisma.crm_campaigns.count({
         where: { tenantId, status: { in: ['DRAFT', 'SCHEDULED', 'ACTIVE'] } },
       }),
-      prisma.crmLoyaltyRule.count({ where: { tenantId } }),
+      prisma.crm_loyalty_rules.count({ where: { tenantId } }),
     ]);
 
     return {

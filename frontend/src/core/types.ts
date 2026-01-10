@@ -49,7 +49,7 @@ export type TenantWithAll = Prisma.TenantGetPayload<{
 export type UserWithMemberships = Prisma.UserGetPayload<{
   include: {
     memberships: {
-      include: { tenant: true }
+      include: { Tenant: true }
     }
   }
 }>
@@ -60,7 +60,7 @@ export type MembershipWithUser = Prisma.TenantMembershipGetPayload<{
 }>
 
 export type MembershipWithTenant = Prisma.TenantMembershipGetPayload<{
-  include: { tenant: true }
+  include: { Tenant: true }
 }>
 
 // API Response types

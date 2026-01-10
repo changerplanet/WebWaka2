@@ -69,7 +69,7 @@ export async function getPartnerEntitlements(tenantId?: string): Promise<Partner
   // Get tenant's subscription
   const subscription = await prisma.subscription.findUnique({
     where: { tenantId },
-    include: { plan: true },
+    include: { Plan: true },
   });
   
   if (!subscription || subscription.status !== 'ACTIVE') {

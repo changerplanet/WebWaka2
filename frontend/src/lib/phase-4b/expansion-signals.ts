@@ -74,7 +74,7 @@ export async function detectExpansionSignals(
   const instances = await prisma.platformInstance.findMany({
     where: { createdByPartnerId: partnerId },
     include: {
-      tenant: { select: { id: true, name: true } },
+      Tenant: { select: { id: true, name: true } },
       subscriptions: true,
       financialSummary: true,
     }

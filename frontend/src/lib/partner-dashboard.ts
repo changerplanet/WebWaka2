@@ -441,7 +441,7 @@ async function getReferralsSummary(partnerId: string): Promise<ReferralsSummary>
   const recentReferrals = await prisma.partnerReferral.findMany({
     where: { partnerId },
     include: {
-      tenant: {
+      Tenant: {
         select: {
           id: true,
           name: true,
@@ -458,7 +458,7 @@ async function getReferralsSummary(partnerId: string): Promise<ReferralsSummary>
   const referralsWithEarnings = await prisma.partnerReferral.findMany({
     where: { partnerId },
     include: {
-      tenant: {
+      Tenant: {
         select: { id: true, name: true, slug: true, status: true }
       },
       earnings: {
@@ -526,7 +526,7 @@ async function getRecentActivity(partnerId: string): Promise<ActivityItem[]> {
     include: {
       referral: {
         include: {
-          tenant: { select: { name: true } }
+          Tenant: { select: { name: true } }
         }
       }
     }
@@ -550,7 +550,7 @@ async function getRecentActivity(partnerId: string): Promise<ActivityItem[]> {
     orderBy: { referredAt: 'desc' },
     take: 5,
     include: {
-      tenant: { select: { name: true } }
+      Tenant: { select: { name: true } }
     }
   })
   
@@ -614,7 +614,7 @@ export async function getPartnerPerformance(
       referredAt: { gte: periodStart, lte: periodEnd }
     },
     include: {
-      tenant: { select: { status: true } }
+      Tenant: { select: { status: true } }
     }
   })
   
@@ -772,7 +772,7 @@ export async function getReferredTenants(
     prisma.partnerReferral.findMany({
       where,
       include: {
-        tenant: {
+        Tenant: {
           select: { id: true, name: true, slug: true, status: true }
         },
         earnings: {

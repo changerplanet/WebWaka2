@@ -261,7 +261,7 @@ export async function validateSignupPartnerContext(
     const code = await prisma.partnerReferralCode.findUnique({
       where: { code: referralCode },
       include: {
-        partner: {
+        Partner: {
           select: { id: true, status: true }
         }
       }

@@ -150,7 +150,7 @@ export class InventoryAuditService {
     const inventoryLevels = await prisma.inventoryLevel.findMany({
       where: inventoryWhere,
       include: {
-        product: true,
+        Product: true,
         variant: true,
       },
     });

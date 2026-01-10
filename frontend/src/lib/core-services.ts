@@ -201,8 +201,8 @@ export class CoreInventoryService {
       const variant = await prisma.productVariant.findFirst({
         where: { id: variantId, productId },
         include: {
-          product: {
-            include: { category: true }
+          Product: {
+            include: { ProductCategory: true }
           },
           inventoryLevels: locationId ? {
             where: { locationId }
@@ -224,7 +224,7 @@ export class CoreInventoryService {
     const product = await prisma.product.findFirst({
       where: { id: productId, tenantId },
       include: {
-        category: true,
+        ProductCategory: true,
         inventoryLevels: locationId ? {
           where: { locationId, variantId: null }
         } : {
@@ -262,7 +262,7 @@ export class CoreInventoryService {
         tenantId 
       },
       include: {
-        category: true,
+        ProductCategory: true,
         variants: {
           include: {
             inventoryLevels: locationId ? {
@@ -414,7 +414,7 @@ export class CoreInventoryService {
     const products = await prisma.product.findMany({
       where,
       include: {
-        category: true,
+        ProductCategory: true,
         inventoryLevels: options?.locationId ? {
           where: { locationId: options.locationId, variantId: null }
         } : {
@@ -456,8 +456,8 @@ export class CoreInventoryService {
         }
       },
       include: {
-        product: {
-          include: { category: true }
+        Product: {
+          include: { ProductCategory: true }
         },
         variant: true,
         location: true
@@ -492,7 +492,7 @@ export class CoreInventoryService {
     const products = await prisma.product.findMany({
       where,
       include: {
-        category: true,
+        ProductCategory: true,
         variants: {
           include: {
             inventoryLevels: options?.locationId ? {

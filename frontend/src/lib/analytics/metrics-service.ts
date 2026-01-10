@@ -347,7 +347,7 @@ export class MetricsService {
     try {
       const inventory = await prisma.inventoryLevel.findMany({
         where: { tenantId },
-        include: { product: { select: { costPrice: true } } },
+        include: { Product: { select: { costPrice: true } } },
       })
 
       return inventory.reduce((total: number, item) => {

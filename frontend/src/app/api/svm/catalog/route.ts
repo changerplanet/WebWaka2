@@ -120,7 +120,7 @@ export async function GET(request: NextRequest) {
       const product = await prisma.product.findFirst({
         where: { id: productId, tenantId },
         include: {
-          category: true,
+          ProductCategory: true,
           variants: true
         }
       })
@@ -144,7 +144,7 @@ export async function GET(request: NextRequest) {
       const product = await prisma.product.findFirst({
         where: { slug, tenantId },
         include: {
-          category: true,
+          ProductCategory: true,
           variants: true
         }
       })
@@ -198,7 +198,7 @@ export async function GET(request: NextRequest) {
     const products = await prisma.product.findMany({
       where,
       include: {
-        category: true,
+        ProductCategory: true,
         variants: true
       },
       orderBy,
@@ -256,7 +256,7 @@ export async function POST(request: NextRequest) {
         tenantId
       },
       include: {
-        category: true,
+        ProductCategory: true,
         variants: true
       }
     })

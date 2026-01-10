@@ -78,7 +78,7 @@ async function getDefaultInstance(tenantId: string): Promise<PlatformInstanceWit
       isDefault: true,
       isActive: true
     },
-    include: { tenant: true }
+    include: { Tenant: true }
   })
 }
 
@@ -104,12 +104,12 @@ export async function resolveTenantFromHost(hostname: string): Promise<TenantCon
       status: 'VERIFIED'
     },
     include: {
-      tenant: {
+      Tenant: {
         include: { domains: true }
       },
       // Phase 2: Include platform instance if mapped
       platformInstance: {
-        include: { tenant: true }
+        include: { Tenant: true }
       }
     }
   })
@@ -149,11 +149,11 @@ export async function resolveTenantFromHost(hostname: string): Promise<TenantCon
           status: 'VERIFIED'
         },
         include: {
-          tenant: {
+          Tenant: {
             include: { domains: true }
           },
           platformInstance: {
-            include: { tenant: true }
+            include: { Tenant: true }
           }
         }
       })
@@ -242,11 +242,11 @@ export async function resolveTenantFromQuery(slug: string): Promise<TenantContex
       type: 'SUBDOMAIN'
     },
     include: {
-      tenant: {
+      Tenant: {
         include: { domains: true }
       },
       platformInstance: {
-        include: { tenant: true }
+        include: { Tenant: true }
       }
     }
   })
@@ -378,7 +378,7 @@ export async function getTenantFromDomain(domain: string): Promise<TenantWithDom
 export async function getInstanceById(instanceId: string): Promise<PlatformInstanceWithTenant | null> {
   return prisma.platformInstance.findUnique({
     where: { id: instanceId },
-    include: { tenant: true }
+    include: { Tenant: true }
   })
 }
 
@@ -390,7 +390,7 @@ export async function resolveInstanceFromDomain(domain: string): Promise<Platfor
     where: { domain: domain.toLowerCase() },
     include: {
       platformInstance: {
-        include: { tenant: true }
+        include: { Tenant: true }
       }
     }
   })

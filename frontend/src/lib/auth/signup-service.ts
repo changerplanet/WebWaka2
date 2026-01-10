@@ -304,7 +304,7 @@ export async function startSignup(request: StartSignupRequest): Promise<StartSig
   if (request.referralCode) {
     const referralCode = await prisma.partnerReferralCode.findUnique({
       where: { code: request.referralCode },
-      include: { partner: true },
+      include: { Partner: true },
     })
     
     if (referralCode?.isActive && referralCode.partner.status === 'ACTIVE') {

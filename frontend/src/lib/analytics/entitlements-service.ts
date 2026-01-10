@@ -78,7 +78,7 @@ export class AnalyticsEntitlementsService {
   private static async getTenantTier(tenantId: string): Promise<keyof typeof TIER_LIMITS> {
     const tenant = await prisma.tenant.findUnique({
       where: { id: tenantId },
-      include: { subscription: { include: { plan: true } } },
+      include: { Subscription: { include: { Plan: true } } },
     })
 
     if (!tenant?.subscription?.plan) return 'FREE'

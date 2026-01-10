@@ -25,7 +25,7 @@ export async function GET(request: NextRequest) {
     const tenantMemberships = await prisma.tenantMembership.findMany({
       where: { userId: user.id },
       include: {
-        tenant: {
+        Tenant: {
           include: {
             platformInstances: {
               include: {

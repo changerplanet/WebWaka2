@@ -31,7 +31,7 @@ export async function PATCH(
     // Find instance
     const instance = await prisma.platformInstance.findUnique({
       where: { id },
-      include: { tenant: { select: { slug: true } } }
+      include: { Tenant: { select: { slug: true } } }
     })
     
     if (!instance) {
