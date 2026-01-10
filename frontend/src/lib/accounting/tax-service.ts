@@ -446,23 +446,23 @@ export class TaxService {
       limit?: number;
     }
   ) {
-    const where: Prisma.AcctTaxSummaryWhereInput = {
+    const where: Prisma.acct_tax_summariesWhereInput = {
       tenantId,
       taxCode: 'VAT_7.5',
     };
 
     if (options?.year) {
-      where.period = {
+      where.acct_financial_periods = {
         fiscalYear: options.year,
       };
     }
 
     const summaries = await prisma.acct_tax_summaries.findMany({
       where,
-      orderBy: { period: { startDate: 'desc' } },
+      orderBy: { createdAt: 'desc' },
       take: options?.limit || 12,
       include: {
-        period: {
+        acct_financial_periods: {
           select: {
             id: true,
             name: true,
@@ -475,18 +475,21 @@ export class TaxService {
       },
     });
 
-    return summaries.map(s => ({
-      id: s.id,
-      period: s.period,
-      taxCollected: s.taxCollected.toString(),
-      taxPaid: s.taxPaid.toString(),
-      netTax: s.netTaxLiability.toString(),
-      isReportGenerated: !!s.reportGeneratedAt,
-      reportGeneratedAt: s.reportGeneratedAt,
-      reportGeneratedBy: s.reportGeneratedBy,
-      notes: s.notes,
-      createdAt: s.createdAt,
-    }));
+    return summaries.map(s => {
+      const sAny = s as any;
+      return {
+        id: s.id,
+        period: sAny.acct_financial_periods,
+        taxCollected: s.taxCollected.toString(),
+        taxPaid: s.taxPaid.toString(),
+        netTax: s.netTaxLiability.toString(),
+        isReportGenerated: !!s.reportGeneratedAt,
+        reportGeneratedAt: s.reportGeneratedAt,
+        reportGeneratedBy: s.reportGeneratedBy,
+        notes: s.notes,
+        createdAt: s.createdAt,
+      };
+    });
   }
 
   /**
@@ -497,22 +500,23 @@ export class TaxService {
       where: {
         tenantId,
         taxCode: 'VAT_7.5',
-        period: { fiscalYear: year },
+        acct_financial_periods: { fiscalYear: year },
       },
       include: { acct_financial_periods: true },
-      orderBy: { period: { startDate: 'asc' } },
+      orderBy: { createdAt: 'asc' },
     });
 
     let totalCollected = new Decimal(0);
     let totalPaid = new Decimal(0);
 
     const monthly = summaries.map(s => {
+      const sAny = s as any;
       totalCollected = totalCollected.plus(s.taxCollected.toString());
       totalPaid = totalPaid.plus(s.taxPaid.toString());
 
       return {
-        month: s.acct_financial_periods.code,
-        monthName: s.acct_financial_periods.name,
+        month: sAny.acct_financial_periods.code,
+        monthName: sAny.acct_financial_periods.name,
         taxCollected: s.taxCollected.toString(),
         taxPaid: s.taxPaid.toString(),
         netTax: s.netTaxLiability.toString(),
