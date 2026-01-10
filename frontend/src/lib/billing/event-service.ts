@@ -29,7 +29,7 @@ interface LogBillingEventInput {
 
 export async function logBillingEvent(input: LogBillingEventInput): Promise<void> {
   try {
-    await prisma.billingEventLog.create({
+    await (prisma.billing_event_logs.create as any)({
       data: {
         eventType: input.eventType,
         tenantId: input.tenantId,
@@ -76,13 +76,13 @@ export async function getBillingEvents(params: {
   }
   
   const [events, total] = await Promise.all([
-    prisma.billingEventLog.findMany({
+    prisma.billing_event_logs.findMany({
       where,
       skip: (page - 1) * limit,
       take: limit,
       orderBy: { occurredAt: 'desc' },
     }),
-    prisma.billingEventLog.count({ where }),
+    prisma.billing_event_logs.count({ where }),
   ]);
   
   return {
@@ -188,7 +188,7 @@ export async function handleSubscriptionCreated(event: {
 }): Promise<{ success: boolean; error?: string }> {
   try {
     // Ensure billing configuration exists
-    await prisma.billingConfiguration.upsert({
+    await (prisma.billing_configurations.upsert as any)({
       where: { tenantId: event.tenantId },
       create: {
         tenantId: event.tenantId,
@@ -257,7 +257,7 @@ export async function isEventProcessed(
   eventType: string,
   eventId: string
 ): Promise<boolean> {
-  const existing = await prisma.billingEventLog.findFirst({
+  const existing = await prisma.billing_event_logs.findFirst({
     where: {
       eventType,
       eventData: {

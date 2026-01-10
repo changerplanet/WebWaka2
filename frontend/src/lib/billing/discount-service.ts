@@ -50,7 +50,7 @@ export async function createDiscountRule(input: CreateDiscountRuleInput): Promis
       }
     }
     
-    const rule = await prisma.billing_discount_rules.create({
+    const rule = await (prisma.billing_discount_rules.create as any)({
       data: {
         tenantId: input.tenantId,
         name: input.name,
