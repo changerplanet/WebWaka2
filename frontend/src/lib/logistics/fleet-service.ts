@@ -25,25 +25,25 @@ export async function getVehicles(tenantId: string, options?: {
   limit?: number;
 }): Promise<{ vehicles: Vehicle[]; total: number; stats: FleetStats }> {
   const store = getVehiclesStore();
-  let filtered = store.filter((v: string) => v.tenantId === tenantId || tenantId === 'demo-logistics');
+  let filtered = store.filter((v) => v.tenantId === tenantId || tenantId === 'demo-logistics');
   
   if (options?.vehicleType) {
-    filtered = filtered.filter((v: string) => v.vehicleType === options.vehicleType);
+    filtered = filtered.filter((v) => v.vehicleType === options.vehicleType);
   }
   
   if (options?.status) {
-    filtered = filtered.filter((v: string) => v.status === options.status);
+    filtered = filtered.filter((v) => v.status === options.status);
   }
   
   if (options?.isActive !== undefined) {
-    filtered = filtered.filter((v: string) => v.isActive === options.isActive);
+    filtered = filtered.filter((v) => v.isActive === options.isActive);
   }
   
   if (options?.hasDriver !== undefined) {
     if (options.hasDriver) {
-      filtered = filtered.filter((v: string) => v.currentDriverId);
+      filtered = filtered.filter((v) => v.currentDriverId);
     } else {
-      filtered = filtered.filter((v: string) => !v.currentDriverId);
+      filtered = filtered.filter((v) => !v.currentDriverId);
     }
   }
   
@@ -59,18 +59,18 @@ export async function getVehicles(tenantId: string, options?: {
   return {
     vehicles: paginated,
     total,
-    stats: calculateFleetStats(store.filter((v: string) => v.tenantId === tenantId || tenantId === 'demo-logistics')),
+    stats: calculateFleetStats(store.filter((v) => v.tenantId === tenantId || tenantId === 'demo-logistics')),
   };
 }
 
 export async function getVehicleById(tenantId: string, id: string): Promise<Vehicle | null> {
   const store = getVehiclesStore();
-  return store.find((v: string) => v.id === id && (v.tenantId === tenantId || tenantId === 'demo-logistics')) || null;
+  return store.find((v) => v.id === id && (v.tenantId === tenantId || tenantId === 'demo-logistics')) || null;
 }
 
 export async function getVehicleByNumber(tenantId: string, vehicleNumber: string): Promise<Vehicle | null> {
   const store = getVehiclesStore();
-  return store.find((v: string) => 
+  return store.find((v) => 
     v.vehicleNumber === vehicleNumber && 
     (v.tenantId === tenantId || tenantId === 'demo-logistics')
   ) || null;
@@ -78,14 +78,14 @@ export async function getVehicleByNumber(tenantId: string, vehicleNumber: string
 
 export async function getAvailableVehicles(tenantId: string, vehicleType?: VehicleType): Promise<Vehicle[]> {
   const store = getVehiclesStore();
-  let available = store.filter((v: string) => 
+  let available = store.filter((v) => 
     (v.tenantId === tenantId || tenantId === 'demo-logistics') &&
     v.status === 'AVAILABLE' &&
     v.isActive
   );
   
   if (vehicleType) {
-    available = available.filter((v: string) => v.vehicleType === vehicleType);
+    available = available.filter((v) => v.vehicleType === vehicleType);
   }
   
   return available;
@@ -103,7 +103,7 @@ export async function updateVehicleStatus(
   driverName?: string
 ): Promise<Vehicle | null> {
   const store = getVehiclesStore();
-  const index = store.findIndex((v: string) => 
+  const index = store.findIndex((v) => 
     v.id === vehicleId && 
     (v.tenantId === tenantId || tenantId === 'demo-logistics')
   );
@@ -140,7 +140,7 @@ export async function setVehicleMaintenance(
   reason?: string
 ): Promise<Vehicle | null> {
   const store = getVehiclesStore();
-  const index = store.findIndex((v: string) => 
+  const index = store.findIndex((v) => 
     v.id === vehicleId && 
     (v.tenantId === tenantId || tenantId === 'demo-logistics')
   );
@@ -209,12 +209,12 @@ interface FleetStats {
 }
 
 function calculateFleetStats(vehicles: Vehicle[]): FleetStats {
-  const active = vehicles.filter((v: string) => v.isActive);
-  const available = vehicles.filter((v: string) => v.status === 'AVAILABLE' && v.isActive);
-  const inUse = vehicles.filter((v: string) => v.status === 'IN_USE');
-  const maintenance = vehicles.filter((v: string) => v.status === 'MAINTENANCE');
-  const outOfService = vehicles.filter((v: string) => v.status === 'OUT_OF_SERVICE');
-  const reserved = vehicles.filter((v: string) => v.status === 'RESERVED');
+  const active = vehicles.filter((v) => v.isActive);
+  const available = vehicles.filter((v) => v.status === 'AVAILABLE' && v.isActive);
+  const inUse = vehicles.filter((v) => v.status === 'IN_USE');
+  const maintenance = vehicles.filter((v) => v.status === 'MAINTENANCE');
+  const outOfService = vehicles.filter((v) => v.status === 'OUT_OF_SERVICE');
+  const reserved = vehicles.filter((v) => v.status === 'RESERVED');
   
   // Calculate utilization (in-use / active)
   const utilizationRate = active.length > 0 
@@ -223,7 +223,7 @@ function calculateFleetStats(vehicles: Vehicle[]): FleetStats {
   
   // Group by type
   const byType: Record<string, number> = {};
-  vehicles.forEach((v: string) => {
+  vehicles.forEach((v) => {
     byType[v.vehicleType] = (byType[v.vehicleType] || 0) + 1;
   });
   
@@ -242,6 +242,6 @@ function calculateFleetStats(vehicles: Vehicle[]): FleetStats {
 
 export async function getFleetStats(tenantId: string): Promise<FleetStats> {
   const store = getVehiclesStore();
-  const filtered = store.filter((v: string) => v.tenantId === tenantId || tenantId === 'demo-logistics');
+  const filtered = store.filter((v) => v.tenantId === tenantId || tenantId === 'demo-logistics');
   return calculateFleetStats(filtered);
 }
