@@ -133,12 +133,12 @@ export async function createSubscription(
     })
     
     // Grant entitlements for included modules
-    for (const module of plan.includedModules) {
+    for (const moduleName of plan.includedModules) {
       await tx.entitlement.create({
         data: {
           tenantId: input.tenantId,
           subscriptionId: sub.id,
-          module,
+          module: moduleName,
           status: 'ACTIVE',
           validUntil: periodEnd,
           source: 'subscription'

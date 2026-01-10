@@ -148,13 +148,13 @@ export async function getModuleAccess(
   )
   
   // Check each requested module
-  for (const module of modules) {
-    const entitlement = entitlementMap.get(module)
+  for (const moduleName of modules) {
+    const entitlement = entitlementMap.get(moduleName)
     
     if (!entitlement) {
-      results[module] = {
+      results[moduleName] = {
         hasAccess: false,
-        module,
+        module: moduleName,
         status: null,
         validUntil: null,
         limits: null,
@@ -166,9 +166,9 @@ export async function getModuleAccess(
     const isActive = entitlement.status === 'ACTIVE'
     const isExpired = entitlement.validUntil && entitlement.validUntil < new Date()
     
-    results[module] = {
+    results[moduleName] = {
       hasAccess: isActive && !isExpired,
-      module,
+      module: moduleName,
       status: isExpired ? 'EXPIRED' : entitlement.status,
       validUntil: entitlement.validUntil,
       limits: entitlement.limits as Record<string, any> | null,
