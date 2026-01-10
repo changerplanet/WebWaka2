@@ -366,9 +366,12 @@ export class StockTransferService {
       },
       include: {
         inv_stock_transfer_items: true,
-        
-        
       },
+    });
+
+    // Fetch warehouse info
+    const fromWarehouse = await prisma.inv_warehouses.findUnique({
+      where: { id: updated.fromWarehouseId },
     });
 
     // Build inventory deltas for source location (DECREASE)
@@ -377,7 +380,7 @@ export class StockTransferService {
       .map(i => ({
         productId: i.productId,
         variantId: i.variantId || undefined,
-        locationId: updated.fromWarehouse.locationId,
+        locationId: fromWarehouse?.locationId,
         delta: -i.quantityShipped, // Negative = decrease
         reason: 'TRANSFER_OUT' as const,
       }));
@@ -390,7 +393,7 @@ export class StockTransferService {
         transferId: transfer.id,
         transferNumber: transfer.transferNumber,
         fromWarehouseId: transfer.fromWarehouseId,
-        fromLocationId: updated.fromWarehouse.locationId,
+        fromLocationId: fromWarehouse?.locationId,
         items: updated.inv_stock_transfer_items.map(i => ({
           productId: i.productId,
           variantId: i.variantId || undefined,
@@ -418,7 +421,7 @@ export class StockTransferService {
           tenantId,
           productId: item.productId,
           variantId: item.variantId,
-          locationId: updated.fromWarehouse.locationId,
+          warehouseId: updated.fromWarehouseId,
           reason: 'TRANSFER_OUT',
           quantity: -item.quantityShipped,
           quantityBefore: 0, // Would be populated from actual inventory lookup
