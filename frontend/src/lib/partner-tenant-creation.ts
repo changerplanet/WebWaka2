@@ -428,7 +428,7 @@ export async function getPendingTenantsByPartner(
     where: {
       partnerId,
       attributionMethod: 'PARTNER_CREATED',
-      tenant: {
+      Tenant: {
         status: 'PENDING_ACTIVATION'
       }
     },
@@ -437,7 +437,7 @@ export async function getPendingTenantsByPartner(
     }
   })
   
-  return referrals.map(r => r.tenant)
+  return referrals.map(r => r.Tenant)
 }
 
 /**
@@ -463,7 +463,7 @@ export async function getTenantsByPartner(
   }
   
   if (options?.status) {
-    where.tenant = { status: { in: options.status } }
+    where.Tenant = { status: { in: options.status } }
   }
   
   const [referrals, total] = await Promise.all([
@@ -480,7 +480,7 @@ export async function getTenantsByPartner(
   ])
   
   return {
-    tenants: referrals.map(r => r.tenant),
+    tenants: referrals.map(r => r.Tenant),
     total
   }
 }
