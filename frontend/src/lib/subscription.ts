@@ -338,7 +338,7 @@ export async function renewSubscription(
     })
     
     // Audit log
-    await tx.auditLog.create({
+    await (tx.auditLog.create as any)({
       data: {
         action: 'SUBSCRIPTION_RENEWED',
         actorId: 'system',
@@ -429,7 +429,7 @@ export async function cancelSubscription(
     }
     
     // Audit log
-    await tx.auditLog.create({
+    await (tx.auditLog.create as any)({
       data: {
         action: 'SUBSCRIPTION_CANCELLED',
         actorId: options?.actorId || 'system',
