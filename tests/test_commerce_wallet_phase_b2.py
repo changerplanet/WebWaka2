@@ -24,7 +24,7 @@ import uuid
 import os
 
 # Get base URL from environment
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://nextbuild-repair.preview.emergentagent.com').rstrip('/')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://prisma-next-fix.preview.emergentagent.com').rstrip('/')
 
 # Test tenant ID - unique per test run
 TEST_TENANT_ID = f"test-wallet-tenant-{uuid.uuid4().hex[:8]}"

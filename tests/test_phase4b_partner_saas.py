@@ -13,7 +13,7 @@ import pytest
 import requests
 import os
 
-BASE_URL = os.environ.get('NEXT_PUBLIC_APP_URL', 'https://nextbuild-repair.preview.emergentagent.com')
+BASE_URL = os.environ.get('NEXT_PUBLIC_APP_URL', 'https://prisma-next-fix.preview.emergentagent.com')
 
 
 class TestPartnerDashboardAPI:

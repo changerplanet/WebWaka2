@@ -1,881 +1,148 @@
 <analysis>**original_problem_statement**: The user's primary goal is to fix a failing production build (yarn run v1.22.22
-info Visit https://yarnpkg.com/en/docs/cli/run for documentation about this command.) for a Next.js application to unblock deployment to Vercel. The build is failing due to a cascade of hundreds of TypeScript type errors. These errors stem from a systemic mismatch between the application code (which often uses ) and the Prisma schema (which enforces  for models and has specific  or  for relations).
+info Visit https://yarnpkg.com/en/docs/cli/run for documentation about this command.) for a Next.js application to unblock deployment to Vercel. The build is failing due to a cascade of over a thousand TypeScript type errors. These errors stem from a systemic mismatch between the application code (which often uses ) and the Prisma schema (which enforces  for models and has specific  or  for relations). The user has dictated a highly structured, multi-phase remediation plan to resolve these issues systemically rather than one by one.
 
 **User's preferred language**: English
 
 **what currently exists?**
-The project has undergone a massive, multi-phase remediation effort dictated by the user.
-- **Phase 1 (Audit)**: A complete audit of all 1,300+ build errors was performed and reported.
-- **Phase 2 & 2.1 (Automation)**: A foundational helper, , was created in . A sophisticated AST-based script was developed and executed to automatically fix over 400 issues by correcting Prisma model names and wrapping , , and  calls with the new helper. This eliminated all mechanical, schema-enforcement errors that could be fixed without ambiguity.
-- **Phase 3 (Manual Cleanup)**: The agent is now in the middle of this phase, manually fixing the remaining, more complex type errors that require contextual understanding (e.g., incorrect relation names, property casing mismatches). The build is still failing.
+The project is in the middle of a massive, user-directed, batch-based remediation effort to fix a failing yarn run v1.22.22
+info Visit https://yarnpkg.com/en/docs/cli/run for documentation about this command.. The initial one-by-one manual fix approach was halted by the user in favor of a more structured, analytical process.
+
+Key progress includes:
+-   **Initial Audits**: Several audits were performed to classify thousands of TypeScript errors.
+-   **Automated Fixes**: Scripts were used to fix hundreds of structural and syntactical errors (e.g., missing parentheses in arrow functions, basic Prisma model name corrections).
+-   **Governance Actions**: Critical build blockers unrelated to the main type errors have been resolved, including disabling two API routes (, ) that referenced a non-existent  model and fixing two project-level ESLint errors.
+-   **Code Ownership Mapping**: A definitive analysis was completed to map all code to one of three layers: **Platform Foundation**, **Internal Shared Modules**, or **14 Canonical v2-FROZEN Suites**. This mapping now governs the entire remediation strategy.
+-   **Batch Remediation (Phase 2)**: The project is now in a strict, batch-based fixing process.
+    -   **Phase 2A (Foundation First)**: This phase focuses on fixing errors in Platform and Shared code before touching any of the 14 application suites.
+        -   **Batch 2A-1 (Platform Foundation)**: Completed, fixing 6 errors.
+        -   **Batch 2A-2 (Shared Modules - Round 1)**: Completed, fixing 15 errors related to  clauses.
+    -   The build is still failing with approximately 1,600 TypeScript errors.
 
 **Last working item**:
-- **Last item agent was working**: The agent is executing **Phase 3: Manual Edge Cleanup**. This involves a strict, iterative process: run yarn run v1.22.22
-info Visit https://yarnpkg.com/en/docs/cli/run for documentation about this command., identify the first blocking TypeScript error, apply a minimal manual fix based on the schema, and repeat. The last action was , correcting the  relation name in .
-- **Status**: IN PROGRESS
-- **Agent Testing Done**: N (The build is still failing. yarn run v1.22.22
-info Visit https://yarnpkg.com/en/docs/cli/run for documentation about this command. is being used as the primary testing/validation tool after each small fix.)
-- **Which testing method agent to use?**: Manual testing. The required process is to run yarn run v1.22.22
-$ yarn validate:schema
-$ node scripts/validation/validate-prisma-models.js
-[34m
-===========================================[0m
-[1m  PRISMA MODEL VALIDATION[0m
-[34m  Mode: CHECK[0m
-[34m===========================================
-[0m
-[34mStep 1: Reading Prisma schema...[0m
-[0m  Found 365 models in schema.prisma[0m
-[34m
-Step 2: Reading generated Prisma client...[0m
-[0m  Found 365 models in Prisma client[0m
-[34m
-Step 3: Scanning source files...[0m
-[0m  Found 1170 source files[0m
-[34m
-Step 4: Extracting Prisma model references...[0m
-[0m  Found 4336 Prisma model references[0m
-[34m
-Step 5: Validating model references...[0m
-[34m
-===========================================[0m
-[1m  VALIDATION RESULTS[0m
-[34m===========================================
-[0m
-[32m✓ No NEW Prisma model issues detected![0m
-[0m
-  Total references: 4336[0m
-[0m  Valid models: 365[0m
-[2m  Known legacy issues: 0 (baselined)[0m
-[0m
--------------------------------------------[0m
-[0mTotal files scanned: 1170[0m
-[0mTotal references: 4336[0m
-[0mValid models: 365[0m
-[2mBaselined issues: 1201[0m
-[0mNew issues: 0[0m
-[0m
-Report saved: /app/frontend/.prisma-validation-report.json[0m
-[34m
-===========================================
-[0m
-$ yarn validate:schema && next build
-$ node scripts/validation/validate-prisma-models.js
-[34m
-===========================================[0m
-[1m  PRISMA MODEL VALIDATION[0m
-[34m  Mode: CHECK[0m
-[34m===========================================
-[0m
-[34mStep 1: Reading Prisma schema...[0m
-[0m  Found 365 models in schema.prisma[0m
-[34m
-Step 2: Reading generated Prisma client...[0m
-[0m  Found 365 models in Prisma client[0m
-[34m
-Step 3: Scanning source files...[0m
-[0m  Found 1170 source files[0m
-[34m
-Step 4: Extracting Prisma model references...[0m
-[0m  Found 4336 Prisma model references[0m
-[34m
-Step 5: Validating model references...[0m
-[34m
-===========================================[0m
-[1m  VALIDATION RESULTS[0m
-[34m===========================================
-[0m
-[32m✓ No NEW Prisma model issues detected![0m
-[0m
-  Total references: 4336[0m
-[0m  Valid models: 365[0m
-[2m  Known legacy issues: 0 (baselined)[0m
-[0m
--------------------------------------------[0m
-[0mTotal files scanned: 1170[0m
-[0mTotal references: 4336[0m
-[0mValid models: 365[0m
-[2mBaselined issues: 1201[0m
-[0mNew issues: 0[0m
-[0m
-Report saved: /app/frontend/.prisma-validation-report.json[0m
-[34m
-===========================================
-[0m
-  ▲ Next.js 14.2.21
-  - Environments: .env
+-   **Last item agent was working**: The agent was executing **Batch 2A-3**, which focuses on fixing **Property Access (TS2339)** and **Type Assignment (TS2322)** errors within the **Internal Shared Modules** (Inventory, Procurement, Billing, CRM, etc.). The agent had analyzed the error patterns within this scope but had not yet created or run the remediation script.
+-   **Status**: IN PROGRESS
+-   **Agent Testing Done**: N
+-   **Which testing method agent to use?**: Manual testing. The mandated process is to create a batch remediation script, execute it, and then run 
+[41m                                                                               [0m
+[41m[37m                This is not the tsc command you are looking for                [0m
+[41m                                                                               [0m
 
-   Creating an optimized production build ...
-   Linting and checking validity of types ...
+To get access to the TypeScript compiler, [34mtsc[0m, from the command line either:
 
-./src/app/(auth)/signup-v2/page.tsx
-394:6  Warning: React Hook useEffect has missing dependencies: 'loading' and 'onVerify'. Either include them or remove the dependency array. If 'onVerify' changes too often, find the parent component that defines it and wrap that definition in useCallback.  react-hooks/exhaustive-deps
-
-./src/app/admin/capabilities/page.tsx
-84:6  Warning: React Hook useEffect has a missing dependency: 'fetchCapabilities'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-
-./src/app/admin/errors/page.tsx
-63:6  Warning: React Hook useEffect has a missing dependency: 'loadErrors'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-
-./src/app/admin/page.tsx
-59:6  Warning: React Hook useEffect has a missing dependency: 'checkAuth'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-67:6  Warning: React Hook useEffect has a missing dependency: 'fetchTenants'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-
-./src/app/admin/partners/governance/audit/page.tsx
-39:6  Warning: React Hook useEffect has a missing dependency: 'loadAuditData'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-
-./src/app/admin/partners/governance/inspection/page.tsx
-52:6  Warning: React Hook useEffect has a missing dependency: 'loadAuditData'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-
-./src/app/admin/partners/governance/page.tsx
-55:6  Warning: React Hook useEffect has a missing dependency: 'checkAuthAndLoadData'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-
-./src/app/admin/partners/page.tsx
-99:6  Warning: React Hook useEffect has a missing dependency: 'loadPartners'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-106:6  Warning: React Hook useEffect has a missing dependency: 'loadPartners'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-
-./src/app/admin/tenants/[id]/page.tsx
-58:6  Warning: React Hook useEffect has a missing dependency: 'fetchTenantDetails'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-
-./src/app/admin/users/page.tsx
-74:6  Warning: React Hook useEffect has a missing dependency: 'checkAuth'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-80:6  Warning: React Hook useEffect has a missing dependency: 'fetchUsers'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-
-./src/app/civic/constituents/page.tsx
-87:6  Warning: React Hook useEffect has a missing dependency: 'fetchConstituents'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-
-./src/app/dashboard/accounting/page.tsx
-66:6  Warning: React Hook useEffect has a missing dependency: 'fetchDashboardData'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-
-./src/app/dashboard/analytics/page.tsx
-91:6  Warning: React Hook useEffect has a missing dependency: 'initializeAndFetch'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-
-./src/app/dashboard/page.tsx
-53:6  Warning: React Hook useEffect has a missing dependency: 'fetchActiveCapabilities'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-
-./src/app/dashboard/partner/clients/page.tsx
-29:6  Warning: React Hook useEffect has a missing dependency: 'fetchPartnerInfo'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-
-./src/app/dashboard/payments/page.tsx
-89:6  Warning: React Hook useEffect has a missing dependency: 'initializeAndFetch'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-
-./src/app/dashboard/platform-instances/page.tsx
-54:6  Warning: React Hook useEffect has a missing dependency: 'fetchData'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-
-./src/app/dashboard/settings/page.tsx
-55:6  Warning: React Hook useEffect has a missing dependency: 'fetchData'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-
-./src/app/education/students/page.tsx
-77:6  Warning: React Hook useEffect has a missing dependency: 'fetchStudents'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-
-./src/app/hospitality/folios/page.tsx
-133:6  Warning: React Hook useEffect has a missing dependency: 'fetchFolios'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-
-./src/app/hospitality/guests/page.tsx
-107:6  Warning: React Hook useEffect has a missing dependency: 'fetchGuests'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-
-./src/app/hospitality/housekeeping/page.tsx
-106:6  Warning: React Hook useEffect has a missing dependency: 'fetchTasks'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-
-./src/app/hospitality/reservations/page.tsx
-120:6  Warning: React Hook useEffect has a missing dependency: 'fetchReservations'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-
-./src/app/legal-practice-suite/matters/page.tsx
-212:6  Warning: React Hook useEffect has a missing dependency: 'templates.length'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-
-./src/app/logistics-suite/drivers/page.tsx
-100:6  Warning: React Hook useEffect has a missing dependency: 'fetchDrivers'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-
-./src/app/logistics-suite/fleet/page.tsx
-98:6  Warning: React Hook useEffect has a missing dependency: 'fetchVehicles'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-
-./src/app/logistics-suite/jobs/page.tsx
-134:6  Warning: React Hook useEffect has a missing dependency: 'fetchJobs'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-
-./src/app/partner/audit/page.tsx
-60:6  Warning: React Hook useEffect has a missing dependency: 'checkAuthAndFetchData'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-70:6  Warning: React Hook useEffect has missing dependencies: 'fetchActivityReport' and 'fetchAuditLogs'. Either include them or remove the dependency array.  react-hooks/exhaustive-deps
-
-./src/app/partner/earnings/page.tsx
-79:6  Warning: React Hook useEffect has a missing dependency: 'checkAuthAndFetchData'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-85:6  Warning: React Hook useEffect has a missing dependency: 'fetchPerformance'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-
-./src/app/partner/page.tsx
-101:6  Warning: React Hook useEffect has a missing dependency: 'checkAuthAndFetchDashboard'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-
-./src/app/partner/referrals/page.tsx
-51:6  Warning: React Hook useEffect has a missing dependency: 'checkAuthAndFetchData'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-57:6  Warning: React Hook useEffect has a missing dependency: 'fetchReferrals'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-
-./src/app/partner-portal/funnels/[funnelId]/editor/page.tsx
-110:6  Warning: React Hook useEffect has a missing dependency: 'fetchFunnel'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-
-./src/app/partner-portal/page.tsx
-162:6  Warning: React Hook useEffect has a missing dependency: 'fetchSession'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-168:6  Warning: React Hook useEffect has a missing dependency: 'fetchPartnerData'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-
-./src/app/partner-portal/sites/[siteId]/editor/page.tsx
-100:6  Warning: React Hook useEffect has a missing dependency: 'fetchSite'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-
-./src/app/pos/page.tsx
-48:6  Warning: React Hook useEffect has a missing dependency: 'refreshProducts'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-
-./src/app/select-tenant/page.tsx
-30:6  Warning: React Hook useEffect has a missing dependency: 'fetchSession'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-
-./src/components/AuthProvider.tsx
-212:6  Warning: React Hook useCallback has missing dependencies: 'fetchInstances' and 'switchTenantInternal'. Either include them or remove the dependency array.  react-hooks/exhaustive-deps
-251:6  Warning: React Hook useCallback has a missing dependency: 'switchTenantInternal'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-299:6  Warning: React Hook useEffect has a missing dependency: 'refreshSession'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-310:6  Warning: React Hook useEffect has a missing dependency: 'switchTenantInternal'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-
-./src/components/DomainManagement.tsx
-37:6  Warning: React Hook useEffect has a missing dependency: 'fetchDomains'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-
-./src/components/IntentSuggestionsPanel.tsx
-96:6  Warning: React Hook useEffect has a missing dependency: 'fetchSuggestions'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-
-./src/components/MemberManagement.tsx
-38:6  Warning: React Hook useEffect has a missing dependency: 'fetchMembers'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-
-./src/components/OfflineStatus.tsx
-23:6  Warning: React Hook useEffect has a missing dependency: 'handleSync'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-
-./src/components/mvm/MVMProvider.tsx
-311:6  Warning: React Hook useCallback has a missing dependency: 'vendorId'. Either include it or remove the dependency array. You can also replace multiple useState variables with useReducer if 'setDashboard' needs the current value of 'vendorId'.  react-hooks/exhaustive-deps
-
-./src/components/partner/ClientManagement.tsx
-63:6  Warning: React Hook useEffect has a missing dependency: 'fetchClients'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-
-./src/components/platform-instance/DomainInstanceMapping.tsx
-55:6  Warning: React Hook useEffect has a missing dependency: 'fetchDomains'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-
-./src/components/platform-instance/InstanceAdminPage.tsx
-96:6  Warning: React Hook useEffect has a missing dependency: 'fetchInstances'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-450:6  Warning: React Hook useEffect has a missing dependency: 'slug'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-
-./src/components/pos/POSProvider.tsx
-207:6  Warning: React Hook useEffect has a missing dependency: 'state.cart'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-217:6  Warning: React Hook useEffect has a missing dependency: 'fetchLocations'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-406:6  Warning: React Hook useCallback has a missing dependency: 'removeFromCart'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-562:6  Warning: React Hook useEffect has missing dependencies: 'state.pendingTransactions' and 'syncOfflineTransactions'. Either include them or remove the dependency array.  react-hooks/exhaustive-deps
-
-./src/components/svm/SVMProvider.tsx
-363:6  Warning: React Hook useEffect has a missing dependency: 'cart'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-
-info  - Need to disable some ESLint rules? Learn more here: https://nextjs.org/docs/basic-features/eslint#disabling-rules
-info Visit https://yarnpkg.com/en/docs/cli/run for documentation about this command., analyze the first error, and apply a fix. This cycle repeats until the build succeeds.
-- **User Testing Done**: N
+- Use [1mnpm install typescript[0m to first add TypeScript to your project [1mbefore[0m using npx
+- Use [1myarn[0m to avoid accidentally running code from un-installed packages to verify the error reduction. The final validation for each phase is a full yarn run v1.22.22
+info Visit https://yarnpkg.com/en/docs/cli/run for documentation about this command..
+-   **User Testing Done**: N
 
 **All Pending/In progress Issue list**:
-- **Issue 1: Deployment Build Failure (P0)**
-  - **Description**: The yarn run v1.22.22
-info Visit https://yarnpkg.com/en/docs/cli/run for documentation about this command. command is still failing with 624 TypeScript errors across 72 files, preventing deployment. The initial Prisma schema enforcement errors (missing uid=0(root) gid=0(root) groups=0(root)/, incorrect model names) are almost entirely resolved. The remaining errors are complex type mismatches, mostly related to incorrect relation names in  clauses and incorrect property casing ( vs ).
-  - **Attempted fixes**: An extensive, multi-phase remediation was executed. Phases 1 and 2 involved automated auditing and fixing via an AST script, which resolved ~50% of the initial errors. The agent is now in Phase 3, fixing the remaining errors manually, one by one. This has been a long and arduous process of identifying and correcting nuanced errors that automation could not handle.
-  - **Next debug checklist**: Continue the user-mandated Phase 3 process without deviation:
-    1. Run yarn run v1.22.22
-$ yarn validate:schema
-$ node scripts/validation/validate-prisma-models.js
-[34m
-===========================================[0m
-[1m  PRISMA MODEL VALIDATION[0m
-[34m  Mode: CHECK[0m
-[34m===========================================
-[0m
-[34mStep 1: Reading Prisma schema...[0m
-[0m  Found 365 models in schema.prisma[0m
-[34m
-Step 2: Reading generated Prisma client...[0m
-[0m  Found 365 models in Prisma client[0m
-[34m
-Step 3: Scanning source files...[0m
-[0m  Found 1170 source files[0m
-[34m
-Step 4: Extracting Prisma model references...[0m
-[0m  Found 4336 Prisma model references[0m
-[34m
-Step 5: Validating model references...[0m
-[34m
-===========================================[0m
-[1m  VALIDATION RESULTS[0m
-[34m===========================================
-[0m
-[32m✓ No NEW Prisma model issues detected![0m
-[0m
-  Total references: 4336[0m
-[0m  Valid models: 365[0m
-[2m  Known legacy issues: 0 (baselined)[0m
-[0m
--------------------------------------------[0m
-[0mTotal files scanned: 1170[0m
-[0mTotal references: 4336[0m
-[0mValid models: 365[0m
-[2mBaselined issues: 1201[0m
-[0mNew issues: 0[0m
-[0m
-Report saved: /app/frontend/.prisma-validation-report.json[0m
-[34m
-===========================================
-[0m
-$ yarn validate:schema && next build
-$ node scripts/validation/validate-prisma-models.js
-[34m
-===========================================[0m
-[1m  PRISMA MODEL VALIDATION[0m
-[34m  Mode: CHECK[0m
-[34m===========================================
-[0m
-[34mStep 1: Reading Prisma schema...[0m
-[0m  Found 365 models in schema.prisma[0m
-[34m
-Step 2: Reading generated Prisma client...[0m
-[0m  Found 365 models in Prisma client[0m
-[34m
-Step 3: Scanning source files...[0m
-[0m  Found 1170 source files[0m
-[34m
-Step 4: Extracting Prisma model references...[0m
-[0m  Found 4336 Prisma model references[0m
-[34m
-Step 5: Validating model references...[0m
-[34m
-===========================================[0m
-[1m  VALIDATION RESULTS[0m
-[34m===========================================
-[0m
-[32m✓ No NEW Prisma model issues detected![0m
-[0m
-  Total references: 4336[0m
-[0m  Valid models: 365[0m
-[2m  Known legacy issues: 0 (baselined)[0m
-[0m
--------------------------------------------[0m
-[0mTotal files scanned: 1170[0m
-[0mTotal references: 4336[0m
-[0mValid models: 365[0m
-[2mBaselined issues: 1201[0m
-[0mNew issues: 0[0m
-[0m
-Report saved: /app/frontend/.prisma-validation-report.json[0m
-[34m
-===========================================
-[0m
-  ▲ Next.js 14.2.21
-  - Environments: .env
-
-   Creating an optimized production build ...
-   Linting and checking validity of types ...
-
-./src/app/(auth)/signup-v2/page.tsx
-394:6  Warning: React Hook useEffect has missing dependencies: 'loading' and 'onVerify'. Either include them or remove the dependency array. If 'onVerify' changes too often, find the parent component that defines it and wrap that definition in useCallback.  react-hooks/exhaustive-deps
-
-./src/app/admin/capabilities/page.tsx
-84:6  Warning: React Hook useEffect has a missing dependency: 'fetchCapabilities'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-
-./src/app/admin/errors/page.tsx
-63:6  Warning: React Hook useEffect has a missing dependency: 'loadErrors'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-
-./src/app/admin/page.tsx
-59:6  Warning: React Hook useEffect has a missing dependency: 'checkAuth'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-67:6  Warning: React Hook useEffect has a missing dependency: 'fetchTenants'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-
-./src/app/admin/partners/governance/audit/page.tsx
-39:6  Warning: React Hook useEffect has a missing dependency: 'loadAuditData'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-
-./src/app/admin/partners/governance/inspection/page.tsx
-52:6  Warning: React Hook useEffect has a missing dependency: 'loadAuditData'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-
-./src/app/admin/partners/governance/page.tsx
-55:6  Warning: React Hook useEffect has a missing dependency: 'checkAuthAndLoadData'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-
-./src/app/admin/partners/page.tsx
-99:6  Warning: React Hook useEffect has a missing dependency: 'loadPartners'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-106:6  Warning: React Hook useEffect has a missing dependency: 'loadPartners'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-
-./src/app/admin/tenants/[id]/page.tsx
-58:6  Warning: React Hook useEffect has a missing dependency: 'fetchTenantDetails'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-
-./src/app/admin/users/page.tsx
-74:6  Warning: React Hook useEffect has a missing dependency: 'checkAuth'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-80:6  Warning: React Hook useEffect has a missing dependency: 'fetchUsers'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-
-./src/app/civic/constituents/page.tsx
-87:6  Warning: React Hook useEffect has a missing dependency: 'fetchConstituents'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-
-./src/app/dashboard/accounting/page.tsx
-66:6  Warning: React Hook useEffect has a missing dependency: 'fetchDashboardData'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-
-./src/app/dashboard/analytics/page.tsx
-91:6  Warning: React Hook useEffect has a missing dependency: 'initializeAndFetch'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-
-./src/app/dashboard/page.tsx
-53:6  Warning: React Hook useEffect has a missing dependency: 'fetchActiveCapabilities'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-
-./src/app/dashboard/partner/clients/page.tsx
-29:6  Warning: React Hook useEffect has a missing dependency: 'fetchPartnerInfo'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-
-./src/app/dashboard/payments/page.tsx
-89:6  Warning: React Hook useEffect has a missing dependency: 'initializeAndFetch'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-
-./src/app/dashboard/platform-instances/page.tsx
-54:6  Warning: React Hook useEffect has a missing dependency: 'fetchData'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-
-./src/app/dashboard/settings/page.tsx
-55:6  Warning: React Hook useEffect has a missing dependency: 'fetchData'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-
-./src/app/education/students/page.tsx
-77:6  Warning: React Hook useEffect has a missing dependency: 'fetchStudents'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-
-./src/app/hospitality/folios/page.tsx
-133:6  Warning: React Hook useEffect has a missing dependency: 'fetchFolios'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-
-./src/app/hospitality/guests/page.tsx
-107:6  Warning: React Hook useEffect has a missing dependency: 'fetchGuests'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-
-./src/app/hospitality/housekeeping/page.tsx
-106:6  Warning: React Hook useEffect has a missing dependency: 'fetchTasks'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-
-./src/app/hospitality/reservations/page.tsx
-120:6  Warning: React Hook useEffect has a missing dependency: 'fetchReservations'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-
-./src/app/legal-practice-suite/matters/page.tsx
-212:6  Warning: React Hook useEffect has a missing dependency: 'templates.length'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-
-./src/app/logistics-suite/drivers/page.tsx
-100:6  Warning: React Hook useEffect has a missing dependency: 'fetchDrivers'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-
-./src/app/logistics-suite/fleet/page.tsx
-98:6  Warning: React Hook useEffect has a missing dependency: 'fetchVehicles'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-
-./src/app/logistics-suite/jobs/page.tsx
-134:6  Warning: React Hook useEffect has a missing dependency: 'fetchJobs'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-
-./src/app/partner/audit/page.tsx
-60:6  Warning: React Hook useEffect has a missing dependency: 'checkAuthAndFetchData'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-70:6  Warning: React Hook useEffect has missing dependencies: 'fetchActivityReport' and 'fetchAuditLogs'. Either include them or remove the dependency array.  react-hooks/exhaustive-deps
-
-./src/app/partner/earnings/page.tsx
-79:6  Warning: React Hook useEffect has a missing dependency: 'checkAuthAndFetchData'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-85:6  Warning: React Hook useEffect has a missing dependency: 'fetchPerformance'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-
-./src/app/partner/page.tsx
-101:6  Warning: React Hook useEffect has a missing dependency: 'checkAuthAndFetchDashboard'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-
-./src/app/partner/referrals/page.tsx
-51:6  Warning: React Hook useEffect has a missing dependency: 'checkAuthAndFetchData'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-57:6  Warning: React Hook useEffect has a missing dependency: 'fetchReferrals'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-
-./src/app/partner-portal/funnels/[funnelId]/editor/page.tsx
-110:6  Warning: React Hook useEffect has a missing dependency: 'fetchFunnel'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-
-./src/app/partner-portal/page.tsx
-162:6  Warning: React Hook useEffect has a missing dependency: 'fetchSession'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-168:6  Warning: React Hook useEffect has a missing dependency: 'fetchPartnerData'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-
-./src/app/partner-portal/sites/[siteId]/editor/page.tsx
-100:6  Warning: React Hook useEffect has a missing dependency: 'fetchSite'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-
-./src/app/pos/page.tsx
-48:6  Warning: React Hook useEffect has a missing dependency: 'refreshProducts'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-
-./src/app/select-tenant/page.tsx
-30:6  Warning: React Hook useEffect has a missing dependency: 'fetchSession'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-
-./src/components/AuthProvider.tsx
-212:6  Warning: React Hook useCallback has missing dependencies: 'fetchInstances' and 'switchTenantInternal'. Either include them or remove the dependency array.  react-hooks/exhaustive-deps
-251:6  Warning: React Hook useCallback has a missing dependency: 'switchTenantInternal'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-299:6  Warning: React Hook useEffect has a missing dependency: 'refreshSession'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-310:6  Warning: React Hook useEffect has a missing dependency: 'switchTenantInternal'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-
-./src/components/DomainManagement.tsx
-37:6  Warning: React Hook useEffect has a missing dependency: 'fetchDomains'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-
-./src/components/IntentSuggestionsPanel.tsx
-96:6  Warning: React Hook useEffect has a missing dependency: 'fetchSuggestions'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-
-./src/components/MemberManagement.tsx
-38:6  Warning: React Hook useEffect has a missing dependency: 'fetchMembers'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-
-./src/components/OfflineStatus.tsx
-23:6  Warning: React Hook useEffect has a missing dependency: 'handleSync'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-
-./src/components/mvm/MVMProvider.tsx
-311:6  Warning: React Hook useCallback has a missing dependency: 'vendorId'. Either include it or remove the dependency array. You can also replace multiple useState variables with useReducer if 'setDashboard' needs the current value of 'vendorId'.  react-hooks/exhaustive-deps
-
-./src/components/partner/ClientManagement.tsx
-63:6  Warning: React Hook useEffect has a missing dependency: 'fetchClients'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-
-./src/components/platform-instance/DomainInstanceMapping.tsx
-55:6  Warning: React Hook useEffect has a missing dependency: 'fetchDomains'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-
-./src/components/platform-instance/InstanceAdminPage.tsx
-96:6  Warning: React Hook useEffect has a missing dependency: 'fetchInstances'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-450:6  Warning: React Hook useEffect has a missing dependency: 'slug'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-
-./src/components/pos/POSProvider.tsx
-207:6  Warning: React Hook useEffect has a missing dependency: 'state.cart'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-217:6  Warning: React Hook useEffect has a missing dependency: 'fetchLocations'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-406:6  Warning: React Hook useCallback has a missing dependency: 'removeFromCart'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-562:6  Warning: React Hook useEffect has missing dependencies: 'state.pendingTransactions' and 'syncOfflineTransactions'. Either include them or remove the dependency array.  react-hooks/exhaustive-deps
-
-./src/components/svm/SVMProvider.tsx
-363:6  Warning: React Hook useEffect has a missing dependency: 'cart'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-
-info  - Need to disable some ESLint rules? Learn more here: https://nextjs.org/docs/basic-features/eslint#disabling-rules
-info Visit https://yarnpkg.com/en/docs/cli/run for documentation about this command..
-    2. Analyze the *first* blocking TypeScript error from the output.
-    3. Cross-reference the failing code with  to determine the correct relation name, type, or property casing.
-    4. Apply the most minimal, targeted fix possible.
-    5. Repeat the cycle until yarn run v1.22.22
-info Visit https://yarnpkg.com/en/docs/cli/run for documentation about this command. passes.
-  - **Why fix this issue and what will be achieved with the fix?**: A successful build is the sole blocker for deploying the application.
-  - **Status**: IN PROGRESS
-  - **Is recurring issue?**: Y (The entire session has been dedicated to resolving a series of cascading build errors stemming from the same root causes.)
-  - **Should Test frontend/backend/both after fix?**: Frontend. The only success criterion is a passing yarn run v1.22.22
-info Visit https://yarnpkg.com/en/docs/cli/run for documentation about this command..
+-   **Issue 1: Deployment Build Failure (P0)**
+    -   **Description**: The yarn run v1.22.22
+info Visit https://yarnpkg.com/en/docs/cli/run for documentation about this command. command is still failing with ~1600 TypeScript errors across the codebase, preventing deployment. The errors are now being addressed in a highly structured, batch-based process defined by the user.
+    -   **Attempted fixes**: An extensive, multi-phase remediation has been executed, moving from chaotic one-by-one fixes to systematic, batch-based remediation guided by code ownership layers. Multiple automated scripts have successfully reduced the error count and resolved critical, isolated blockers.
+    -   **Next debug checklist**: Continue executing the user-mandated **Phase 2 Batch Remediation** plan. The immediate next step is to create and run the script for **Batch 2A-3**.
+    -   **Why fix this issue and what will be achieved with the fix?**: A successful yarn run v1.22.22
+info Visit https://yarnpkg.com/en/docs/cli/run for documentation about this command. is the sole blocker for deploying the entire application.
+    -   **Status**: IN PROGRESS
+    -   **Is recurring issue?**: Y (This is the central issue of the entire multi-fork job).
+    -   **Should Test frontend/backend/both after fix?**: Frontend (build process).
 
 **In progress Task List**:
-- **Task 1: Complete Phase 3: Manual Edge Cleanup (P0)**
-  - **Where to resume**: The last action was . The next agent must examine the build output from message #726 to identify the next blocking TypeScript error and continue the fix-and-rebuild cycle.
-  - **What will be achieved with this?**: A successful production build, finally unblocking the application for deployment.
-  - **Status**: IN PROGRESS
-  - **Should Test frontend/backend/both after fix?**: N/A (Testing is the build process itself).
-  - **Blocked on something**: Nothing. This is the primary task.
+-   **Task 1: Complete Phase 2A: Platform & Shared Modules Remediation (P0)**
+    -   **Where to resume**: The agent needs to create and execute the remediation script for **Batch 2A-3**, targeting  and  errors within the defined scope of Internal Shared Modules. The analysis has already been done.
+    -   **What will be achieved with this?**: This will fix another class of errors in foundational code, reducing error propagation into the canonical suites and moving one step closer to a stable base for the final phase of remediation.
+    -   **Status**: IN PROGRESS
+    -   **Should Test frontend/backend/both after fix?**: Frontend (build process).
+    -   **Blocked on something**: Nothing. Awaiting execution of the next authorized batch.
 
 **Upcoming and Future Tasks**
-- **Upcoming Tasks:**
-  - **P0: Phase 4: Verification**: Once the build finally passes, this final verification step will be required.
-  - **P1: Authorize Phase 2 — Partner Domain Attachment**: A feature pending the successful deployment.
-- **Future Tasks:**
-  - **Code Quality Hardening**: Address the ~600+ non-blocking TypeScript issues (e.g., implicit , lint warnings) that were explicitly deferred by the user.
-  - **PHASE E3: Guided Demo Tours (ALL SUITES)**: A backlog feature request.
+-   **Upcoming Tasks:**
+    -   **P0: Complete any remaining Phase 2A batches**: Address all error classes within Platform Foundation and Internal Shared Modules until they are clean.
+    -   **P0: Phase 2B: Canonical Suite Remediation**: After Phase 2A is complete, begin fixing the 14 Canonical Suites one by one, in the priority order specified by the user (starting with Quick-Fix Suites like Project Management and Education).
+    -   **P1: Phase 4: Verification**: Once the build finally passes, perform final verification.
+-   **Future Tasks:**
+    -   **Code Quality Hardening**: Address the hundreds of non-blocking TypeScript issues (e.g., implicit , lint warnings) that were explicitly deferred.
+    -   **Re-enable Education Routes**: Re-implement the  and  routes with a proper, governance-approved data model, removing the  stubs.
+    -   **PHASE E3: Guided Demo Tours (ALL SUITES)**: A backlog feature request.
 
 **Completed work in this session**
-- **Phase 1: Dry-Run Audit**: Analyzed and reported over 1,300 initial build errors.
-- **Phase 2 & 2.1: Automated Remediation**:
-  - Created a foundational helper at  to standardize create operations.
-  - Developed and executed an AST-based script () that programmatically fixed **404** issues by correcting Prisma model names and wrapping , , and  calls with the new helper. This eliminated nearly all mechanical Prisma schema enforcement errors.
-- **Phase 3: Manual Edge Cleanup (In Progress)**:
-  - Manually fixed the ambiguous Prisma case skipped by the AST script.
-  - Manually fixed over 28 distinct, complex TypeScript errors related to incorrect relation names, property casing, and type mismatches that were blocking the build.
+-   **Phase 1 & 1.5 (Suite Audits)**: Performed a comprehensive analysis to correctly map all TypeScript errors to their code ownership layer (Platform, Shared Module, or Canonical Suite), creating the foundational strategy for batch remediation.
+-   ** Model Governance Action**: Resolved a hard build blocker by deactivating two API routes (, ) that referenced a non-existent  model.
+-   **ESLint Build Unblock**: Fixed two project-level ESLint errors () that were blocking the build after Prisma validation was fixed.
+-   **Phase 2A (Batch Remediation)**:
+    -   **Batch 2A-1 (Platform Foundation)**: Executed a script to fix 6 errors in core platform code.
+    -   **Batch 2A-2 (Shared Modules)**: Executed a script to fix 15 errors in internal shared modules like Billing and CRM.
 
 **Earlier issues found/mentioned but not fixed**
-- **Issue 1: Build Warnings**: The build log contains non-blocking warnings for  and . These are low-priority and can be addressed after the build is fixed.
-- **Issue 2: Non-Blocking Type Errors**: Approximately 600+ TypeScript issues (like implicit  types) remain. The user has explicitly marked these as out-of-scope for the current remediation and will be handled in a future quality hardening track.
+-   **Build Warnings**: Non-blocking warnings for  and  are still present but are low-priority.
+-   **Non-Blocking Type Errors**: Hundreds of non-blocking TypeScript errors and lint warnings remain. The user has explicitly marked these as out-of-scope until the build passes.
 
 **Known issue recurrence from previous fork**
-- None.
+-   None.
 
 **Code Architecture**
 
 
 **Key Technical Concepts**
-- **Prisma Naming Conventions**: The core issue is the conflict between  model names and inconsistent / relation names in the schema vs. the  usage in the legacy codebase.
-- **AST (Abstract Syntax Tree) Transformation**: A TypeScript AST-based script was the key to the successful automated remediation in Phase 2, allowing for safe and deterministic code modification.
-- **Foundational Helper Abstraction**: The  helper was introduced as a non-negotiable standard for all new data creation to prevent future regressions of missing required fields.
-- **User-Mandated Phased Remediation**: The entire session has been governed by a strict, multi-phase plan dictated by the user, transitioning from broad automation to highly controlled, surgical manual fixes.
+-   **Batch Remediation**: The core strategy. Fixes are no longer applied file-by-file but in batches based on error class and code ownership.
+-   **Code Ownership Layers**: All code is classified into three distinct layers that dictate the remediation order:
+    1.  **Platform Foundation** (Fix First)
+    2.  **Internal Shared Modules** (Fix Second)
+    3.  **Canonical Suites** (Fix Last)
+-   **Prisma Naming Conventions**: The root cause of the issues is the conflict between  model names in  and inconsistent usage in the application code.
+-   **AST (Abstract Syntax Tree) Transformation**: Scripts that parse and modify code programmatically are the primary tool for applying batch fixes.
 
 **key DB schema**
-- **Prisma Schema**: The file  is the absolute source of truth. All manual fixes must be validated against the model and relation names defined in this file.
+-   The file  is the absolute source of truth for all database models, relations, and naming conventions. All fixes must conform to this schema.
 
 **changes in tech stack**
-- None.
+-   None.
 
 **All files of reference**
-- : **CRITICAL**. Must be consulted for every manual fix to verify correct model and relation names.
-- : The foundational helper function.
-- : The AST script used for the automated phase.
-- : The final report from the automation phase, detailing what was fixed and what remained.
+-   **/app/frontend/prisma/schema.prisma**: The single source of truth for all data models.
+-   **/app/frontend/docs/**: Contains all critical audit and remediation reports created during the job. Key reports include:
+    -    (Defines the current strategy)
+    -   
+    -   
+-   **/app/frontend/scripts/**: Contains all remediation scripts created so far (e.g., , ).
 
 **Critical Info for New Agent**
-- **You are continuing Phase 3: Manual Edge Cleanup.** Your sole focus is to get yarn run v1.22.22
-info Visit https://yarnpkg.com/en/docs/cli/run for documentation about this command. to pass.
-- **DO NOT AUTOMATE.** The user has explicitly forbidden further use of , scripts, or any other form of automation. All fixes from this point are manual, targeted, and minimal.
-- **Follow the mandated workflow:**
-  1. Run yarn run v1.22.22
-$ yarn validate:schema
-$ node scripts/validation/validate-prisma-models.js
-[34m
-===========================================[0m
-[1m  PRISMA MODEL VALIDATION[0m
-[34m  Mode: CHECK[0m
-[34m===========================================
-[0m
-[34mStep 1: Reading Prisma schema...[0m
-[0m  Found 365 models in schema.prisma[0m
-[34m
-Step 2: Reading generated Prisma client...[0m
-[0m  Found 365 models in Prisma client[0m
-[34m
-Step 3: Scanning source files...[0m
-[0m  Found 1170 source files[0m
-[34m
-Step 4: Extracting Prisma model references...[0m
-[0m  Found 4336 Prisma model references[0m
-[34m
-Step 5: Validating model references...[0m
-[34m
-===========================================[0m
-[1m  VALIDATION RESULTS[0m
-[34m===========================================
-[0m
-[32m✓ No NEW Prisma model issues detected![0m
-[0m
-  Total references: 4336[0m
-[0m  Valid models: 365[0m
-[2m  Known legacy issues: 0 (baselined)[0m
-[0m
--------------------------------------------[0m
-[0mTotal files scanned: 1170[0m
-[0mTotal references: 4336[0m
-[0mValid models: 365[0m
-[2mBaselined issues: 1201[0m
-[0mNew issues: 0[0m
-[0m
-Report saved: /app/frontend/.prisma-validation-report.json[0m
-[34m
-===========================================
-[0m
-$ yarn validate:schema && next build
-$ node scripts/validation/validate-prisma-models.js
-[34m
-===========================================[0m
-[1m  PRISMA MODEL VALIDATION[0m
-[34m  Mode: CHECK[0m
-[34m===========================================
-[0m
-[34mStep 1: Reading Prisma schema...[0m
-[0m  Found 365 models in schema.prisma[0m
-[34m
-Step 2: Reading generated Prisma client...[0m
-[0m  Found 365 models in Prisma client[0m
-[34m
-Step 3: Scanning source files...[0m
-[0m  Found 1170 source files[0m
-[34m
-Step 4: Extracting Prisma model references...[0m
-[0m  Found 4336 Prisma model references[0m
-[34m
-Step 5: Validating model references...[0m
-[34m
-===========================================[0m
-[1m  VALIDATION RESULTS[0m
-[34m===========================================
-[0m
-[32m✓ No NEW Prisma model issues detected![0m
-[0m
-  Total references: 4336[0m
-[0m  Valid models: 365[0m
-[2m  Known legacy issues: 0 (baselined)[0m
-[0m
--------------------------------------------[0m
-[0mTotal files scanned: 1170[0m
-[0mTotal references: 4336[0m
-[0mValid models: 365[0m
-[2mBaselined issues: 1201[0m
-[0mNew issues: 0[0m
-[0m
-Report saved: /app/frontend/.prisma-validation-report.json[0m
-[34m
-===========================================
-[0m
-  ▲ Next.js 14.2.21
-  - Environments: .env
-
-   Creating an optimized production build ...
-   Linting and checking validity of types ...
-
-./src/app/(auth)/signup-v2/page.tsx
-394:6  Warning: React Hook useEffect has missing dependencies: 'loading' and 'onVerify'. Either include them or remove the dependency array. If 'onVerify' changes too often, find the parent component that defines it and wrap that definition in useCallback.  react-hooks/exhaustive-deps
-
-./src/app/admin/capabilities/page.tsx
-84:6  Warning: React Hook useEffect has a missing dependency: 'fetchCapabilities'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-
-./src/app/admin/errors/page.tsx
-63:6  Warning: React Hook useEffect has a missing dependency: 'loadErrors'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-
-./src/app/admin/page.tsx
-59:6  Warning: React Hook useEffect has a missing dependency: 'checkAuth'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-67:6  Warning: React Hook useEffect has a missing dependency: 'fetchTenants'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-
-./src/app/admin/partners/governance/audit/page.tsx
-39:6  Warning: React Hook useEffect has a missing dependency: 'loadAuditData'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-
-./src/app/admin/partners/governance/inspection/page.tsx
-52:6  Warning: React Hook useEffect has a missing dependency: 'loadAuditData'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-
-./src/app/admin/partners/governance/page.tsx
-55:6  Warning: React Hook useEffect has a missing dependency: 'checkAuthAndLoadData'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-
-./src/app/admin/partners/page.tsx
-99:6  Warning: React Hook useEffect has a missing dependency: 'loadPartners'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-106:6  Warning: React Hook useEffect has a missing dependency: 'loadPartners'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-
-./src/app/admin/tenants/[id]/page.tsx
-58:6  Warning: React Hook useEffect has a missing dependency: 'fetchTenantDetails'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-
-./src/app/admin/users/page.tsx
-74:6  Warning: React Hook useEffect has a missing dependency: 'checkAuth'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-80:6  Warning: React Hook useEffect has a missing dependency: 'fetchUsers'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-
-./src/app/civic/constituents/page.tsx
-87:6  Warning: React Hook useEffect has a missing dependency: 'fetchConstituents'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-
-./src/app/dashboard/accounting/page.tsx
-66:6  Warning: React Hook useEffect has a missing dependency: 'fetchDashboardData'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-
-./src/app/dashboard/analytics/page.tsx
-91:6  Warning: React Hook useEffect has a missing dependency: 'initializeAndFetch'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-
-./src/app/dashboard/page.tsx
-53:6  Warning: React Hook useEffect has a missing dependency: 'fetchActiveCapabilities'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-
-./src/app/dashboard/partner/clients/page.tsx
-29:6  Warning: React Hook useEffect has a missing dependency: 'fetchPartnerInfo'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-
-./src/app/dashboard/payments/page.tsx
-89:6  Warning: React Hook useEffect has a missing dependency: 'initializeAndFetch'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-
-./src/app/dashboard/platform-instances/page.tsx
-54:6  Warning: React Hook useEffect has a missing dependency: 'fetchData'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-
-./src/app/dashboard/settings/page.tsx
-55:6  Warning: React Hook useEffect has a missing dependency: 'fetchData'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-
-./src/app/education/students/page.tsx
-77:6  Warning: React Hook useEffect has a missing dependency: 'fetchStudents'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-
-./src/app/hospitality/folios/page.tsx
-133:6  Warning: React Hook useEffect has a missing dependency: 'fetchFolios'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-
-./src/app/hospitality/guests/page.tsx
-107:6  Warning: React Hook useEffect has a missing dependency: 'fetchGuests'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-
-./src/app/hospitality/housekeeping/page.tsx
-106:6  Warning: React Hook useEffect has a missing dependency: 'fetchTasks'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-
-./src/app/hospitality/reservations/page.tsx
-120:6  Warning: React Hook useEffect has a missing dependency: 'fetchReservations'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-
-./src/app/legal-practice-suite/matters/page.tsx
-212:6  Warning: React Hook useEffect has a missing dependency: 'templates.length'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-
-./src/app/logistics-suite/drivers/page.tsx
-100:6  Warning: React Hook useEffect has a missing dependency: 'fetchDrivers'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-
-./src/app/logistics-suite/fleet/page.tsx
-98:6  Warning: React Hook useEffect has a missing dependency: 'fetchVehicles'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-
-./src/app/logistics-suite/jobs/page.tsx
-134:6  Warning: React Hook useEffect has a missing dependency: 'fetchJobs'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-
-./src/app/partner/audit/page.tsx
-60:6  Warning: React Hook useEffect has a missing dependency: 'checkAuthAndFetchData'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-70:6  Warning: React Hook useEffect has missing dependencies: 'fetchActivityReport' and 'fetchAuditLogs'. Either include them or remove the dependency array.  react-hooks/exhaustive-deps
-
-./src/app/partner/earnings/page.tsx
-79:6  Warning: React Hook useEffect has a missing dependency: 'checkAuthAndFetchData'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-85:6  Warning: React Hook useEffect has a missing dependency: 'fetchPerformance'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-
-./src/app/partner/page.tsx
-101:6  Warning: React Hook useEffect has a missing dependency: 'checkAuthAndFetchDashboard'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-
-./src/app/partner/referrals/page.tsx
-51:6  Warning: React Hook useEffect has a missing dependency: 'checkAuthAndFetchData'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-57:6  Warning: React Hook useEffect has a missing dependency: 'fetchReferrals'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-
-./src/app/partner-portal/funnels/[funnelId]/editor/page.tsx
-110:6  Warning: React Hook useEffect has a missing dependency: 'fetchFunnel'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-
-./src/app/partner-portal/page.tsx
-162:6  Warning: React Hook useEffect has a missing dependency: 'fetchSession'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-168:6  Warning: React Hook useEffect has a missing dependency: 'fetchPartnerData'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-
-./src/app/partner-portal/sites/[siteId]/editor/page.tsx
-100:6  Warning: React Hook useEffect has a missing dependency: 'fetchSite'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-
-./src/app/pos/page.tsx
-48:6  Warning: React Hook useEffect has a missing dependency: 'refreshProducts'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-
-./src/app/select-tenant/page.tsx
-30:6  Warning: React Hook useEffect has a missing dependency: 'fetchSession'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-
-./src/components/AuthProvider.tsx
-212:6  Warning: React Hook useCallback has missing dependencies: 'fetchInstances' and 'switchTenantInternal'. Either include them or remove the dependency array.  react-hooks/exhaustive-deps
-251:6  Warning: React Hook useCallback has a missing dependency: 'switchTenantInternal'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-299:6  Warning: React Hook useEffect has a missing dependency: 'refreshSession'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-310:6  Warning: React Hook useEffect has a missing dependency: 'switchTenantInternal'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-
-./src/components/DomainManagement.tsx
-37:6  Warning: React Hook useEffect has a missing dependency: 'fetchDomains'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-
-./src/components/IntentSuggestionsPanel.tsx
-96:6  Warning: React Hook useEffect has a missing dependency: 'fetchSuggestions'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-
-./src/components/MemberManagement.tsx
-38:6  Warning: React Hook useEffect has a missing dependency: 'fetchMembers'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-
-./src/components/OfflineStatus.tsx
-23:6  Warning: React Hook useEffect has a missing dependency: 'handleSync'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-
-./src/components/mvm/MVMProvider.tsx
-311:6  Warning: React Hook useCallback has a missing dependency: 'vendorId'. Either include it or remove the dependency array. You can also replace multiple useState variables with useReducer if 'setDashboard' needs the current value of 'vendorId'.  react-hooks/exhaustive-deps
-
-./src/components/partner/ClientManagement.tsx
-63:6  Warning: React Hook useEffect has a missing dependency: 'fetchClients'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-
-./src/components/platform-instance/DomainInstanceMapping.tsx
-55:6  Warning: React Hook useEffect has a missing dependency: 'fetchDomains'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-
-./src/components/platform-instance/InstanceAdminPage.tsx
-96:6  Warning: React Hook useEffect has a missing dependency: 'fetchInstances'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-450:6  Warning: React Hook useEffect has a missing dependency: 'slug'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-
-./src/components/pos/POSProvider.tsx
-207:6  Warning: React Hook useEffect has a missing dependency: 'state.cart'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-217:6  Warning: React Hook useEffect has a missing dependency: 'fetchLocations'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-406:6  Warning: React Hook useCallback has a missing dependency: 'removeFromCart'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-562:6  Warning: React Hook useEffect has missing dependencies: 'state.pendingTransactions' and 'syncOfflineTransactions'. Either include them or remove the dependency array.  react-hooks/exhaustive-deps
-
-./src/components/svm/SVMProvider.tsx
-363:6  Warning: React Hook useEffect has a missing dependency: 'cart'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-
-info  - Need to disable some ESLint rules? Learn more here: https://nextjs.org/docs/basic-features/eslint#disabling-rules
-info Visit https://yarnpkg.com/en/docs/cli/run for documentation about this command..
-  2. Identify the **first** blocking error.
-  3. Fix **only** that error.
-  4. Repeat.
-- **Trust the Schema, Not the Code**: The remaining errors are due to the code being inconsistent with . The schema is the source of truth for all relation names and casing.
-- **No Scope Creep**: Do not fix anything that is not a blocking build error. Style cleanups, refactoring, and fixing non-blocking warnings are explicitly forbidden.
+-   **You are executing a strict, user-mandated batch remediation plan. DO NOT DEVIATE.**
+-   **NO one-by-one fixes.** All work must be done in governed batches, following the defined order.
+-   **Current Phase**: **Phase 2A**, focusing on fixing foundational code before touching any of the 14 application suites.
+-   **Current Batch**: You are starting **Batch 2A-3**, focused on fixing property access errors (, ) in the **Internal Shared Modules**.
+-   **Honor the Ownership Layers**: Do not mix fixes for Platform, Shared Modules, and Canonical Suites in the same batch. The current scope is **Internal Shared Modules ONLY**.
+-   **Hard Stop after each batch**: After completing and reporting on a batch, you MUST STOP and wait for the user's explicit authorization to proceed to the next one.
 
 **documents and test reports created in this job**
-- 
-- 
-- 
-- 
+-   /app/frontend/docs/SUITE_ERROR_MATRIX.md
+-   /app/frontend/docs/CANONICAL_SUITE_CODE_OWNERSHIP_MAP.md
+-   /app/frontend/docs/PHASE_2_BATCH_2A1_REPORT.md
+-   /app/frontend/docs/PHASE_2_BATCH_2A2_REPORT.md
+-   /app/frontend/docs/PHASE_3A_AST_REMEDIATION_REPORT.md
+-   /app/frontend/docs/PHASE_3B_SEMANTIC_ERROR_CLASSIFICATION.md
+-   /app/frontend/docs/PHASE_3C1_MECHANICAL_REMEDIATION_REPORT.md
+-   /app/frontend/docs/CONTACT_ROUTE_DEACTIVATION_REPORT.md
+-   /app/frontend/docs/ESLINT_BUILD_UNBLOCK_REPORT.md
 
 **Last 10 User Messages and any pending HUMAN messages**
-The user has acted as a technical director, providing a series of extremely precise, non-negotiable directives.
-- **Key Directives**: Mandated the phased approach, authorized each phase with strict constraints, forbade manual/sed fixes during automation, and finally authorized the current Phase 3: Manual Edge Cleanup.
-- **Last User Message**: The user acknowledged the completion of the automated phase (Phase B), confirmed the remaining errors were expected, and gave the final directive to proceed with Phase 3, outlining the strict manual one-by-one fix process. The agent has been following this directive since.
+The user's messages have been a series of formal, non-negotiable authorizations for specific, tightly-scoped remediation batches. The last user message explicitly authorized the agent to proceed with **Batch 2A-3**.
 
 **Project Health Check:**
-- **Broken**: Yes. The application cannot be built (yarn run v1.22.22
-info Visit https://yarnpkg.com/en/docs/cli/run for documentation about this command. fails), which blocks all deployments.
+-   **Broken**: Yes. The application cannot be built due to ~1,600 TypeScript errors, blocking all deployments.
 
 **3rd Party Integrations**
-- Supabase (PostgreSQL)
-- Prisma ORM
-- Vercel
+-   Supabase (PostgreSQL)
+-   Prisma ORM
+-   Vercel
 
 **Testing status**
-- **Testing agent used after significant changes**: NO
-- **Troubleshoot agent used after agent stuck in loop**: NO
-- **Test files created**: None.
-- **Known regressions**: The automation phase initially introduced some regressions (e.g., incorrect  replacements), which were manually identified and corrected. This highlights the need for the current cautious, one-by-one approach.
+-   **Testing agent used after significant changes**: NO
+-   **Troubleshoot agent used after agent stuck in loop**: NO
+-   **Test files created**: None.
+-   **Known regressions**: Regressions were caught and reverted during earlier attempts at automated fixes, which led to the current, more cautious batch-based and ownership-aware strategy.
 
 **Credentials to test flow:**
-- N/A
+-   N/A
 
 **What agent forgot to execute**
-- Nothing. The agent is correctly and meticulously following a very long and detailed set of user instructions. The task is simply not yet complete.</analysis>
+-   Nothing. The agent has been meticulously following a very long and complex series of user directives. The overall task is massive and ongoing.</analysis>

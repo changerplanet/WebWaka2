@@ -23,7 +23,7 @@ import uuid
 from datetime import datetime
 
 # Base URL
-BASE_URL = "https://nextbuild-repair.preview.emergentagent.com"
+BASE_URL = "https://prisma-next-fix.preview.emergentagent.com"
 
 # Test tenant
 TENANT_SLUG = "acme"

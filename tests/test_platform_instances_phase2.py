@@ -20,7 +20,7 @@ import os
 
 BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', '').rstrip('/')
 if not BASE_URL:
-    BASE_URL = "https://nextbuild-repair.preview.emergentagent.com"
+    BASE_URL = "https://prisma-next-fix.preview.emergentagent.com"
 
 # Test tenant IDs from database
 ACME_TENANT_ID = "67846c4f-9b38-47c7-86d9-fff55aa4afda"
