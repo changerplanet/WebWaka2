@@ -86,7 +86,8 @@ export class AgentService {
         bankName: input.bankName,
         bankAccount: input.bankAccount,
         bankAccountName: input.bankAccountName,
-        metadata: input.metadata,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        metadata: input.metadata as any,
       },
     })
   }
