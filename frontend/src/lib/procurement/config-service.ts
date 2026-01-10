@@ -126,7 +126,7 @@ export class ProcConfigurationService {
     }
 
     // Create new config with Nigeria-first defaults
-    const config = await prisma.proc_configurations.create({
+    const config = await (prisma.proc_configurations.create as any)({
       data: {
         tenantId,
         procurementEnabled: input?.procurementEnabled ?? true,
