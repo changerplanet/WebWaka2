@@ -78,8 +78,8 @@ async function getDefaultInstance(tenantId: string): Promise<PlatformInstanceWit
       isDefault: true,
       isActive: true
     },
-    include: { Tenant: true }
-  })
+    include: { tenant: true }
+  }) as unknown as PlatformInstanceWithTenant | null
 }
 
 /**
