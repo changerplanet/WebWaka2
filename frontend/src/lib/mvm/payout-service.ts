@@ -532,14 +532,27 @@ export const PayoutService = {
     })
     
     // Filter to those meeting minimum
+    type VendorWithCommissions = {
+      id: string;
+      name: string;
+      email: string;
+      commissions: Array<{ vendorPayout: { toNumber: () => number } }>;
+    };
+    type PayoutCandidate = {
+      vendorId: string;
+      vendorName: string;
+      email: string;
+      availableAmount: number;
+      commissionCount: number;
+    };
     return vendors
-      .map((v: string) => ({
+      .map((v: VendorWithCommissions) => ({
         vendorId: v.id,
         vendorName: v.name,
         email: v.email,
-        availableAmount: v.commissions.reduce((sum: any, c: any) => sum + c.vendorPayout.toNumber(), 0),
+        availableAmount: v.commissions.reduce((sum: number, c) => sum + c.vendorPayout.toNumber(), 0),
         commissionCount: v.commissions.length
       }))
-      .filter((v: string) => v.availableAmount >= minPayout)
+      .filter((v: PayoutCandidate) => v.availableAmount >= minPayout)
   }
 }
