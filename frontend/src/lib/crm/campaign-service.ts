@@ -289,7 +289,7 @@ export class CampaignService {
       throw new Error('Can only publish DRAFT campaigns');
     }
 
-    if (!campaign.audiences.length) {
+    if (!campaign.crm_campaign_audiences.length) {
       throw new Error('Campaign must have an audience before publishing');
     }
 
@@ -490,7 +490,7 @@ export class CampaignService {
     const customerIds = new Set<string>();
     const excludeIds = new Set<string>();
 
-    for (const audience of campaign.audiences) {
+    for (const audience of campaign.crm_campaign_audiences) {
       // Add exclusions
       for (const id of audience.excludeCustomerIds) {
         excludeIds.add(id);
