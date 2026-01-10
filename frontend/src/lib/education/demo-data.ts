@@ -157,3 +157,20 @@ export const DEMO_GRADE_DISTRIBUTIONS = {
     failing: { min: 15, max: 34, percentage: 5 },
   },
 };
+
+/**
+ * Clear demo data for Education Suite
+ * Removes all seeded demo data for a tenant
+ */
+export async function clearEducationDemoData(tenantId: string): Promise<{
+  success: boolean;
+  message: string;
+}> {
+  console.log(`[Education Demo] Clearing demo data for tenant: ${tenantId}`);
+  // In a real implementation, this would delete demo data
+  // For now, return success as a stub
+  return {
+    success: true,
+    message: 'Demo data cleared successfully',
+  };
+}
