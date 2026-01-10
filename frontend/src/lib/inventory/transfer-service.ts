@@ -241,8 +241,8 @@ export class StockTransferService {
       },
       include: {
         inv_stock_transfer_items: true,
-        fromWarehouse: true,
-        toWarehouse: true,
+        
+        
       },
     });
 
@@ -293,8 +293,8 @@ export class StockTransferService {
       },
       include: {
         inv_stock_transfer_items: true,
-        fromWarehouse: true,
-        toWarehouse: true,
+        
+        
       },
     });
 
@@ -366,8 +366,8 @@ export class StockTransferService {
       },
       include: {
         inv_stock_transfer_items: true,
-        fromWarehouse: true,
-        toWarehouse: true,
+        
+        
       },
     });
 
@@ -505,8 +505,8 @@ export class StockTransferService {
       },
       include: {
         inv_stock_transfer_items: true,
-        fromWarehouse: true,
-        toWarehouse: true,
+        
+        
       },
     });
 
@@ -596,8 +596,8 @@ export class StockTransferService {
       },
       include: {
         inv_stock_transfer_items: true,
-        fromWarehouse: true,
-        toWarehouse: true,
+        
+        
       },
     });
 
@@ -672,8 +672,8 @@ export class StockTransferService {
         where,
         include: {
           inv_stock_transfer_items: true,
-          fromWarehouse: true,
-          toWarehouse: true,
+          
+          
         },
         orderBy: { createdAt: 'desc' },
         take: options?.limit || 50,
@@ -699,8 +699,8 @@ export class StockTransferService {
       where: { id: transferId, tenantId },
       include: {
         inv_stock_transfer_items: true,
-        fromWarehouse: true,
-        toWarehouse: true,
+        
+        
       },
     });
 
@@ -718,8 +718,8 @@ export class StockTransferService {
       where: { id: transferId, tenantId },
       include: {
         inv_stock_transfer_items: true,
-        fromWarehouse: true,
-        toWarehouse: true,
+        
+        
       },
     });
 
