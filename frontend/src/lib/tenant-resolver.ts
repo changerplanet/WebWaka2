@@ -242,11 +242,11 @@ export async function resolveTenantFromQuery(slug: string): Promise<TenantContex
       type: 'SUBDOMAIN'
     },
     include: {
-      Tenant: {
+      tenant: {
         include: { domains: true }
       },
       platformInstance: {
-        include: { Tenant: true }
+        include: { tenant: true }
       }
     }
   })
@@ -378,8 +378,8 @@ export async function getTenantFromDomain(domain: string): Promise<TenantWithDom
 export async function getInstanceById(instanceId: string): Promise<PlatformInstanceWithTenant | null> {
   return prisma.platformInstance.findUnique({
     where: { id: instanceId },
-    include: { Tenant: true }
-  })
+    include: { tenant: true }
+  }) as unknown as PlatformInstanceWithTenant | null
 }
 
 /**
@@ -390,13 +390,13 @@ export async function resolveInstanceFromDomain(domain: string): Promise<Platfor
     where: { domain: domain.toLowerCase() },
     include: {
       platformInstance: {
-        include: { Tenant: true }
+        include: { tenant: true }
       }
     }
   })
   
   if (domainEntry?.platformInstance) {
-    return domainEntry.platformInstance
+    return domainEntry.platformInstance as unknown as PlatformInstanceWithTenant
   }
   
   // Fallback to default instance of the tenant
