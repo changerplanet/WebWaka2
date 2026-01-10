@@ -151,7 +151,7 @@ export class InventoryAuditService {
       where: inventoryWhere,
       include: {
         Product: true,
-        variant: true,
+        ProductVariant: true,
       },
     });
 
@@ -185,26 +185,29 @@ export class InventoryAuditService {
         varianceThresholdValue: data.varianceThresholdValue,
         createdById: userId,
         createdByName: userName,
-        items: {
-          create: filteredLevels.map(inv => ({
-            productId: inv.productId,
-            variantId: inv.variantId,
-            productName: inv.product.name,
-            variantName: inv.variant?.name,
-            sku: inv.variant?.sku || inv.product.sku,
-            binLocation: inv.binLocation,
-            expectedQuantity: inv.quantityOnHand,
-            unitCost: inv.variant?.costPrice || inv.product.costPrice,
-          })),
+        inv_audit_items: {
+          create: filteredLevels.map(inv => {
+            const invAny = inv as any;
+            return {
+              productId: inv.productId,
+              variantId: inv.variantId,
+              productName: invAny.Product?.name || 'Unknown',
+              variantName: invAny.ProductVariant?.name,
+              sku: invAny.ProductVariant?.sku || invAny.Product?.sku,
+              binLocation: inv.binLocation,
+              expectedQuantity: inv.quantityOnHand,
+              unitCost: invAny.ProductVariant?.costPrice || invAny.Product?.costPrice,
+            };
+          }),
         },
-      },
+      } as any,
       include: {
         inv_audit_items: true,
         inv_warehouses: true,
       },
     });
 
-    return this.toResponse(audit);
+    return this.toResponse(audit as any);
   }
 
   /**
