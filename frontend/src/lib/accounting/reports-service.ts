@@ -576,7 +576,7 @@ export class ReportsService {
       where: { tenantId },
       include: {
         acct_chart_of_accounts: true,
-        entries: {
+        acct_ledger_entries: {
           where: {
             entryDate: {
               gte: startDate,
@@ -585,33 +585,34 @@ export class ReportsService {
           },
         },
       },
-      orderBy: { chartOfAccount: { code: 'asc' } },
+      orderBy: { acct_chart_of_accounts: { code: 'asc' } },
     });
 
     return ledgerAccounts
-      .filter(la => la.entries.length > 0 || la.currentBalance.toNumber() !== 0)
+      .filter(la => (la as any).acct_ledger_entries.length > 0 || la.currentBalance.toNumber() !== 0)
       .map(la => {
+        const laAny = la as any;
         // Calculate period activity
         let periodDebit = new Decimal(0);
         let periodCredit = new Decimal(0);
 
-        for (const entry of la.entries) {
+        for (const entry of laAny.acct_ledger_entries) {
           periodDebit = periodDebit.plus(entry.debitAmount.toString());
           periodCredit = periodCredit.plus(entry.creditAmount.toString());
         }
 
         // Calculate balance based on normal balance
         let balance: Decimal;
-        if (la.acct_chart_of_accounts.normalBalance === 'DEBIT') {
+        if (laAny.acct_chart_of_accounts.normalBalance === 'DEBIT') {
           balance = periodDebit.minus(periodCredit);
         } else {
           balance = periodCredit.minus(periodDebit);
         }
 
         return {
-          accountCode: la.acct_chart_of_accounts.code,
-          accountName: la.acct_chart_of_accounts.name,
-          accountType: la.acct_chart_of_accounts.accountType,
+          accountCode: laAny.acct_chart_of_accounts.code,
+          accountName: laAny.acct_chart_of_accounts.name,
+          accountType: laAny.acct_chart_of_accounts.accountType,
           balance: balance.abs().toFixed(2),
           debit: periodDebit.toFixed(2),
           credit: periodCredit.toFixed(2),
