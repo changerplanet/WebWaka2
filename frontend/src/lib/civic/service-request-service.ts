@@ -64,8 +64,8 @@ export async function getServiceRequests(tenantId: string, options?: {
   
   // Sort by priority and created date
   filtered.sort((a: any, b: any) => {
-    const priorityOrder = { URGENT: 0, HIGH: 1, MEDIUM: 2, LOW: 3 };
-    const priorityDiff = priorityOrder[a.priority] - priorityOrder[b.priority];
+    const priorityOrder: Record<string, number> = { URGENT: 0, HIGH: 1, MEDIUM: 2, LOW: 3 };
+    const priorityDiff = (priorityOrder[a.priority] ?? 4) - (priorityOrder[b.priority] ?? 4);
     if (priorityDiff !== 0) return priorityDiff;
     return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
   });
