@@ -357,8 +357,8 @@ export async function getVenueStats(tenantId: string, venueId: string) {
   const tableStats = Object.fromEntries(tables.map((t: any) => [t.status, t._count]))
   const roomStats = Object.fromEntries(rooms.map((r: any) => [r.status, r._count]))
 
-  const totalRooms = Object.values(roomStats).reduce((a: any, b: any) => a + b, 0)
-  const occupiedRooms = (roomStats['OCCUPIED'] || 0)
+  const totalRooms = Object.values(roomStats).reduce((a: number, b: unknown) => a + (b as number), 0)
+  const occupiedRooms = (roomStats['OCCUPIED'] || 0) as number
   const occupancyRate = totalRooms > 0 ? (occupiedRooms / totalRooms) * 100 : 0
 
   return {
