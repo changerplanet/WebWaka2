@@ -866,7 +866,7 @@ export class ChartOfAccountService {
         acct_ledger_accounts: {
           include: {
             _count: {
-              select: { entries: true },
+              select: { acct_ledger_entries: true },
             },
           },
         },
@@ -881,9 +881,10 @@ export class ChartOfAccountService {
       throw new Error('Cannot delete system accounts');
     }
 
+    const accountAny = account as any;
     // Check for any entries
-    const hasEntries = account.acct_ledger_accounts.some(
-      (la) => la._count.entries > 0
+    const hasEntries = accountAny.acct_ledger_accounts.some(
+      (la: any) => la._count.acct_ledger_entries > 0
     );
 
     if (hasEntries) {
