@@ -47,7 +47,7 @@ export interface OfflineAssignment {
   agentId: string | null
   customerName: string | null
   customerPhone: string | null
-  deliveryAddress: object | null
+  deliveryAddress: unknown
   deliveryLatitude: string | null
   deliveryLongitude: string | null
   specialInstructions: string | null
@@ -348,7 +348,7 @@ export class OfflineService {
           offlineId: update.offlineId,
           recordedAt: offlineTime,
           syncedAt: new Date(),
-        },
+        } as any,
       })
       return null
     }
