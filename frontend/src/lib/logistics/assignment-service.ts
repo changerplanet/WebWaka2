@@ -255,6 +255,7 @@ export class AssignmentService {
         where,
         include: {
           logistics_delivery_agents: { select: { id: true, firstName: true, lastName: true, phone: true } },
+        },
         orderBy: [{ priority: 'desc' }, { createdAt: 'desc' }],
         take: options.limit || 50,
         skip: options.offset || 0,
