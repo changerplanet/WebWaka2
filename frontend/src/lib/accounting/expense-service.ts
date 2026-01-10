@@ -608,13 +608,6 @@ export class ExpenseService {
       total,
     };
   }
-          name: accountMap.get(e.ledgerAccountId)!.chartOfAccount.name,
-          type: accountMap.get(e.ledgerAccountId)!.chartOfAccount.accountType,
-        } : null,
-      })),
-      total,
-    };
-  }
 
   /**
    * Get single expense by ID
@@ -623,7 +616,7 @@ export class ExpenseService {
     const expense = await prisma.acct_expense_records.findFirst({
       where: { id: expenseId, tenantId },
       include: {
-        period: true,
+        acct_financial_periods: true,
       },
     });
 
