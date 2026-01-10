@@ -141,7 +141,7 @@ export class StockTransferService {
         },
       },
       include: {
-        bill_invoice_items: true,
+        inv_stock_transfer_items: true,
         fromWarehouse: true,
         toWarehouse: true,
       },
@@ -173,7 +173,7 @@ export class StockTransferService {
         requestedByName: userName || transfer.requestedByName,
       },
       include: {
-        bill_invoice_items: true,
+        inv_stock_transfer_items: true,
         fromWarehouse: true,
         toWarehouse: true,
       },
@@ -190,7 +190,7 @@ export class StockTransferService {
         fromLocationId: updated.fromWarehouse.locationId,
         toWarehouseId: transfer.toWarehouseId,
         toLocationId: updated.toWarehouse.locationId,
-        items: updated.items.map(i => ({
+        items: updated.inv_stock_transfer_items.map(i => ({
           productId: i.productId,
           variantId: i.variantId || undefined,
           sku: i.sku || undefined,
@@ -230,7 +230,7 @@ export class StockTransferService {
         approvedByName: userName,
       },
       include: {
-        bill_invoice_items: true,
+        inv_stock_transfer_items: true,
         fromWarehouse: true,
         toWarehouse: true,
       },
@@ -245,7 +245,7 @@ export class StockTransferService {
         transferNumber: transfer.transferNumber,
         approvedById: userId,
         approvedByName: userName,
-        items: updated.items.map(i => ({
+        items: updated.inv_stock_transfer_items.map(i => ({
           productId: i.productId,
           variantId: i.variantId || undefined,
           quantityApproved: i.quantityRequested,
@@ -282,7 +282,7 @@ export class StockTransferService {
         rejectionReason: reason,
       },
       include: {
-        bill_invoice_items: true,
+        inv_stock_transfer_items: true,
         fromWarehouse: true,
         toWarehouse: true,
       },
@@ -323,7 +323,7 @@ export class StockTransferService {
 
     // Update item quantities
     for (const shipItem of data.items) {
-      const item = transfer.items.find(
+      const item = transfer.inv_stock_transfer_items.find(
         i => i.productId === shipItem.productId && 
              (i.variantId || null) === (shipItem.variantId || null)
       );
@@ -355,14 +355,14 @@ export class StockTransferService {
         shippingCost: data.shippingCost,
       },
       include: {
-        bill_invoice_items: true,
+        inv_stock_transfer_items: true,
         fromWarehouse: true,
         toWarehouse: true,
       },
     });
 
     // Build inventory deltas for source location (DECREASE)
-    const inventoryDeltas = updated.items
+    const inventoryDeltas = updated.inv_stock_transfer_items
       .filter(i => i.quantityShipped > 0)
       .map(i => ({
         productId: i.productId,
@@ -381,7 +381,7 @@ export class StockTransferService {
         transferNumber: transfer.transferNumber,
         fromWarehouseId: transfer.fromWarehouseId,
         fromLocationId: updated.fromWarehouse.locationId,
-        items: updated.items.map(i => ({
+        items: updated.inv_stock_transfer_items.map(i => ({
           productId: i.productId,
           variantId: i.variantId || undefined,
           quantityShipped: i.quantityShipped,
@@ -402,7 +402,7 @@ export class StockTransferService {
     });
 
     // Record stock movements for audit trail
-    for (const item of updated.items.filter(i => i.quantityShipped > 0)) {
+    for (const item of updated.inv_stock_transfer_items.filter(i => i.quantityShipped > 0)) {
       await prisma.wh_stock_movement.create({
         data: {
           tenantId,
@@ -447,7 +447,7 @@ export class StockTransferService {
 
     // Update item quantities and variances
     for (const receiveItem of data.items) {
-      const item = transfer.items.find(
+      const item = transfer.inv_stock_transfer_items.find(
         i => i.productId === receiveItem.productId && 
              (i.variantId || null) === (receiveItem.variantId || null)
       );
@@ -494,14 +494,14 @@ export class StockTransferService {
         receivingNotes: data.receivingNotes,
       },
       include: {
-        bill_invoice_items: true,
+        inv_stock_transfer_items: true,
         fromWarehouse: true,
         toWarehouse: true,
       },
     });
 
     // Build inventory deltas for destination location (INCREASE)
-    const inventoryDeltas = updated.items
+    const inventoryDeltas = updated.inv_stock_transfer_items
       .filter(i => i.quantityReceived > 0)
       .map(i => ({
         productId: i.productId,
@@ -520,7 +520,7 @@ export class StockTransferService {
         transferNumber: transfer.transferNumber,
         toWarehouseId: transfer.toWarehouseId,
         toLocationId: updated.toWarehouse.locationId,
-        items: updated.items.map(i => ({
+        items: updated.inv_stock_transfer_items.map(i => ({
           productId: i.productId,
           variantId: i.variantId || undefined,
           quantityReceived: i.quantityReceived,
@@ -533,7 +533,7 @@ export class StockTransferService {
     });
 
     // Record stock movements for audit trail
-    for (const item of updated.items.filter(i => i.quantityReceived > 0)) {
+    for (const item of updated.inv_stock_transfer_items.filter(i => i.quantityReceived > 0)) {
       await prisma.wh_stock_movement.create({
         data: {
           tenantId,
@@ -585,7 +585,7 @@ export class StockTransferService {
         notes: `${transfer.notes || ''}\n\nCancelled by ${userName}: ${reason}`.trim(),
       },
       include: {
-        bill_invoice_items: true,
+        inv_stock_transfer_items: true,
         fromWarehouse: true,
         toWarehouse: true,
       },
@@ -604,7 +604,7 @@ export class StockTransferService {
         needsReversal,
         // If shipped, need to restore source inventory
         inventoryDeltas: needsReversal
-          ? updated.items.map(i => ({
+          ? updated.inv_stock_transfer_items.map(i => ({
               productId: i.productId,
               variantId: i.variantId || undefined,
               locationId: updated.fromWarehouse.locationId,
@@ -661,7 +661,7 @@ export class StockTransferService {
       prisma.inv_stock_transfers.findMany({
         where,
         include: {
-          bill_invoice_items: true,
+          inv_stock_transfer_items: true,
           fromWarehouse: true,
           toWarehouse: true,
         },
@@ -688,7 +688,7 @@ export class StockTransferService {
     const transfer = await prisma.inv_stock_transfers.findFirst({
       where: { id: transferId, tenantId },
       include: {
-        bill_invoice_items: true,
+        inv_stock_transfer_items: true,
         fromWarehouse: true,
         toWarehouse: true,
       },
@@ -707,7 +707,7 @@ export class StockTransferService {
     const transfer = await prisma.inv_stock_transfers.findFirst({
       where: { id: transferId, tenantId },
       include: {
-        bill_invoice_items: true,
+        inv_stock_transfer_items: true,
         fromWarehouse: true,
         toWarehouse: true,
       },
@@ -772,7 +772,7 @@ export class StockTransferService {
       code: string;
     };
   }): StockTransferResponse {
-    const items: StockTransferItemResponse[] = transfer.items.map(i => ({
+    const items: StockTransferItemResponse[] = transfer.inv_stock_transfer_items.map(i => ({
       id: i.id,
       productId: i.productId,
       variantId: i.variantId || undefined,
