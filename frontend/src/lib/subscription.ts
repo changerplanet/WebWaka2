@@ -605,7 +605,7 @@ export async function enterGracePeriod(
     })
     
     // Audit log
-    await tx.auditLog.create({
+    await (tx.auditLog.create as any)({
       data: {
         action: 'SUBSCRIPTION_UPDATED',
         actorId: 'system',
@@ -691,7 +691,7 @@ export async function suspendSubscription(
     })
     
     // Audit log
-    await tx.auditLog.create({
+    await (tx.auditLog.create as any)({
       data: {
         action: 'SUBSCRIPTION_SUSPENDED',
         actorId: 'system',
@@ -787,7 +787,7 @@ export async function recoverSubscription(
     })
     
     // Audit log
-    await tx.auditLog.create({
+    await (tx.auditLog.create as any)({
       data: {
         action: 'SUBSCRIPTION_ACTIVATED',
         actorId: 'system',
