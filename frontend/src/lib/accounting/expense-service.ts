@@ -153,7 +153,7 @@ export class ExpenseService {
           tenantId,
           chartOfAccountId: account.id,
           currency: input.currency || 'NGN',
-        },
+        } as any,
       });
     }
 
@@ -190,9 +190,9 @@ export class ExpenseService {
         metadata: input.metadata as Prisma.InputJsonValue | undefined,
         createdBy,
         status: 'DRAFT',
-      },
+      } as any,
       include: {
-        period: true,
+        acct_financial_periods: true,
       },
     });
   }
