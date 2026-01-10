@@ -230,7 +230,7 @@ export class TaxService {
         taxCode: { not: null },
       },
       include: {
-        lines: {
+        acct_ledger_entries: {
           include: {
             acct_ledger_accounts: {
               include: { acct_chart_of_accounts: true },
@@ -256,6 +256,7 @@ export class TaxService {
     // Process each journal entry
     for (const journal of journals) {
       const taxAmount = journal.taxAmount ? new Decimal(journal.taxAmount.toString()) : new Decimal(0);
+      const journalAny = journal as any;
 
       switch (journal.sourceType) {
         case 'POS_SALE':
@@ -281,8 +282,8 @@ export class TaxService {
           break;
         default:
           // Other sources - check if it's an expense account
-          for (const line of journal.lines) {
-            if (line.ledgerAccount.acct_chart_of_accounts.accountType === 'EXPENSE') {
+          for (const line of journalAny.acct_ledger_entries) {
+            if (line.acct_ledger_accounts.acct_chart_of_accounts.accountType === 'EXPENSE') {
               inputVAT.expenses = inputVAT.expenses.plus(taxAmount);
               expenseCount++;
               break;
