@@ -191,17 +191,17 @@ export async function resolveBundleEntitlements(bundleId: string): Promise<{
 }> {
   const bundle = await prisma.billing_bundles.findUnique({
     where: { id: bundleId },
-    include: { bill_invoice_items: true },
+    include: { billing_bundle_items: true },
   });
   
   if (!bundle) {
     return { modules: [], featureLimits: {} };
   }
   
-  const modules = bundle.items.map(item => item.moduleKey);
+  const modules = bundle.billing_bundle_items.map(item => item.moduleKey);
   const featureLimits: Record<string, any> = {};
   
-  for (const item of bundle.items) {
+  for (const item of bundle.billing_bundle_items) {
     if (item.featureLimits) {
       featureLimits[item.moduleKey] = item.featureLimits;
     }
