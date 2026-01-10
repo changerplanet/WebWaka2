@@ -204,7 +204,7 @@ export class PurchaseRequestService {
   static async getPurchaseRequestById(tenantId: string, id: string) {
     const pr = await prisma.proc_purchase_requests.findFirst({
       where: { id, tenantId },
-      include: { bill_invoice_items: { orderBy: { lineNumber: 'asc' } } },
+      include: { proc_purchase_request_items: { orderBy: { lineNumber: 'asc' } } },
     })
 
     return pr ? this.formatPurchaseRequest(pr) : null
@@ -247,7 +247,7 @@ export class PurchaseRequestService {
         status: newStatus,
         ...(approvedBy && { approvedBy, approvedAt }),
       },
-      include: { bill_invoice_items: true },
+      include: { proc_purchase_request_items: true },
     })
 
     // Emit event
@@ -286,7 +286,7 @@ export class PurchaseRequestService {
         approvedAt: new Date(),
         ...(notes && { notes: pr.notes ? `${pr.notes}\n\nApproval Notes: ${notes}` : `Approval Notes: ${notes}` }),
       },
-      include: { bill_invoice_items: true },
+      include: { proc_purchase_request_items: true },
     })
 
     // Emit event
@@ -325,7 +325,7 @@ export class PurchaseRequestService {
         rejectedAt: new Date(),
         rejectionReason: reason,
       },
-      include: { bill_invoice_items: true },
+      include: { proc_purchase_request_items: true },
     })
 
     // Emit event
@@ -356,7 +356,7 @@ export class PurchaseRequestService {
     const updated = await prisma.proc_purchase_requests.update({
       where: { id },
       data: { status: 'CANCELLED' },
-      include: { bill_invoice_items: true },
+      include: { proc_purchase_request_items: true },
     })
 
     // Emit event
@@ -424,7 +424,7 @@ export class PurchaseRequestService {
           },
         }),
       },
-      include: { bill_invoice_items: { orderBy: { lineNumber: 'asc' } } },
+      include: { proc_purchase_request_items: { orderBy: { lineNumber: 'asc' } } },
     })
 
     return this.formatPurchaseRequest(updated)
