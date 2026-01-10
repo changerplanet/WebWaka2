@@ -182,7 +182,7 @@ export async function POST(request: NextRequest) {
         sortOrder,
         icon,
         metadata,
-      },
+      } as any,
     });
 
     return NextResponse.json({
