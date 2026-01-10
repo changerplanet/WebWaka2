@@ -188,7 +188,7 @@ export async function getPublicServiceCatalogue(tenantId: string) {
       code: true,
       name: true,
       description: true,
-      leg_template_categories: true,
+      category: true,
       eligibility: true,
       requiredDocuments: true,
       baseFee: true,
