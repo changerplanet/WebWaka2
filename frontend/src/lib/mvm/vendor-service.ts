@@ -182,7 +182,7 @@ export const VendorService = {
         status: 'PENDING_APPROVAL',
         onboardingStep: 'REGISTERED',
         tierId: defaultTier?.id,
-        metadata: input.metadata as Prisma.JsonValue
+        metadata: input.metadata as object | undefined
       },
       select: { id: true, slug: true }
     })
