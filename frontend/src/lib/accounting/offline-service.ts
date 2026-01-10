@@ -299,7 +299,7 @@ export class OfflineService {
               syncClientId: request.clientId,
             } as Prisma.InputJsonValue,
             createdBy: userId,
-          },
+          } as any,
         });
 
         results.push({
