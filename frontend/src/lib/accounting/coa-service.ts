@@ -818,7 +818,7 @@ export class ChartOfAccountService {
       include: {
         acct_ledger_accounts: {
           include: {
-            entries: {
+            acct_ledger_entries: {
               where: {
                 acct_journal_entries: {
                   status: 'DRAFT',
@@ -836,8 +836,8 @@ export class ChartOfAccountService {
     }
 
     // Check for unposted entries
-    const hasUnpostedEntries = account.acct_ledger_accounts.some(
-      (la) => la.entries.length > 0
+    const hasUnpostedEntries = (account as any).acct_ledger_accounts.some(
+      (la: any) => la.acct_ledger_entries.length > 0
     );
 
     if (hasUnpostedEntries) {
