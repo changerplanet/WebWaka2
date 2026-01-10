@@ -63,20 +63,20 @@ export async function GET(request: NextRequest) {
         include: {
           memberships: {
             include: {
-              Tenant: {
+              tenant: {
                 select: { id: true, name: true, slug: true, status: true }
               }
             }
           },
-          partnerMembership: {
+          PartnerUser: {
             include: {
-              Partner: {
+              partner: {
                 select: { id: true, name: true, slug: true, status: true }
               }
             }
           },
           _count: {
-            select: { sessions: true }
+            select: { Session: true }
           }
         },
         orderBy: { createdAt: 'desc' },
@@ -87,40 +87,43 @@ export async function GET(request: NextRequest) {
     ])
 
     // Format response - exclude sensitive data
-    const formattedUsers = users.map(user => ({
-      id: user.id,
-      email: user.email,
-      name: user.name,
-      avatarUrl: user.avatarUrl,
-      globalRole: user.globalRole,
-      createdAt: user.createdAt.toISOString(),
-      updatedAt: user.updatedAt.toISOString(),
-      lastLoginAt: user.lastLoginAt?.toISOString() || null,
-      activeSessions: user._count.sessions,
-      memberships: user.memberships.map(m => ({
-        id: m.id,
-        tenantId: m.tenantId,
-        tenantName: m.tenant.name,
-        tenantSlug: m.tenant.slug,
-        tenantStatus: m.tenant.status,
-        role: m.role,
-        createdAt: m.createdAt.toISOString()
-      })),
-      partnerMembership: user.partnerMembership ? {
-        partnerId: user.partnerMembership.partnerId,
-        partnerName: user.partnerMembership.partner.name,
-        partnerSlug: user.partnerMembership.partner.slug,
-        role: user.partnerMembership.role,
-        isActive: user.partnerMembership.isActive
-      } : null
-    }))
+    const formattedUsers = users.map(user => {
+      const userAny = user as any
+      return {
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        avatarUrl: user.avatarUrl,
+        globalRole: user.globalRole,
+        createdAt: user.createdAt.toISOString(),
+        updatedAt: user.updatedAt.toISOString(),
+        lastLoginAt: user.lastLoginAt?.toISOString() || null,
+        activeSessions: userAny._count.Session,
+        memberships: userAny.memberships.map((m: any) => ({
+          id: m.id,
+          tenantId: m.tenantId,
+          tenantName: m.tenant.name,
+          tenantSlug: m.tenant.slug,
+          tenantStatus: m.tenant.status,
+          role: m.role,
+          createdAt: m.createdAt.toISOString()
+        })),
+        partnerMembership: userAny.PartnerUser ? {
+          partnerId: userAny.PartnerUser.partnerId,
+          partnerName: userAny.PartnerUser.partner.name,
+          partnerSlug: userAny.PartnerUser.partner.slug,
+          role: userAny.PartnerUser.role,
+          isActive: userAny.PartnerUser.isActive
+        } : null
+      }
+    })
 
     // Get stats
     const [totalUsers, superAdmins, withTenants, withPartners] = await Promise.all([
       prisma.user.count(),
       prisma.user.count({ where: { globalRole: 'SUPER_ADMIN' } }),
       prisma.user.count({ where: { memberships: { some: {} } } }),
-      prisma.user.count({ where: { partnerMembership: { isNot: null } } })
+      prisma.user.count({ where: { PartnerUser: { isNot: null } } })
     ])
 
     return NextResponse.json({
