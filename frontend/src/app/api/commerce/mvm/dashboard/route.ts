@@ -131,7 +131,7 @@ export async function GET(request: NextRequest) {
         commissions: commissionSummary,
         payouts: {
           eligibleVendors: eligibleVendors.length,
-          totalPayable: eligibleVendors.reduce((sum: any, v: string) => sum + v.availableAmount, 0)
+          totalPayable: eligibleVendors.reduce((sum: number, v: { availableAmount: number }) => sum + v.availableAmount, 0)
         }
       }
     })
