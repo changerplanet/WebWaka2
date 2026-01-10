@@ -893,7 +893,7 @@ export async function checkSubscriptionAccess(tenantId: string): Promise<{
 }> {
   const subscription = await prisma.subscription.findUnique({
     where: { tenantId },
-    include: { Plan: true }
+    include: { SubscriptionPlan: true }
   })
   
   if (!subscription) {
