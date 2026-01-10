@@ -99,7 +99,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
           id: uuidv4(),
           email: email.toLowerCase(),
           globalRole: 'USER'
-        }
+        } as any
       })
     }
     
@@ -127,7 +127,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
         userId: user.id,
         tenantId: id,
         role: role === 'TENANT_ADMIN' ? 'TENANT_ADMIN' : 'TENANT_USER'
-      },
+      } as any,
       include: {
         user: {
           select: {
