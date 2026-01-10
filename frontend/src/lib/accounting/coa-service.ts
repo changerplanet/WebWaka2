@@ -770,7 +770,7 @@ export class ChartOfAccountService {
         sortOrder: input.sortOrder || 0,
         metadata: input.metadata as Prisma.InputJsonValue | undefined,
         createdBy,
-      },
+      } as any,
     });
   }
 
