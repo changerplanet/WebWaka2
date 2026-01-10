@@ -172,17 +172,18 @@ export class ProcEntitlementsService {
     const tenant = await prisma.tenant.findUnique({
       where: { id: tenantId },
       include: {
-        Subscription: {
-          include: { plan: true },
+        subscription: {
+          include: { SubscriptionPlan: true },
         },
       },
     })
 
-    if (!tenant?.subscription?.plan) {
+    const tenantAny = tenant as any;
+    if (!tenantAny?.subscription?.SubscriptionPlan) {
       return 'FREE'
     }
 
-    const planSlug = tenant.subscription.plan.slug.toUpperCase()
+    const planSlug = tenantAny.subscription.SubscriptionPlan.slug.toUpperCase()
 
     if (planSlug.includes('ENTERPRISE')) return 'ENTERPRISE'
     if (planSlug.includes('PROFESSIONAL') || planSlug.includes('PRO')) return 'PROFESSIONAL'
