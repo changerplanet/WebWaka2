@@ -77,7 +77,7 @@ const studentStorage: Map<string, StudentProfile[]> = new Map();
 
 export async function createStudent(
   tenantId: string,
-  input: CreateStudentInput,
+  input: CreateStudentServiceInput,
   createdBy: string
 ): Promise<{ success: boolean; studentId?: string; error?: string }> {
   console.log(`[Education Demo] Creating student: ${input.firstName} ${input.lastName}`);
