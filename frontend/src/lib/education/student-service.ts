@@ -158,3 +158,56 @@ export async function getStudentGuardians(
 export async function getStudentCountByClass(tenantId: string): Promise<{ classId: string; className: string; count: number }[]> {
   return [];
 }
+
+// ============================================================================
+// GUARDIAN ENTITY HELPERS (for API routes)
+// ============================================================================
+
+export function validateGuardianInput(input: {
+  tenantId: string;
+  firstName?: string;
+  lastName?: string;
+  phone?: string;
+  [key: string]: unknown;
+}): { valid: boolean; errors?: string[] } {
+  const errors: string[] = [];
+  
+  if (!input.firstName?.trim()) errors.push('First name is required');
+  if (!input.lastName?.trim()) errors.push('Last name is required');
+  if (!input.phone?.trim()) errors.push('Phone number is required');
+  
+  return { valid: errors.length === 0, errors: errors.length > 0 ? errors : undefined };
+}
+
+export function createGuardianEntity(input: {
+  tenantId: string;
+  firstName: string;
+  lastName: string;
+  middleName?: string;
+  phone: string;
+  email?: string;
+  whatsapp?: string;
+  address?: string;
+  city?: string;
+  state?: string;
+  occupation?: string;
+  employer?: string;
+  [key: string]: unknown;
+}): Record<string, unknown> {
+  return {
+    tenantId: input.tenantId,
+    firstName: input.firstName.trim(),
+    lastName: input.lastName.trim(),
+    middleName: input.middleName?.trim() || null,
+    fullName: `${input.firstName} ${input.lastName}`.trim(),
+    phone: input.phone.trim(),
+    email: input.email?.trim() || null,
+    whatsapp: input.whatsapp?.trim() || null,
+    address: input.address?.trim() || null,
+    city: input.city?.trim() || null,
+    state: input.state?.trim() || null,
+    occupation: input.occupation?.trim() || null,
+    employer: input.employer?.trim() || null,
+    isActive: true,
+  };
+}
