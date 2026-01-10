@@ -434,11 +434,11 @@ export class StockTransferService {
           eventProcessed: true,
           performedBy: userId,
           performedByName: userName,
-        },
+        } as any,
       });
     }
 
-    return this.toResponse(updated);
+    return this.toResponse(updated, fromWarehouse, null);
   }
 
   /**
