@@ -863,7 +863,7 @@ export class InventoryAuditService {
       supervisorName: audit.supervisorName || undefined,
       approvedByName: audit.approvedByName || undefined,
       notes: audit.notes || undefined,
-      items: audit.items.map(i => ({
+      items: audit.inv_audit_items.map(i => ({
         id: i.id,
         productId: i.productId,
         variantId: i.variantId || undefined,
