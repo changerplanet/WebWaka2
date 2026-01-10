@@ -35,9 +35,6 @@ export async function GET(
       where: { key },
       include: {
         core_tenant_capability_activations: {
-          include: {
-            capability: false,
-          },
           orderBy: { updatedAt: 'desc' },
           take: 100,
         },
@@ -51,20 +48,20 @@ export async function GET(
       );
     }
 
-    const activations = capability.activations;
+    const activations = (capability as any).core_tenant_capability_activations;
     const stats = {
       totalActivations: activations.length,
-      active: activations.filter((a) => a.status === 'ACTIVE').length,
-      inactive: activations.filter((a) => a.status === 'INACTIVE').length,
-      suspended: activations.filter((a) => a.status === 'SUSPENDED').length,
+      active: activations.filter((a: any) => a.status === 'ACTIVE').length,
+      inactive: activations.filter((a: any) => a.status === 'INACTIVE').length,
+      suspended: activations.filter((a: any) => a.status === 'SUSPENDED').length,
     };
 
     return NextResponse.json({
       capability: {
         ...capability,
-        activations: undefined,
+        core_tenant_capability_activations: undefined,
       },
-      activations: activations.map((a) => ({
+      activations: activations.map((a: any) => ({
         id: a.id,
         tenantId: a.tenantId,
         status: a.status,
