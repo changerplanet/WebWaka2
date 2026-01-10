@@ -46,7 +46,7 @@ export async function createMagicLink(email: string, tenantId?: string): Promise
         id: uuidv4(),
         email: normalizedEmail,
         globalRole: 'USER'
-      }
+      } as any
     })
   }
   
@@ -129,7 +129,7 @@ export async function verifyMagicLink(token: string): Promise<{ user: SessionUse
     include: {
       memberships: {
         where: { isActive: true },
-        include: { Tenant: true }
+        include: { tenant: true }
       }
     }
   })
@@ -152,7 +152,7 @@ export async function getSessionByToken(token: string): Promise<AuthSession | nu
         include: {
           memberships: {
             where: { isActive: true },
-            include: { Tenant: true }
+            include: { tenant: true }
           }
         }
       }
