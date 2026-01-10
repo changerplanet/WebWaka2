@@ -674,7 +674,7 @@ export class ReorderSuggestionEngine {
     const [suggestions, total] = await Promise.all([
       prisma.inv_reorder_suggestions.findMany({
         where,
-        include: { rule: true },
+        include: { inv_reorder_rules: true },
         orderBy: [
           { urgency: 'desc' },
           { createdAt: 'desc' },
@@ -686,7 +686,7 @@ export class ReorderSuggestionEngine {
     ]);
 
     return {
-      suggestions: suggestions.map(s => this.toResponse(s, s.rule?.name)),
+      suggestions: suggestions.map(s => this.toResponse(s, (s as any).inv_reorder_rules?.name)),
       total,
     };
   }
@@ -788,7 +788,7 @@ export class ReorderSuggestionEngine {
       where,
       include: {
         Product: true,
-        variant: true,
+        ProductVariant: true,
         Location: true,
       },
     });
@@ -808,6 +808,7 @@ export class ReorderSuggestionEngine {
 
     for (const inv of inventoryLevels) {
       const threshold = options?.threshold || inv.reorderPoint || 10;
+      const invAny = inv as any;
 
       if (inv.quantityAvailable <= threshold) {
         let urgency: 'LOW' | 'NORMAL' | 'HIGH' | 'CRITICAL' = 'NORMAL';
@@ -824,12 +825,12 @@ export class ReorderSuggestionEngine {
 
         alerts.push({
           productId: inv.productId,
-          productName: inv.product.name,
+          productName: invAny.Product?.name || 'Unknown',
           variantId: inv.variantId || undefined,
-          variantName: inv.variant?.name || undefined,
-          sku: inv.variant?.sku || inv.product.sku || undefined,
+          variantName: invAny.ProductVariant?.name || undefined,
+          sku: invAny.ProductVariant?.sku || invAny.Product?.sku || undefined,
           locationId: inv.locationId,
-          locationName: inv.location.name,
+          locationName: invAny.Location?.name || 'Unknown',
           quantityAvailable: inv.quantityAvailable,
           reorderPoint: threshold,
           urgency,
