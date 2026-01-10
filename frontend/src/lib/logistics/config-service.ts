@@ -94,7 +94,7 @@ export class ConfigurationService {
         maxConcurrentDeliveries: input.maxConcurrentDeliveries || 5,
         maxDeliveryAttempts: input.maxDeliveryAttempts || 3,
         operatingHours: input.operatingHours as object | undefined,
-        metadata: input.metadata as object | undefined,
+        metadata: input.metadata ?? undefined,
       },
     })
 
@@ -153,7 +153,7 @@ export class ConfigurationService {
         ...(input.notifyCustomerOnFailure !== undefined && { notifyCustomerOnFailure: input.notifyCustomerOnFailure }),
         ...(input.supportInformalAddresses !== undefined && { supportInformalAddresses: input.supportInformalAddresses }),
         ...(input.landmarkRequired !== undefined && { landmarkRequired: input.landmarkRequired }),
-        ...(input.metadata !== undefined && { metadata: input.metadata as object | undefined }),
+        ...(input.metadata !== undefined && { metadata: input.metadata ?? undefined }),
       },
     })
   }

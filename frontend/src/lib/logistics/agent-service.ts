@@ -86,7 +86,7 @@ export class AgentService {
         bankName: input.bankName,
         bankAccount: input.bankAccount,
         bankAccountName: input.bankAccountName,
-        metadata: input.metadata as object | undefined,
+        metadata: input.metadata ?? undefined,
       },
     })
   }
@@ -192,7 +192,7 @@ export class AgentService {
         ...(input.bankName !== undefined && { bankName: input.bankName }),
         ...(input.bankAccount !== undefined && { bankAccount: input.bankAccount }),
         ...(input.bankAccountName !== undefined && { bankAccountName: input.bankAccountName }),
-        ...(input.metadata !== undefined && { metadata: input.metadata as object | undefined }),
+        ...(input.metadata !== undefined && { metadata: input.metadata ?? undefined }),
       },
     })
   }
