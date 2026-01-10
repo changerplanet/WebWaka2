@@ -577,7 +577,7 @@ export class ExpenseService {
         take: options?.limit || 50,
         skip: options?.offset || 0,
         include: {
-          period: { select: { id: true, name: true, code: true } },
+          acct_financial_periods: { select: { id: true, name: true, code: true } },
         },
       }),
       prisma.acct_expense_records.count({ where }),
@@ -592,12 +592,22 @@ export class ExpenseService {
     const accountMap = new Map(ledgerAccounts.map(a => [a.id, a]));
 
     return {
-      expenses: expenses.map(e => ({
-        ...e,
-        amount: e.amount.toString(),
-        taxAmount: e.taxAmount?.toString(),
-        account: accountMap.get(e.ledgerAccountId) ? {
-          code: accountMap.get(e.ledgerAccountId)!.chartOfAccount.code,
+      expenses: expenses.map(e => {
+        const acct = accountMap.get(e.ledgerAccountId) as any;
+        return {
+          ...e,
+          amount: e.amount.toString(),
+          taxAmount: e.taxAmount?.toString(),
+          account: acct ? {
+            code: acct.acct_chart_of_accounts.code,
+            name: acct.acct_chart_of_accounts.name,
+            accountType: acct.acct_chart_of_accounts.accountType,
+          } : null,
+        };
+      }),
+      total,
+    };
+  }
           name: accountMap.get(e.ledgerAccountId)!.chartOfAccount.name,
           type: accountMap.get(e.ledgerAccountId)!.chartOfAccount.accountType,
         } : null,
