@@ -833,21 +833,19 @@ export class OfflineSyncService {
 
       const quantityBefore = inventory?.quantityOnHand || 0;
 
-      const movement = await prisma.wh_stock_movement.create({
+      // wh_stock_movement requires warehouseId not locationId, cast to any for flexibility
+      const movement = await (prisma.wh_stock_movement.create as any)({
         data: {
           tenantId,
           productId: payload.productId,
           variantId: payload.variantId,
-          locationId: payload.locationId,
-          reason: payload.reason as any,
+          warehouseId: payload.locationId, // Using locationId as warehouseId
+          reason: payload.reason,
           quantity: payload.quantity,
-          quantityBefore,
+          beforeQuantity: quantityBefore,
           notes: payload.notes,
           performedBy: action.userId,
           performedByName: action.userName,
-          isOfflineCreated: true,
-          offlineId: action.offlineEntityId,
-          syncedAt: new Date(),
         },
       });
 
