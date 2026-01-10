@@ -52,7 +52,7 @@ export class ProcEventService {
    * Emit a procurement event
    */
   static async emitEvent(tenantId: string, input: ProcEventInput) {
-    const event = await prisma.procEventLog.create({
+    const event = await (prisma.proc_event_logs.create as any)({
       data: {
         tenantId,
         eventType: input.eventType,
@@ -86,7 +86,7 @@ export class ProcEventService {
    * Get events with filters
    */
   static async getEvents(tenantId: string, filters: ProcEventFilters = {}, limit: number = 50) {
-    const where: Prisma.ProcEventLogWhereInput = {
+    const where: Prisma.proc_event_logsWhereInput = {
       tenantId,
       ...(filters.eventType && { eventType: { in: filters.eventType } }),
       ...(filters.entityType && { entityType: filters.entityType }),
@@ -96,13 +96,13 @@ export class ProcEventService {
       ...(filters.toDate && { occurredAt: { lte: filters.toDate } }),
     }
 
-    const events = await prisma.procEventLog.findMany({
+    const events = await prisma.proc_event_logs.findMany({
       where,
       orderBy: { occurredAt: 'desc' },
       take: limit,
     })
 
-    return events.map(e => ({
+    return events.map((e: any) => ({
       id: e.id,
       eventType: e.eventType,
       entityType: e.entityType,
@@ -200,19 +200,19 @@ export class ProcEventService {
     const fromDate = new Date(Date.now() - days * 24 * 60 * 60 * 1000)
 
     const [eventCounts, recentEvents] = await Promise.all([
-      prisma.procEventLog.groupBy({
+      prisma.proc_event_logs.groupBy({
         by: ['eventType'],
         where: { tenantId, occurredAt: { gte: fromDate } },
         _count: true,
       }),
-      prisma.procEventLog.count({
+      prisma.proc_event_logs.count({
         where: { tenantId, occurredAt: { gte: fromDate } },
       }),
     ])
 
     return {
       totalEvents: recentEvents,
-      byType: Object.fromEntries(eventCounts.map(e => [e.eventType, e._count])),
+      byType: Object.fromEntries(eventCounts.map((e: any) => [e.eventType, e._count])),
       periodDays: days,
     }
   }
