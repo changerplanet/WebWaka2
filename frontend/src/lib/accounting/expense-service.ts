@@ -747,7 +747,7 @@ export class ExpenseService {
     startDate?: Date,
     endDate?: Date
   ) {
-    const where: Prisma.AcctExpenseRecordWhereInput = {
+    const where: Prisma.acct_expense_recordsWhereInput = {
       tenantId,
       status: 'POSTED',
     };
@@ -831,7 +831,7 @@ export class ExpenseService {
           endDate,
           fiscalYear: year,
           status: 'OPEN',
-        },
+        } as any,
       });
     }
 
