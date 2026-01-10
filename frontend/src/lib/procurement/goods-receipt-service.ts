@@ -91,7 +91,7 @@ export class GoodsReceiptService {
     // Verify PO exists
     const po = await prisma.proc_purchase_orders.findFirst({
       where: { id: input.purchaseOrderId, tenantId },
-      include: { proc_goods_receipt_items: true },
+      include: { proc_purchase_order_items: true },
     })
 
     if (!po) throw new Error('Purchase order not found')
@@ -103,7 +103,7 @@ export class GoodsReceiptService {
     const receiptNumber = await ProcConfigurationService.getNextGRNumber(tenantId)
 
     // Create receipt with items
-    const receipt = await prisma.proc_goods_receipts.create({
+    const receipt = await (prisma.proc_goods_receipts.create as any)({
       data: {
         tenantId,
         receiptNumber,
@@ -117,8 +117,8 @@ export class GoodsReceiptService {
         photoUrls: input.photoUrls ? (input.photoUrls as Prisma.InputJsonValue) : Prisma.JsonNull,
         notes: input.notes,
         offlineId: input.offlineId,
-        items: {
-          create: input.items.map(item => ({
+        proc_goods_receipt_items: {
+          create: input.items.map((item: any) => ({
             purchaseOrderItemId: item.purchaseOrderItemId,
             productId: item.productId,
             productSku: item.productSku,
@@ -164,7 +164,7 @@ export class GoodsReceiptService {
   static async listGoodsReceipts(tenantId: string, options: GoodsReceiptListOptions = {}) {
     const { filters = {}, page = 1, limit = 20, orderBy = 'receivedDate', orderDir = 'desc' } = options
 
-    const where: Prisma.ProcGoodsReceiptWhereInput = {
+    const where: Prisma.proc_goods_receiptsWhereInput = {
       tenantId,
       ...(filters.status && { status: { in: filters.status } }),
       ...(filters.purchaseOrderId && { purchaseOrderId: filters.purchaseOrderId }),
@@ -213,7 +213,7 @@ export class GoodsReceiptService {
       include: {
         proc_goods_receipt_items: true,
         proc_purchase_orders: {
-          include: { proc_goods_receipt_items: true },
+          include: { proc_purchase_order_items: true },
         },
       },
     })
@@ -472,7 +472,7 @@ export class GoodsReceiptService {
       metadata: receipt.metadata,
       createdAt: receipt.createdAt,
       updatedAt: receipt.updatedAt,
-      items: receipt.proc_goods_receipt_items?.map(item => ({
+      items: (receipt as any).proc_goods_receipt_items?.map((item: any) => ({
         id: item.id,
         purchaseOrderItemId: item.purchaseOrderItemId,
         productId: item.productId,
