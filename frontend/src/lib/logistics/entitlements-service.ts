@@ -107,7 +107,7 @@ export class EntitlementsService {
     const tenant = await prisma.tenant.findUnique({
       where: { id: tenantId },
       include: {
-        Subscription: {
+        subscription: {
           include: {
             Plan: { select: { slug: true } },
           },
