@@ -36,7 +36,7 @@ export async function GET(request: NextRequest) {
         where: { id, tenantId },
         include: {
           patient: { select: { id: true, firstName: true, lastName: true, mrn: true, phone: true } },
-          integration_providers: { select: { id: true, firstName: true, lastName: true, title: true } },
+          provider: { select: { id: true, firstName: true, lastName: true, title: true } },
           facility: { select: { id: true, name: true } },
           visit: true,
         },
@@ -100,7 +100,7 @@ export async function GET(request: NextRequest) {
         orderBy: [{ appointmentDate: 'asc' }, { appointmentTime: 'asc' }],
         include: {
           patient: { select: { id: true, firstName: true, lastName: true, mrn: true } },
-          integration_providers: { select: { id: true, firstName: true, lastName: true, title: true } },
+          provider: { select: { id: true, firstName: true, lastName: true, title: true } },
           facility: { select: { id: true, name: true } },
         },
       }),
@@ -150,7 +150,7 @@ export async function POST(request: NextRequest) {
       },
       include: {
         patient: { select: { id: true, firstName: true, lastName: true, mrn: true } },
-        integration_providers: { select: { id: true, firstName: true, lastName: true, title: true } },
+        provider: { select: { id: true, firstName: true, lastName: true, title: true } },
       },
     })
 

@@ -39,7 +39,7 @@ export async function GET(request: NextRequest) {
         where: { id, tenantId },
         include: {
           patient: { select: { id: true, firstName: true, lastName: true, mrn: true, allergies: true, conditions: true } },
-          integration_providers: { select: { id: true, firstName: true, lastName: true, title: true, specialty: true } },
+          provider: { select: { id: true, firstName: true, lastName: true, title: true, specialty: true } },
           facility: { select: { id: true, name: true } },
           visit: true,
           notes: { orderBy: { createdAt: 'asc' } },
@@ -86,7 +86,7 @@ export async function GET(request: NextRequest) {
           take: limit,
           orderBy: { encounterDate: 'desc' },
           include: {
-            integration_providers: { select: { id: true, firstName: true, lastName: true, title: true } },
+            provider: { select: { id: true, firstName: true, lastName: true, title: true } },
             diagnoses: { where: { type: 'PRIMARY' } },
           },
         }),
@@ -114,7 +114,7 @@ export async function GET(request: NextRequest) {
         orderBy: { encounterDate: 'desc' },
         include: {
           patient: { select: { id: true, firstName: true, lastName: true, mrn: true } },
-          integration_providers: { select: { id: true, firstName: true, lastName: true, title: true } },
+          provider: { select: { id: true, firstName: true, lastName: true, title: true } },
         },
       }),
       prisma.health_encounter.count({ where }),
@@ -159,7 +159,7 @@ export async function POST(request: NextRequest) {
           },
           include: {
             patient: { select: { id: true, firstName: true, lastName: true, mrn: true } },
-            integration_providers: { select: { id: true, firstName: true, lastName: true, title: true } },
+            provider: { select: { id: true, firstName: true, lastName: true, title: true } },
           },
         })
 

@@ -72,7 +72,7 @@ export async function createAppointment(
     }),
     include: {
       patient: { select: { id: true, firstName: true, lastName: true, mrn: true } },
-      integration_providers: { select: { id: true, firstName: true, lastName: true, title: true } },
+      provider: { select: { id: true, firstName: true, lastName: true, title: true } },
       facility: { select: { id: true, name: true } },
     },
   })
@@ -88,7 +88,7 @@ export async function getAppointment(tenantId: string, appointmentId: string) {
     where: { id: appointmentId, tenantId },
     include: {
       patient: { select: { id: true, firstName: true, lastName: true, mrn: true, phone: true } },
-      integration_providers: { select: { id: true, firstName: true, lastName: true, title: true, specialty: true } },
+      provider: { select: { id: true, firstName: true, lastName: true, title: true, specialty: true } },
       facility: { select: { id: true, name: true } },
       visit: true,
     },
@@ -122,7 +122,7 @@ export async function listAppointments(tenantId: string, filters: AppointmentFil
       orderBy: [{ appointmentDate: 'asc' }, { appointmentTime: 'asc' }],
       include: {
         patient: { select: { id: true, firstName: true, lastName: true, mrn: true } },
-        integration_providers: { select: { id: true, firstName: true, lastName: true, title: true } },
+        provider: { select: { id: true, firstName: true, lastName: true, title: true } },
         facility: { select: { id: true, name: true } },
       },
     }),

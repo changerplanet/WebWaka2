@@ -69,7 +69,7 @@ export async function createVisit(
     }),
     include: {
       patient: { select: { id: true, firstName: true, lastName: true, mrn: true } },
-      integration_providers: { select: { id: true, firstName: true, lastName: true, title: true } },
+      provider: { select: { id: true, firstName: true, lastName: true, title: true } },
       facility: { select: { id: true, name: true } },
     },
   })
@@ -93,7 +93,7 @@ export async function getVisit(tenantId: string, visitId: string) {
     where: { id: visitId, tenantId },
     include: {
       patient: { select: { id: true, firstName: true, lastName: true, mrn: true, phone: true, allergies: true } },
-      integration_providers: { select: { id: true, firstName: true, lastName: true, title: true, specialty: true } },
+      provider: { select: { id: true, firstName: true, lastName: true, title: true, specialty: true } },
       facility: { select: { id: true, name: true } },
       appointment: true,
       encounters: {
@@ -118,7 +118,7 @@ export async function getVisitByNumber(tenantId: string, visitNumber: string) {
     where: { visitNumber, tenantId },
     include: {
       patient: { select: { id: true, firstName: true, lastName: true, mrn: true } },
-      integration_providers: { select: { id: true, firstName: true, lastName: true, title: true } },
+      provider: { select: { id: true, firstName: true, lastName: true, title: true } },
       encounters: true,
     },
   })
@@ -150,7 +150,7 @@ export async function listVisits(tenantId: string, filters: VisitFilters = {}) {
       orderBy: { visitDate: 'desc' },
       include: {
         patient: { select: { id: true, firstName: true, lastName: true, mrn: true } },
-        integration_providers: { select: { id: true, firstName: true, lastName: true, title: true } },
+        provider: { select: { id: true, firstName: true, lastName: true, title: true } },
         facility: { select: { id: true, name: true } },
       },
     }),
@@ -239,7 +239,7 @@ export async function getWaitingQueue(tenantId: string, facilityId?: string) {
     orderBy: { registeredAt: 'asc' },
     include: {
       patient: { select: { id: true, firstName: true, lastName: true, mrn: true } },
-      integration_providers: { select: { id: true, firstName: true, lastName: true, title: true } },
+      provider: { select: { id: true, firstName: true, lastName: true, title: true } },
     },
   })
 }

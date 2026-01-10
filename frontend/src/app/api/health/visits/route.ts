@@ -40,7 +40,7 @@ export async function GET(request: NextRequest) {
         },
         include: {
           patient: { select: { id: true, firstName: true, lastName: true, mrn: true, phone: true, allergies: true } },
-          integration_providers: { select: { id: true, firstName: true, lastName: true, title: true } },
+          provider: { select: { id: true, firstName: true, lastName: true, title: true } },
           facility: { select: { id: true, name: true } },
           appointment: true,
           encounters: { orderBy: { createdAt: 'desc' } },
@@ -71,7 +71,7 @@ export async function GET(request: NextRequest) {
         orderBy: { registeredAt: 'asc' },
         include: {
           patient: { select: { id: true, firstName: true, lastName: true, mrn: true } },
-          integration_providers: { select: { id: true, firstName: true, lastName: true, title: true } },
+          provider: { select: { id: true, firstName: true, lastName: true, title: true } },
         },
       })
 
@@ -107,7 +107,7 @@ export async function GET(request: NextRequest) {
         orderBy: { visitDate: 'desc' },
         include: {
           patient: { select: { id: true, firstName: true, lastName: true, mrn: true } },
-          integration_providers: { select: { id: true, firstName: true, lastName: true, title: true } },
+          provider: { select: { id: true, firstName: true, lastName: true, title: true } },
           facility: { select: { id: true, name: true } },
         },
       }),
@@ -171,7 +171,7 @@ export async function POST(request: NextRequest) {
       },
       include: {
         patient: { select: { id: true, firstName: true, lastName: true, mrn: true } },
-        integration_providers: { select: { id: true, firstName: true, lastName: true, title: true } },
+        provider: { select: { id: true, firstName: true, lastName: true, title: true } },
       },
     })
 

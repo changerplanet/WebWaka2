@@ -80,7 +80,7 @@ export async function createEncounter(
     }),
     include: {
       patient: { select: { id: true, firstName: true, lastName: true, mrn: true } },
-      integration_providers: { select: { id: true, firstName: true, lastName: true, title: true } },
+      provider: { select: { id: true, firstName: true, lastName: true, title: true } },
     },
   })
   
@@ -101,7 +101,7 @@ export async function getEncounter(tenantId: string, encounterId: string) {
     where: { id: encounterId, tenantId },
     include: {
       patient: { select: { id: true, firstName: true, lastName: true, mrn: true, allergies: true, conditions: true } },
-      integration_providers: { select: { id: true, firstName: true, lastName: true, title: true, specialty: true } },
+      provider: { select: { id: true, firstName: true, lastName: true, title: true, specialty: true } },
       facility: { select: { id: true, name: true } },
       visit: true,
       notes: { orderBy: { createdAt: 'asc' } },
@@ -130,7 +130,7 @@ export async function listPatientEncounters(
       take: limit,
       orderBy: { encounterDate: 'desc' },
       include: {
-        integration_providers: { select: { id: true, firstName: true, lastName: true, title: true } },
+        provider: { select: { id: true, firstName: true, lastName: true, title: true } },
         diagnoses: { where: { type: 'PRIMARY' } },
       },
     }),
@@ -349,7 +349,7 @@ export async function getPatientDiagnosisHistory(tenantId: string, patientId: st
       encounter: {
         select: { encounterDate: true, providerId: true },
         include: {
-          integration_providers: { select: { firstName: true, lastName: true, title: true } },
+          provider: { select: { firstName: true, lastName: true, title: true } },
         },
       },
     },
