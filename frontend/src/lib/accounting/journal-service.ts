@@ -501,7 +501,7 @@ export class JournalEntryService {
         include: { acct_chart_of_accounts: true },
       });
       if (ledgerAccount) {
-        reversalLines[i].accountCode = ledgerAccount.chartOfAccount.code;
+        reversalLines[i].accountCode = (ledgerAccount as any).acct_chart_of_accounts.code;
       }
     }
 
