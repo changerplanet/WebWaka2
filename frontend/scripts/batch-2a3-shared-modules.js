@@ -37,6 +37,56 @@ const PRISMA_MODEL_RENAMES = {
 };
 
 // =============================================================================
+// CONFIGURATION: Relation Property Mappings per file
+// Pattern: { file: { oldProperty: newProperty } }
+// These are mechanical fixes for relation access naming mismatches
+// =============================================================================
+
+const RELATION_PROPERTY_FIXES = {
+  // Inventory audit service - .items -> .inv_audit_items
+  'src/lib/inventory/audit-service.ts': {
+    '.items': '.inv_audit_items',
+  },
+  // Inventory transfer service - .items -> .inv_stock_transfer_items
+  'src/lib/inventory/transfer-service.ts': {
+    '.items': '.inv_stock_transfer_items',
+  },
+  // Inventory offline sync service
+  'src/lib/inventory/offline-sync-service.ts': {
+    // Context-dependent: audits use inv_audit_items, transfers use inv_stock_transfer_items
+    // Skip this - needs manual review for context
+  },
+  // CRM campaign service - .audiences -> .crm_campaign_audiences
+  'src/lib/crm/campaign-service.ts': {
+    '.audiences': '.crm_campaign_audiences',
+  },
+  // CRM loyalty service - .rules -> .crm_loyalty_rules
+  'src/lib/crm/loyalty-service.ts': {
+    '.rules': '.crm_loyalty_rules',
+  },
+  // Billing bundle service - .items -> .billing_bundle_items
+  'src/lib/billing/bundle-service.ts': {
+    '.items': '.billing_bundle_items',
+  },
+  // Procurement goods receipt service - .items -> .proc_goods_receipt_items
+  'src/lib/procurement/goods-receipt-service.ts': {
+    '.items': '.proc_goods_receipt_items',
+  },
+  // Procurement purchase order service - .items -> .proc_purchase_order_items
+  'src/lib/procurement/purchase-order-service.ts': {
+    '.items': '.proc_purchase_order_items',
+  },
+  // Procurement offline service - .items -> .proc_purchase_order_items
+  'src/lib/procurement/offline-service.ts': {
+    '.items': '.proc_purchase_order_items',
+  },
+  // Procurement supplier service - .receipts -> .proc_goods_receipts
+  'src/lib/procurement/supplier-service.ts': {
+    '.receipts': '.proc_goods_receipts',
+  },
+};
+
+// =============================================================================
 // CONFIGURATION: Files in scope (Internal Shared Modules ONLY)
 // =============================================================================
 
