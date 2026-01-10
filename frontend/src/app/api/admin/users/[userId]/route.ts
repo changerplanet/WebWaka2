@@ -38,19 +38,19 @@ export async function GET(
       include: {
         memberships: {
           include: {
-            Tenant: {
+            tenant: {
               select: { id: true, name: true, slug: true, status: true }
             }
           }
         },
-        partnerMembership: {
+        PartnerUser: {
           include: {
-            Partner: {
+            partner: {
               select: { id: true, name: true, slug: true, status: true, tier: true }
             }
           }
         },
-        sessions: {
+        Session: {
           select: {
             id: true,
             createdAt: true,
@@ -62,7 +62,7 @@ export async function GET(
           take: 10
         },
         _count: {
-          select: { sessions: true }
+          select: { Session: true }
         }
       }
     })
@@ -73,6 +73,8 @@ export async function GET(
         { status: 404 }
       )
     }
+
+    const userAny = user as any
 
     return NextResponse.json({
       success: true,
@@ -85,15 +87,15 @@ export async function GET(
         createdAt: user.createdAt.toISOString(),
         updatedAt: user.updatedAt.toISOString(),
         lastLoginAt: user.lastLoginAt?.toISOString() || null,
-        totalSessions: user._count.sessions,
-        recentSessions: user.sessions.map(s => ({
+        totalSessions: userAny._count.Session,
+        recentSessions: userAny.Session.map((s: any) => ({
           id: s.id,
           createdAt: s.createdAt.toISOString(),
           expiresAt: s.expiresAt.toISOString(),
           ipAddress: s.ipAddress,
           userAgent: s.userAgent
         })),
-        memberships: user.memberships.map(m => ({
+        memberships: userAny.memberships.map((m: any) => ({
           id: m.id,
           tenantId: m.tenantId,
           tenantName: m.tenant.name,
@@ -102,13 +104,13 @@ export async function GET(
           role: m.role,
           createdAt: m.createdAt.toISOString()
         })),
-        partnerMembership: user.partnerMembership ? {
-          partnerId: user.partnerMembership.partnerId,
-          partnerName: user.partnerMembership.partner.name,
-          partnerSlug: user.partnerMembership.partner.slug,
-          partnerTier: user.partnerMembership.partner.tier,
-          role: user.partnerMembership.role,
-          isActive: user.partnerMembership.isActive
+        partnerMembership: userAny.PartnerUser ? {
+          partnerId: userAny.PartnerUser.partnerId,
+          partnerName: userAny.PartnerUser.partner.name,
+          partnerSlug: userAny.PartnerUser.partner.slug,
+          partnerTier: userAny.PartnerUser.partner.tier,
+          role: userAny.PartnerUser.role,
+          isActive: userAny.PartnerUser.isActive
         } : null
       }
     })
