@@ -36,7 +36,7 @@ export interface RecordExpenseFactInput {
   partyId?: string;
   amount: number;
   currency?: string;
-  ProductCategory: PolExpenseCategory;
+  category: PolExpenseCategory;
   beneficiaryType?: string;
   beneficiaryName: string;
   beneficiaryAddress?: string;
