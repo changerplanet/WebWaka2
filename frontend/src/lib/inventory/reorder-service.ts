@@ -547,7 +547,7 @@ export class ReorderSuggestionEngine {
         const [product, location, supplier] = await Promise.all([
           prisma.product.findUnique({
             where: { id: suggestion.productId },
-            include: { variants: true },
+            include: { ProductVariant: true },
           }),
           prisma.location.findUnique({ where: { id: suggestion.locationId } }),
           rule.preferredSupplierId
@@ -557,8 +557,9 @@ export class ReorderSuggestionEngine {
 
         if (!product || !location) continue;
 
+        const productAny = product as any;
         const variant = suggestion.variantId
-          ? product.variants.find(v => v.id === suggestion.variantId)
+          ? productAny.ProductVariant?.find((v: any) => v.id === suggestion.variantId)
           : null;
 
         // Calculate estimated cost
@@ -569,7 +570,7 @@ export class ReorderSuggestionEngine {
           : undefined;
 
         // Create suggestion
-        const created = await prisma.inv_reorder_suggestions.create({
+        const created = await (prisma.inv_reorder_suggestions.create as any)({
           data: {
             tenantId,
             ruleId: rule.id,
