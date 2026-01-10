@@ -733,56 +733,12 @@ export class StockTransferService {
   /**
    * Convert to API response
    */
-  private static toResponse(transfer: {
-    id: string;
-    tenantId: string;
-    transferNumber: string;
-    fromWarehouseId: string;
-    toWarehouseId: string;
-    status: string;
-    priority: string;
-    reason: string | null;
-    requestedDate: Date;
-    approvedDate: Date | null;
-    shippedDate: Date | null;
-    expectedArrival: Date | null;
-    receivedDate: Date | null;
-    requestedByName: string | null;
-    approvedByName: string | null;
-    createdAt: Date;
-    updatedAt: Date;
-    items: Array<{
-      id: string;
-      productId: string;
-      variantId: string | null;
-      productName: string;
-      variantName: string | null;
-      sku: string | null;
-      quantityRequested: number;
-      quantityShipped: number;
-      quantityReceived: number;
-      varianceQuantity: number | null;
-      varianceReason: string | null;
-      batchNumber: string | null;
-      lotNumber: string | null;
-      expiryDate: Date | null;
-    }>;
-    fromWarehouse: {
-      id: string;
-      tenantId: string;
-      locationId: string;
-      name: string;
-      code: string;
-    };
-    toWarehouse: {
-      id: string;
-      tenantId: string;
-      locationId: string;
-      name: string;
-      code: string;
-    };
-  }): StockTransferResponse {
-    const items: StockTransferItemResponse[] = transfer.inv_stock_transfer_items.map(i => ({
+  private static toResponse(
+    transfer: any,
+    fromWarehouse?: any,
+    toWarehouse?: any
+  ): StockTransferResponse {
+    const items: StockTransferItemResponse[] = (transfer.inv_stock_transfer_items || []).map((i: any) => ({
       id: i.id,
       productId: i.productId,
       variantId: i.variantId || undefined,
@@ -799,16 +755,19 @@ export class StockTransferService {
       expiryDate: i.expiryDate || undefined,
     }));
 
+    const fromWh = fromWarehouse || transfer.fromWarehouse;
+    const toWh = toWarehouse || transfer.toWarehouse;
+
     return {
       id: transfer.id,
       tenantId: transfer.tenantId,
       transferNumber: transfer.transferNumber,
-      fromWarehouse: {
-        id: transfer.fromWarehouse.id,
-        tenantId: transfer.fromWarehouse.tenantId,
-        locationId: transfer.fromWarehouse.locationId,
-        name: transfer.fromWarehouse.name,
-        code: transfer.fromWarehouse.code,
+      fromWarehouse: fromWh ? {
+        id: fromWh.id,
+        tenantId: fromWh.tenantId,
+        locationId: fromWh.locationId,
+        name: fromWh.name,
+        code: fromWh.code,
         description: undefined,
         warehouseType: 'GENERAL',
         fulfillmentPriority: 0,
@@ -818,13 +777,13 @@ export class StockTransferService {
         isDefaultForReceiving: false,
         createdAt: new Date(),
         updatedAt: new Date(),
-      },
-      toWarehouse: {
-        id: transfer.toWarehouse.id,
-        tenantId: transfer.toWarehouse.tenantId,
-        locationId: transfer.toWarehouse.locationId,
-        name: transfer.toWarehouse.name,
-        code: transfer.toWarehouse.code,
+      } : undefined as any,
+      toWarehouse: toWh ? {
+        id: toWh.id,
+        tenantId: toWh.tenantId,
+        locationId: toWh.locationId,
+        name: toWh.name,
+        code: toWh.code,
         description: undefined,
         warehouseType: 'GENERAL',
         fulfillmentPriority: 0,
@@ -834,7 +793,7 @@ export class StockTransferService {
         isDefaultForReceiving: false,
         createdAt: new Date(),
         updatedAt: new Date(),
-      },
+      } : undefined as any,
       status: transfer.status,
       priority: transfer.priority,
       reason: transfer.reason || undefined,
