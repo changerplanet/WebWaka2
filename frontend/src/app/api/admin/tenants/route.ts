@@ -129,7 +129,7 @@ export async function POST(request: NextRequest) {
             status: 'VERIFIED',
             isPrimary: true,
             verifiedAt: new Date()
-          }
+          } as any
         }
       },
       include: {
@@ -149,7 +149,7 @@ export async function POST(request: NextRequest) {
             id: uuidv4(),
             email: adminEmail.toLowerCase(),
             globalRole: 'USER'
-          }
+          } as any
         })
       }
       
@@ -159,7 +159,7 @@ export async function POST(request: NextRequest) {
           userId: user.id,
           tenantId: tenant.id,
           role: 'TENANT_ADMIN'
-        }
+        } as any
       })
     }
     
