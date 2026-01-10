@@ -316,7 +316,7 @@ export async function grantEntitlement(
       validUntil: options.validUntil,
       limits: options.limits,
       source: options.source || 'subscription'
-    },
+    } as any,
     update: {
       subscriptionId: options.subscriptionId,
       status: 'ACTIVE',
