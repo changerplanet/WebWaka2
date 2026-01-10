@@ -260,7 +260,7 @@ export class OfflineService {
     // Process proofs
     if (request.proofs?.length) {
       const proofResults = await ProofService.syncOfflineProofs(tenantId, request.proofs)
-      response.proofs = proofResults.map(r => ({
+      response.logistics_delivery_proofs = proofResults.map(r => ({
         offlineId: r.offlineId || '',
         success: r.success,
         id: r.success ? r.id : undefined,
