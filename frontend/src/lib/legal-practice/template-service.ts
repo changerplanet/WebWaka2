@@ -5,7 +5,10 @@
 
 import { withPrismaDefaults } from '@/lib/db/prismaDefaults'
 import { prisma } from '@/lib/prisma';
-import { leg_MatterType, leg_MatterStatus, leg_BillingType } from '@prisma/client';
+import { leg_MatterType, leg_MatterStatus } from '@prisma/client';
+
+// Billing types (stored as strings in schema)
+type BillingType = 'RETAINER' | 'HOURLY' | 'FLAT_FEE' | 'CONTINGENCY';
 
 // ============================================================================
 // TYPES
