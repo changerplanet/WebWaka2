@@ -349,7 +349,7 @@ export async function activateTenant(
         tenantId: input.tenantId,
         role: 'TENANT_ADMIN',
         isActive: true
-      },
+      } as any,
       update: {
         role: 'TENANT_ADMIN',
         isActive: true
@@ -380,7 +380,7 @@ export async function activateTenant(
             reason: 'first_payment',
             paymentReference: input.paymentReference
           }
-        }
+        } as any
       })
     }
     
