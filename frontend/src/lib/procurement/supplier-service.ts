@@ -74,7 +74,7 @@ export class SupplierService {
     })
 
     // Create new price entry
-    const price = await prisma.proc_supplier_price_lists.create({
+    const price = await (prisma.proc_supplier_price_lists.create as any)({
       data: {
         tenantId,
         supplierId: input.supplierId,
@@ -120,7 +120,7 @@ export class SupplierService {
    * List supplier prices
    */
   static async listPrices(tenantId: string, filters: SupplierPriceFilters = {}) {
-    const where: Prisma.ProcSupplierPriceListWhereInput = {
+    const where: Prisma.proc_supplier_price_listsWhereInput = {
       tenantId,
       ...(filters.supplierId && { supplierId: filters.supplierId }),
       ...(filters.productId && { productId: filters.productId }),
@@ -270,7 +270,7 @@ export class SupplierService {
       : qualityScore || deliveryScore || null
 
     // Upsert performance record
-    const performance = await prisma.proc_supplier_performance.upsert({
+    const performance = await (prisma.proc_supplier_performance.upsert as any)({
       where: {
         tenantId_supplierId_periodStart_periodEnd: {
           tenantId,
@@ -348,7 +348,7 @@ export class SupplierService {
    * List supplier performance records
    */
   static async listPerformance(tenantId: string, filters: SupplierPerformanceFilters = {}) {
-    const where: Prisma.ProcSupplierPerformanceWhereInput = {
+    const where: Prisma.proc_supplier_performanceWhereInput = {
       tenantId,
       ...(filters.supplierId && { supplierId: filters.supplierId }),
       ...(filters.fromDate && { periodStart: { gte: filters.fromDate } }),
