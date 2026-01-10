@@ -446,7 +446,7 @@ export class OfflineSyncService {
     // Apply ship action
     try {
       for (const shipItem of payload.items) {
-        const item = transfer.items.find(
+        const item = transfer.inv_stock_transfer_items.find(
           i => i.productId === shipItem.productId &&
                (i.variantId || null) === (shipItem.variantId || null)
         );
@@ -547,7 +547,7 @@ export class OfflineSyncService {
 
     try {
       for (const receiveItem of payload.items) {
-        const item = transfer.items.find(
+        const item = transfer.inv_stock_transfer_items.find(
           i => i.productId === receiveItem.productId &&
                (i.variantId || null) === (receiveItem.variantId || null)
         );
@@ -739,7 +739,7 @@ export class OfflineSyncService {
       const conflicts: Array<{ productId: string; serverCount: number; offlineCount: number }> = [];
 
       for (const count of payload.counts) {
-        const item = audit.items.find(
+        const item = audit.inv_audit_items.find(
           i => i.productId === count.productId &&
                (i.variantId || null) === (count.variantId || null)
         );
