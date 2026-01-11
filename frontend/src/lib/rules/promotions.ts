@@ -98,5 +98,5 @@ export { getPromotion as getPromotionRule } from '../promotions-storage'
 export { updatePromotion as updatePromotionRule } from '../promotions-storage'
 export { deletePromotion as deletePromotionRule } from '../promotions-storage'
 export { getPromotions as listPromotionRules } from '../promotions-storage'
-export type { Promotion as PromotionRule }
-export type { AppliedPromotion as PromotionResult }
+export type PromotionRule = _Promotion
+export type PromotionResult = _AppliedPromotion
