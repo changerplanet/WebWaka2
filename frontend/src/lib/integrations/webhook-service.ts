@@ -118,7 +118,7 @@ export async function verifyWebhookSignature(
     return false
   }
   
-  const algo = webhook.instance.provider.webhookSignatureAlgo || 'sha256'
+  const algo = webhook.instance.integration_providers.webhookSignatureAlgo || 'sha256'
   const expectedSignature = crypto
     .createHmac(algo, webhook.secretKey)
     .update(payload)
@@ -159,7 +159,7 @@ export async function processInboundWebhook(
   }
   
   // Determine event type from payload
-  const eventType = determineEventType(webhook.instance.provider.key, payload)
+  const eventType = determineEventType(webhook.instance.integration_providers.key, payload)
   
   if (!webhook.events.includes('*') && !webhook.events.includes(eventType)) {
     return { success: false, eventEmitted: null, error: `Event type '${eventType}' not subscribed` }
@@ -201,7 +201,7 @@ export async function processInboundWebhook(
       tenantId: webhook.instance.tenantId,
       eventType: emittedEvent,
       eventData: {
-        provider: webhook.instance.provider.key,
+        provider: webhook.instance.integration_providers.key,
         originalEvent: eventType,
         payload,
         logId: log.id,
@@ -238,7 +238,7 @@ export async function sendOutboundWebhook(
   
   // Sign the payload
   const payloadString = JSON.stringify(payload)
-  const algo = webhook.instance.provider.webhookSignatureAlgo || 'sha256'
+  const algo = webhook.instance.integration_providers.webhookSignatureAlgo || 'sha256'
   const signature = webhook.secretKey
     ? crypto.createHmac(algo, webhook.secretKey).update(payloadString).digest('hex')
     : ''
