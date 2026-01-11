@@ -11,6 +11,7 @@
 import { prisma } from '@/lib/prisma'
 import { B2BBulkOrderStatus, Prisma } from '@prisma/client'
 import { B2BPricingService } from './pricing-service'
+import { withPrismaDefaults } from '@/lib/db/prismaDefaults'
 
 // ============================================================================
 // TYPES
@@ -114,7 +115,7 @@ export class B2BBulkOrderService {
     const estimatedTotal = subtotal - discountTotal
 
     const draft = await prisma.b2b_bulk_order_drafts.create({
-      data: {
+      data: withPrismaDefaults({
         tenantId,
         profileId: input.profileId,
         name: input.name,
@@ -127,7 +128,7 @@ export class B2BBulkOrderService {
         offlineId: input.offlineId,
         createdBy,
         status: 'DRAFT',
-      },
+      }),
     })
 
     return this.formatDraft(draft)
