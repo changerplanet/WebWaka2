@@ -351,12 +351,12 @@ export class B2BCustomerService {
   }
 
   private static async logEvent(tenantId: string, eventType: string, eventData: Record<string, unknown>) {
-    await prisma.b2BEventLog.create({
-      data: {
+    await prisma.b2b_event_logs.create({
+      data: withPrismaDefaults({
         tenantId,
         eventType,
         eventData: eventData as Prisma.InputJsonValue,
-      },
+      }),
     })
   }
 }
