@@ -535,7 +535,7 @@ export async function checkPayoutReadiness(
   
   // Log the readiness check
   await prisma.auditLog.create({
-    data: {
+    data: withPrismaDefaults({
       action: 'PAYOUT_READINESS_CHECKED',
       actorId: 'system',
       actorEmail: 'payout@webwaka.internal',
@@ -549,7 +549,7 @@ export async function checkPayoutReadiness(
         netAmount,
         earningsCount: payableEarnings.length
       }
-    }
+    })
   })
   
   return {
