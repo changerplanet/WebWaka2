@@ -260,7 +260,7 @@ export async function sendOutboundWebhook(
     
     // Log the call
     await prisma.integration_logs.create({
-      data: {
+      data: withPrismaDefaults({
         tenantId: webhook.instance.tenantId,
         instanceId: webhook.instanceId,
         logType: 'webhook_sent',
@@ -277,7 +277,7 @@ export async function sendOutboundWebhook(
         errorMessage: response.ok ? null : response.statusText,
         retryCount,
         isRetry: retryCount > 0,
-      },
+      }),
     })
     
     // Update metrics
@@ -304,7 +304,7 @@ export async function sendOutboundWebhook(
   } catch (error) {
     // Log the error
     await prisma.integration_logs.create({
-      data: {
+      data: withPrismaDefaults({
         tenantId: webhook.instance.tenantId,
         instanceId: webhook.instanceId,
         logType: 'webhook_sent',
