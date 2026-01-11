@@ -60,7 +60,7 @@ export async function generateInsight(input: GenerateInsightInput): Promise<{
     }
     
     const insight = await prisma.ai_insights.create({
-      data: {
+      data: withPrismaDefaults({
         tenantId: input.tenantId,
         insightType: input.insightType,
         title: input.title,
@@ -75,7 +75,7 @@ export async function generateInsight(input: GenerateInsightInput): Promise<{
         status: 'ACTIVE',
         validFrom: new Date(),
         validTo: input.validTo,
-      },
+      }),
     });
     
     await logAIEvent({
