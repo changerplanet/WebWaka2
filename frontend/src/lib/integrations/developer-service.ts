@@ -188,13 +188,13 @@ export async function verifyDeveloperApp(
   
   // Log event
   await prisma.integration_event_logs.create({
-    data: {
+    data: withPrismaDefaults({
       eventType: 'DEVELOPER_APP_VERIFIED',
       eventData: { appId, verifiedBy },
       appId,
       actorId: verifiedBy,
       actorType: 'super_admin',
-    },
+    }),
   })
   
   return app
