@@ -199,7 +199,7 @@ export async function GET(request: NextRequest) {
       where,
       include: {
         ProductCategory: true,
-        variants: true
+        ProductVariant: true
       },
       orderBy,
       take: limit,
@@ -257,7 +257,7 @@ export async function POST(request: NextRequest) {
       },
       include: {
         ProductCategory: true,
-        variants: true
+        ProductVariant: true
       }
     })
     
