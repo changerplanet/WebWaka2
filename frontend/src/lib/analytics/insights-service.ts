@@ -108,18 +108,18 @@ export class InsightsService {
     category?: string
     limit?: number
   }): Promise<InsightOutput[]> {
-    const where: Prisma.AnalyticsInsightWhereInput = {
+    const where: Prisma.ai_insightsWhereInput = {
       tenantId,
       ...(options?.status && { status: { in: options.status } }),
       ...(options?.severity && { severity: { in: options.severity } }),
-      ...(options?.category && { category: options.category }),
+      ...(options?.category && { insightType: options.category }),
       OR: [
-        { validUntil: null },
-        { validUntil: { gte: new Date() } },
+        { validTo: null },
+        { validTo: { gte: new Date() } },
       ],
     }
 
-    const insights = await prisma.analytics_insights.findMany({
+    const insights = await prisma.ai_insights.findMany({
       where,
       orderBy: [
         { severity: 'desc' },
