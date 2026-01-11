@@ -104,7 +104,7 @@ export async function startClientSubscription(
     }
     
     // Check for existing active subscription
-    if (instance.subscriptions.length > 0) {
+    if (instance.InstanceSubscription && instance.InstanceSubscription.status !== 'CANCELLED') {
       return {
         success: false,
         error: 'Instance already has an active subscription',
