@@ -15,6 +15,7 @@ import { CommissionTypeExt, CommissionEventType, CommissionStatusExt } from '@pr
 import { prisma } from '@/lib/prisma';
 import { getPartnerConfiguration } from './config-service';
 import { logPartnerEvent } from './event-service';
+import { withPrismaDefaults } from '@/lib/db/prismaDefaults';
 
 // ============================================================================
 // COMMISSION RULE MANAGEMENT
@@ -42,7 +43,7 @@ export async function createCommissionRule(input: CreateCommissionRuleInput): Pr
 }> {
   try {
     const rule = await prisma.partner_commission_rules_ext.create({
-      data: {
+      data: withPrismaDefaults({
         partnerId: input.partnerId,
         name: input.name,
         description: input.description,
@@ -56,7 +57,7 @@ export async function createCommissionRule(input: CreateCommissionRuleInput): Pr
         validTo: input.validTo,
         priority: input.priority ?? 0,
         isActive: true,
-      },
+      }),
     });
     
     // Log event
@@ -233,7 +234,7 @@ async function createCommissionRecord(data: {
 }): Promise<{ success: boolean; commission?: any; error?: string }> {
   try {
     const commission = await prisma.partner_commission_records_ext.create({
-      data: {
+      data: withPrismaDefaults({
         partnerId: data.partnerId,
         attributionId: data.attributionId,
         eventType: data.eventType,
@@ -244,7 +245,7 @@ async function createCommissionRecord(data: {
         commissionAmount: data.commissionAmount,
         currency: data.currency || 'NGN',
         status: 'PENDING',
-      },
+      }),
     });
     
     // Update partner pending earnings
