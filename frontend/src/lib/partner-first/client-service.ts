@@ -15,6 +15,7 @@ import { prisma } from '../prisma'
 import { TenantStatus, Tenant, PlatformInstance, TenantDomain } from '@prisma/client'
 import { requirePartnerOwner, requirePartnerAccess } from '../partner-authorization'
 import { createDefaultInstanceForTenant } from '../platform-instance/default-instance'
+import { withPrismaDefaults } from '../db/prismaDefaults'
 import { v4 as uuidv4 } from 'uuid'
 
 // ============================================================================
@@ -180,8 +181,7 @@ export async function createClientPlatform(
   const result = await prisma.$transaction(async (tx) => {
     // Create tenant
     const tenant = await tx.tenant.create({
-      data: {
-        id: uuidv4(),
+      data: withPrismaDefaults({
         name: input.name,
         slug: input.slug,
         status: 'PENDING_ACTIVATION',
@@ -191,41 +191,38 @@ export async function createClientPlatform(
         logoUrl: input.branding?.logoUrl || null,
         requestedModules: input.requestedCapabilities || [],
         activatedModules: [],
-      }
+      })
     })
     
     // Create default subdomain
     const domain = await tx.tenantDomain.create({
-      data: {
-        id: uuidv4(),
+      data: withPrismaDefaults({
         tenantId: tenant.id,
         domain: input.slug,
         type: 'SUBDOMAIN',
         status: 'VERIFIED',
         isPrimary: true,
-      }
+      })
     })
     
     // Create custom domain if provided
     let customDomainRecord: TenantDomain | null = null
     if (input.customDomain) {
       customDomainRecord = await tx.tenantDomain.create({
-        data: {
-          id: uuidv4(),
+        data: withPrismaDefaults({
           tenantId: tenant.id,
           domain: input.customDomain,
           type: 'CUSTOM',
           status: 'PENDING',
           isPrimary: false,
           verificationToken: uuidv4(),
-        }
+        })
       })
     }
     
     // Create partner referral/attribution
     await tx.partnerReferral.create({
-      data: {
-        id: uuidv4(),
+      data: withPrismaDefaults({
         partnerId,
         tenantId: tenant.id,
         attributionMethod: 'PARTNER_CREATED',
@@ -238,12 +235,12 @@ export async function createClientPlatform(
           requestedCapabilities: input.requestedCapabilities,
           notes: input.notes,
         }
-      }
+      })
     })
     
     // Audit log
     await tx.auditLog.create({
-      data: {
+      data: withPrismaDefaults({
         action: 'PARTNER_TENANT_CREATED',
         actorId: authResult.user.id,
         actorEmail: authResult.user.email || 'unknown',
@@ -256,7 +253,7 @@ export async function createClientPlatform(
           tenantSlug: tenant.slug,
           adminEmail: input.adminEmail,
         }
-      }
+      })
     })
     
     return { tenant, domain, customDomain: customDomainRecord }
