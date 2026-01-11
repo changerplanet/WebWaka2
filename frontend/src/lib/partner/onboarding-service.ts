@@ -15,6 +15,7 @@ import { PartnerStatus, PartnerType, VerificationStatus } from '@prisma/client';
 import { prisma } from '@/lib/prisma';
 import { getPartnerConfiguration } from './config-service';
 import { logPartnerEvent } from './event-service';
+import { withPrismaDefaults } from '@/lib/db/prismaDefaults';
 
 // ============================================================================
 // PARTNER SIGNUP
@@ -87,7 +88,7 @@ export async function createPartnerApplication(input: PartnerSignupInput): Promi
     
     // Create partner in existing Core Partner model
     const partner = await prisma.partner.create({
-      data: {
+      data: withPrismaDefaults({
         name: input.name,
         slug: partnerCode.toLowerCase().replace(/[^a-z0-9]/g, '-'),
         email: input.email,
@@ -102,12 +103,12 @@ export async function createPartnerApplication(input: PartnerSignupInput): Promi
           signupSource: 'web',
           signupDate: new Date().toISOString(),
         },
-      },
+      }),
     });
     
     // Create partner profile extension
     await prisma.partner_profiles_ext.create({
-      data: {
+      data: withPrismaDefaults({
         partnerId: partner.id,
         partnerType: input.partnerType || 'INDIVIDUAL',
         cacNumber: input.cacNumber,
@@ -121,16 +122,16 @@ export async function createPartnerApplication(input: PartnerSignupInput): Promi
         specialties: input.specialties || [],
         servicesOffered: input.servicesOffered || [],
         regionsServed: input.regionsServed || [],
-      },
+      }),
     });
     
     // Create verification record if required
     if (config.verificationRequired) {
       await prisma.partner_verifications.create({
-        data: {
+        data: withPrismaDefaults({
           partnerId: partner.id,
           status: 'PENDING',
-        },
+        }),
       });
     }
     
