@@ -399,7 +399,7 @@ export async function GET(request: NextRequest) {
           sessionId ? { sessionId } : {}
         ].filter(o => Object.keys(o).length > 0)
       },
-      include: { items: true }
+      include: { svm_cart_items: true }
     })
 
     if (!cart) {
@@ -433,7 +433,7 @@ export async function GET(request: NextRequest) {
         customerId: cart.customerId,
         sessionId: cart.sessionId,
         email: cart.email,
-        items: cart.items.map(item => ({
+        items: cart.svm_cart_items.map((item: { productId: string; variantId: string | null; productName: string; variantName: string | null; sku: string | null; imageUrl: string | null; unitPrice: { toString: () => string }; quantity: number; lineTotal: { toString: () => string }; discountAmount: { toString: () => string } }) => ({
           productId: item.productId,
           variantId: item.variantId,
           productName: item.productName,
