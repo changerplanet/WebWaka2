@@ -52,7 +52,7 @@ export class B2BConfigService {
    * Get B2B status for tenant
    */
   static async getStatus(tenantId: string): Promise<B2BStatus> {
-    const config = await prisma.b2BConfiguration.findUnique({
+    const config = await prisma.b2b_configurations.findUnique({
       where: { tenantId },
     })
 
@@ -122,7 +122,7 @@ export class B2BConfigService {
    * Initialize B2B for tenant
    */
   static async initialize(tenantId: string, options?: Partial<B2BConfig>): Promise<B2BConfig> {
-    const config = await prisma.b2BConfiguration.upsert({
+    const config = await prisma.b2b_configurations.upsert({
       where: { tenantId },
       create: {
         tenantId,
@@ -170,7 +170,7 @@ export class B2BConfigService {
    * Update B2B configuration
    */
   static async updateConfig(tenantId: string, updates: Partial<B2BConfig>): Promise<B2BConfig> {
-    const config = await prisma.b2BConfiguration.update({
+    const config = await prisma.b2b_configurations.update({
       where: { tenantId },
       data: {
         b2bEnabled: updates.b2bEnabled,
