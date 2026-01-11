@@ -7,6 +7,7 @@
 
 import { prisma } from '@/lib/prisma'
 import { Prisma } from '@prisma/client'
+import { withPrismaDefaults } from '@/lib/db/prismaDefaults'
 
 type CommerceWalletType = 'CUSTOMER' | 'VENDOR' | 'PLATFORM'
 type LedgerEntryType = 
@@ -70,7 +71,7 @@ export async function getOrCreateWallet(params: CreateWalletParams) {
   if (!wallet) {
     // Create new wallet
     wallet = await prisma.commerce_wallets.create({
-      data: {
+      data: withPrismaDefaults({
         tenantId,
         type,
         customerId: customerId || null,
@@ -80,7 +81,7 @@ export async function getOrCreateWallet(params: CreateWalletParams) {
         pendingBalance: 0,
         availableBalance: 0,
         metadata: metadata ? JSON.parse(JSON.stringify(metadata)) : undefined
-      }
+      })
     })
   }
 
