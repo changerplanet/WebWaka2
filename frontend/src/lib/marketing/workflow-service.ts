@@ -199,7 +199,7 @@ export class WorkflowService {
   ): Promise<WorkflowOutput> {
     const template = await prisma.mkt_automation_workflows.findFirst({
       where: { tenantId, templateKey, isTemplate: true },
-      include: { triggers: true, actions: true },
+      include: { mkt_automation_triggers: true, mkt_automation_actions: true },
     })
 
     if (!template) {
@@ -213,8 +213,8 @@ export class WorkflowService {
         description: overrides?.description || template.description,
         isRecurring: template.isRecurring,
         createdBy,
-        triggers: {
-          create: template.triggers.map(t => withPrismaDefaults({
+        mkt_automation_triggers: {
+          create: template.mkt_automation_triggers.map(t => withPrismaDefaults({
             type: t.type,
             eventName: t.eventName,
             conditions: t.conditions as Prisma.InputJsonValue || Prisma.JsonNull,
@@ -223,8 +223,8 @@ export class WorkflowService {
             sortOrder: t.sortOrder,
           })),
         },
-        actions: {
-          create: template.actions.map(a => withPrismaDefaults({
+        mkt_automation_actions: {
+          create: template.mkt_automation_actions.map(a => withPrismaDefaults({
             type: a.type,
             config: a.config as Prisma.InputJsonValue,
             delayMinutes: a.delayMinutes,
@@ -233,8 +233,8 @@ export class WorkflowService {
         },
       }),
       include: {
-        triggers: { orderBy: { sortOrder: 'asc' } },
-        actions: { orderBy: { sortOrder: 'asc' } },
+        mkt_automation_triggers: { orderBy: { sortOrder: 'asc' } },
+        mkt_automation_actions: { orderBy: { sortOrder: 'asc' } },
       },
     })
 
@@ -255,8 +255,8 @@ export class WorkflowService {
         ...(input.endDate !== undefined && { endDate: input.endDate }),
       },
       include: {
-        triggers: { orderBy: { sortOrder: 'asc' } },
-        actions: { orderBy: { sortOrder: 'asc' } },
+        mkt_automation_triggers: { orderBy: { sortOrder: 'asc' } },
+        mkt_automation_actions: { orderBy: { sortOrder: 'asc' } },
       },
     })
 
@@ -270,7 +270,7 @@ export class WorkflowService {
     const workflow = await prisma.mkt_automation_workflows.update({
       where: { id },
       data: { status: 'ACTIVE' },
-      include: { triggers: true, actions: true },
+      include: { mkt_automation_triggers: true, mkt_automation_actions: true },
     })
 
     return this.formatWorkflow(workflow)
@@ -283,7 +283,7 @@ export class WorkflowService {
     const workflow = await prisma.mkt_automation_workflows.update({
       where: { id },
       data: { status: 'PAUSED' },
-      include: { triggers: true, actions: true },
+      include: { mkt_automation_triggers: true, mkt_automation_actions: true },
     })
 
     return this.formatWorkflow(workflow)
@@ -305,7 +305,7 @@ export class WorkflowService {
   static async getTemplates(tenantId: string): Promise<WorkflowOutput[]> {
     const templates = await prisma.mkt_automation_workflows.findMany({
       where: { tenantId, isTemplate: true },
-      include: { triggers: true, actions: true },
+      include: { mkt_automation_triggers: true, mkt_automation_actions: true },
       orderBy: { name: 'asc' },
     })
 
