@@ -301,7 +301,7 @@ export async function configureCredentials(
   
   // Log event
   await prisma.integration_event_logs.create({
-    data: {
+    data: withPrismaDefaults({
       tenantId: instance.tenantId,
       eventType: 'CREDENTIALS_CONFIGURED',
       eventData: {
@@ -311,7 +311,7 @@ export async function configureCredentials(
       instanceId,
       actorId: configuredBy,
       actorType: 'tenant_admin',
-    },
+    }),
   })
   
   return updated
