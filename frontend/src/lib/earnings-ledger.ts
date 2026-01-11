@@ -223,7 +223,7 @@ export async function createReversalEntry(
   const reversal = await prisma.$transaction(async (tx) => {
     // Create debit entry
     const debitEntry = await tx.partnerEarning.create({
-      data: {
+      data: withPrismaDefaults({
         partnerId: original.partnerId,
         referralId: original.referralId,
         agreementId: original.agreementId,
@@ -243,7 +243,7 @@ export async function createReversalEntry(
         createdByUserId: userId || 'system',
         status: 'CLEARED', // Reversals are immediately cleared
         clearedAt: new Date()
-      }
+      })
     })
     
     // Update original entry status
@@ -259,7 +259,7 @@ export async function createReversalEntry(
     
     // Audit log
     await tx.auditLog.create({
-      data: {
+      data: withPrismaDefaults({
         action: 'EARNING_REVERSED',
         actorId: userId || 'system',
         actorEmail: 'commission@webwaka.internal',
@@ -271,7 +271,7 @@ export async function createReversalEntry(
           originalAmount: Number(original.commissionAmount),
           reversalAmount: Number(original.commissionAmount) * -1
         }
-      }
+      })
     })
     
     return debitEntry
