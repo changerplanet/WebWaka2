@@ -356,7 +356,7 @@ export async function getPartnerEarnings(
     prisma.partnerInstanceEarning.findMany({
       where,
       include: {
-        platformInstance: {
+        PlatformInstance: {
           select: { id: true, name: true, slug: true }
         }
       },
