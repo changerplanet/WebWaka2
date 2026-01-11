@@ -72,14 +72,14 @@ export async function POST(request: NextRequest) {
           { sessionId: sessionId || undefined }
         ].filter(Boolean)
       },
-      include: { items: true }
+      include: { svm_cart_items: true }
     })
 
     // If customer has no cart but session does, try to find session cart
     if (!cart && customerId && sessionId) {
       const sessionCart = await prisma.svm_carts.findFirst({
         where: { tenantId, sessionId, status: 'ACTIVE' },
-        include: { items: true }
+        include: { svm_cart_items: true }
       })
       
       if (sessionCart) {
@@ -87,7 +87,7 @@ export async function POST(request: NextRequest) {
         cart = await prisma.svm_carts.update({
           where: { id: sessionCart.id },
           data: { customerId, sessionId: null },
-          include: { items: true }
+          include: { svm_cart_items: true }
         })
       }
     }
@@ -103,7 +103,7 @@ export async function POST(request: NextRequest) {
           status: 'ACTIVE',
           expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) // 7 days
         }),
-        include: { items: true }
+        include: { svm_cart_items: true }
       })
     }
 
