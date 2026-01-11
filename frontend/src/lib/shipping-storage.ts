@@ -470,6 +470,7 @@ export async function addRate(tenantId: string, zoneId: string, rate: ShippingRa
   const created = await prisma.svm_shipping_rates.create({
     data: {
       id: rate.id,
+      updatedAt: new Date(),
       zoneId,
       name: rate.name,
       description: rate.description,
