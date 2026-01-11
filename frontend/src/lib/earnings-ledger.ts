@@ -747,8 +747,8 @@ export async function processEventForCommission(
   // Get partner's active agreement
   const agreement = await prisma.partnerAgreement.findFirst({
     where: {
-      partner: {
-        referrals: {
+      Partner: {
+        PartnerReferral: {
           some: {
             id: event.partnerId
           }
