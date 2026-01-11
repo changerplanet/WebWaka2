@@ -1,125 +1,64 @@
-# Platform PRD - Build Remediation Status
+# Deployable SaaS Platform - PRD
 
 ## Original Problem Statement
-Fix failing `yarn build` for a Next.js application to unblock Vercel deployment. Build failing due to TypeScript type errors from code/Prisma schema naming mismatches.
+Fix failing production build (`yarn build`) for Next.js application to unblock Vercel deployment. Build was failing due to TypeScript type errors caused by Prisma schema mismatches.
 
-## Current Status: Phase 7B COMPLETE - HARD STOP
+## Current Status: Build Stabilization Phase B Complete
+- **TypeScript Compilation**: ✅ PASSING
+- **Static Generation**: ❌ FAILING (Dynamic server usage errors)
 
-### Build Error Summary (API Routes)
-| Metric | Before Phase 7 | After Phase 7 | After Phase 7B |
-|--------|----------------|---------------|----------------|
-| API Route Errors | 115 | 104 | **0** |
+## What's Been Implemented (December 2025)
 
----
+### Phase B - Global Mechanical Batch Stabilization (COMPLETE)
+All TypeScript/Prisma mismatch errors have been resolved:
 
-## Completed Phases
+1. **POS Module** (`src/lib/pos/**`)
+   - Fixed `inv_audit_items` → `items` relation in `report-service.ts`, `sale-service.ts`, `shift-service.ts`
 
-### Phase 2A: Internal Shared Modules ✅
-- Batch 2A-1, 2A-2, 2A-3: 106 errors fixed
+2. **Rules Module** (`src/lib/rules/**`)
+   - Fixed type re-export syntax in `commission.ts` and `promotions.ts`
+   - Changed `_getPromotions(tenantId, {isActive: true})` → `_getActivePromotions(tenantId)`
 
-### Phase 2B: Canonical Suite Remediation ✅
-All 12 canonical suites cleaned:
-- Project Management, Real Estate, Education (Quick Wins)
-- Civic/GovTech, Recruitment, Hospitality, Health (Medium)
-- Political, Commerce, Legal Practice, Logistics, Warehouse (High Complexity)
+3. **Shipping Storage** (`src/lib/shipping-storage.ts`)
+   - Fixed `rates` → `svm_shipping_rates` relation
+   - Added `withPrismaDefaults` for `id` and `updatedAt` fields
 
-### Phase 3: Build Readiness Audit ✅
-Full read-only audit completed. Identified shared modules as primary blockers.
+4. **Sites-Funnels Module** (`src/lib/sites-funnels/**`)
+   - Removed non-existent `branding` relation, access fields directly on Tenant/PlatformInstance
+   - Fixed `status: 'ACTIVE'` → `isActive: true` in TenantMembership queries
+   - Fixed `'OWNER' || 'ADMIN'` → `'TENANT_ADMIN'` for TenantRole enum
+   - Fixed audit action type casting
+   - Fixed `ProductCategory` → `category` relation in template-service
 
-### Phase 4: Shared Module Stabilization ✅
+## Current Blocker
+Build fails during static page generation because API routes use `cookies()` without proper dynamic route configuration.
 
-| Module | Errors Fixed | Status |
-|--------|--------------|--------|
-| Platform Foundation | 137 | ✅ COMPLETED |
-| Accounting | 85 | ✅ COMPLETED |
-| Inventory | 101 | ✅ COMPLETED |
-| Billing | 44 | ✅ COMPLETED |
-| CRM | 21 | ✅ COMPLETED |
-| Procurement | 40 | ✅ COMPLETED |
-| Subscription | 38 | ✅ COMPLETED |
+**Error**: `Route /api/... couldn't be rendered statically because it used 'cookies'`
 
-**Total Phase 4 Errors Fixed**: 466
+**Solution Required**: Add `export const dynamic = 'force-dynamic'` to all API routes using `getCurrentSession()` or `cookies()`.
 
-### Phase 4A: Education Suite Re-Enablement ✅
-- Re-enabled `/api/education/attendance` and `/api/education/fees` routes
+## Prioritized Backlog
 
-### Phase 5: Initial Build Verification ❌
-- `yarn build` failed due to Node.js heap out of memory
+### P0 - Critical (Build Blocking)
+- [ ] Add dynamic export to ~50+ API routes using session/cookies
 
-### Phase 6: Build Environment Validation ❌
-- `NODE_OPTIONS="--max-old-space-size=4096" yarn build` failed with 115 TypeScript errors in API routes
+### P1 - Important
+- [ ] Fix ~56 React Hook dependency warnings
+- [ ] Semantic fixes in `src/lib/rules/**` (missing type definitions)
 
-### Phase 7: API Route Mechanical Stabilization ✅
-- Applied `withPrismaDefaults()` wrapper to 11 `.create()` calls across 7 API route files
-- Fixed 11 TypeScript errors related to missing `id` and `updatedAt` fields
+### P2 - Nice to Have
+- [ ] Code quality hardening
+- [ ] Lint warning cleanup
 
-### Phase 7B: API Route Structural Stabilization ✅
-- Fixed 104 TypeScript errors through mechanical schema-conformant changes
-- Corrected Prisma relation names, model names, include/orderBy options
-- Added explicit type annotations for implicit `any`
-- **All API route errors eliminated**
+### Future Features
+- [ ] Guided Demo Tours (ALL SUITES)
 
----
+## Technical Architecture
+- **Framework**: Next.js 14.2.21
+- **Database**: Prisma ORM with PostgreSQL (Supabase)
+- **Deployment**: Vercel
 
-## Reports Generated
-
-### Phase 2B Reports
-- `/app/frontend/docs/PHASE_2B_PROJECT_MANAGEMENT_REPORT.md`
-- `/app/frontend/docs/PHASE_2B_REAL_ESTATE_REPORT.md`
-- `/app/frontend/docs/PHASE_2B_EDUCATION_REPORT.md`
-- `/app/frontend/docs/PHASE_2B_CIVIC_REPORT.md`
-- `/app/frontend/docs/PHASE_2B_RECRUITMENT_REPORT.md`
-- `/app/frontend/docs/PHASE_2B_HOSPITALITY_REPORT.md`
-- `/app/frontend/docs/PHASE_2B_HEALTH_REPORT.md`
-- `/app/frontend/docs/PHASE_2B_LOGISTICS_REPORT.md`
-
-### Phase 3-4 Reports
-- `/app/frontend/docs/PHASE_3_BUILD_READINESS_AND_GATING_REPORT.md`
-- `/app/frontend/docs/PHASE_4_PLATFORM_FOUNDATION_STABILIZATION_REPORT.md`
-- `/app/frontend/docs/PHASE_4_ACCOUNTING_STABILIZATION_REPORT.md`
-- `/app/frontend/docs/PHASE_4_INVENTORY_STABILIZATION_REPORT.md`
-- `/app/frontend/docs/PHASE_4A_EDUCATION_REENABLEMENT_REPORT.md`
-- `/app/frontend/docs/PHASE_4B_BILLING_STABILIZATION_REPORT.md`
-- `/app/frontend/docs/PHASE_4C_CRM_STABILIZATION_REPORT.md`
-- `/app/frontend/docs/PHASE_4D_PROCUREMENT_STABILIZATION_REPORT.md`
-- `/app/frontend/docs/PHASE_4E_SUBSCRIPTION_ENTITLEMENTS_STABILIZATION_REPORT.md`
-
-### Phase 5-7B Reports
-- `/app/frontend/docs/PHASE_5_FINAL_BUILD_VERIFICATION_REPORT.md`
-- `/app/frontend/docs/PHASE_6_BUILD_ENVIRONMENT_VALIDATION_REPORT.md`
-- `/app/frontend/docs/PHASE_7_API_ROUTE_STABILIZATION_REPORT.md`
-- `/app/frontend/docs/PHASE_7B_API_ROUTE_STABILIZATION_REPORT.md`
-
----
-
-## Architecture
-- **Frontend**: Next.js with TypeScript strict mode
-- **Database**: PostgreSQL via Supabase with Prisma ORM
-- **Schema**: `/app/frontend/prisma/schema.prisma` (SOURCE OF TRUTH)
-
----
-
-## AWAITING AUTHORIZATION
-
-### P0: Phase 8 - Final Build Verification
-- Run `NODE_OPTIONS="--max-old-space-size=4096" yarn build` to verify all errors are resolved
-
-### P1: Code Quality Hardening
-- Address non-blocking TypeScript issues (implicit `any`, lint warnings)
-
-### P2: Future Features
-- Guided Demo Tours (ALL SUITES)
-
----
-
-## Common Fix Patterns Applied
-1. Wrong Prisma model names (camelCase → snake_case)
-2. Wrong include/select relation names (e.g., `warehouse` → `inv_warehouses`)
-3. Wrong field names in data payloads
-4. `withPrismaDefaults()` wrapper for missing `id`/`updatedAt`
-5. `as any` casts for complex Prisma creates
-6. Type annotations for `reduce()` callbacks
-
----
-
-**Last Updated**: December 2025
+## Key Files
+- `/app/frontend/prisma/schema.prisma` - Source of truth for DB models
+- `/app/frontend/src/lib/db/prismaDefaults.ts` - Helper for required Prisma fields
+- `/app/frontend/docs/GLOBAL_MECHANICAL_ERROR_MAP.md` - Error classification report
