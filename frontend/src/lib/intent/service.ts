@@ -235,7 +235,7 @@ export async function captureIntent(data: {
   const intentDef = getIntentByKey(data.intentKey)
   
   const intent = await prisma.user_intents.create({
-    data: {
+    data: withPrismaDefaults({
       intentKey: data.intentKey,
       intentDomain: intentDef?.domain || 'GENERAL',
       intentSource: data.source || 'DIRECT',
@@ -246,7 +246,7 @@ export async function captureIntent(data: {
       referralCode: data.referralCode,
       metadata: data.metadata,
       capturedAt: new Date(),
-    },
+    }),
   })
   
   return intent
