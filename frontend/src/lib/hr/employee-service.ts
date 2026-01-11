@@ -8,6 +8,7 @@
 
 import { prisma } from '@/lib/prisma'
 import { HrEmploymentType, HrPayFrequency, HrPaymentMethod, Prisma } from '@prisma/client'
+import { withPrismaDefaults } from '@/lib/db/prismaDefaults'
 
 // ============================================================================
 // TYPES
@@ -80,7 +81,7 @@ export class EmployeeService {
     }
 
     const profile = await prisma.hr_employee_profiles.create({
-      data: {
+      data: withPrismaDefaults({
         tenantId,
         staffId: input.staffId,
         employmentType: input.employmentType || 'FULL_TIME',
@@ -112,7 +113,7 @@ export class EmployeeService {
         emergencyContactPhone: input.emergencyContactPhone,
         emergencyContactRelation: input.emergencyContactRelation,
         metadata: input.metadata as Prisma.InputJsonValue,
-      },
+      }),
     })
 
     // Initialize leave balances for current year
