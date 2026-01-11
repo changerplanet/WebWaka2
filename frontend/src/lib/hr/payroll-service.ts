@@ -376,7 +376,7 @@ export class PayrollService {
           employeeProfileId: employee.id,
         },
       },
-      create: {
+      create: withPrismaDefaults({
         tenantId,
         payrollPeriodId: periodId,
         employeeProfileId: employee.id,
@@ -402,7 +402,7 @@ export class PayrollService {
         lateCount: attendance.daysLate,
         earningsBreakdown: earningsBreakdown as Prisma.InputJsonValue,
         deductionsBreakdown: deductionsBreakdown as Prisma.InputJsonValue,
-      },
+      }),
       update: {
         status: 'CALCULATED',
         basePay,
