@@ -118,7 +118,7 @@ export async function verifyWebhookSignature(
     return false
   }
   
-  const algo = webhook.instance.integration_providers.webhookSignatureAlgo || 'sha256'
+  const algo = webhook.integration_instances.integration_providers.webhookSignatureAlgo || 'sha256'
   const expectedSignature = crypto
     .createHmac(algo, webhook.secretKey)
     .update(payload)
@@ -159,7 +159,7 @@ export async function processInboundWebhook(
   }
   
   // Determine event type from payload
-  const eventType = determineEventType(webhook.instance.integration_providers.key, payload)
+  const eventType = determineEventType(webhook.integration_instances.integration_providers.key, payload)
   
   if (!webhook.events.includes('*') && !webhook.events.includes(eventType)) {
     return { success: false, eventEmitted: null, error: `Event type '${eventType}' not subscribed` }
@@ -168,7 +168,7 @@ export async function processInboundWebhook(
   // Log the webhook call
   const log = await prisma.integration_logs.create({
     data: withPrismaDefaults({
-      tenantId: webhook.instance.tenantId,
+      tenantId: webhook.integration_instances.tenantId,
       instanceId: webhook.instanceId,
       logType: 'webhook_received',
       direction: 'inbound',
@@ -198,10 +198,10 @@ export async function processInboundWebhook(
   // Log the event emission
   await prisma.integration_event_logs.create({
     data: withPrismaDefaults({
-      tenantId: webhook.instance.tenantId,
+      tenantId: webhook.integration_instances.tenantId,
       eventType: emittedEvent,
       eventData: {
-        provider: webhook.instance.integration_providers.key,
+        provider: webhook.integration_instances.integration_providers.key,
         originalEvent: eventType,
         payload,
         logId: log.id,
@@ -238,7 +238,7 @@ export async function sendOutboundWebhook(
   
   // Sign the payload
   const payloadString = JSON.stringify(payload)
-  const algo = webhook.instance.integration_providers.webhookSignatureAlgo || 'sha256'
+  const algo = webhook.integration_instances.integration_providers.webhookSignatureAlgo || 'sha256'
   const signature = webhook.secretKey
     ? crypto.createHmac(algo, webhook.secretKey).update(payloadString).digest('hex')
     : ''
@@ -261,7 +261,7 @@ export async function sendOutboundWebhook(
     // Log the call
     await prisma.integration_logs.create({
       data: withPrismaDefaults({
-        tenantId: webhook.instance.tenantId,
+        tenantId: webhook.integration_instances.tenantId,
         instanceId: webhook.instanceId,
         logType: 'webhook_sent',
         direction: 'outbound',
@@ -305,7 +305,7 @@ export async function sendOutboundWebhook(
     // Log the error
     await prisma.integration_logs.create({
       data: withPrismaDefaults({
-        tenantId: webhook.instance.tenantId,
+        tenantId: webhook.integration_instances.tenantId,
         instanceId: webhook.instanceId,
         logType: 'webhook_sent',
         direction: 'outbound',
@@ -365,7 +365,7 @@ export async function deleteWebhook(webhookId: string) {
   // Log event
   await prisma.integration_event_logs.create({
     data: withPrismaDefaults({
-      tenantId: webhook.instance.tenantId,
+      tenantId: webhook.integration_instances.tenantId,
       eventType: 'WEBHOOK_DELETED',
       eventData: { webhookId, name: webhook.name },
       instanceId: webhook.instanceId,
