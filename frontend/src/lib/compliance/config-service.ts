@@ -67,7 +67,7 @@ export const DEFAULT_VAT_RATE = 7.5;  // Nigeria VAT rate
 export async function getComplianceProfile(tenantId: string) {
   let profile = await prisma.compliance_profiles.findUnique({
     where: { tenantId },
-    include: { taxConfig: true },
+    include: { tax_configurations: true },
   });
   
   if (!profile) {
@@ -94,7 +94,7 @@ export async function getComplianceProfile(tenantId: string) {
           },
         },
       },
-      include: { taxConfig: true },
+      include: { tax_configurations: true },
     });
   }
   
@@ -123,7 +123,7 @@ export async function updateComplianceProfile(
   return prisma.compliance_profiles.update({
     where: { tenantId },
     data,
-    include: { taxConfig: true },
+    include: { tax_configurations: true },
   });
 }
 
