@@ -263,7 +263,7 @@ export async function requirePartnerUser(): Promise<PartnerAuthorizationResult> 
     }
   }
   
-  if (partnerUser.partner.status !== 'ACTIVE') {
+  if (partnerUser.Partner.status !== 'ACTIVE') {
     return {
       authorized: false,
       error: 'Partner organization is not active',
@@ -275,7 +275,7 @@ export async function requirePartnerUser(): Promise<PartnerAuthorizationResult> 
     authorized: true,
     user: session.user,
     session,
-    partner: partnerUser.partner,
+    partner: partnerUser.Partner,
     partnerUser,
     role: partnerUser.role
   }
