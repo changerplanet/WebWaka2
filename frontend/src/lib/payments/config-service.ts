@@ -242,13 +242,13 @@ export class PayConfigService {
     
     await prisma.pay_wallets.upsert({
       where: { tenantId_walletNumber: { tenantId, walletNumber } },
-      create: {
+      create: withPrismaDefaults({
         tenantId,
         ownerType: 'BUSINESS',
         walletNumber,
         name: 'Business Wallet',
         currency,
-      },
+      }),
       update: {},
     })
   }
@@ -261,13 +261,13 @@ export class PayConfigService {
     
     await prisma.pay_wallets.upsert({
       where: { tenantId_walletNumber: { tenantId, walletNumber } },
-      create: {
+      create: withPrismaDefaults({
         tenantId,
         ownerType: 'PLATFORM',
         walletNumber,
         name: 'Platform Fees Wallet',
         currency,
-      },
+      }),
       update: {},
     })
   }
