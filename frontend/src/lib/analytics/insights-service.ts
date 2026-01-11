@@ -16,6 +16,7 @@
 import { prisma } from '@/lib/prisma'
 import { Prisma } from '@prisma/client'
 import { MetricsService, DateRange } from './metrics-service'
+import { withPrismaDefaults } from '@/lib/db/prismaDefaults'
 
 // ============================================================================
 // TYPES
@@ -361,11 +362,11 @@ export class InsightsService {
     validUntil?: Date
   }): Promise<InsightOutput> {
     // Check for existing similar insight
-    const existing = await prisma.analytics_insights.findFirst({
+    const existing = await prisma.ai_insights.findFirst({
       where: {
         tenantId,
-        type: input.type,
-        status: { in: ['NEW', 'ACKNOWLEDGED'] },
+        insightType: input.type,
+        status: { in: ['ACTIVE', 'ACKNOWLEDGED'] },
         createdAt: { gte: new Date(Date.now() - 24 * 60 * 60 * 1000) }, // Within 24 hours
       },
     })
@@ -374,19 +375,24 @@ export class InsightsService {
       return this.formatInsight(existing)
     }
 
-    const insight = await prisma.analytics_insights.create({
-      data: {
+    // Map service interface fields → Prisma model fields
+    const insight = await prisma.ai_insights.create({
+      data: withPrismaDefaults({
         tenantId,
-        type: input.type,
+        insightType: input.type,
         title: input.title,
-        description: input.description,
-        severity: input.severity,
-        category: input.category,
-        data: input.data as Prisma.InputJsonValue,
-        suggestedAction: input.suggestedAction,
-        actionUrl: input.actionUrl,
-        validUntil: input.validUntil,
-      },
+        summary: input.description,
+        details: input.data as Prisma.InputJsonValue,
+        explanation: input.suggestedAction || '',
+        dataSourcesUsed: [input.category],
+        confidence: 0.8,
+        severity: input.severity.toUpperCase(),
+        relatedType: input.actionUrl ? 'URL' : null,
+        relatedId: input.actionUrl || null,
+        status: 'ACTIVE',
+        validFrom: new Date(),
+        validTo: input.validUntil || null,
+      }),
     })
 
     return this.formatInsight(insight)
