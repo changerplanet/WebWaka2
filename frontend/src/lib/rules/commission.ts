@@ -22,6 +22,12 @@ export {
   type RuleCondition
 } from '../commission-engine'
 
+// Import types for aliasing
+import type { 
+  CommissionCalculationInput,
+  CommissionCalculationResult 
+} from '../commission-engine'
+
 // Additional type aliases for canonical naming
-export type { CommissionCalculationInput as CommissionRule }
-export type { CommissionCalculationResult as CommissionCalculation }
+export type CommissionRule = CommissionCalculationInput
+export type CommissionCalculation = CommissionCalculationResult
