@@ -356,7 +356,7 @@ export class WorkflowService {
     lastRunAt: Date | null
     createdAt: Date
     updatedAt: Date
-    triggers: Array<{
+    mkt_automation_triggers: Array<{
       id: string
       type: MktTriggerType
       eventName: string | null
@@ -365,7 +365,7 @@ export class WorkflowService {
       scheduleDays: number | null
       isActive: boolean
     }>
-    actions: Array<{
+    mkt_automation_actions: Array<{
       id: string
       type: MktActionType
       config: unknown
@@ -389,7 +389,7 @@ export class WorkflowService {
       successfulRuns: workflow.successfulRuns,
       failedRuns: workflow.failedRuns,
       lastRunAt: workflow.lastRunAt,
-      triggers: workflow.triggers.map(t => ({
+      triggers: workflow.mkt_automation_triggers.map(t => ({
         id: t.id,
         type: t.type,
         eventName: t.eventName,
@@ -398,7 +398,7 @@ export class WorkflowService {
         scheduleDays: t.scheduleDays,
         isActive: t.isActive,
       })),
-      actions: workflow.actions.map(a => ({
+      actions: workflow.mkt_automation_actions.map(a => ({
         id: a.id,
         type: a.type,
         config: a.config as Record<string, unknown>,
