@@ -101,7 +101,7 @@ export class PayConfigService {
         where: { tenantId, status: 'CONFIRMED', confirmedAt: { gte: todayStart } },
         _sum: { amount: true },
       }),
-      prisma.paySettlement.count({ where: { tenantId, status: { in: ['PENDING', 'CALCULATED', 'APPROVED'] } } }),
+      prisma.pay_settlements.count({ where: { tenantId, status: { in: ['PENDING', 'CALCULATED', 'APPROVED'] } } }),
     ])
 
     return {
