@@ -178,7 +178,7 @@ export async function getInstanceSubscription(
           tenantId: true,
         }
       },
-      partner: {
+      Partner: {
         select: {
           id: true,
           name: true,
