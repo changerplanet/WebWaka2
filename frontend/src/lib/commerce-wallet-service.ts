@@ -189,7 +189,7 @@ export async function createLedgerEntry(params: LedgerEntryParams) {
 
     // Create ledger entry
     const entry = await tx.commerce_wallet_ledger.create({
-      data: {
+      data: withPrismaDefaults({
         walletId,
         entryType,
         status: 'COMPLETED',
@@ -206,7 +206,7 @@ export async function createLedgerEntry(params: LedgerEntryParams) {
         description,
         metadata: metadata ? JSON.parse(JSON.stringify(metadata)) : undefined,
         createdBy
-      }
+      })
     })
 
     // Update wallet balance cache
@@ -269,7 +269,7 @@ export async function transferFunds(params: TransferParams) {
     const newFromAvailable = newFromBalance - Number(fromWallet.pendingBalance)
 
     await tx.commerce_wallet_ledger.create({
-      data: {
+      data: withPrismaDefaults({
         walletId: fromWalletId,
         entryType: 'DEBIT_TRANSFER_OUT',
         status: 'COMPLETED',
@@ -284,7 +284,7 @@ export async function transferFunds(params: TransferParams) {
         idempotencyKey: `${idempotencyKey}_debit`,
         description: description || `Transfer to wallet ${toWalletId}`,
         createdBy
-      }
+      })
     })
 
     await tx.commerce_wallets.update({
@@ -300,7 +300,7 @@ export async function transferFunds(params: TransferParams) {
     const newToAvailable = newToBalance - Number(toWallet.pendingBalance)
 
     await tx.commerce_wallet_ledger.create({
-      data: {
+      data: withPrismaDefaults({
         walletId: toWalletId,
         entryType: 'CREDIT_TRANSFER_IN',
         status: 'COMPLETED',
@@ -315,7 +315,7 @@ export async function transferFunds(params: TransferParams) {
         idempotencyKey: `${idempotencyKey}_credit`,
         description: description || `Transfer from wallet ${fromWalletId}`,
         createdBy
-      }
+      })
     })
 
     await tx.commerce_wallets.update({
