@@ -291,7 +291,7 @@ export async function POST(request: NextRequest) {
     // Reload cart with updated items
     const updatedCart = await prisma.svm_carts.findUnique({
       where: { id: cart.id },
-      include: { items: true }
+      include: { svm_cart_items: true }
     })
 
     if (!updatedCart) {
@@ -303,7 +303,7 @@ export async function POST(request: NextRequest) {
 
     // Calculate totals
     const discountRate = updatedCart.promotionCode ? 0.1 : 0 // 10% for promo codes
-    const totals = calculateCartTotals(updatedCart.items, discountRate)
+    const totals = calculateCartTotals(updatedCart.svm_cart_items, discountRate)
 
     // Update cart totals
     await prisma.svm_carts.update({
@@ -325,7 +325,7 @@ export async function POST(request: NextRequest) {
         customerId: updatedCart.customerId,
         sessionId: updatedCart.sessionId,
         email: updatedCart.email,
-        items: updatedCart.items.map(item => ({
+        items: updatedCart.svm_cart_items.map((item: { productId: string; variantId: string | null; productName: string; variantName: string | null; sku: string | null; imageUrl: string | null; unitPrice: { toString: () => string }; quantity: number; lineTotal: { toString: () => string }; discountAmount: { toString: () => string } }) => ({
           productId: item.productId,
           variantId: item.variantId,
           productName: item.productName,
