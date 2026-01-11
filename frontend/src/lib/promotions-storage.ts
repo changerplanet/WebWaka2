@@ -180,7 +180,7 @@ async function seedDefaultPromotions(tenantId: string): Promise<Promotion[]> {
       }
     }),
     prisma.svm_promotions.create({
-      data: {
+      data: withPrismaDefaults({
         tenantId,
         name: 'Free Delivery',
         description: 'Free delivery on orders over ₦10,000',
@@ -202,7 +202,7 @@ async function seedDefaultPromotions(tenantId: string): Promise<Promotion[]> {
       }
     }),
     prisma.svm_promotions.create({
-      data: {
+      data: withPrismaDefaults({
         tenantId,
         name: 'Buy 2 Get 1 Free',
         description: 'Buy any 2 items, get 1 free',
@@ -226,7 +226,7 @@ async function seedDefaultPromotions(tenantId: string): Promise<Promotion[]> {
       }
     }),
     prisma.svm_promotions.create({
-      data: {
+      data: withPrismaDefaults({
         tenantId,
         name: '₦4,000 Off',
         description: '₦4,000 off orders over ₦15,000 (limit 100 uses)',
