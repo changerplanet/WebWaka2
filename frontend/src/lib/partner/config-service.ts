@@ -13,6 +13,7 @@
  */
 
 import { prisma } from '@/lib/prisma';
+import { withPrismaDefaults } from '@/lib/db/prismaDefaults';
 
 // ============================================================================
 // MODULE MANIFEST
@@ -80,7 +81,7 @@ export async function getPartnerConfiguration() {
   
   if (!config) {
     config = await prisma.partner_configurations.create({
-      data: DEFAULT_PARTNER_CONFIG,
+      data: withPrismaDefaults(DEFAULT_PARTNER_CONFIG),
     });
   }
   
