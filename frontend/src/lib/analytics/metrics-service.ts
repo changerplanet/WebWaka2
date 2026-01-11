@@ -76,7 +76,7 @@ export class MetricsService {
    * Get all metric definitions for tenant
    */
   static async getMetricDefinitions(tenantId: string): Promise<MetricDefinition[]> {
-    const metrics = await prisma.analyticsMetricDefinition.findMany({
+    const metrics = await prisma.analytics_metric_definitions.findMany({
       where: { tenantId, isActive: true },
       orderBy: [{ category: 'asc' }, { name: 'asc' }],
     })
