@@ -428,7 +428,7 @@ export async function markEarningPaid(
     })
     
     await tx.auditLog.create({
-      data: {
+      data: withPrismaDefaults({
         action: 'EARNING_PAID',
         actorId: 'payout-system',
         actorEmail: 'payout@webwaka.internal',
@@ -439,7 +439,7 @@ export async function markEarningPaid(
           amount: Number(earning.commissionAmount),
           ...paymentDetails
         }
-      }
+      })
     })
     
     return entry
@@ -487,7 +487,7 @@ export async function disputeEarning(
     })
     
     await tx.auditLog.create({
-      data: {
+      data: withPrismaDefaults({
         action: 'EARNING_DISPUTED',
         actorId: disputedBy,
         actorEmail: 'dispute',
