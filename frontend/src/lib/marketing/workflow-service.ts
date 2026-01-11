@@ -104,8 +104,8 @@ export class WorkflowService {
       prisma.mkt_automation_workflows.findMany({
         where,
         include: {
-          triggers: { orderBy: { sortOrder: 'asc' } },
-          actions: { orderBy: { sortOrder: 'asc' } },
+          mkt_automation_triggers: { orderBy: { sortOrder: 'asc' } },
+          mkt_automation_actions: { orderBy: { sortOrder: 'asc' } },
         },
         orderBy: { createdAt: 'desc' },
         skip: (page - 1) * limit,
@@ -127,8 +127,8 @@ export class WorkflowService {
     const workflow = await prisma.mkt_automation_workflows.findFirst({
       where: { id, tenantId },
       include: {
-        triggers: { orderBy: { sortOrder: 'asc' } },
-        actions: { orderBy: { sortOrder: 'asc' } },
+        mkt_automation_triggers: { orderBy: { sortOrder: 'asc' } },
+        mkt_automation_actions: { orderBy: { sortOrder: 'asc' } },
       },
     })
 
@@ -160,7 +160,7 @@ export class WorkflowService {
         endDate: input.endDate,
         offlineId: input.offlineId,
         createdBy,
-        triggers: {
+        mkt_automation_triggers: {
           create: input.triggers.map((t, i) => withPrismaDefaults({
             type: t.type,
             eventName: t.eventName,
@@ -170,7 +170,7 @@ export class WorkflowService {
             sortOrder: i,
           })),
         },
-        actions: {
+        mkt_automation_actions: {
           create: input.actions.map((a, i) => withPrismaDefaults({
             type: a.type,
             config: a.config as Prisma.InputJsonValue,
@@ -180,8 +180,8 @@ export class WorkflowService {
         },
       }),
       include: {
-        triggers: { orderBy: { sortOrder: 'asc' } },
-        actions: { orderBy: { sortOrder: 'asc' } },
+        mkt_automation_triggers: { orderBy: { sortOrder: 'asc' } },
+        mkt_automation_actions: { orderBy: { sortOrder: 'asc' } },
       },
     })
 
