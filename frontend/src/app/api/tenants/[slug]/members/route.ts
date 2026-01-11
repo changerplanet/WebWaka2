@@ -115,11 +115,10 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
     
     if (!user) {
       user = await prisma.user.create({
-        data: {
-          id: uuidv4(),
+        data: withPrismaDefaults({
           email: email.toLowerCase(),
           globalRole: 'USER'
-        }
+        })
       })
     }
     
@@ -142,12 +141,11 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
     
     // Create membership
     const membership = await prisma.tenantMembership.create({
-      data: {
-        id: uuidv4(),
+      data: withPrismaDefaults({
         userId: user.id,
         tenantId: tenant.id,
         role: role === 'TENANT_ADMIN' ? 'TENANT_ADMIN' : 'TENANT_USER'
-      },
+      }),
       include: {
         user: {
           select: {

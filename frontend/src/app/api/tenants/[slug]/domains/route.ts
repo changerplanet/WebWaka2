@@ -99,15 +99,14 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
     const verificationToken = uuidv4()
     
     const newDomain = await prisma.tenantDomain.create({
-      data: {
-        id: uuidv4(),
+      data: withPrismaDefaults({
         tenantId: authResult.tenantId,
         domain: normalizedDomain,
         type: 'CUSTOM',
         status: 'PENDING',
         isPrimary: false,
         verificationToken
-      }
+      })
     })
     
     await createAuditLog({

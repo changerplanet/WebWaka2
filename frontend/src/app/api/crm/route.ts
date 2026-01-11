@@ -100,14 +100,14 @@ export async function POST(request: NextRequest) {
 
       // Create configuration
       const config = await prisma.crm_configurations.create({
-        data: {
+        data: withPrismaDefaults({
           tenantId: session.activeTenantId,
           loyaltyEnabled: !!loyaltyResult,
           loyaltyProgramId: loyaltyResult?.program?.id,
           campaignsEnabled: body.enableCampaigns || false,
           smsEnabled: body.smsEnabled ?? true,
           emailEnabled: body.emailEnabled ?? true,
-        },
+        }),
       });
 
       return NextResponse.json({

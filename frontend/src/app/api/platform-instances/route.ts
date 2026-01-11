@@ -130,7 +130,7 @@ export async function POST(request: NextRequest) {
     
     // Create instance
     const instance = await prisma.platformInstance.create({
-      data: {
+      data: withPrismaDefaults({
         tenantId: tenant.id,
         name,
         slug,
@@ -142,7 +142,7 @@ export async function POST(request: NextRequest) {
         logoUrl: logoUrl || null,
         isDefault: false,
         isActive: true,
-      },
+      }),
       select: {
         id: true,
         name: true,

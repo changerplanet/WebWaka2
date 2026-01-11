@@ -53,7 +53,7 @@ export async function POST(request: NextRequest) {
 
     if (!period) {
       period = await prisma.acct_financial_periods.create({
-        data: {
+        data: withPrismaDefaults({
           tenantId: session.activeTenantId,
           name: periodName,
           code: periodCode,
@@ -62,7 +62,7 @@ export async function POST(request: NextRequest) {
           endDate: endOfMonth,
           fiscalYear: now.getFullYear(),
           status: 'OPEN',
-        },
+        }),
       });
     }
 

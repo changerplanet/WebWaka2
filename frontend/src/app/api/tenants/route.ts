@@ -116,23 +116,21 @@ export async function POST(request: NextRequest) {
         domains: {
           create: [
             // Always create subdomain
-            {
-              id: uuidv4(),
+            withPrismaDefaults({
               domain: normalizedSlug,
               type: 'SUBDOMAIN',
               status: 'VERIFIED', // Subdomains are auto-verified
               isPrimary: !customDomain, // Primary if no custom domain
               verifiedAt: new Date()
-            },
+            }),
             // Optionally create custom domain
-            ...(customDomain ? [{
-              id: uuidv4(),
+            ...(customDomain ? [withPrismaDefaults({
               domain: customDomain.toLowerCase(),
               type: 'CUSTOM' as const,
               status: 'PENDING' as const, // Custom domains need verification
               isPrimary: true,
               verificationToken: uuidv4()
-            }] : [])
+            })] : [])
           ]
         }
       },

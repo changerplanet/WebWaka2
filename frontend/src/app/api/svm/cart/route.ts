@@ -95,14 +95,14 @@ export async function POST(request: NextRequest) {
     // Create new cart if none exists
     if (!cart) {
       cart = await prisma.svm_carts.create({
-        data: {
+        data: withPrismaDefaults({
           tenantId,
           customerId: customerId || null,
           sessionId: customerId ? null : sessionId,
           email: email || null,
           status: 'ACTIVE',
           expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) // 7 days
-        },
+        }),
         include: { items: true }
       })
     }
@@ -140,7 +140,7 @@ export async function POST(request: NextRequest) {
         } else {
           // Add new item
           await prisma.svm_cart_items.create({
-            data: {
+            data: withPrismaDefaults({
               cartId: cart.id,
               productId,
               variantId: variantId || null,
@@ -151,7 +151,7 @@ export async function POST(request: NextRequest) {
               unitPrice,
               quantity,
               lineTotal: unitPrice * quantity
-            }
+            })
           })
         }
         break
