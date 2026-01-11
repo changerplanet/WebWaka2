@@ -346,6 +346,7 @@ export async function addZone(zone: ShippingZone): Promise<void> {
   await prisma.svm_shipping_zones.create({
     data: {
       id: zone.id,
+      updatedAt: new Date(),
       tenantId: zone.tenantId,
       name: zone.name,
       description: zone.description || null,
@@ -359,6 +360,7 @@ export async function addZone(zone: ShippingZone): Promise<void> {
       svm_shipping_rates: {
         create: zone.rates.map(rate => ({
           id: rate.id,
+          updatedAt: new Date(),
           name: rate.name,
           description: rate.description,
           carrier: rate.carrier,
