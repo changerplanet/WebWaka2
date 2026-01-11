@@ -84,7 +84,7 @@ export class DashboardService {
     const dashboards = await prisma.analytics_dashboards.findMany({
       where: { tenantId, isActive: true },
       include: {
-        widgets: {
+        analytics_dashboard_widgets: {
           where: { isActive: true },
           orderBy: { sortOrder: 'asc' },
         },
@@ -102,7 +102,7 @@ export class DashboardService {
     const dashboard = await prisma.analytics_dashboards.findUnique({
       where: { tenantId_key: { tenantId, key } },
       include: {
-        widgets: {
+        analytics_dashboard_widgets: {
           where: { isActive: true },
           orderBy: { sortOrder: 'asc' },
         },
