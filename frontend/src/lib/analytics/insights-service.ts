@@ -280,7 +280,7 @@ export class InsightsService {
    * Acknowledge insight
    */
   static async acknowledgeInsight(tenantId: string, insightId: string, userId: string): Promise<InsightOutput> {
-    const insight = await prisma.analytics_insights.update({
+    const insight = await prisma.ai_insights.update({
       where: { id: insightId },
       data: {
         status: 'ACKNOWLEDGED',
@@ -296,7 +296,7 @@ export class InsightsService {
    * Dismiss insight
    */
   static async dismissInsight(tenantId: string, insightId: string): Promise<void> {
-    await prisma.analytics_insights.update({
+    await prisma.ai_insights.update({
       where: { id: insightId },
       data: { status: 'DISMISSED' },
     })
@@ -306,11 +306,10 @@ export class InsightsService {
    * Resolve insight
    */
   static async resolveInsight(tenantId: string, insightId: string): Promise<InsightOutput> {
-    const insight = await prisma.analytics_insights.update({
+    const insight = await prisma.ai_insights.update({
       where: { id: insightId },
       data: {
         status: 'RESOLVED',
-        resolvedAt: new Date(),
       },
     })
 
@@ -321,18 +320,18 @@ export class InsightsService {
    * Get insight statistics
    */
   static async getStatistics(tenantId: string) {
-    const [bySeverity, byCategory, byStatus] = await Promise.all([
-      prisma.analytics_insights.groupBy({
+    const [bySeverity, byType, byStatus] = await Promise.all([
+      prisma.ai_insights.groupBy({
         by: ['severity'],
         where: { tenantId },
         _count: true,
       }),
-      prisma.analytics_insights.groupBy({
-        by: ['category'],
+      prisma.ai_insights.groupBy({
+        by: ['insightType'],
         where: { tenantId },
         _count: true,
       }),
-      prisma.analytics_insights.groupBy({
+      prisma.ai_insights.groupBy({
         by: ['status'],
         where: { tenantId },
         _count: true,
@@ -341,7 +340,7 @@ export class InsightsService {
 
     return {
       bySeverity: Object.fromEntries(bySeverity.map(s => [s.severity, s._count])),
-      byCategory: Object.fromEntries(byCategory.map(c => [c.category, c._count])),
+      byCategory: Object.fromEntries(byType.map(c => [c.insightType, c._count])),
       byStatus: Object.fromEntries(byStatus.map(s => [s.status, s._count])),
     }
   }
