@@ -228,7 +228,7 @@ export class EmployeeService {
     const profile = await prisma.hr_employee_profiles.findFirst({
       where: { id: profileId, tenantId },
       include: {
-        hr_employee_contracts: { orderBy: { startDate: 'desc' }, take: 5 },
+        hr_employment_contracts: { orderBy: { startDate: 'desc' }, take: 5 },
         leaveBalances: { where: { year: new Date().getFullYear() } },
         _count: {
           select: {
