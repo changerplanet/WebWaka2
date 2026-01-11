@@ -7,6 +7,7 @@
 
 import { prisma } from '@/lib/prisma'
 import { Prisma } from '@prisma/client'
+import { withPrismaDefaults } from '@/lib/db/prismaDefaults'
 
 // ============================================================================
 // TYPES
@@ -124,7 +125,7 @@ export class B2BConfigService {
   static async initialize(tenantId: string, options?: Partial<B2BConfig>): Promise<B2BConfig> {
     const config = await prisma.b2b_configurations.upsert({
       where: { tenantId },
-      create: {
+      create: withPrismaDefaults({
         tenantId,
         b2bEnabled: options?.b2bEnabled ?? true,
         wholesalePricing: options?.wholesalePricing ?? true,
@@ -136,7 +137,7 @@ export class B2BConfigService {
         defaultCurrency: options?.defaultCurrency ?? 'NGN',
         negotiatedPricingEnabled: options?.negotiatedPricingEnabled ?? true,
         manualOverrideEnabled: options?.manualOverrideEnabled ?? true,
-      },
+      }),
       update: {},
     })
 
