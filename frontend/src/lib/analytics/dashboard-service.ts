@@ -232,7 +232,7 @@ export class DashboardService {
     })
 
     const widget = await prisma.analytics_dashboard_widgets.create({
-      data: {
+      data: withPrismaDefaults({
         dashboardId,
         title: input.title,
         type: input.type,
@@ -244,7 +244,7 @@ export class DashboardService {
         gridW: input.gridW,
         gridH: input.gridH,
         sortOrder: (maxOrder._max.sortOrder || 0) + 1,
-      },
+      }),
     })
 
     return this.formatWidget(widget)
