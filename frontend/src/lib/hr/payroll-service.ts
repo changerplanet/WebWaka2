@@ -117,7 +117,7 @@ export class PayrollService {
       offset?: number
     } = {}
   ) {
-    const where: Prisma.HrPayrollPeriodWhereInput = { tenantId }
+    const where: Prisma.hr_payroll_periodsWhereInput = { tenantId }
 
     if (options.status) where.status = options.status
     if (options.payFrequency) where.payFrequency = options.payFrequency
