@@ -601,7 +601,7 @@ export async function getPartnerEarnings(
       take: options?.limit || 50,
       skip: options?.offset || 0,
       include: {
-        referral: {
+        PartnerReferral: {
           include: {
             Tenant: {
               select: { id: true, name: true, slug: true }
