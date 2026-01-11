@@ -236,7 +236,7 @@ export async function generateApiKeyForApp(
   const { key, prefix, hash } = generateApiKey()
   
   const apiKey = await prisma.api_keys.create({
-    data: {
+    data: withPrismaDefaults({
       appId,
       tenantId: data.tenantId,
       name: data.name,
@@ -247,12 +247,12 @@ export async function generateApiKeyForApp(
       expiresAt: data.expiresAt,
       rateLimit: data.rateLimit,
       allowedIps: data.allowedIps || [],
-    },
+    }),
   })
   
   // Log event
   await prisma.integration_event_logs.create({
-    data: {
+    data: withPrismaDefaults({
       tenantId: data.tenantId,
       eventType: 'API_KEY_GENERATED',
       eventData: {
@@ -262,7 +262,7 @@ export async function generateApiKeyForApp(
       },
       appId,
       keyId: apiKey.id,
-    },
+    }),
   })
   
   // Return with unencrypted key (only shown once!)
