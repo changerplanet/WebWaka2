@@ -249,7 +249,7 @@ export async function createInstance(
   }
 ): Promise<PlatformInstanceWithTenant> {
   const instance = await prisma.platformInstance.create({
-    data: {
+    data: withPrismaDefaults({
       tenantId,
       name: data.name,
       slug: data.slug,
@@ -262,7 +262,7 @@ export async function createInstance(
       secondaryColor: data.branding?.secondaryColor,
       isDefault: false, // Only one default per tenant
       isActive: true,
-    },
+    }),
     include: {
       tenant: {
         select: {
