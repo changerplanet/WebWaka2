@@ -223,7 +223,7 @@ async function seedDefaultPromotions(tenantId: string): Promise<Promotion[]> {
         isActive: true,
         stackable: false,
         priority: 0
-      }
+      })
     }),
     prisma.svm_promotions.create({
       data: withPrismaDefaults({
@@ -247,7 +247,7 @@ async function seedDefaultPromotions(tenantId: string): Promise<Promotion[]> {
         isActive: true,
         stackable: false,
         priority: 0
-      }
+      })
     })
   ])
   
