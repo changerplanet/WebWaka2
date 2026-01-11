@@ -21,6 +21,7 @@ import {
   CapabilityDefinition,
 } from './registry';
 import { CapabilityStatus, CapabilityActivator } from '@prisma/client';
+import { withPrismaDefaults } from '../db/prismaDefaults';
 
 // ============================================================================
 // TYPES
@@ -301,7 +302,7 @@ export class CapabilityActivationService {
           },
         },
       },
-      create: {
+      create: withPrismaDefaults({
         tenantId,
         capabilityKey,
         status: 'ACTIVE',
@@ -314,7 +315,7 @@ export class CapabilityActivationService {
           timestamp: now.toISOString(),
           activatedBy,
         }],
-      },
+      }),
     });
 
     // Log event
