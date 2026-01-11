@@ -52,18 +52,18 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
       taxAmount: journal.taxAmount?.toString(),
       taxCode: journal.taxCode,
       isReversal: journal.isReversal,
-      period: journal.period ? {
-        id: journal.period.id,
-        name: journal.period.name,
-        code: journal.period.code,
-        status: journal.period.status,
+      period: journal.acct_financial_periods ? {
+        id: journal.acct_financial_periods.id,
+        name: journal.acct_financial_periods.name,
+        code: journal.acct_financial_periods.code,
+        status: journal.acct_financial_periods.status,
       } : null,
-      lines: journal.lines.map((line) => ({
+      lines: journal.acct_ledger_entries.map((line: { id: string; lineNumber: number; acct_ledger_accounts: { acct_chart_of_accounts: { code: string; name: string; accountType: string } }; debitAmount: { toString: () => string }; creditAmount: { toString: () => string }; balanceAfter: { toString: () => string }; description: string | null; memo: string | null; referenceType: string | null; referenceId: string | null; referenceNumber: string | null }) => ({
         id: line.id,
         lineNumber: line.lineNumber,
-        accountCode: line.ledgerAccount.chartOfAccount.code,
-        accountName: line.ledgerAccount.chartOfAccount.name,
-        accountType: line.ledgerAccount.chartOfAccount.accountType,
+        accountCode: line.acct_ledger_accounts.acct_chart_of_accounts.code,
+        accountName: line.acct_ledger_accounts.acct_chart_of_accounts.name,
+        accountType: line.acct_ledger_accounts.acct_chart_of_accounts.accountType,
         debitAmount: line.debitAmount.toString(),
         creditAmount: line.creditAmount.toString(),
         balanceAfter: line.balanceAfter.toString(),
@@ -73,14 +73,11 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
         referenceId: line.referenceId,
         referenceNumber: line.referenceNumber,
       })),
-      reversalOf: journal.reversalOf ? {
-        id: journal.reversalOf.id,
-        journalNumber: journal.reversalOf.journalNumber,
+      reversalOf: journal.isReversal && journal.reversedJournalId ? {
+        id: journal.reversedJournalId,
+        journalNumber: null,
       } : null,
-      reversedJournal: journal.reversedJournal ? {
-        id: journal.reversedJournal.id,
-        journalNumber: journal.reversedJournal.journalNumber,
-      } : null,
+      reversedJournal: null,
       attachmentUrls: journal.attachmentUrls,
       metadata: journal.metadata,
       createdBy: journal.createdBy,
