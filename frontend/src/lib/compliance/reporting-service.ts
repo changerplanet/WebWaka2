@@ -10,6 +10,7 @@ import { PrismaClient } from '@prisma/client';
 import { getComplianceProfile, getTaxConfiguration } from './config-service';
 import { getComputationSummary } from './tax-service';
 import { logComplianceEvent } from './event-service';
+import { withPrismaDefaults } from '@/lib/db/prismaDefaults';
 
 const prisma = new PrismaClient();
 
@@ -67,7 +68,7 @@ export async function generateReport(input: GenerateReportInput): Promise<{
     
     // Create immutable report
     const report = await prisma.regulatory_reports.create({
-      data: {
+      data: withPrismaDefaults({
         tenantId: input.tenantId,
         reportType: input.reportType,
         reportName,
@@ -90,7 +91,7 @@ export async function generateReport(input: GenerateReportInput): Promise<{
             vatInclusive: taxConfig.vatInclusive,
           } : null,
         },
-      },
+      }),
     });
     
     // Log event
