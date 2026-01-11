@@ -247,7 +247,7 @@ export async function configureCredentials(
   }
   
   // Validate required credentials
-  const missing = instance.provider.requiredCredentials.filter(
+  const missing = instance.integration_providers.requiredCredentials.filter(
     key => !credentials[key]
   )
   if (missing.length > 0) {
@@ -274,7 +274,7 @@ export async function configureCredentials(
         key,
         encryptedValue: encrypt(value),
         maskedValue: maskValue(value),
-        isRequired: instance.provider.requiredCredentials.includes(key),
+        isRequired: instance.integration_providers.requiredCredentials.includes(key),
         createdBy: configuredBy,
       },
     })
