@@ -25,7 +25,7 @@ export async function GET(request: NextRequest) {
     const tenantMemberships = await prisma.tenantMembership.findMany({
       where: { userId: user.id },
       include: {
-        Tenant: {
+        tenant: {
           include: {
             platformInstances: {
               include: {
@@ -68,8 +68,8 @@ export async function GET(request: NextRequest) {
     })
     
     // Build client-friendly view
-    const platforms = tenantMemberships.flatMap(tm => {
-      return tm.tenant.platformInstances.map(instance => {
+    const platforms = tenantMemberships.flatMap((tm: { tenant: { platformInstances: Array<{ id: string; name: string; slug: string; isActive: boolean; suspendedAt: Date | null; subscriptions: Array<{ status: string; currentPeriodEnd: Date | null; trialEnd: Date | null }>; createdByPartner: { name: string; email: string; phone: string | null; website: string | null } | null; domains: Array<{ domain: string; type: string }> }> } }) => {
+      return tm.tenant.platformInstances.map((instance: { id: string; name: string; slug: string; isActive: boolean; suspendedAt: Date | null; subscriptions: Array<{ status: string; currentPeriodEnd: Date | null; trialEnd: Date | null }>; createdByPartner: { name: string; email: string; phone: string | null; website: string | null } | null; domains: Array<{ domain: string; type: string }> }) => {
         const subscription = instance.subscriptions[0]
         const partner = instance.createdByPartner
         const primaryDomain = instance.domains[0]
