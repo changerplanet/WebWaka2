@@ -148,16 +148,16 @@ export async function updatePayoutSettings(
   const settings = await prisma.$transaction(async (tx) => {
     const updated = await tx.partnerPayoutSettings.upsert({
       where: { partnerId },
-      create: {
+      create: withPrismaDefaults({
         partnerId,
         ...updates,
         minimumPayout: updates.minimumPayout ?? 100.00
-      },
+      }),
       update: updates
     })
     
     await tx.auditLog.create({
-      data: {
+      data: withPrismaDefaults({
         action: 'PAYOUT_SETTINGS_UPDATED',
         actorId: updatedBy,
         actorEmail: 'admin',
@@ -167,7 +167,7 @@ export async function updatePayoutSettings(
           partnerId,
           updates
         }
-      }
+      })
     })
     
     return updated
