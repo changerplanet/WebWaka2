@@ -483,7 +483,7 @@ export class LeaveService {
               leaveType: 'ANNUAL',
             },
           },
-          create: {
+          create: withPrismaDefaults({
             tenantId,
             employeeProfileId: balance.employeeProfileId,
             year: toYear,
@@ -491,7 +491,7 @@ export class LeaveService {
             entitlement: profile?.annualLeaveEntitlement || 15,
             carriedForward: carryForward,
             available: (profile?.annualLeaveEntitlement || 15) + carryForward,
-          },
+          }),
           update: {
             carriedForward: carryForward,
             available: { increment: carryForward },
