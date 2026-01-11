@@ -115,7 +115,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Calculate commission using the actual function
-    const result = calculateCommission(agreement as Parameters<typeof calculateCommission>[0], input)
+    const result = calculateCommission(agreement as unknown as Parameters<typeof calculateCommission>[0], input)
 
     return NextResponse.json({
       success: result.success,
