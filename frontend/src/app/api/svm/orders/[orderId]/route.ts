@@ -67,7 +67,7 @@ export async function GET(
 
     const order = await prisma.svm_orders.findUnique({
       where: { id: orderId },
-      include: { items: true }
+      include: { svm_order_items: true }
     })
 
     if (!order) {
@@ -98,7 +98,7 @@ export async function GET(
         customerPhone: order.customerPhone,
         customerName: order.customerName,
         channel: order.channel,
-        items: order.items.map(item => ({
+        items: order.svm_order_items.map((item: { id: string; productId: string; variantId: string | null; productName: string; sku: string | null; variantName: string | null; imageUrl: string | null; unitPrice: { toString: () => string }; quantity: number; lineTotal: { toString: () => string }; discountAmount: { toString: () => string }; taxAmount: { toString: () => string }; fulfilledQuantity: number; refundedQuantity: number; customizations: unknown }) => ({
           id: item.id,
           productId: item.productId,
           variantId: item.variantId,
