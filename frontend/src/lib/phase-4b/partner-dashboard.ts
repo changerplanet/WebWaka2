@@ -265,11 +265,11 @@ export async function getChurnIndicators(
       cancelledAt: { not: null }
     },
     include: {
-      platformInstance: {
+      PlatformInstance: {
         select: {
           id: true,
           name: true,
-          Tenant: { select: { name: true } }
+          tenant: { select: { name: true } }
         }
       }
     },
@@ -280,9 +280,9 @@ export async function getChurnIndicators(
   for (const sub of cancelledSubs) {
     indicators.push({
       type: 'subscription_cancelled',
-      instanceId: sub.platformInstance.id,
-      instanceName: sub.platformInstance.name,
-      tenantName: sub.platformInstance.tenant.name,
+      instanceId: sub.PlatformInstance.id,
+      instanceName: sub.PlatformInstance.name,
+      tenantName: sub.PlatformInstance.tenant?.name || 'Unknown',
       indicator: `Subscription cancelled${sub.cancelReason ? `: ${sub.cancelReason}` : ''}`,
       severity: 'high',
       occurredAt: sub.cancelledAt!,
@@ -296,7 +296,7 @@ export async function getChurnIndicators(
       suspendedAt: { not: null }
     },
     include: {
-      Tenant: { select: { name: true } }
+      tenant: { select: { name: true } }
     },
     orderBy: { suspendedAt: 'desc' },
     take: limit
@@ -307,7 +307,7 @@ export async function getChurnIndicators(
       type: 'instance_suspended',
       instanceId: instance.id,
       instanceName: instance.name,
-      tenantName: instance.tenant.name,
+      tenantName: instance.tenant?.name || 'Unknown',
       indicator: instance.suspendedReason || 'Instance suspended',
       severity: 'medium',
       occurredAt: instance.suspendedAt!,
