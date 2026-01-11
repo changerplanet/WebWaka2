@@ -14,6 +14,7 @@ import { prisma } from '@/lib/prisma'
 import { PayPaymentMethod, PayIntentStatus, PayPaymentStatus, Prisma } from '@prisma/client'
 import { WalletService } from './wallet-service'
 import { v4 as uuidv4 } from 'uuid'
+import { withPrismaDefaults } from '@/lib/db/prismaDefaults'
 
 // ============================================================================
 // TYPES
@@ -106,7 +107,7 @@ export class PaymentService {
       : null
 
     const intent = await prisma.pay_payment_intents.create({
-      data: {
+      data: withPrismaDefaults({
         tenantId,
         intentId,
         amount: input.amount,
@@ -120,7 +121,7 @@ export class PaymentService {
         expiresAt,
         idempotencyKey: input.idempotencyKey,
         status: 'CREATED',
-      },
+      }),
     })
 
     // Log event
@@ -199,7 +200,7 @@ export class PaymentService {
     const transactionNumber = await this.generateTransactionNumber(tenantId)
     
     const transaction = await prisma.pay_payment_transactions.create({
-      data: {
+      data: withPrismaDefaults({
         tenantId,
         transactionNumber,
         intentId,
@@ -223,7 +224,7 @@ export class PaymentService {
         confirmedAt: new Date(),
         processedBy: options.processedBy,
         idempotencyKey: options.idempotencyKey,
-      },
+      }),
     })
 
     // Credit business wallet
@@ -497,13 +498,13 @@ export class PaymentService {
   }
 
   private static async logEvent(tenantId: string, eventType: string, eventData: Record<string, unknown>) {
-    await prisma.payEventLog.create({
-      data: {
+    await prisma.pay_event_logs.create({
+      data: withPrismaDefaults({
         tenantId,
         eventType,
         eventData: eventData as Prisma.InputJsonValue,
         paymentId: eventData.paymentId as string | undefined,
-      },
+      }),
     })
   }
 }
