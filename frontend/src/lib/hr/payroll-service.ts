@@ -90,7 +90,7 @@ export class PayrollService {
     }
 
     return prisma.hr_payroll_periods.create({
-      data: {
+      data: withPrismaDefaults({
         tenantId,
         name: input.name,
         payFrequency: input.payFrequency,
@@ -100,7 +100,7 @@ export class PayrollService {
         status: 'DRAFT',
         notes: input.notes,
         metadata: input.metadata as Prisma.InputJsonValue,
-      },
+      }),
     })
   }
 
