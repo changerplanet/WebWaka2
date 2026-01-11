@@ -511,7 +511,7 @@ export class CapabilityActivationService {
           },
         },
       },
-      create: {
+      create: withPrismaDefaults({
         tenantId,
         capabilityKey,
         status: 'SUSPENDED',
@@ -523,7 +523,7 @@ export class CapabilityActivationService {
           timestamp: now.toISOString(),
           reason,
         }],
-      },
+      }),
     });
 
     // Log event
