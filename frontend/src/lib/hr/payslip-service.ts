@@ -74,7 +74,7 @@ export class PayslipService {
       const existing = await prisma.hr_payslips.findFirst({
         where: {
           payrollPeriodId: input.periodId,
-          employeeProfileId: calc.hr_employee_profilesId,
+          employeeProfileId: calc.hr_employee_profiles.id,
         },
       })
 
@@ -97,7 +97,7 @@ export class PayslipService {
         data: {
           tenantId,
           payrollPeriodId: input.periodId,
-          employeeProfileId: calc.hr_employee_profilesId,
+          employeeProfileId: calc.hr_employee_profiles.id,
           payslipNumber,
           
           // Employee snapshot
