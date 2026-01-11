@@ -973,7 +973,7 @@ export async function approvePayoutBatch(
     
     // Audit log
     await tx.auditLog.create({
-      data: {
+      data: withPrismaDefaults({
         action: 'PAYOUT_BATCH_APPROVED',
         actorId: approvedBy,
         actorEmail: 'admin',
@@ -983,7 +983,7 @@ export async function approvePayoutBatch(
           partnerId: batch.partnerId,
           netAmount: Number(batch.netAmount)
         }
-      }
+      })
     })
     
     return updated
