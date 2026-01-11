@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "yarn validate:schema && next build",
-    "start": "next dev",
+    "start": "next start",
     "lint": "next lint",
     "test": "jest",
     "test:unit": "jest __tests__/unit",
