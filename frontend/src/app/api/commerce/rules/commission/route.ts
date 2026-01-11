@@ -13,7 +13,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getCurrentSession } from '@/lib/auth'
 import { checkCapabilityForSession } from '@/lib/capabilities'
-import { CommissionEngine, CommissionCalculator } from '@/lib/rules'
+import { calculateCommission, COMMISSION_EXAMPLES } from '@/lib/rules'
 
 /**
  * GET /api/commerce/rules/commission
@@ -36,6 +36,7 @@ export async function GET(request: NextRequest) {
       description: 'Partner commission calculation (percentage, fixed, tiered, hybrid)',
       supportedTypes: ['PERCENTAGE', 'FIXED', 'TIERED', 'HYBRID'],
       tierTypes: ['VOLUME', 'REVENUE'],
+      examples: COMMISSION_EXAMPLES,
       example: {
         type: 'TIERED',
         tiers: [
@@ -88,19 +89,46 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Calculate commission using the engine
-    const result = CommissionCalculator.calculate(body.amount, body.rule)
+    // Build agreement config from rule
+    const agreement = {
+      id: 'preview',
+      partnerId: 'preview',
+      commissionType: body.rule.type || 'PERCENTAGE',
+      commissionTrigger: body.rule.trigger || 'ON_PAYMENT',
+      commissionRate: body.rule.rate ? body.rule.rate / 100 : 0,
+      fixedAmount: body.rule.fixedAmount || 0,
+      setupFee: body.rule.setupFee || 0,
+      tiers: body.rule.tiers || [],
+      clearanceDays: body.rule.clearanceDays || 30,
+      isActive: true,
+      createdAt: new Date(),
+      updatedAt: new Date()
+    }
+
+    // Build calculation input
+    const input = {
+      grossAmount: body.amount,
+      netAmount: body.amount,
+      currency: body.currency || 'USD',
+      eventType: body.eventType || 'SUBSCRIPTION_RENEWED',
+      isFirstPayment: body.isFirstPayment || false
+    }
+
+    // Calculate commission using the actual function
+    const result = calculateCommission(agreement as Parameters<typeof calculateCommission>[0], input)
 
     return NextResponse.json({
-      success: true,
+      success: result.success,
       input: {
         amount: body.amount,
         rule: body.rule
       },
       result: {
-        commission: result.commission,
-        effectiveRate: result.effectiveRate,
-        breakdown: result.breakdown
+        commission: result.commissionAmount,
+        currency: result.currency,
+        effectiveRate: body.amount > 0 ? (result.commissionAmount / body.amount) * 100 : 0,
+        breakdown: result.details?.breakdown || [],
+        formula: result.details?.formula
       }
     })
   } catch (error) {
