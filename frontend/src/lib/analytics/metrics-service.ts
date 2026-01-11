@@ -19,6 +19,7 @@
 
 import { prisma } from '@/lib/prisma'
 import { Prisma } from '@prisma/client'
+import { withPrismaDefaults } from '@/lib/db/prismaDefaults'
 
 // ============================================================================
 // TYPES
@@ -420,7 +421,7 @@ export class MetricsService {
           dimensionValue: '',
         },
       },
-      create: {
+      create: withPrismaDefaults({
         tenantId,
         metricId: metric.id,
         periodType,
@@ -431,7 +432,7 @@ export class MetricsService {
         changePercent,
         dimensionKey: '',
         dimensionValue: '',
-      },
+      }),
       update: {
         value,
         previousValue,
