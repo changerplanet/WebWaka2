@@ -335,7 +335,7 @@ export async function validateApiKey(
   }
   
   // Check app is active
-  if (!apiKey.app.isActive) {
+  if (!apiKey.developer_apps.isActive) {
     return { valid: false, error: 'Developer app is not active' }
   }
   
