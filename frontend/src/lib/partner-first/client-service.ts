@@ -363,7 +363,7 @@ export async function getClientPlatforms(
   
   // Map to client platform format
   const platforms: ClientPlatform[] = referrals.map(ref => {
-    const tenant = ref.tenant
+    const tenant = ref.Tenant
     const metadata = (ref.metadata as any) || {}
     
     return {
@@ -439,7 +439,7 @@ export async function getClientPlatform(
     return null
   }
   
-  const tenant = referral.tenant
+  const tenant = referral.Tenant
   const metadata = (referral.metadata as any) || {}
   
   return {
