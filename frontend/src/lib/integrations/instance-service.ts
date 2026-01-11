@@ -74,7 +74,7 @@ export async function listInstancesForTenant(
           select: {
             key: true,
             name: true,
-            ProductCategory: true,
+            category: true,
             logoUrl: true,
             isNigeriaFirst: true,
           },
