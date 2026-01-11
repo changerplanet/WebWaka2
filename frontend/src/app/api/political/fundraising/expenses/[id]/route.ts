@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 /**
  * Political Suite - Expense Fact Detail API Route (Phase 2)
  * FACTS ONLY — No payment processing

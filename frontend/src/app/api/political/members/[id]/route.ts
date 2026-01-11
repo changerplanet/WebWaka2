@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 /**
  * Political Suite - Member Detail API Route
  * Phase 1: Party & Campaign Operations

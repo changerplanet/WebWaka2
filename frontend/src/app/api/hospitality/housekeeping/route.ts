@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 /**
  * HOSPITALITY SUITE: Housekeeping API Route
  * 

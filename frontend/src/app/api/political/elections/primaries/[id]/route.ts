@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 /**
  * Political Suite - Primary Detail API Route (Phase 3)
  * INTERNAL PARTY USE ONLY — NOT AN OFFICIAL ELECTION

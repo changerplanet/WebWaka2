@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 /**
  * SVM Shipping Zone by ID API
  * 

@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 /**
  * LOGISTICS SUITE: Tracking API Route
  * 

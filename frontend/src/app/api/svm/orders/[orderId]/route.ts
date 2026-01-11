@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 /**
  * SVM Order by ID API - Database Persistent
  * 

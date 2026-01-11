@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 /**
  * Commerce Wallet by ID API
  * 

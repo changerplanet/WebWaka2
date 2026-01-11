@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 /**
  * Political Suite - Governance Audit API Route (Phase 4)
  * APPEND-ONLY / IMMUTABLE AUDIT TRAIL

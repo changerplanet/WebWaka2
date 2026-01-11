@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 /**
  * Political Suite - Petitions API Route (Phase 4)
  * INTERNAL PARTY GRIEVANCE HANDLING ONLY

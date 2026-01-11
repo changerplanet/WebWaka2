@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 /**
  * Political Suite - Regulators API Route (Phase 4)
  * READ-ONLY ACCESS FOR REGULATORS & OBSERVERS

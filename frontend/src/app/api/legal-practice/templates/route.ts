@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 /**
  * LEGAL PRACTICE SUITE — Matter Templates API
  * GET: Retrieve all templates or filter by type

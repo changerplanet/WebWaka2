@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 /**
  * SVM Product by ID API - Core Proxy
  * 

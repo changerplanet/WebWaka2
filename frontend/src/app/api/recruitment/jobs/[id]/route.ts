@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 /**
  * RECRUITMENT SUITE — Job Detail API
  * Phase 7C.1, S4 API Routes

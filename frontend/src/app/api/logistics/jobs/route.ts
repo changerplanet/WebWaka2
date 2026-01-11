@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 /**
  * LOGISTICS SUITE: Jobs/Dispatch API Route
  * 

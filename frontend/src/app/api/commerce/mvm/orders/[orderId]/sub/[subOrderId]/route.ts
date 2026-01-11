@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 /**
  * MVM Single Sub-Order API
  * 

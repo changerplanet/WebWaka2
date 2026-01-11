@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 /**
  * Political Suite - Engagements API Route (Phase 4)
  * POST-ELECTION COMMUNITY ENGAGEMENT

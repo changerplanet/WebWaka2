@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 /**
  * ERROR LOG VIEWER API
  * 

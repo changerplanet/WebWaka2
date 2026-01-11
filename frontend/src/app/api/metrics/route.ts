@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 /**
  * Metrics & Health Check API
  * 

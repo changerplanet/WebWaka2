@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 /**
  * Political Suite - Transparency Reports API Route (Phase 4)
  * TRANSPARENCY PUBLISHING (NON-PARTISAN)

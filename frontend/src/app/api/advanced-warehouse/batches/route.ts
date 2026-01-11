@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 /**
  * ADVANCED WAREHOUSE SUITE — Batches API
  * Phase 7C.3, S4 API Routes

@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 /**
  * Political Suite - Evidence API Route (Phase 4)
  * APPEND-ONLY / IMMUTABLE EVIDENCE RECORDS

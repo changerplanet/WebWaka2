@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 /**
  * REAL ESTATE MANAGEMENT — Property Detail API
  * Phase 7A, S3 API Routes

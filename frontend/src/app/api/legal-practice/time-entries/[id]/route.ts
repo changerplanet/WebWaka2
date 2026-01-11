@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 /**
  * LEGAL PRACTICE SUITE — Time Entry Detail API
  * Phase 7B.1, S4 API Routes

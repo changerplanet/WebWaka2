@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 /**
  * POS Shift Z-Report API
  * 

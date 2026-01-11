@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 /**
  * MODULE 15: ECOSYSTEM & INTEGRATIONS HUB
  * API Routes

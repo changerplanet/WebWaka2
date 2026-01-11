@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 /**
  * PROJECT MANAGEMENT SUITE — Project Detail API
  * Phase 7C.2, S4 API Routes

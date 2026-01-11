@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 /**
  * Political Suite - Disclosures API Route (Phase 2)
  * Reporting & Aggregation
