@@ -103,7 +103,7 @@ export class AnalyticsConfigService {
     }
 
     const config = await prisma.analytics_configurations.create({
-      data: {
+      data: withPrismaDefaults({
         tenantId,
         analyticsEnabled: input?.analyticsEnabled ?? true,
         dashboardsEnabled: input?.dashboardsEnabled ?? true,
@@ -117,7 +117,7 @@ export class AnalyticsConfigService {
         timezone: input?.timezone ?? 'Africa/Lagos',
         fiscalYearStart: input?.fiscalYearStart ?? 1,
         metadata: input?.metadata ? (input.metadata as Prisma.InputJsonValue) : Prisma.JsonNull,
-      },
+      }),
     })
 
     // Create default metric definitions
