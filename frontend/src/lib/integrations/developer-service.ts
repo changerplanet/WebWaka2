@@ -386,13 +386,13 @@ export async function revokeApiKey(
   
   // Log event
   await prisma.integration_event_logs.create({
-    data: {
+    data: withPrismaDefaults({
       tenantId: apiKey.tenantId,
       eventType: 'API_KEY_REVOKED',
       eventData: { keyId, reason },
       keyId,
       actorId: revokedBy,
-    },
+    }),
   })
   
   return apiKey
