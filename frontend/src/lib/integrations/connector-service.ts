@@ -12,6 +12,7 @@
 
 import { PrismaClient, IntegrationInstanceStatus } from '@prisma/client'
 import { getDecryptedCredentials } from './instance-service'
+import { withPrismaDefaults } from '@/lib/db/prismaDefaults'
 
 const prisma = new PrismaClient()
 
@@ -293,7 +294,7 @@ async function logApiCall(
   }
 ) {
   await prisma.integration_logs.create({
-    data: {
+    data: withPrismaDefaults({
       tenantId,
       instanceId,
       logType: 'api_call',
@@ -310,7 +311,7 @@ async function logApiCall(
       errorMessage: data.errorMessage,
       retryCount: data.retryCount,
       isRetry: data.retryCount > 0,
-    },
+    }),
   })
 }
 
