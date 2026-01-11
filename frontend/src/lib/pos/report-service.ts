@@ -83,7 +83,7 @@ export async function generateDailySummary(
   // Get all sales for the day
   const sales = await prisma.pos_sale.findMany({
     where,
-    include: { inv_audit_items: true },
+    include: { items: true },
   })
 
   // Get shifts for the day
