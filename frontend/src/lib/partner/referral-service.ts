@@ -15,6 +15,7 @@ import { AttributionStatus } from '@prisma/client';
 import { prisma } from '@/lib/prisma';
 import { getPartnerConfiguration } from './config-service';
 import { logPartnerEvent } from './event-service';
+import { withPrismaDefaults } from '@/lib/db/prismaDefaults';
 
 // ============================================================================
 // REFERRAL LINK MANAGEMENT
@@ -53,7 +54,7 @@ export async function createReferralLink(input: CreateReferralLinkInput): Promis
     const code = generateReferralCode(partner.slug);
     
     const referralLink = await prisma.partner_referral_links_ext.create({
-      data: {
+      data: withPrismaDefaults({
         partnerId: input.partnerId,
         code,
         name: input.name || `Link ${new Date().toISOString().slice(0, 10)}`,
@@ -66,7 +67,7 @@ export async function createReferralLink(input: CreateReferralLinkInput): Promis
         clicks: 0,
         signups: 0,
         conversions: 0,
-      },
+      }),
     });
     
     // Log event
@@ -213,7 +214,7 @@ export async function createAttribution(input: CreateAttributionInput): Promise<
     
     // Create attribution
     const attribution = await prisma.partner_attributions_ext.create({
-      data: {
+      data: withPrismaDefaults({
         partnerId: input.partnerId,
         tenantId: input.tenantId,
         tenantSlug: input.tenantSlug,
@@ -223,7 +224,7 @@ export async function createAttribution(input: CreateAttributionInput): Promise<
         utmCampaign: input.utmCampaign,
         status: 'ATTRIBUTED',
         isLocked: false,  // Will be locked after first subscription
-      },
+      }),
     });
     
     // Update referral link signups count
