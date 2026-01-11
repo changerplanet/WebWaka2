@@ -1,12 +1,12 @@
 {
-  "timestamp": "2026-01-11T13:32:31.963Z",
+  "timestamp": "2026-01-11T13:32:41.643Z",
   "mode": "check",
   "summary": {
     "totalFiles": 1175,
     "totalReferences": 4191,
     "validModels": 365,
     "totalErrors": 0,
-    "legacyIssues": 5,
+    "legacyIssues": 4,
     "newErrors": 0,
     "baselinedIssues": 1201
   },
