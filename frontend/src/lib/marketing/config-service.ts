@@ -223,38 +223,38 @@ export class MktConfigService {
 
       if (!existing) {
         const workflow = await prisma.mkt_automation_workflows.create({
-          data: {
+          data: withPrismaDefaults({
             tenantId,
             name: template.name,
             description: template.description,
             templateKey: template.templateKey,
             isTemplate: true,
             status: 'DRAFT', // Templates start as draft
-          },
+          }),
         })
 
         // Create trigger
         await prisma.mkt_automation_triggers.create({
-          data: {
+          data: withPrismaDefaults({
             workflowId: workflow.id,
             type: template.trigger.type as 'EVENT' | 'TIME' | 'CONDITION' | 'MANUAL',
             eventName: template.trigger.eventName,
             conditions: template.trigger.conditions as Prisma.InputJsonValue || Prisma.JsonNull,
             scheduleType: template.trigger.scheduleType,
             scheduleDays: template.trigger.scheduleDays,
-          },
+          }),
         })
 
         // Create actions
         for (let i = 0; i < template.actions.length; i++) {
           const action = template.actions[i]
           await prisma.mkt_automation_actions.create({
-            data: {
+            data: withPrismaDefaults({
               workflowId: workflow.id,
               type: action.type as 'SEND_MESSAGE' | 'APPLY_TAG' | 'AWARD_POINTS' | 'INTERNAL_NOTIFY' | 'WAIT',
               config: action.config as Prisma.InputJsonValue,
               sortOrder: i,
-            },
+            }),
           })
         }
       }
