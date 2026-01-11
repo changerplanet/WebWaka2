@@ -7,6 +7,7 @@
 
 import { prisma } from './prisma'
 import { Prisma } from '@prisma/client'
+import { withPrismaDefaults } from './db/prismaDefaults'
 
 // ============================================================================
 // TYPES (maintained for API compatibility)
