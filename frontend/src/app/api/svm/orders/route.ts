@@ -89,7 +89,7 @@ export async function POST(request: NextRequest) {
     if (cartId) {
       const cart = await prisma.svm_carts.findUnique({
         where: { id: cartId },
-        include: { items: true }
+        include: { svm_cart_items: true }
       })
 
       if (!cart) {
@@ -106,14 +106,14 @@ export async function POST(request: NextRequest) {
         )
       }
 
-      if (cart.items.length === 0) {
+      if (cart.svm_cart_items.length === 0) {
         return NextResponse.json(
           { success: false, error: 'Cart is empty' },
           { status: 400 }
         )
       }
 
-      orderItems = cart.items.map(item => ({
+      orderItems = cart.svm_cart_items.map((item: { productId: string; variantId: string | null; productName: string; sku: string | null; variantName: string | null; imageUrl: string | null; unitPrice: { toString: () => string }; quantity: number }) => ({
         productId: item.productId,
         variantId: item.variantId || undefined,
         productName: item.productName,
