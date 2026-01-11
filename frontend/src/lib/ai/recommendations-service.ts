@@ -63,7 +63,7 @@ export async function createRecommendation(input: CreateRecommendationInput): Pr
     }
     
     const recommendation = await prisma.ai_recommendations.create({
-      data: {
+      data: withPrismaDefaults({
         tenantId: input.tenantId,
         recommendationType: input.recommendationType,
         title: input.title,
@@ -78,7 +78,7 @@ export async function createRecommendation(input: CreateRecommendationInput): Pr
         suggestedAction: input.suggestedAction,
         status: 'PENDING',
         expiresAt: input.expiresAt,
-      },
+      }),
     });
     
     await logAIEvent({
