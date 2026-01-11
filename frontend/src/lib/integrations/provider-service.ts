@@ -89,8 +89,8 @@ export async function getProviderByKey(key: string) {
   
   return {
     ...provider,
-    instanceCount: provider.instances.length,
-    activeInstanceCount: provider.instances.filter(i => i.status === 'ACTIVE').length,
+    instanceCount: provider.integration_instances.length,
+    activeInstanceCount: provider.integration_instances.filter(i => i.status === 'ACTIVE').length,
   }
 }
 
