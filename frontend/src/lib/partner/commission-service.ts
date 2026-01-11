@@ -393,7 +393,7 @@ export async function getPartnerEarningsSummary(partnerId: string) {
         summary.pendingEarnings += amount;
       } else if (status === 'PAID') {
         summary.paidEarnings += amount;
-      } else if (status === 'READY') {
+      } else if (status === 'APPROVED') {
         summary.readyForPayout += amount;
       }
     }
