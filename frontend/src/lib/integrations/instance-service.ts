@@ -128,7 +128,7 @@ export async function getInstanceById(instanceId: string, tenantId?: string) {
     where,
     include: {
       integration_providers: true,
-      credentials: {
+      integration_credentials: {
         select: {
           id: true,
           key: true,
@@ -138,7 +138,7 @@ export async function getInstanceById(instanceId: string, tenantId?: string) {
           expiresAt: true,
         },
       },
-      webhooks: true,
+      integration_webhooks: true,
     },
   })
 }
