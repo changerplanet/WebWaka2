@@ -600,7 +600,7 @@ export class CapabilityActivationService {
     metadata?: Record<string, unknown>;
   }): Promise<void> {
     await prisma.core_capability_event_logs.create({
-      data: {
+      data: withPrismaDefaults({
         eventType: data.eventType,
         tenantId: data.tenantId,
         capabilityKey: data.capabilityKey,
@@ -610,7 +610,7 @@ export class CapabilityActivationService {
         newStatus: data.newStatus,
         reason: data.reason,
         metadata: data.metadata ? JSON.parse(JSON.stringify(data.metadata)) : undefined,
-      },
+      }),
     });
   }
 
