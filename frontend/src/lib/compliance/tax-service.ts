@@ -9,6 +9,7 @@
 import { PrismaClient } from '@prisma/client';
 import { getTaxConfiguration, DEFAULT_VAT_RATE } from './config-service';
 import { logComplianceEvent } from './event-service';
+import { withPrismaDefaults } from '@/lib/db/prismaDefaults';
 
 const prisma = new PrismaClient();
 
@@ -75,7 +76,7 @@ export async function computeTaxForPeriod(input: ComputeTaxInput): Promise<{
     
     // Create computation record (append-only)
     const computation = await prisma.tax_computation_records.create({
-      data: {
+      data: withPrismaDefaults({
         tenantId: input.tenantId,
         periodStart: input.periodStart,
         periodEnd: input.periodEnd,
@@ -93,7 +94,7 @@ export async function computeTaxForPeriod(input: ComputeTaxInput): Promise<{
         computedAt: new Date(),
         computedBy: input.computedBy,
         sourceType: 'AUTO',
-      },
+      }),
     });
     
     // Log event
