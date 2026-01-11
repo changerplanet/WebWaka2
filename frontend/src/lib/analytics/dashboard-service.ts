@@ -17,6 +17,7 @@
 import { prisma } from '@/lib/prisma'
 import { Prisma } from '@prisma/client'
 import { MetricsService, DateRange } from './metrics-service'
+import { withPrismaDefaults } from '@/lib/db/prismaDefaults'
 
 // ============================================================================
 // TYPES
@@ -173,7 +174,7 @@ export class DashboardService {
     createdBy: string
   ): Promise<DashboardOutput> {
     const dashboard = await prisma.analytics_dashboards.create({
-      data: {
+      data: withPrismaDefaults({
         tenantId,
         key: input.key,
         name: input.name,
@@ -182,7 +183,7 @@ export class DashboardService {
         isDefault: input.isDefault ?? false,
         isSystem: false,
         createdBy,
-      },
+      }),
       include: { analytics_dashboard_widgets: true },
     })
 
