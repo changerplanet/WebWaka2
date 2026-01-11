@@ -105,9 +105,9 @@ export class HrEntitlementsService {
     const tenant = await prisma.tenant.findUnique({
       where: { id: tenantId },
       include: {
-        Subscription: {
+        subscription: {
           include: {
-            Plan: { select: { slug: true } },
+            SubscriptionPlan: { select: { slug: true } },
           },
         },
       },
@@ -118,7 +118,7 @@ export class HrEntitlementsService {
     }
 
     // Map plan slug to entitlement key
-    const planSlug = tenant.subscription?.plan?.slug || 'free'
+    const planSlug = tenant.subscription?.SubscriptionPlan?.slug || 'free'
     const planKey = planSlug.toUpperCase().replace(/-/g, '_')
     return PLAN_ENTITLEMENTS[planKey] || PLAN_ENTITLEMENTS.FREE
   }
