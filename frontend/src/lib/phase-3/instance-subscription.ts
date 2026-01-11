@@ -185,7 +185,7 @@ export async function getInstanceSubscription(
           slug: true,
         }
       },
-      plan: {
+      SubscriptionPlan: {
         select: {
           id: true,
           name: true,
