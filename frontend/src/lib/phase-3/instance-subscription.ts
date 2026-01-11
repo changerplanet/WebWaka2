@@ -170,7 +170,7 @@ export async function getInstanceSubscription(
   return prisma.instanceSubscription.findUnique({
     where: { platformInstanceId },
     include: {
-      platformInstance: {
+      PlatformInstance: {
         select: {
           id: true,
           name: true,
@@ -217,7 +217,7 @@ export async function getPartnerSubscriptions(
     prisma.instanceSubscription.findMany({
       where,
       include: {
-        platformInstance: {
+        PlatformInstance: {
           select: {
             id: true,
             name: true,
@@ -309,7 +309,7 @@ export async function suspendInstanceSubscription(
   try {
     const subscription = await prisma.instanceSubscription.findUnique({
       where: { id: subscriptionId },
-      include: { platformInstance: true }
+      include: { PlatformInstance: true }
     })
     
     if (!subscription) {
