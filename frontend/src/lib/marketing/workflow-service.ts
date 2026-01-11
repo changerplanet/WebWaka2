@@ -94,7 +94,7 @@ export class WorkflowService {
   }) {
     const { status, includeTemplates = false, page = 1, limit = 20 } = options || {}
 
-    const where: Prisma.MktAutomationWorkflowWhereInput = {
+    const where: Prisma.mkt_automation_workflowsWhereInput = {
       tenantId,
       ...(status && { status: { in: status } }),
       ...(!includeTemplates && { isTemplate: false }),
