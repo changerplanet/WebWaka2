@@ -119,7 +119,7 @@ export class OfflineHrService {
       }),
 
       // Get schedules
-      prisma.hrWorkSchedule.findMany({
+      prisma.hr_work_schedules.findMany({
         where: { tenantId, isActive: true },
         select: {
           id: true,
