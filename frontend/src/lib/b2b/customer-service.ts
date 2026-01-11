@@ -10,6 +10,7 @@
 
 import { prisma } from '@/lib/prisma'
 import { B2BCustomerType, B2BProfileStatus, B2BCreditStatus, Prisma } from '@prisma/client'
+import { withPrismaDefaults } from '@/lib/db/prismaDefaults'
 
 // ============================================================================
 // TYPES
@@ -94,7 +95,7 @@ export class B2BCustomerService {
     const customerName = customer.fullName || `${customer.firstName || ''} ${customer.lastName || ''}`.trim() || 'Unknown'
 
     const profile = await prisma.b2b_customer_profiles.create({
-      data: {
+      data: withPrismaDefaults({
         tenantId,
         customerId: input.customerId,
         customerType: input.customerType || 'RETAILER',
@@ -110,7 +111,7 @@ export class B2BCustomerService {
         allowCashPurchase: input.allowCashPurchase ?? true,
         allowCreditPurchase: input.allowCreditPurchase ?? false,
         status: 'ACTIVE',
-      },
+      }),
     })
 
     // Log event
