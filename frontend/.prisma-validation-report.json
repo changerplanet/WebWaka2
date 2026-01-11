@@ -1,25 +1,15 @@
 {
-  "timestamp": "2026-01-11T09:59:39.585Z",
+  "timestamp": "2026-01-11T09:59:56.164Z",
   "mode": "check",
   "summary": {
     "totalFiles": 1175,
     "totalReferences": 4191,
     "validModels": 365,
-    "totalErrors": 6,
+    "totalErrors": 5,
     "legacyIssues": 11,
-    "newErrors": 1,
+    "newErrors": 0,
     "baselinedIssues": 1201
   },
-  "newErrors": [
-    {
-      "model": "accessScope",
-      "method": "upsert",
-      "line": 335,
-      "file": "/app/frontend/src/lib/integrations/config-service.ts",
-      "key": "src/lib/integrations/config-service.ts:335:accessScope",
-      "type": "UNKNOWN_MODEL",
-      "suggestion": null
-    }
-  ],
-  "status": "FAILED"
+  "newErrors": [],
+  "status": "PASSED"
 }
