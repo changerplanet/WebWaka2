@@ -10,6 +10,7 @@
 
 import { prisma } from '@/lib/prisma'
 import { B2BPriceType, B2BDiscountType } from '@prisma/client'
+import { withPrismaDefaults } from '@/lib/db/prismaDefaults'
 
 // ============================================================================
 // TYPES
@@ -226,7 +227,7 @@ export class B2BPricingService {
     }
   ): Promise<PriceTier> {
     const tier = await prisma.b2b_price_tiers.create({
-      data: {
+      data: withPrismaDefaults({
         tenantId,
         name: input.name,
         code: input.code,
@@ -235,7 +236,7 @@ export class B2BPricingService {
         minOrderValue: input.minOrderValue || 0,
         minOrderQuantity: input.minOrderQuantity || 1,
         priority: input.priority || 0,
-      },
+      }),
     })
 
     return {
