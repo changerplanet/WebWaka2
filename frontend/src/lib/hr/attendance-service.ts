@@ -7,6 +7,7 @@
 
 import { prisma } from '@/lib/prisma'
 import { HrAttendanceStatus, HrClockMethod, Prisma } from '@prisma/client'
+import { withPrismaDefaults } from '@/lib/db/prismaDefaults'
 
 // ============================================================================
 // TYPES
@@ -108,7 +109,7 @@ export class AttendanceService {
     } else {
       // Create new record
       record = await prisma.hr_attendance_records.create({
-        data: {
+        data: withPrismaDefaults({
           tenantId,
           employeeProfileId: input.employeeProfileId,
           date: today,
@@ -123,7 +124,7 @@ export class AttendanceService {
           recordedAt: now,
           syncedAt: input.offlineId ? new Date() : null,
           createdBy,
-        },
+        }),
       })
     }
 
