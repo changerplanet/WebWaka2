@@ -208,7 +208,7 @@ export class ReportsService {
         .filter(item => Number(item.quantityAvailable) <= Number(item.reorderPoint))
         .slice(0, 20)
         .map(item => ({
-          productName: item.product?.name || 'Unknown',
+          productName: item.Product?.name || 'Unknown',
           quantity: Number(item.quantityOnHand),
           reorderPoint: Number(item.reorderPoint),
         }))
