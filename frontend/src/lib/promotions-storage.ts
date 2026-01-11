@@ -367,7 +367,7 @@ export async function addPromotion(promotion: Promotion): Promise<void> {
       isActive: promotion.isActive,
       stackable: promotion.stackable,
       priority: promotion.priority
-    }
+    })
   })
 }
 
