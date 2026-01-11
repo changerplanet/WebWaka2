@@ -134,7 +134,7 @@ export async function updateComplianceProfile(
 
 export async function getTaxConfiguration(tenantId: string) {
   const profile = await getComplianceProfile(tenantId);
-  return profile.taxConfig;
+  return profile.tax_configurations;
 }
 
 export async function updateTaxConfiguration(
@@ -154,7 +154,7 @@ export async function updateTaxConfiguration(
 ) {
   await getComplianceProfile(tenantId);  // Ensure exists
   
-  return prisma.taxConfiguration.update({
+  return prisma.tax_configurations.update({
     where: { tenantId },
     data,
   });
@@ -197,10 +197,10 @@ export async function getComplianceModuleStatus(tenantId?: string) {
         vatRegistered: profile.vatRegistered,
         taxTrackingEnabled: profile.taxTrackingEnabled,
       },
-      taxConfig: profile.taxConfig ? {
-        vatEnabled: profile.taxConfig.vatEnabled,
-        vatRate: profile.taxConfig.vatRate,
-        vatInclusive: profile.taxConfig.vatInclusive,
+      taxConfig: profile.tax_configurations ? {
+        vatEnabled: profile.tax_configurations.vatEnabled,
+        vatRate: profile.tax_configurations.vatRate,
+        vatInclusive: profile.tax_configurations.vatInclusive,
       } : null,
       computations: tenantComputations,
       reports: tenantReports,

@@ -1,15 +1,25 @@
 {
-  "timestamp": "2026-01-11T08:47:41.934Z",
+  "timestamp": "2026-01-11T08:48:13.234Z",
   "mode": "check",
   "summary": {
     "totalFiles": 1175,
     "totalReferences": 4191,
     "validModels": 365,
-    "totalErrors": 6,
-    "legacyIssues": 18,
-    "newErrors": 0,
+    "totalErrors": 7,
+    "legacyIssues": 17,
+    "newErrors": 1,
     "baselinedIssues": 1201
   },
-  "newErrors": [],
-  "status": "PASSED"
+  "newErrors": [
+    {
+      "model": "tax_configurationsuration",
+      "method": "update",
+      "line": 157,
+      "file": "/app/frontend/src/lib/compliance/config-service.ts",
+      "key": "src/lib/compliance/config-service.ts:157:tax_configurationsuration",
+      "type": "UNKNOWN_MODEL",
+      "suggestion": null
+    }
+  ],
+  "status": "FAILED"
 }
