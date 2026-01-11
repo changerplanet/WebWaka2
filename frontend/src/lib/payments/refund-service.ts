@@ -137,7 +137,7 @@ export class RefundService {
   static async processRefund(tenantId: string, refundId: string): Promise<Refund> {
     const refund = await prisma.pay_refunds.findUnique({
       where: { id: refundId, tenantId },
-      include: { payment: true },
+      include: { pay_payment_transactions: true },
     })
 
     if (!refund) throw new Error('Refund not found')
@@ -163,7 +163,7 @@ export class RefundService {
       type: 'REFUND_MADE',
       referenceType: 'REFUND',
       referenceId: refundId,
-      description: `Refund ${refund.refundNumber} for payment ${refund.payment.transactionNumber}`,
+      description: `Refund ${refund.refundNumber} for payment ${refund.pay_payment_transactions.transactionNumber}`,
     })
 
     // Update refund to completed
