@@ -13,7 +13,7 @@ import uuid
 from datetime import datetime, timedelta
 
 # Base URL from environment
-BASE_URL = os.environ.get('NEXT_PUBLIC_APP_URL', 'https://prisma-sync.preview.emergentagent.com').rstrip('/')
+BASE_URL = os.environ.get('NEXT_PUBLIC_APP_URL', 'https://typefix.preview.emergentagent.com').rstrip('/')
 
 # Test data prefix for cleanup
 TEST_PREFIX = "TEST_"

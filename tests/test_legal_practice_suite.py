@@ -8,7 +8,7 @@ import pytest
 import requests
 import os
 
-BASE_URL = os.environ.get('NEXT_PUBLIC_APP_URL', 'https://prisma-sync.preview.emergentagent.com')
+BASE_URL = os.environ.get('NEXT_PUBLIC_APP_URL', 'https://typefix.preview.emergentagent.com')
 TENANT_ID = "demo-legal-practice-tenant"
 
 class TestTenantScoping:
