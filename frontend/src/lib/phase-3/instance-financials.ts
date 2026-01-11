@@ -150,7 +150,7 @@ export async function getPartnerFinancials(
   const summaries = await prisma.instanceFinancialSummary.findMany({
     where: { partnerId },
     include: {
-      platformInstance: {
+      PlatformInstance: {
         select: { id: true, name: true, slug: true }
       }
     }
@@ -158,7 +158,7 @@ export async function getPartnerFinancials(
   
   const instances: InstanceFinancials[] = summaries.map(s => ({
     instanceId: s.platformInstanceId,
-    instanceName: s.platformInstance.name,
+    instanceName: s.PlatformInstance.name,
     partnerId: s.partnerId,
     partnerName: '',
     totalRevenue: Number(s.totalRevenue),
