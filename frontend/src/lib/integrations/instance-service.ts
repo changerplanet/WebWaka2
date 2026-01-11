@@ -9,6 +9,7 @@
 
 import { PrismaClient, IntegrationInstanceStatus, IntegrationProviderStatus } from '@prisma/client'
 import crypto from 'crypto'
+import { withPrismaDefaults } from '@/lib/db/prismaDefaults'
 
 const prisma = new PrismaClient()
 
@@ -194,7 +195,7 @@ export async function enableIntegration(
   
   // Create instance
   const instance = await prisma.integration_instances.create({
-    data: {
+    data: withPrismaDefaults({
       tenantId,
       providerId: provider.id,
       displayName: data.displayName || provider.name,
@@ -202,7 +203,7 @@ export async function enableIntegration(
       status: IntegrationInstanceStatus.PENDING_SETUP,
       enabledScopes: data.enabledScopes,
       configuration: data.configuration,
-    },
+    }),
     include: {
       integration_providers: true,
     },
@@ -210,7 +211,7 @@ export async function enableIntegration(
   
   // Log event
   await prisma.integration_event_logs.create({
-    data: {
+    data: withPrismaDefaults({
       tenantId,
       eventType: 'INTEGRATION_ENABLED',
       eventData: {
@@ -222,7 +223,7 @@ export async function enableIntegration(
       instanceId: instance.id,
       actorId: data.activatedBy,
       actorType: 'tenant_admin',
-    },
+    }),
   })
   
   return instance
@@ -255,7 +256,7 @@ export async function configureCredentials(
   
   // Store credentials (encrypted)
   for (const [key, value] of Object.entries(credentials)) {
-    await prisma.integrationCredential.upsert({
+    await prisma.integration_credentials.upsert({
       where: {
         instanceId_key: {
           instanceId,
@@ -320,7 +321,7 @@ export async function configureCredentials(
  * Get decrypted credentials (internal use only)
  */
 export async function getDecryptedCredentials(instanceId: string): Promise<Record<string, string>> {
-  const credentials = await prisma.integrationCredential.findMany({
+  const credentials = await prisma.integration_credentials.findMany({
     where: { instanceId },
   })
   
@@ -423,7 +424,7 @@ export async function revokeInstance(
   })
   
   // Delete credentials for security
-  await prisma.integrationCredential.deleteMany({
+  await prisma.integration_credentials.deleteMany({
     where: { instanceId },
   })
   
