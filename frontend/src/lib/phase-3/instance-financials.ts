@@ -277,8 +277,7 @@ export async function recordPartnerEarning(
     clearsAt.setDate(clearsAt.getDate() + (input.clearsInDays || 30))
     
     const earning = await prisma.partnerInstanceEarning.create({
-      data: {
-        id: uuidv4(),
+      data: withPrismaDefaults({
         partnerId: input.partnerId,
         platformInstanceId: input.platformInstanceId,
         earningType: input.earningType,
@@ -292,20 +291,19 @@ export async function recordPartnerEarning(
         status: 'PENDING',
         clearsAt,
         metadata: input.metadata,
-      }
+      })
     })
     
     // Update financial summary
     await prisma.instanceFinancialSummary.upsert({
       where: { platformInstanceId: input.platformInstanceId },
-      create: {
-        id: uuidv4(),
+      create: withPrismaDefaults({
         platformInstanceId: input.platformInstanceId,
         partnerId: input.partnerId,
         totalCommissionEarned: commissionAmount,
         pendingCommission: commissionAmount,
         lastCalculatedAt: new Date(),
-      },
+      }),
       update: {
         totalCommissionEarned: { increment: commissionAmount },
         pendingCommission: { increment: commissionAmount },
