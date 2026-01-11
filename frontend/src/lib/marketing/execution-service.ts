@@ -129,7 +129,7 @@ export class ExecutionService {
   ): Promise<ExecutionResult> {
     // Create run record
     const run = await prisma.mkt_automation_runs.create({
-      data: {
+      data: withPrismaDefaults({
         tenantId,
         workflowId,
         customerId,
@@ -138,7 +138,7 @@ export class ExecutionService {
         triggerData: triggerData as Prisma.InputJsonValue,
         status: 'RUNNING',
         startedAt: new Date(),
-      },
+      }),
     })
 
     const results: ActionResult[] = []
