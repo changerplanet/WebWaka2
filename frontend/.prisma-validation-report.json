@@ -1,25 +1,15 @@
 {
-  "timestamp": "2026-01-11T08:46:11.620Z",
+  "timestamp": "2026-01-11T08:46:26.381Z",
   "mode": "check",
   "summary": {
     "totalFiles": 1175,
     "totalReferences": 4191,
     "validModels": 365,
-    "totalErrors": 7,
+    "totalErrors": 6,
     "legacyIssues": 18,
-    "newErrors": 1,
+    "newErrors": 0,
     "baselinedIssues": 1201
   },
-  "newErrors": [
-    {
-      "model": "auditArtifact",
-      "method": "count",
-      "line": 179,
-      "file": "/app/frontend/src/lib/compliance/config-service.ts",
-      "key": "src/lib/compliance/config-service.ts:179:auditArtifact",
-      "type": "UNKNOWN_MODEL",
-      "suggestion": null
-    }
-  ],
-  "status": "FAILED"
+  "newErrors": [],
+  "status": "PASSED"
 }
