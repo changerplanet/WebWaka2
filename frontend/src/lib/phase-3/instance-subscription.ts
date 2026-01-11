@@ -67,7 +67,7 @@ export async function createInstanceSubscription(
     // Validate instance exists
     const instance = await prisma.platformInstance.findUnique({
       where: { id: input.platformInstanceId },
-      include: { Tenant: true }
+      include: { tenant: true }
     })
     
     if (!instance) {
@@ -222,7 +222,7 @@ export async function getPartnerSubscriptions(
             id: true,
             name: true,
             slug: true,
-            Tenant: {
+            tenant: {
               select: {
                 id: true,
                 name: true,
