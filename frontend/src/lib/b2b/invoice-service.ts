@@ -10,6 +10,7 @@
 
 import { prisma } from '@/lib/prisma'
 import { B2BInvoiceStatus, B2BCreditTransactionType, Prisma } from '@prisma/client'
+import { withPrismaDefaults } from '@/lib/db/prismaDefaults'
 
 // ============================================================================
 // TYPES
@@ -109,7 +110,7 @@ export class B2BInvoiceService {
     const invoiceNumber = await this.generateInvoiceNumber(tenantId)
 
     const invoice = await prisma.b2b_invoices.create({
-      data: {
+      data: withPrismaDefaults({
         tenantId,
         invoiceNumber,
         profileId: input.profileId,
@@ -127,7 +128,7 @@ export class B2BInvoiceService {
         lineItems: input.lineItems,
         createdBy,
         status: 'DRAFT',
-      },
+      }),
     })
 
     return this.formatInvoice(invoice)
