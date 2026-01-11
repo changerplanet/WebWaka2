@@ -135,7 +135,7 @@ async function seedDefaultZones(tenantId: string): Promise<ShippingZone[]> {
       isDefault: false,
       isActive: true,
       priority: 100,
-      rates: {
+      svm_shipping_rates: {
         create: [
           {
             name: 'Standard Shipping',
@@ -187,7 +187,7 @@ async function seedDefaultZones(tenantId: string): Promise<ShippingZone[]> {
         ]
       }
     },
-    include: { rates: true }
+    include: { svm_shipping_rates: true }
   })
 
   // Create default Canada zone
@@ -203,7 +203,7 @@ async function seedDefaultZones(tenantId: string): Promise<ShippingZone[]> {
       isDefault: false,
       isActive: true,
       priority: 90,
-      rates: {
+      svm_shipping_rates: {
         create: [
           {
             name: 'Standard Shipping',
@@ -239,7 +239,7 @@ async function seedDefaultZones(tenantId: string): Promise<ShippingZone[]> {
         ]
       }
     },
-    include: { rates: true }
+    include: { svm_shipping_rates: true }
   })
 
   // Create default International zone
@@ -255,7 +255,7 @@ async function seedDefaultZones(tenantId: string): Promise<ShippingZone[]> {
       isDefault: true,
       isActive: true,
       priority: 0,
-      rates: {
+      svm_shipping_rates: {
         create: [
           {
             name: 'International Standard',
@@ -290,7 +290,7 @@ async function seedDefaultZones(tenantId: string): Promise<ShippingZone[]> {
         ]
       }
     },
-    include: { rates: true }
+    include: { svm_shipping_rates: true }
   })
 
   return [usZone, caZone, intlZone].map(mapDbZoneToInterface)
@@ -307,7 +307,7 @@ export async function getOrCreateDefaultZones(tenantId: string): Promise<Shippin
   // Check if zones already exist
   const existingZones = await prisma.svm_shipping_zones.findMany({
     where: { tenantId },
-    include: { rates: true },
+    include: { svm_shipping_rates: true },
     orderBy: { priority: 'desc' }
   })
   
@@ -332,7 +332,7 @@ export async function getZones(tenantId: string): Promise<ShippingZone[]> {
 export async function getZone(tenantId: string, zoneId: string): Promise<ShippingZone | null> {
   const zone = await prisma.svm_shipping_zones.findFirst({
     where: { id: zoneId, tenantId },
-    include: { rates: true }
+    include: { svm_shipping_rates: true }
   })
   
   return zone ? mapDbZoneToInterface(zone) : null
@@ -355,7 +355,7 @@ export async function addZone(zone: ShippingZone): Promise<void> {
       isDefault: zone.isDefault,
       isActive: zone.isActive,
       priority: zone.priority,
-      rates: {
+      svm_shipping_rates: {
         create: zone.rates.map(rate => ({
           id: rate.id,
           name: rate.name,
@@ -409,7 +409,7 @@ export async function updateZone(tenantId: string, zoneId: string, updates: Part
       isActive: updates.isActive,
       priority: updates.priority
     },
-    include: { rates: true }
+    include: { svm_shipping_rates: true }
   })
   
   return mapDbZoneToInterface(updated)
@@ -421,7 +421,7 @@ export async function updateZone(tenantId: string, zoneId: string, updates: Part
 export async function deleteZone(tenantId: string, zoneId: string): Promise<ShippingZone | null> {
   const existing = await prisma.svm_shipping_zones.findFirst({
     where: { id: zoneId, tenantId },
-    include: { rates: true }
+    include: { svm_shipping_rates: true }
   })
   
   if (!existing) return null
