@@ -522,13 +522,13 @@ export class AttendanceService {
       where: {
         employeeProfileId_date: { employeeProfileId, date: d },
       },
-      create: {
+      create: withPrismaDefaults({
         tenantId,
         employeeProfileId,
         date: d,
         status: 'LEAVE',
         leaveRequestId,
-      },
+      }),
       update: {
         status: 'LEAVE',
         leaveRequestId,
