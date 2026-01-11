@@ -104,8 +104,7 @@ export async function POST(request: NextRequest) {
 
     // Create tenant with domains in a transaction
     const tenant = await prisma.tenant.create({
-      data: {
-        id: uuidv4(),
+      data: withPrismaDefaults({
         name,
         slug: normalizedSlug,
         appName: appName || name,
@@ -133,7 +132,7 @@ export async function POST(request: NextRequest) {
             })] : [])
           ]
         }
-      },
+      }),
       include: {
         domains: true
       }
