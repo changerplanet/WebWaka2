@@ -43,7 +43,7 @@ export async function GET(request: NextRequest) {
       orderBy: [{ fiscalYear: 'desc' }, { startDate: 'desc' }],
       include: {
         _count: {
-          select: { acct_journal_entries: true, ledgerEntries: true },
+          select: { acct_journal_entries: true, acct_ledger_entries: true },
         },
       },
     });
@@ -63,8 +63,8 @@ export async function GET(request: NextRequest) {
         new Date() <= p.endDate,
       closedAt: p.closedAt,
       closedBy: p.closedBy,
-      journalCount: p._count.journalEntries,
-      ledgerEntryCount: p._count.ledgerEntries,
+      journalCount: p._count.acct_journal_entries,
+      ledgerEntryCount: p._count.acct_ledger_entries,
       createdAt: p.createdAt,
     }));
 
