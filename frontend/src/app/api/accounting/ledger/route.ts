@@ -87,7 +87,7 @@ export async function GET(request: NextRequest) {
           acct_ledger_accounts: {
             include: { acct_chart_of_accounts: true },
           },
-          journalEntry: {
+          acct_journal_entries: {
             select: {
               id: true,
               journalNumber: true,
@@ -97,7 +97,7 @@ export async function GET(request: NextRequest) {
               status: true,
             },
           },
-          period: {
+          acct_financial_periods: {
             select: { id: true, name: true, code: true },
           },
         },
@@ -112,10 +112,10 @@ export async function GET(request: NextRequest) {
       lineNumber: e.lineNumber,
       account: {
         id: e.ledgerAccountId,
-        code: e.ledgerAccount.chartOfAccount.code,
-        name: e.ledgerAccount.chartOfAccount.name,
-        type: e.ledgerAccount.chartOfAccount.accountType,
-        normalBalance: e.ledgerAccount.chartOfAccount.normalBalance,
+        code: e.acct_ledger_accounts.acct_chart_of_accounts.code,
+        name: e.acct_ledger_accounts.acct_chart_of_accounts.name,
+        type: e.acct_ledger_accounts.acct_chart_of_accounts.accountType,
+        normalBalance: e.acct_ledger_accounts.acct_chart_of_accounts.normalBalance,
       },
       debitAmount: e.debitAmount.toString(),
       creditAmount: e.creditAmount.toString(),
@@ -125,15 +125,15 @@ export async function GET(request: NextRequest) {
       referenceType: e.referenceType,
       referenceId: e.referenceId,
       referenceNumber: e.referenceNumber,
-      journal: e.journalEntry ? {
-        id: e.journalEntry.id,
-        journalNumber: e.journalEntry.journalNumber,
-        description: e.journalEntry.description,
-        sourceType: e.journalEntry.sourceType,
-        sourceModule: e.journalEntry.sourceModule,
-        status: e.journalEntry.status,
+      journal: e.acct_journal_entries ? {
+        id: e.acct_journal_entries.id,
+        journalNumber: e.acct_journal_entries.journalNumber,
+        description: e.acct_journal_entries.description,
+        sourceType: e.acct_journal_entries.sourceType,
+        sourceModule: e.acct_journal_entries.sourceModule,
+        status: e.acct_journal_entries.status,
       } : null,
-      period: e.period ? { id: e.period.id, name: e.period.name, code: e.period.code } : null,
+      period: e.acct_financial_periods ? { id: e.acct_financial_periods.id, name: e.acct_financial_periods.name, code: e.acct_financial_periods.code } : null,
       createdAt: e.createdAt,
     }));
 
