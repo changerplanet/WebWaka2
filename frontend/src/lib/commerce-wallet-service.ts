@@ -104,7 +104,7 @@ export async function getWalletWithLedger(walletId: string, limit = 50) {
   const wallet = await prisma.commerce_wallets.findUnique({
     where: { id: walletId },
     include: {
-      ledgerEntries: {
+      commerce_wallet_ledger: {
         orderBy: { createdAt: 'desc' },
         take: limit
       }
