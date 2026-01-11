@@ -15,6 +15,7 @@
 import { prisma } from '../prisma'
 import { PartnerRole } from '@prisma/client'
 import { v4 as uuidv4 } from 'uuid'
+import { withPrismaDefaults } from '../db/prismaDefaults'
 
 // ============================================================================
 // TYPES
@@ -156,15 +157,14 @@ export async function addPartnerStaff(input: AddStaffInput): Promise<StaffResult
     
     // Create staff member
     const staff = await prisma.partnerUser.create({
-      data: {
-        id: uuidv4(),
+      data: withPrismaDefaults({
         partnerId: input.partnerId,
         userId: input.userId,
         role: input.role,
         displayName: input.displayName,
         department: input.department,
         assignedTenantIds: input.assignedTenantIds || [],
-      },
+      }),
       include: {
         user: {
           select: { id: true, name: true, email: true, phone: true }
@@ -452,13 +452,13 @@ export async function getAccessibleClients(
   if (hasPermission(staff.role, 'canViewAllClients')) {
     const instances = await prisma.platformInstance.findMany({
       where: { createdByPartnerId: staff.partnerId },
-      include: { Tenant: { select: { id: true, name: true } } },
+      include: { tenant: { select: { id: true, name: true } } },
       distinct: ['tenantId']
     })
     
     return instances.map(i => ({
-      tenantId: i.tenant.id,
-      tenantName: i.tenant.name,
+      tenantId: i.tenant?.id || '',
+      tenantName: i.tenant?.name || 'Unknown',
     }))
   }
   
