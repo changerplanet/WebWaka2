@@ -165,7 +165,7 @@ export function getPartnerPermissions(role: PartnerRole | 'SUPER_ADMIN'): Partne
 /**
  * Get user's partner membership (if any)
  */
-export async function getPartnerMembership(userId: string): Promise<(PartnerUser & { partner: Partner }) | null> {
+export async function getPartnerMembership(userId: string): Promise<(PartnerUser & { Partner: Partner }) | null> {
   return prisma.partnerUser.findUnique({
     where: { userId },
     include: { Partner: true }
@@ -379,7 +379,7 @@ export async function requirePartnerAccess(partnerId: string): Promise<PartnerAu
     }
   }
   
-  if (partnerUser.partner.status !== 'ACTIVE') {
+  if (partnerUser.Partner.status !== 'ACTIVE') {
     return {
       authorized: false,
       error: 'Partner organization is not active',
@@ -391,7 +391,7 @@ export async function requirePartnerAccess(partnerId: string): Promise<PartnerAu
     authorized: true,
     user: session.user,
     session,
-    partner: partnerUser.partner,
+    partner: partnerUser.Partner,
     partnerUser,
     role: partnerUser.role
   }
@@ -464,7 +464,7 @@ export async function canAccessReferral(
   const referral = await prisma.partnerReferral.findUnique({
     where: { id: referralId },
     include: {
-      referralCode: {
+      PartnerReferralCode: {
         select: { metadata: true }
       }
     }
