@@ -83,7 +83,7 @@ export async function detectExpansionSignals(
   const now = new Date()
   
   for (const instance of instances) {
-    const subscription = instance.subscriptions[0]
+    const subscription = instance.InstanceSubscription
     
     // 1. Trial Expiring Signal
     if (subscription?.status === 'TRIAL' && subscription.trialEnd) {
@@ -100,8 +100,8 @@ export async function detectExpansionSignals(
           recommendation: 'Contact client to discuss subscription conversion',
           platformInstanceId: instance.id,
           instanceName: instance.name,
-          tenantId: instance.tenant.id,
-          tenantName: instance.tenant.name,
+          tenantId: instance.tenantId,
+          tenantName: instance.tenant?.name || 'Unknown',
           metrics: { daysLeft, trialEndDate: trialEnd.toISOString() },
           detectedAt: now,
           expiresAt: trialEnd,
