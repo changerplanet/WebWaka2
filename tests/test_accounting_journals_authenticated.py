@@ -23,7 +23,7 @@ import uuid
 from datetime import datetime
 
 # Base URL
-BASE_URL = "https://typefix.preview.emergentagent.com"
+BASE_URL = "https://buildfix-6.preview.emergentagent.com"
 
 # Test tenant
 TENANT_SLUG = "acme"

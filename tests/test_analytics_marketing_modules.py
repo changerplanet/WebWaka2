@@ -28,7 +28,7 @@ import uuid
 import time
 from datetime import datetime, timedelta
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://typefix.preview.emergentagent.com').rstrip('/')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://buildfix-6.preview.emergentagent.com').rstrip('/')
 
 # Test data prefixes for cleanup
 TEST_PREFIX = "TEST_ANALYTICS_MKT_"

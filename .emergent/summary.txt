@@ -1,118 +1,124 @@
 <analysis>**original_problem_statement**: The user's primary goal is to fix a failing production build (yarn run v1.22.22
-info Visit https://yarnpkg.com/en/docs/cli/run for documentation about this command.) for a Next.js application to unblock deployment to Vercel. The build is failing due to a cascade of over a thousand TypeScript type errors. These errors stem from a systemic mismatch between the application code (which often uses  or simple aliases) and the Prisma schema (which enforces  for models and has specific  or  for relations, sometimes with very long auto-generated names). The user has dictated a highly structured, multi-phase remediation plan to resolve these issues systemically rather than one by one, with a hard stop and report required after each discrete module is fixed.
+info Visit https://yarnpkg.com/en/docs/cli/run for documentation about this command.) for a Next.js application to unblock deployment to Vercel. The build is failing due to a cascade of over a thousand TypeScript type errors. These errors stem from a systemic mismatch between the application code (which often uses  or simple aliases) and the Prisma schema (which enforces  for models and has specific  or  for relations). The user has dictated a highly structured, multi-phase remediation plan to resolve these issues systemically rather than one by one, with a hard stop and report required after each discrete module is fixed.
 
 **User's preferred language**: English
 
 **what currently exists?**
-The project is undergoing a massive, iterative build stabilization effort. The agent has been operating under a Continuous Build Stabilization Mandate, which evolved into a more efficient Directory-Level Bulk Remediation Mandate. This allows the agent to audit an entire failing directory, identify all mechanical error patterns (Prisma model/relation name mismatches, missing  wrappers), and fix them in a single batch.
+The project is undergoing a massive, iterative build stabilization effort, following a strict user-mandated process. The agent is currently operating under a **Global Mechanical Batch Stabilization** mandate. This followed a read-only discovery phase where all remaining errors in the codebase were mapped.
 
-So far, the agent has successfully applied this bulk remediation strategy to the , , and  directories, fixing hundreds of errors. After each successful directory remediation, the build process moves on to the next failing module. The build is still failing, but the number of errors has been drastically reduced.
+Under the current mandate, the agent is authorized to fix all purely mechanical errors (Prisma model/relation name mismatches, missing uid=0(root) gid=0(root) groups=0(root) fields in  operations) across all identified safe directories in a single, continuous run without stopping for user approval at each new file.
+
+So far, the agent has successfully remediated hundreds of errors across dozens of files in , , , , , , and .
 
 **Last working item**:
--   **Last item agent was working**: The agent was executing the Directory-Level Bulk Remediation Mandate for the  directory. After applying numerous fixes within that directory, the build failed on a new error within the same directory, specifically in . The agent was in the process of investigating the  model in  to resolve an incorrect relation name to complete the marketing module stabilization.
+-   **Last item agent was working**: The agent was executing Phase B — Global Mechanical Batch Stabilization. It had just finished a series of fixes in the  directory, specifically correcting the  vs.  relation name in . The very last action was to re-run the build to identify the next failing file. The result of that build is the immediate next step.
 -   **Status**: IN PROGRESS
--   **Agent Testing Done**: N
+-   **Agent Testing Done**: Y (The agent is using yarn run v1.22.22
+info Visit https://yarnpkg.com/en/docs/cli/run for documentation about this command. as the mandated testing method)
 -   **Which testing method agent to use?**: Continue the user-mandated build process: yarn run v1.22.22
 info Visit https://yarnpkg.com/en/docs/cli/run for documentation about this command..
 -   **User Testing Done**: N
 
 **All Pending/In progress Issue list**:
--   **Issue 1: Deployment Build Failure (P0)**
+-   **Issue 1: Deployment Build Failure (P0 - BLOCKER)**
     -   **Description**: The primary goal to get yarn run v1.22.22
-info Visit https://yarnpkg.com/en/docs/cli/run for documentation about this command. to pass is not yet met. The build is currently blocked by a mechanical TypeScript error.
-    -   **Status**: BLOCKED
-    -   **Should Test frontend/backend/both after fix?**: Frontend (build process).
-    -   **Blocked on other issue**: Issue 2: Incorrect Prisma Relation Name.
-
--   **Issue 2: Incorrect Prisma Relation Name in  (P0 - BLOCKER)**
-    -   **Description**: The build is failing with the error: . This is a mechanical error where the code is attempting to access a relation that is incorrectly named or not included in the query.
+info Visit https://yarnpkg.com/en/docs/cli/run for documentation about this command. to pass is not yet met. The build is currently blocked by an unknown TypeScript error.
     -   **Next debug checklist**:
-        1.  Open  and examine the  model to find the correct relation names for  and its nested . The agent was just about to do this.
-        2.  Open .
-        3.  Correct the  clause in the Prisma query and any subsequent property access (e.g., ) to match the schema.
-        4.  Resume the Continuous Build Stabilization Mandate by running yarn run v1.22.22
-info Visit https://yarnpkg.com/en/docs/cli/run for documentation about this command..
-    -   **Why fix this issue and what will be achieved with the fix?**: This is the current build blocker. Fixing it will complete the remediation of the  module and allow the build process to identify the next failing module.
+        1.  Analyze the output of the last yarn run v1.22.22
+info Visit https://yarnpkg.com/en/docs/cli/run for documentation about this command. command (invoked in Chat Message 669).
+        2.  Identify the new failing file and the specific error type (e.g., relation name mismatch, missing ).
+        3.  If the failing file is within the authorized scope, apply the appropriate mechanical fix.
+        4.  Re-run the build and repeat the cycle.
+    -   **Why fix this issue and what will be achieved with the fix?**: This is the core task. Each fix moves the build process forward, getting closer to a successful deployment build.
     -   **Status**: IN PROGRESS
-    -   **Is recurring issue?**: Y (This type of mechanical error is the core problem being solved throughout the entire project).
+    -   **Is recurring issue?**: Y (The entire project is about fixing this recurring class of errors).
     -   **Should Test frontend/backend/both after fix?**: Frontend (build process).
     -   **Blocked on other issue**: None.
 
 **In progress Task List**:
--   **Task 1: Complete the Continuous Build Stabilization Mandate (P0)**
-    -   **Where to resume**: Resume the iterative fix-and-build cycle. The immediate next action is to fix the relation name in  as described in Issue 2 above. After that, run the build. If it fails in a new directory, await user authorization for a new Directory-Level Bulk Remediation mandate for that new scope.
-    -   **What will be achieved with this?**: The ultimate goal is to achieve a successful production build (yarn run v1.22.22
-info Visit https://yarnpkg.com/en/docs/cli/run for documentation about this command.) by systematically eliminating all remaining mechanical errors, module by module.
+-   **Task 1: Complete Phase B — Global Mechanical Batch Stabilization (P0)**
+    -   **Where to resume**: Analyze the result of the last yarn run v1.22.22
+info Visit https://yarnpkg.com/en/docs/cli/run for documentation about this command. and continue the fix-and-build cycle as per the user's mandate. Proceed through the authorized directories, including the conditional ones (, , ) until a successful build or a semantic blocker is hit.
+    -   **What will be achieved with this?**: A successful production build or the identification of the next non-mechanical (semantic) blocker requiring user input.
     -   **Status**: IN PROGRESS
     -   **Should Test frontend/backend/both after fix?**: Frontend (build process).
-    -   **Blocked on something**: The current build error in .
+    -   **Blocked on something**: The next build error.
 
 **Upcoming and Future Tasks**
 -   **Upcoming Tasks:**
-    -   **P0: Achieve a Successful Build**: Complete the Continuous Build Stabilization mandate until yarn run v1.22.22
-info Visit https://yarnpkg.com/en/docs/cli/run for documentation about this command. passes. This will likely require several more directory-level bulk remediation cycles on subsequent failing modules.
+    -   **P1: Address Semantic Blockers**: After all mechanical errors are fixed, seek a new user mandate to address the semantic issues identified in the  report, specifically in  and .
 -   **Future Tasks:**
     -   **P1: Address React Hook Dependency Warnings**: Fix the ~56 non-blocking warnings that appear in the build output.
-    -   **P2: Code Quality Hardening**: Address any remaining non-blocking TypeScript issues (e.g., implicit , lint warnings) that were explicitly deferred.
+    -   **P2: Code Quality Hardening**: Address any remaining non-blocking TypeScript issues (e.g., implicit , lint warnings).
     -   **P2: Guided Demo Tours (ALL SUITES)**: A backlog feature request.
 
 **Completed work in this session**
--   Systematically fixed hundreds of mechanical TypeScript errors by running yarn run v1.22.22
-info Visit https://yarnpkg.com/en/docs/cli/run for documentation about this command. iteratively.
--   **Bulk Remediation of  module**: Audited and fixed all mechanical errors (missing , incorrect model/relation names) in .
--   **Bulk Remediation of  module**: Audited and fixed all mechanical errors in .
--   **Bulk Remediation of  module (In Progress)**: Audited and fixed the vast majority of mechanical errors in .
+-   **Mandate Progression**: Followed a sequence of user mandates, expanding scope from single files (, ) to directories (, , , ) and finally to a global, batch-based stabilization.
+-   **Semantic Fix**: Handled one authorized semantic fix: replacing the invalid status  with  in .
+-   **Global Error Analysis**: Completed a Phase A read-only discovery pass, identifying and classifying all remaining build errors in the project and generating the  report.
+-   **Batch Stabilization (Phase B)**: Systematically fixed all mechanical errors in the following directories:
+    -   
+    -   
+    -   
+    -   Dozens of other files across previously authorized scopes. A full log is in .
+
+**Earlier issues found/mentioned but not fixed**
+-   **Issue 1: Missing Type Definitions in **
+    -   **Debug checklist**: The files  and  reference types like  and  that are not defined or imported.
+    -   **Why to solve this issue and what will be achieved with this?**: This is a hard build blocker. Fixing it requires domain knowledge to define these types, which is a semantic task.
+    -   **Status**: BLOCKED (explicitly out of scope for the current mechanical-only mandate).
+-   **Issue 2: Role Enum Mismatch in **
+    -   **Debug checklist**: The code checks for roles like  or  which do not exist on the  enum in the Prisma schema.
+    -   **Why to solve this issue and what will be achieved with this?**: This is a semantic blocker. A decision is needed on whether to add these roles to the schema or change the logic to use existing roles.
+    -   **Status**: BLOCKED (explicitly out of scope for the current mechanical-only mandate).
 
 **Known issue recurrence from previous fork**
--   The fundamental issue of code being inconsistent with the  (camelCase vs. snake_case, incorrect relation names) and Prisma create operations missing required fields (uid=0(root) gid=0(root) groups=0(root), ) continues to be the primary source of all build errors. The current fix-and-build strategy is designed to address this recurrence systemically.
+-   The fundamental issue of code being inconsistent with  (naming conventions, missing default values) is the central problem being solved. The current strategy is designed to address this recurrence systemically.
 
 **Code Architecture**
-
+withPrismaDefaults
 
 **Key Technical Concepts**
--   **Phased Remediation**: The project follows a strict, user-mandated, module-by-module fixing process.
--   **Continuous Build Stabilization**: An initial mandate allowing the agent to iteratively run yarn run v1.22.22
-info Visit https://yarnpkg.com/en/docs/cli/run for documentation about this command. and fix mechanical errors without stopping.
--   **Directory-Level Bulk Remediation**: The current, more efficient mandate. It involves auditing all files in a failing directory, classifying the error patterns, and applying all mechanical fixes in a single batch before re-running the build.
--   **Prisma Naming Mismatches**: The root cause of all errors is the conflict between  model names in  versus  or incorrect names in the application code.
--   **Missing Default Values**: Many Prisma  operations fail because models require an uid=0(root) gid=0(root) groups=0(root) field that doesn't have a database-level default. This is solved by wrapping the data payload with the  helper.
--   **Build Environment**: The build requires increased Node.js heap memory ().
+-   **Global Mechanical Batch Stabilization**: The current mandate. The agent identifies all mechanical errors upfront and fixes them in a single continuous run across authorized directories, stopping only for semantic/schema issues.
+-   **Prisma Naming Mismatches**: The root cause of most errors is the conflict between  model names in  versus  or incorrect names in the application code.
+-   **Missing Default Values**: Many Prisma  operations fail because models require uid=0(root) gid=0(root) groups=0(root) or  fields. This is solved by wrapping the data payload with the  helper.
+-   **Build as a Test**: The yarn run v1.22.22
+info Visit https://yarnpkg.com/en/docs/cli/run for documentation about this command. command is the sole, user-mandated tool for validation and error discovery.
 
 **key DB schema**
 -   The file  is the absolute source of truth for all database models, relations, and naming conventions. All fixes must be validated against this schema.
 
 **All files of reference**
 -   : The single source of truth for all data models.
--   : Contains all remediation reports. The most recent are the bulk remediation reports.
+-   : A critical map of all remaining build errors, classifying them as mechanical or semantic.
+-   : A rolling log of every fix applied during the continuous stabilization waves.
 -   : Contains the  helper function.
--   : The file with the current build-blocking error.
 
 **Critical Info for New Agent**
--   **You are operating under the Directory-Level Bulk Remediation Mandate.** This is the most critical instruction.
--   **Your immediate goal is to fix the current build error in  to complete the remediation of the  module.**
--   After fixing the error, you MUST run yarn run v1.22.22
-info Visit https://yarnpkg.com/en/docs/cli/run for documentation about this command..
--   **If the build fails in a NEW directory:**
-    -   You MUST STOP and report the new failing directory.
-    -   Await user authorization to begin a new directory-scoped bulk remediation cycle for that new scope.
+-   **You are operating under the Global Mechanical Batch Stabilization mandate.** Your primary instruction is to continue the fix->build cycle without stopping at directory boundaries, as long as the fixes are purely mechanical.
+-   **Your immediate task is to analyze the result of the last yarn run v1.22.22
+info Visit https://yarnpkg.com/en/docs/cli/run for documentation about this command. command and address the next error.**
+-   **Consult the  report.** It tells you which directories are safe for batch fixing (, ) and which are conditional (, , ) or blocked ().
 -   **You MUST STOP IMMEDIATELY if a fix requires:**
-    -   Changing business logic.
-    -   Modifying the Prisma schema.
-    -   Altering an API contract (request/response shape).
-    -   Making an ambiguous decision where the correct fix isn't obvious.
--   If you hit a stop condition, create a report and await user instruction. Do not try to solve the ambiguous issue yourself.
+    -   Changing business logic (e.g., deciding what a status enum *should* mean).
+    -   Modifying the  file.
+    -   The error occurs in a directory explicitly marked as out-of-scope (e.g., ).
+-   When a stop condition is met, report the blocker and await a new user mandate. Do not attempt to solve semantic issues.
 
 **documents and test reports created in this job**
 -   
 -   
--    (To be created after the marketing module is fully fixed)
+-   
+-   
 
 **Last 10 User Messages and any pending HUMAN messages**
--   The last three user messages were explicit, mandated instructions authorizing the agent to perform Directory-Level Bulk Remediation on the , , and  directories, respectively. Each instruction followed the same pattern: define the scope, audit the directory, apply mechanical fixes in a batch, report the results, and stop when the build error moves to a new scope.
+-   The user has issued a series of increasingly broad mandates, authorizing the agent to fix build errors.
+-   The sequence was: single-file fixes -> directory-level fixes -> continuous stabilization across multiple directories -> a global read-only discovery phase -> and finally, the current global batch stabilization mandate to fix all identified mechanical errors in one go.
+-   There are no pending messages; the last message was the authorization to begin the current global fixing phase.
 
 **Project Health Check:**
 -   **Broken**: Yes. The yarn run v1.22.22
-info Visit https://yarnpkg.com/en/docs/cli/run for documentation about this command. command is confirmed to fail due to a mechanical TypeScript error.
+info Visit https://yarnpkg.com/en/docs/cli/run for documentation about this command. command is confirmed to still be failing, though the error count has been reduced from over a thousand to under a hundred.
 
 **3rd Party Integrations**
 -   Supabase (PostgreSQL backend)
@@ -125,4 +131,5 @@ info Visit https://yarnpkg.com/en/docs/cli/run for documentation about this comm
 -   **Test files created**: None.
 
 **What agent forgot to execute**
--   Nothing. The agent has been meticulously following the user's complex and rigid plan. The current failure is an expected and planned-for step in the iterative discovery and fixing process defined by the user's mandate.</analysis>
+-   Nothing. The agent was in the middle of executing the mandated yarn run v1.22.22
+info Visit https://yarnpkg.com/en/docs/cli/run for documentation about this command. command when the session ended. The next agent's first task is to check the output of that command.</analysis>
