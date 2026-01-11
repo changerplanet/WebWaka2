@@ -286,7 +286,7 @@ export class B2BInvoiceService {
     const balanceAfter = balanceBefore + amount
 
     // Create ledger entry
-    const entry = await prisma.b2BCreditLedger.create({
+    const entry = await prisma.b2b_credit_ledger.create({
       data: {
         tenantId,
         profileId,
@@ -331,7 +331,7 @@ export class B2BInvoiceService {
     profileId: string,
     limit: number = 50
   ): Promise<CreditLedgerEntry[]> {
-    const entries = await prisma.b2BCreditLedger.findMany({
+    const entries = await prisma.b2b_credit_ledger.findMany({
       where: { tenantId, profileId },
       orderBy: { createdAt: 'desc' },
       take: limit,
