@@ -235,7 +235,7 @@ export async function POST(request: NextRequest) {
       orderNumber: order.orderNumber,
       tenantId,
       customerEmail: order.customerEmail,
-      itemCount: order.items.length,
+      itemCount: order.svm_order_items.length,
       grandTotal: Number(order.grandTotal)
     })
 
@@ -253,7 +253,7 @@ export async function POST(request: NextRequest) {
         customerPhone: order.customerPhone,
         customerName: order.customerName,
         channel: order.channel,
-        items: order.items.map(item => ({
+        items: order.svm_order_items.map((item: { id: string; productId: string; variantId: string | null; productName: string; sku: string | null; variantName: string | null; imageUrl: string | null; unitPrice: { toString: () => string }; quantity: number; lineTotal: { toString: () => string }; discountAmount: { toString: () => string }; taxAmount: { toString: () => string } }) => ({
           id: item.id,
           productId: item.productId,
           variantId: item.variantId,
