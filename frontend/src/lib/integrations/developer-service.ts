@@ -508,7 +508,7 @@ export async function checkRateLimit(keyId: string): Promise<{
     return { allowed: false, remaining: 0, resetAt: new Date() }
   }
   
-  const rateLimit = apiKey.rateLimit || apiKey.app.rateLimit
+  const rateLimit = apiKey.rateLimit || apiKey.developer_apps.rateLimit
   const windowMs = 60000 // 1 minute window
   const windowStart = new Date(Date.now() - windowMs)
   
