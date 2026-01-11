@@ -11,6 +11,7 @@
 import { prisma } from '@/lib/prisma'
 import { MktRunStatus, MktActionType, Prisma } from '@prisma/client'
 import { MktConfigService } from './config-service'
+import { withPrismaDefaults } from '@/lib/db/prismaDefaults'
 
 // ============================================================================
 // TYPES
