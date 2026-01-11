@@ -781,7 +781,7 @@ export async function createPayoutBatch(
   // Create batch in transaction
   const batch = await prisma.$transaction(async (tx) => {
     const newBatch = await tx.payoutBatch.create({
-      data: {
+      data: withPrismaDefaults({
         partnerId: input.partnerId,
         batchNumber,
         status: 'DRAFT',
@@ -798,7 +798,7 @@ export async function createPayoutBatch(
         })),
         readinessStatus: 'READY',
         internalNotes: input.notes
-      }
+      })
     })
     
     // Link earnings to batch
@@ -813,7 +813,7 @@ export async function createPayoutBatch(
     
     // Audit log
     await tx.auditLog.create({
-      data: {
+      data: withPrismaDefaults({
         action: 'PAYOUT_BATCH_CREATED',
         actorId: 'system',
         actorEmail: 'payout@webwaka.internal',
@@ -827,7 +827,7 @@ export async function createPayoutBatch(
           netAmount,
           earningsCount: earnings.length
         }
-      }
+      })
     })
     
     return newBatch
