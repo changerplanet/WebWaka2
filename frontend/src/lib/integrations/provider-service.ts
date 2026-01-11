@@ -134,7 +134,7 @@ export async function registerProvider(data: {
   }
   
   const provider = await prisma.integration_providers.create({
-    data: {
+    data: withPrismaDefaults({
       key: data.key,
       name: data.name,
       category: data.category,
@@ -152,12 +152,12 @@ export async function registerProvider(data: {
       defaultRateLimit: data.defaultRateLimit,
       status: IntegrationProviderStatus.ACTIVE,
       createdBy: data.createdBy,
-    },
+    }),
   })
   
   // Log event
   await prisma.integration_event_logs.create({
-    data: {
+    data: withPrismaDefaults({
       eventType: 'PROVIDER_REGISTERED',
       eventData: {
         providerKey: data.key,
@@ -168,7 +168,7 @@ export async function registerProvider(data: {
       providerId: provider.id,
       actorId: data.createdBy,
       actorType: 'super_admin',
-    },
+    }),
   })
   
   return provider
