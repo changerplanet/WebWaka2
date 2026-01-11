@@ -18,7 +18,7 @@ import os
 import time
 from datetime import datetime, timedelta
 
-BASE_URL = os.environ.get('NEXT_PUBLIC_APP_URL', 'https://buildfix-api.preview.emergentagent.com').rstrip('/')
+BASE_URL = os.environ.get('NEXT_PUBLIC_APP_URL', 'https://prisma-sync.preview.emergentagent.com').rstrip('/')
 API_URL = f"{BASE_URL}/api/integrations"
 TEST_TENANT_ID = "test-tenant-integrations"
 

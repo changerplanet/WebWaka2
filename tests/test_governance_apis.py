@@ -12,7 +12,7 @@ import pytest
 import requests
 import os
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://buildfix-api.preview.emergentagent.com').rstrip('/')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://prisma-sync.preview.emergentagent.com').rstrip('/')
 
 class TestGovernanceAPIsUnauthenticated:
     """Test that all governance APIs require authentication (return 401)"""

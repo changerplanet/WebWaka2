@@ -13,7 +13,7 @@ import requests
 import os
 
 # Get BASE_URL from environment
-BASE_URL = os.environ.get('NEXT_PUBLIC_APP_URL', 'https://buildfix-api.preview.emergentagent.com').rstrip('/')
+BASE_URL = os.environ.get('NEXT_PUBLIC_APP_URL', 'https://prisma-sync.preview.emergentagent.com').rstrip('/')
 
 # Test tenant ID - we'll use demo-webwaka-pos which has POS activated
 # For SVM, we need to test capability guard behavior

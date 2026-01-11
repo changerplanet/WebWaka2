@@ -17,7 +17,7 @@ import os
 import json
 from datetime import datetime, timedelta
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://buildfix-api.preview.emergentagent.com').rstrip('/')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://prisma-sync.preview.emergentagent.com').rstrip('/')
 TEST_TENANT_ID = "test-tenant-compliance-ai"
 
 

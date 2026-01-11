@@ -25,7 +25,7 @@ import uuid
 from datetime import datetime, timedelta
 
 # Base URL from environment
-BASE_URL = os.environ.get('NEXT_PUBLIC_APP_URL', 'https://buildfix-api.preview.emergentagent.com').rstrip('/')
+BASE_URL = os.environ.get('NEXT_PUBLIC_APP_URL', 'https://prisma-sync.preview.emergentagent.com').rstrip('/')
 
 # Test tenant ID (Acme tenant)
 TENANT_ID = "67846c4f-9b38-47c7-86d9-fff55aa4afda"

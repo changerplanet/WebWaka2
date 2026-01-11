@@ -4,81 +4,79 @@ info Visit https://yarnpkg.com/en/docs/cli/run for documentation about this comm
 **User's preferred language**: English
 
 **what currently exists?**
-The project is in the middle of a highly structured, multi-phase effort to resolve build-blocking TypeScript errors. The agent has successfully completed the stabilization of all shared modules (, , , , , , ) as part of the user-mandated **Phase 4**. Additionally, the agent completed **Phase 4A**, which involved re-enabling previously disabled Education suite routes.
+The project is in the final stages of a massive, multi-phase effort to resolve build-blocking TypeScript errors. After numerous phased fixes, the user authorized a Continuous Build Stabilization Mandate, allowing the agent to iteratively find and fix mechanical errors by running the build command repeatedly without stopping for approval.
 
-Subsequent build verification attempts failed:
-*   **Phase 5** failed due to a Node.js heap out of memory error.
-*   **Phase 6**, with increased heap memory, failed on a new set of TypeScript errors located in the  directory, outside the scope of the previously fixed shared modules.
+The agent successfully fixed dozens of errors related to incorrect model names, relation names, missing function imports, and missing default values (). However, this process was halted by a semantic mismatch in , where the service's internal data interface did not match the Prisma model.
 
-The agent is now executing **Phase 7**, which is a strictly limited authorization to fix a specific class of errors within the API routes.
+The user issued a single-point exception to allow a data mapping fix for that specific service. After applying the mapping, the agent resumed the continuous build process, which immediately failed on another mechanical error.
 
 **Last working item**:
--   **Last item agent was working**: The agent is executing **Phase 7: API Route Mechanical Stabilization**. The authorized task is to identify and fix Prisma  and  calls in  that are missing required schema fields (uid=0(root) gid=0(root) groups=0(root), ) by wrapping them with the existing  helper. The agent has identified a total of 115 TypeScript errors in the API routes but noted that many are complex relation name mismatches, which are outside the scope of the current, very strict authorization. The immediate task is to filter the 115 errors to find only those that can be fixed with the authorized  helper.
+-   **Last item agent was working**: The agent was executing the Continuous Build Stabilization Mandate. It had just run yarn run v1.22.22
+info Visit https://yarnpkg.com/en/docs/cli/run for documentation about this command. after applying the authorized semantic mapping fix. The build failed with a new, mechanical TypeScript error. The agent identified the error and was about to fix it.
 -   **Status**: IN PROGRESS
 -   **Agent Testing Done**: N
--   **Which testing method agent to use?**: After Phase 7 is complete and the report is generated, the agent must await user authorization for the next build attempt, which would be yarn run v1.22.22
-info Visit https://yarnpkg.com/en/docs/cli/run for documentation about this command.. A build is explicitly forbidden in the current phase.
+-   **Which testing method agent to use?**: Continue the user-mandated build process: yarn run v1.22.22
+info Visit https://yarnpkg.com/en/docs/cli/run for documentation about this command..
 -   **User Testing Done**: N
 
 **All Pending/In progress Issue list**:
 -   **Issue 1: Deployment Build Failure (P0)**
     -   **Description**: The primary goal to get yarn run v1.22.22
-info Visit https://yarnpkg.com/en/docs/cli/run for documentation about this command. to pass is still not met. The heap memory issue appears to be resolved, but the build is now blocked by ~115 TypeScript errors in the  directory.
+info Visit https://yarnpkg.com/en/docs/cli/run for documentation about this command. to pass is still not met. The build is currently blocked by a mechanical TypeScript error.
     -   **Status**: BLOCKED
     -   **Should Test frontend/backend/both after fix?**: Frontend (build process).
-    -   **Blocked on other issue**: Issue 2: API Route Type Errors.
+    -   **Blocked on other issue**: Issue 2: Incorrect Prisma Model Name.
 
--   **Issue 2: API Route Type Errors (P0 - BLOCKER)**
-    -   **Description**: There are 115 TypeScript errors in the API routes (). The user has only authorized fixing errors that can be resolved by applying the  helper. The agent's initial investigation shows that many errors are due to incorrect relation names and other type mismatches, which cannot be fixed under the current authorization.
-    -   **Attempted fixes**: Analysis in progress. No code has been modified yet for Phase 7.
+-   **Issue 2: Incorrect Prisma Model Name in  (P0 - BLOCKER)**
+    -   **Description**: The build is failing with the error: . This is a simple mechanical error.
     -   **Next debug checklist**:
-        1.  Analyze the 115 error messages to isolate *only* the specific / calls that are missing default fields (uid=0(root) gid=0(root) groups=0(root), ).
-        2.  Apply the  wrapper to only those identified errors, strictly adhering to the user's mandate.
-        3.  Create the  report, confirming that only the authorized fix was applied.
-        4.  Issue a HARD STOP and await user authorization. It is highly likely this will not fix all 115 errors, and a new authorization will be needed.
-    -   **Why fix this issue and what will be achieved with the fix?**: This is the currently mandated step. Completing it, even if it doesn't solve all errors, is required to advance the user's rigid remediation plan and get a clear picture of the remaining work.
+        1.  Open .
+        2.  Find all instances of .
+        3.  Replace them with the correct snake_case model name from the schema: .
+        4.  Resume the Continuous Build Stabilization Mandate by running yarn run v1.22.22
+info Visit https://yarnpkg.com/en/docs/cli/run for documentation about this command..
+    -   **Why fix this issue and what will be achieved with the fix?**: This is the current build blocker. Fixing it is the next step in the authorized continuous build process.
     -   **Status**: IN PROGRESS
-    -   **Is recurring issue?**: Y (The root cause of Prisma schema vs. code mismatches is project-wide).
+    -   **Is recurring issue?**: Y (This type of mechanical error has been common throughout the project).
     -   **Should Test frontend/backend/both after fix?**: Frontend (build process).
-    -   **Blocked on other issue**: Blocked on user authorization to fix error types beyond the  pattern.
+    -   **Blocked on other issue**: None.
 
 **In progress Task List**:
--   **Task 1: Complete Phase 7: API Route Mechanical Stabilization (P0)**
-    -   **Where to resume**: Continue analyzing the 115 errors in . Identify and apply the  fix where applicable.
-    -   **What will be achieved with this?**: Fulfills the user's current mandate, reports on the changes made, and sets the stage for the user to authorize the next phase of work on the remaining API route errors.
+-   **Task 1: Complete the Continuous Build Stabilization Mandate (P0)**
+    -   **Where to resume**: Resume the iterative fix-and-build cycle. The immediate next action is to fix the model name in  as described in Issue 2 above.
+    -   **What will be achieved with this?**: The ultimate goal is to achieve a successful production build (yarn run v1.22.22
+info Visit https://yarnpkg.com/en/docs/cli/run for documentation about this command.) by systematically eliminating all remaining mechanical errors.
     -   **Status**: IN PROGRESS
-    -   **Should Test frontend/backend/both after fix?**: Frontend (build process), but only when explicitly authorized in a subsequent phase.
+    -   **Should Test frontend/backend/both after fix?**: Frontend (build process).
+    -   **Blocked on something**: The current build error in .
 
 **Upcoming and Future Tasks**
 -   **Upcoming Tasks:**
-    -   **P0: Remediate Remaining API Route Errors**: After Phase 7, the user will need to authorize a new phase (e.g., Phase 7B) to fix the other types of errors (relation names, complex type mismatches) in .
-    -   **P0: Final Build Verification (Phase 8)**: Once all API route errors are addressed, run yarn run v1.22.22
-info Visit https://yarnpkg.com/en/docs/cli/run for documentation about this command. to confirm the entire project builds successfully.
+    -   **P0: Achieve a Successful Build**: Complete the Continuous Build Stabilization mandate until yarn run v1.22.22
+info Visit https://yarnpkg.com/en/docs/cli/run for documentation about this command. passes.
 -   **Future Tasks:**
-    -   **P1: Code Quality Hardening**: Address the hundreds of non-blocking TypeScript issues (e.g., implicit , lint warnings) that were explicitly deferred throughout the project.
+    -   **P1: Address React Hook Dependency Warnings**: Fix the ~56 non-blocking warnings that appear in the build output.
+    -   **P2: Code Quality Hardening**: Address any remaining non-blocking TypeScript issues (e.g., implicit , lint warnings) that were explicitly deferred.
     -   **P2: Guided Demo Tours (ALL SUITES)**: A backlog feature request.
 
 **Completed work in this session**
--   **Phase 4 (Shared Modules)**:
-    -   Inventory Module Stabilization: COMPLETED (101 errors fixed).
-    -   Billing Module Stabilization: COMPLETED (44 errors fixed).
-    -   CRM Module Stabilization: COMPLETED (21 errors fixed).
-    -   Procurement Module Stabilization: COMPLETED (40 errors fixed).
-    -   Subscription/Entitlements Module Stabilization: COMPLETED (38 errors fixed).
--   **Phase 4A (Governance Action)**:
-    -   Education Suite Re-Enablement: COMPLETED.
--   **Phase 5 & 6 (Build Verification)**:
-    -   Initial yarn run v1.22.22
-info Visit https://yarnpkg.com/en/docs/cli/run for documentation about this command. failed due to heap memory.
-    -   Second yarn run v1.22.22
-info Visit https://yarnpkg.com/en/docs/cli/run for documentation about this command. with increased heap failed due to TypeScript errors in API routes.
+-   **Phase 7 & 7B (API Routes)**: Fixed all 115 TypeScript errors in .
+-   **Phase 8, 9, 10, 11 (Build Verifications)**: Multiple build attempts that failed but successfully identified subsequent blockers.
+-   **Phase 8B (MVM Component)**: Fixed a missing component export for .
+-   **Phase 8C & 9C (Barrel Exports)**: Corrected multiple incomplete or incorrect barrel export files () in  and .
+-   **Phase 9B (Type Annotation)**: Fixed a blocking type error in the .
+-   **Phase 10B (API Import)**: Aligned an API route to use a refactored  service function.
+-   **Continuous Build Stabilization (In Progress)**: Fixed dozens of mechanical errors across , , , and  modules before being paused by a semantic issue.
+-   **Semantic Mapping (Single-Point Exception)**: Implemented an authorized data mapping in  to resolve a conflict between the service interface and the Prisma model.
 
 **Code Architecture**
 
 
 **Key Technical Concepts**
--   **Phased Remediation**: The entire project is managed through a strict, user-mandated, module-by-module fixing process with hard stops and reports after each phase.
--   **Prisma Naming Mismatches**: The root cause of all errors is the conflict between  model names and auto-generated relation names in  versus the /alias usage in the application code.
+-   **Phased Remediation**: The project follows a strict, user-mandated, module-by-module fixing process with reports after each phase.
+-   **Continuous Build Stabilization**: A new mandate that allows the agent to iteratively run yarn run v1.22.22
+info Visit https://yarnpkg.com/en/docs/cli/run for documentation about this command. and fix mechanical/schema-conformant errors without stopping for approval, unless a stop condition (e.g., semantic or architectural issue) is hit.
+-   **Prisma Naming Mismatches**: The root cause of all errors is the conflict between  model names in  versus  usage in code.
 -   **Build Environment**: The build requires increased Node.js heap memory ().
 
 **key DB schema**
@@ -86,18 +84,26 @@ info Visit https://yarnpkg.com/en/docs/cli/run for documentation about this comm
 
 **All files of reference**
 -   : The single source of truth for all data models.
--   : Contains all remediation reports.
--   : Contains the  helper, the only tool authorized for fixes in the current phase.
--   : Tracks overall progress.
+-   : Contains all remediation reports. The most recent is .
+-   : Contains the  helper.
+-   : The file with the current build-blocking error.
 
 **Critical Info for New Agent**
--   **You are bound by the user's strict, non-negotiable, phased remediation plan.** Do not deviate.
--   **Your immediate task is Phase 7.** You can ONLY modify files under .
--   **The ONLY authorized fix is wrapping Prisma  or  payloads with the  helper.** You cannot fix relation name errors, add , or make any other changes.
--   **DO NOT run yarn run v1.22.22
-info Visit https://yarnpkg.com/en/docs/cli/run for documentation about this command.**. This is explicitly prohibited in the current phase.
--   After applying the allowed fixes, you MUST create the report: .
--   After creating the report, you MUST issue a **HARD STOP** and await explicit authorization from the user. Be prepared that this will not fix all 115 errors in the API routes.
+-   **You are operating under the Continuous Build Stabilization Mandate.** This is the most critical instruction.
+-   **Your goal is to get yarn run v1.22.22
+info Visit https://yarnpkg.com/en/docs/cli/run for documentation about this command. to pass.**
+-   **You MUST continue the iterative fix-and-build process:**
+    1.  Fix the current error (the  model name in ).
+    2.  Run yarn run v1.22.22
+info Visit https://yarnpkg.com/en/docs/cli/run for documentation about this command..
+    3.  If it fails with another mechanical error (type error, export error, Prisma name mismatch), fix it and repeat.
+    4.  If the build passes, you are done. Create the final report.
+-   **You MUST STOP IMMEDIATELY if a fix requires:**
+    -   Changing business logic.
+    -   Modifying the Prisma schema.
+    -   Altering an API contract (request/response shape).
+    -   Making an ambiguous decision where the correct fix isn't obvious.
+-   If you hit a STOP condition, create the  and await user instruction. Do not try to solve the ambiguous issue yourself.
 
 **documents and test reports created in this job**
 -   
@@ -108,31 +114,27 @@ info Visit https://yarnpkg.com/en/docs/cli/run for documentation about this comm
 -   
 -   
 -   
+-   
+-   
+-   
+-   
 
 **Last 10 User Messages and any pending HUMAN messages**
--   The last several messages are a sequence of formal, verbatim authorizations for each phase (Billing, CRM, Procurement, Subscriptions, Build Verification, API Route Stabilization), each with explicit constraints and a mandatory HARD STOP requirement. The user is acting as a project manager, providing precise instructions for each step.
+-   The user has provided a long and extremely detailed sequence of authorizations for each micro-phase of the build fix. This has evolved from rigid, single-step Phase authorizations to the current Continuous Build Stabilization Mandate which grants the agent more autonomy to fix mechanical errors iteratively without stopping for approval unless a major boundary is hit. The user is acting as a strict project manager, guiding the process with precision.
 
 **Project Health Check:**
 -   **Broken**: Yes. The yarn run v1.22.22
-info Visit https://yarnpkg.com/en/docs/cli/run for documentation about this command. command is confirmed to fail due to TypeScript errors in .
+info Visit https://yarnpkg.com/en/docs/cli/run for documentation about this command. command is confirmed to fail due to a mechanical TypeScript error.
 
 **3rd Party Integrations**
--   Supabase (PostgreSQL)
+-   Supabase (PostgreSQL backend)
 -   Prisma ORM
--   Vercel
+-   Vercel (Deployment Target)
 
 **Testing status**
--   **Testing agent used after significant changes**: NO. The process mandates manual 
-[41m                                                                               [0m
-[41m[37m                This is not the tsc command you are looking for                [0m
-[41m                                                                               [0m
-
-To get access to the TypeScript compiler, [34mtsc[0m, from the command line either:
-
-- Use [1mnpm install typescript[0m to first add TypeScript to your project [1mbefore[0m using npx
-- Use [1myarn[0m to avoid accidentally running code from un-installed packages checks or yarn run v1.22.22
-info Visit https://yarnpkg.com/en/docs/cli/run for documentation about this command. after each module fix, per explicit user instructions for each phase.
+-   **Testing agent used after significant changes**: NO. The entire process is driven by the user's mandate to use yarn run v1.22.22
+info Visit https://yarnpkg.com/en/docs/cli/run for documentation about this command. as the sole verification tool.
 -   **Test files created**: None.
 
 **What agent forgot to execute**
--   Nothing. The agent has been meticulously following the user's complex and rigid plan. The current state is a planned step in a long and systematic debugging process.</analysis>
+-   Nothing. The agent has been meticulously following the user's complex and rigid plan. The current failure is an expected and planned-for step in the iterative discovery and fixing process defined by the continuous stabilization mandate.</analysis>
