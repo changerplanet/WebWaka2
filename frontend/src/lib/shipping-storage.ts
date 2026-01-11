@@ -82,7 +82,7 @@ function mapDbZoneToInterface(dbZone: any): ShippingZone {
     isDefault: dbZone.isDefault,
     isActive: dbZone.isActive,
     priority: dbZone.priority,
-    rates: (dbZone.rates || []).map(mapDbRateToInterface),
+    rates: (dbZone.svm_shipping_rates || []).map(mapDbRateToInterface),
     createdAt: dbZone.createdAt?.toISOString(),
     updatedAt: dbZone.updatedAt?.toISOString()
   }
