@@ -275,7 +275,7 @@ export async function validateSignupPartnerContext(
       }
     }
     
-    if (code.partner.status !== 'ACTIVE') {
+    if (code.Partner.status !== 'ACTIVE') {
       return {
         allowed: false,
         error: 'Partner is not active',
