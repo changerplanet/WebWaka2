@@ -137,7 +137,7 @@ export async function detectExpansionSignals(
     }
     
     // 3. Revenue Growth Signal
-    const financials = instance.financialSummary
+    const financials = instance.InstanceFinancialSummary
     if (financials) {
       const currentMonth = Number(financials.currentMonthRevenue || 0)
       const lastMonth = Number(financials.lastMonthRevenue || 0)
@@ -154,8 +154,8 @@ export async function detectExpansionSignals(
           recommendation: 'Client may be ready for additional instances or features',
           platformInstanceId: instance.id,
           instanceName: instance.name,
-          tenantId: instance.tenant.id,
-          tenantName: instance.tenant.name,
+          tenantId: instance.tenantId,
+          tenantName: instance.tenant?.name || 'Unknown',
           metrics: { currentMonth, lastMonth, growthPercent },
           detectedAt: now,
         })
