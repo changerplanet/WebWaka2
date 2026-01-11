@@ -225,7 +225,7 @@ export class B2BInvoiceService {
     const limit = options?.limit || 20
     const skip = (page - 1) * limit
 
-    const where: Prisma.B2BInvoiceWhereInput = {
+    const where: Prisma.b2b_invoicesWhereInput = {
       tenantId,
       ...(options?.profileId && { profileId: options.profileId }),
       ...(options?.status && { status: { in: options.status } }),
