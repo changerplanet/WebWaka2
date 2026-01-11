@@ -23,6 +23,7 @@
 import { prisma } from './prisma'
 import { AttributionMethod, PartnerReferral, Tenant, Partner } from '@prisma/client'
 import { getCurrentSession } from './auth'
+import { withPrismaDefaults } from './db/prismaDefaults'
 
 // ============================================================================
 // TYPES
@@ -190,7 +191,7 @@ export async function createAttribution(input: AttributionInput): Promise<Attrib
   const referral = await prisma.$transaction(async (tx) => {
     // Create the attribution record
     const newReferral = await tx.partnerReferral.create({
-      data: {
+      data: withPrismaDefaults({
         partnerId: input.partnerId,
         tenantId: input.tenantId,
         referralCodeId: input.referralCodeId,
@@ -202,7 +203,7 @@ export async function createAttribution(input: AttributionInput): Promise<Attrib
         metadata: input.metadata ?? undefined,
         createdByUserId: session?.user?.id,
         attributionLocked: false // Will be locked after first billing
-      }
+      })
     })
     
     // Increment referral code usage if used
@@ -215,7 +216,7 @@ export async function createAttribution(input: AttributionInput): Promise<Attrib
     
     // Create audit log
     await tx.auditLog.create({
-      data: {
+      data: withPrismaDefaults({
         action: 'ATTRIBUTION_CREATED',
         actorId: session?.user?.id || 'system',
         actorEmail: session?.user?.email || 'system@webwaka.internal',
@@ -229,7 +230,7 @@ export async function createAttribution(input: AttributionInput): Promise<Attrib
           attributionWindowDays: input.attributionWindowDays,
           isLifetime: !input.attributionWindowDays
         }
-      }
+      })
     })
     
     return newReferral
@@ -321,7 +322,7 @@ export async function lockAttribution(tenantId: string): Promise<AttributionResu
     
     // Audit log
     await tx.auditLog.create({
-      data: {
+      data: withPrismaDefaults({
         action: 'ATTRIBUTION_LOCKED',
         actorId: session?.user?.id || 'billing-system',
         actorEmail: session?.user?.email || 'billing@webwaka.internal',
@@ -332,7 +333,7 @@ export async function lockAttribution(tenantId: string): Promise<AttributionResu
           partnerId: updated.partnerId,
           lockedAt: updated.lockedAt
         }
-      }
+      })
     })
     
     return updated
@@ -416,7 +417,7 @@ export async function isAttributionValidForEarnings(tenantId: string): Promise<b
   if (!referral) return false
   
   // Partner must be active
-  if (referral.partner.status !== 'ACTIVE') return false
+  if (referral.Partner.status !== 'ACTIVE') return false
   
   // Check if within attribution window
   if (referral.attributionExpiresAt && referral.attributionExpiresAt < new Date()) {
@@ -445,7 +446,7 @@ export async function assertAttributionModifiable(tenantId: string): Promise<voi
     // Log the attempted modification
     const session = await getCurrentSession()
     await prisma.auditLog.create({
-      data: {
+      data: withPrismaDefaults({
         action: 'ATTRIBUTION_LOCK_ATTEMPTED',
         actorId: session?.user?.id || 'unknown',
         actorEmail: session?.user?.email || 'unknown',
@@ -456,7 +457,7 @@ export async function assertAttributionModifiable(tenantId: string): Promise<voi
           lockedAt: referral.lockedAt,
           blockedAt: new Date()
         }
-      }
+      })
     })
     
     throw new AttributionLockedError(
@@ -481,7 +482,7 @@ export async function assertNoReassignment(tenantId: string, newPartnerId: strin
     // Log the attempted reassignment
     const session = await getCurrentSession()
     await prisma.auditLog.create({
-      data: {
+      data: withPrismaDefaults({
         action: 'ATTRIBUTION_REASSIGN_BLOCKED',
         actorId: session?.user?.id || 'unknown',
         actorEmail: session?.user?.email || 'unknown',
@@ -492,7 +493,7 @@ export async function assertNoReassignment(tenantId: string, newPartnerId: strin
           attemptedNewPartnerId: newPartnerId,
           blockedAt: new Date()
         }
-      }
+      })
     })
     
     throw new AttributionReassignmentError(
