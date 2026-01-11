@@ -14,6 +14,7 @@
 
 import { withPrismaDefaults } from '@/lib/db/prismaDefaults'
 import { prisma } from '@/lib/prisma'
+import { Prisma } from '@prisma/client'
 
 // ============================================================================
 // TYPES
@@ -271,7 +272,7 @@ export class PaymentProofService {
       data: withPrismaDefaults({
         tenantId,
         eventType,
-        eventData,
+        eventData: eventData as Prisma.InputJsonValue,
         paymentId
       }) // AUTO-FIX: required by Prisma schema
     })
