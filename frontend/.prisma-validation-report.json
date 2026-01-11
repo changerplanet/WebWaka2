@@ -1,34 +1,15 @@
 {
-  "timestamp": "2026-01-11T10:06:49.737Z",
+  "timestamp": "2026-01-11T10:07:07.891Z",
   "mode": "check",
   "summary": {
     "totalFiles": 1175,
     "totalReferences": 4191,
     "validModels": 365,
-    "totalErrors": 5,
+    "totalErrors": 3,
     "legacyIssues": 11,
-    "newErrors": 2,
+    "newErrors": 0,
     "baselinedIssues": 1201
   },
-  "newErrors": [
-    {
-      "model": "accessScope",
-      "method": "findMany",
-      "line": 479,
-      "file": "/app/frontend/src/lib/integrations/developer-service.ts",
-      "key": "src/lib/integrations/developer-service.ts:479:accessScope",
-      "type": "UNKNOWN_MODEL",
-      "suggestion": null
-    },
-    {
-      "model": "accessScope",
-      "method": "findUnique",
-      "line": 489,
-      "file": "/app/frontend/src/lib/integrations/developer-service.ts",
-      "key": "src/lib/integrations/developer-service.ts:489:accessScope",
-      "type": "UNKNOWN_MODEL",
-      "suggestion": null
-    }
-  ],
-  "status": "FAILED"
+  "newErrors": [],
+  "status": "PASSED"
 }
