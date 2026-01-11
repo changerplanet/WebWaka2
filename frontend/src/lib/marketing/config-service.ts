@@ -234,7 +234,7 @@ export class MktConfigService {
         })
 
         // Create trigger
-        await prisma.mktAutomationTrigger.create({
+        await prisma.mkt_automation_triggers.create({
           data: {
             workflowId: workflow.id,
             type: template.trigger.type as 'EVENT' | 'TIME' | 'CONDITION' | 'MANUAL',
@@ -248,7 +248,7 @@ export class MktConfigService {
         // Create actions
         for (let i = 0; i < template.actions.length; i++) {
           const action = template.actions[i]
-          await prisma.mktAutomationAction.create({
+          await prisma.mkt_automation_actions.create({
             data: {
               workflowId: workflow.id,
               type: action.type as 'SEND_MESSAGE' | 'APPLY_TAG' | 'AWARD_POINTS' | 'INTERNAL_NOTIFY' | 'WAIT',

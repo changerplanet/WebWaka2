@@ -283,7 +283,7 @@ export class ExecutionService {
     const handoffId = `MKT-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
 
     // Log the handoff
-    await prisma.mktAutomationLog.create({
+    await prisma.mkt_automation_logs.create({
       data: {
         tenantId: payload.tenantId as string,
         eventType: 'CORE_HANDOFF',
