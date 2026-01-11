@@ -20,15 +20,16 @@
 // Partner commission calculation
 // =============================================================================
 export {
-  CommissionEngine,
-  CommissionCalculator,
-  type CommissionRule,
-  type CommissionRuleConfig,
+  calculateCommission,
+  COMMISSION_EXAMPLES,
+  type CommissionCalculationInput,
+  type CommissionCalculationResult,
+  type CommissionBreakdown,
   type CommissionTier,
-  type CommissionCalculation,
-  type CommissionResult,
-  type CommissionType,
-  type TierType
+  type HybridRule,
+  type RuleCondition,
+  type CommissionRule,
+  type CommissionCalculation
 } from './commission'
 
 // =============================================================================
@@ -101,11 +102,12 @@ export {
   getDiscountRule,
   getDiscountByCode,
   listDiscountRules,
-  updateDiscountRule,
-  deleteDiscountRule,
-  validateDiscountCode,
-  applyDiscountToOrder,
-  getDiscountUsageStats,
+  deactivateDiscountRule,
+  validateDiscount,
+  calculateDiscount,
+  recordDiscountUsage,
+  getPartnerDiscounts,
+  createPartnerDiscount,
   type DiscountRule,
   type DiscountResult
 } from './discounts'
