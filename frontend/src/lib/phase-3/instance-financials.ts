@@ -13,6 +13,7 @@
 
 import { prisma } from '../prisma'
 import { v4 as uuidv4 } from 'uuid'
+import { withPrismaDefaults } from '../db/prismaDefaults'
 
 // ============================================================================
 // TYPES
@@ -215,7 +216,7 @@ export async function recordSubscriptionPayment(
   try {
     const subscription = await prisma.instanceSubscription.findUnique({
       where: { id: subscriptionId },
-      include: { platformInstance: true }
+      include: { PlatformInstance: true }
     })
     
     if (!subscription) {
@@ -229,8 +230,7 @@ export async function recordSubscriptionPayment(
     // Update or create financial summary
     await prisma.instanceFinancialSummary.upsert({
       where: { platformInstanceId: instanceId },
-      create: {
-        id: uuidv4(),
+      create: withPrismaDefaults({
         platformInstanceId: instanceId,
         partnerId,
         totalRevenue: paymentAmount,
@@ -240,7 +240,7 @@ export async function recordSubscriptionPayment(
         totalProfit: profit,
         currentMonthProfit: profit,
         lastCalculatedAt: new Date(),
-      },
+      }),
       update: {
         totalRevenue: { increment: paymentAmount },
         currentMonthRevenue: { increment: paymentAmount },
