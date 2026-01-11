@@ -41,7 +41,7 @@ export async function createWebhook(data: {
   const secretKey = data.secretKey || crypto.randomBytes(32).toString('hex')
   
   const webhook = await prisma.integration_webhooks.create({
-    data: {
+    data: withPrismaDefaults({
       instanceId: data.instanceId,
       name: data.name,
       direction: data.direction,
@@ -52,12 +52,12 @@ export async function createWebhook(data: {
       maxRetries: data.maxRetries ?? 3,
       retryDelayMs: data.retryDelayMs ?? 1000,
       status: WebhookStatus.ACTIVE,
-    },
+    }),
   })
   
   // Log event
   await prisma.integration_event_logs.create({
-    data: {
+    data: withPrismaDefaults({
       tenantId: instance.tenantId,
       eventType: 'WEBHOOK_CREATED',
       eventData: {
@@ -67,7 +67,7 @@ export async function createWebhook(data: {
         events: data.events,
       },
       instanceId: data.instanceId,
-    },
+    }),
   })
   
   return webhook
