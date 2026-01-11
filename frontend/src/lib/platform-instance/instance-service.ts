@@ -148,7 +148,7 @@ export async function getInstance(instanceId: string): Promise<PlatformInstanceW
   return prisma.platformInstance.findUnique({
     where: { id: instanceId },
     include: {
-      Tenant: {
+      tenant: {
         select: {
           id: true,
           name: true,
@@ -171,7 +171,7 @@ export async function getDefaultInstance(tenantId: string): Promise<PlatformInst
   return prisma.platformInstance.findFirst({
     where: { tenantId, isDefault: true },
     include: {
-      Tenant: {
+      tenant: {
         select: {
           id: true,
           name: true,
@@ -194,7 +194,7 @@ export async function getTenantInstances(tenantId: string): Promise<PlatformInst
   return prisma.platformInstance.findMany({
     where: { tenantId, isActive: true },
     include: {
-      Tenant: {
+      tenant: {
         select: {
           id: true,
           name: true,
@@ -264,7 +264,7 @@ export async function createInstance(
       isActive: true,
     },
     include: {
-      Tenant: {
+      tenant: {
         select: {
           id: true,
           name: true,
@@ -299,7 +299,7 @@ export async function updateInstanceBranding(
       secondaryColor: branding.secondaryColor,
     },
     include: {
-      Tenant: {
+      tenant: {
         select: {
           id: true,
           name: true,
@@ -326,7 +326,7 @@ export async function updateInstanceSuites(
     where: { id: instanceId },
     data: { suiteKeys },
     include: {
-      Tenant: {
+      tenant: {
         select: {
           id: true,
           name: true,
