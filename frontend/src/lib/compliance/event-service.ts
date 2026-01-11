@@ -6,6 +6,7 @@
  */
 
 import { PrismaClient } from '@prisma/client';
+import { withPrismaDefaults } from '@/lib/db/prismaDefaults';
 
 const prisma = new PrismaClient();
 
@@ -27,7 +28,7 @@ interface LogEventInput {
 export async function logComplianceEvent(input: LogEventInput): Promise<void> {
   try {
     await prisma.compliance_event_logs.create({
-      data: {
+      data: withPrismaDefaults({
         eventType: input.eventType,
         tenantId: input.tenantId,
         profileId: input.profileId,
@@ -37,7 +38,7 @@ export async function logComplianceEvent(input: LogEventInput): Promise<void> {
         actorType: input.actorType,
         eventData: input.eventData,
         occurredAt: new Date(),
-      },
+      }),
     });
   } catch (error) {
     console.error('Failed to log compliance event:', error);
