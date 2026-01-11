@@ -147,12 +147,12 @@ export async function getUserSitesFunnelsRole(
     where: {
       userId,
       tenantId,
-      status: 'ACTIVE',
+      isActive: true,
     },
   });
 
   if (membership) {
-    if (membership.role === 'OWNER' || membership.role === 'ADMIN') {
+    if (membership.role === 'TENANT_ADMIN') {
       return 'CLIENT_ADMIN';
     }
     return 'CLIENT_EDITOR';
