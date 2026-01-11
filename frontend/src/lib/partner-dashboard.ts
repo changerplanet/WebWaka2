@@ -299,14 +299,14 @@ async function getDashboardSummary(partnerId: string): Promise<DashboardSummary>
   const activeReferrals = await prisma.partnerReferral.count({
     where: {
       partnerId,
-      tenant: { status: 'ACTIVE' }
+      Tenant: { status: 'ACTIVE' }
     }
   })
   
   const pendingReferrals = await prisma.partnerReferral.count({
     where: {
       partnerId,
-      tenant: { status: 'PENDING_ACTIVATION' }
+      Tenant: { status: 'PENDING_ACTIVATION' }
     }
   })
   
@@ -422,19 +422,19 @@ async function getReferralsSummary(partnerId: string): Promise<ReferralsSummary>
   })
   
   const activeTenants = await prisma.partnerReferral.count({
-    where: { partnerId, tenant: { status: 'ACTIVE' } }
+    where: { partnerId, Tenant: { status: 'ACTIVE' } }
   })
   
   const pendingTenants = await prisma.partnerReferral.count({
-    where: { partnerId, tenant: { status: 'PENDING_ACTIVATION' } }
+    where: { partnerId, Tenant: { status: 'PENDING_ACTIVATION' } }
   })
   
   const suspendedTenants = await prisma.partnerReferral.count({
-    where: { partnerId, tenant: { status: 'SUSPENDED' } }
+    where: { partnerId, Tenant: { status: 'SUSPENDED' } }
   })
   
   const churnedTenants = await prisma.partnerReferral.count({
-    where: { partnerId, tenant: { status: 'DEACTIVATED' } }
+    where: { partnerId, Tenant: { status: 'DEACTIVATED' } }
   })
   
   // Get recent referrals (last 10)
@@ -461,7 +461,7 @@ async function getReferralsSummary(partnerId: string): Promise<ReferralsSummary>
       Tenant: {
         select: { id: true, name: true, slug: true, status: true }
       },
-      earnings: {
+      PartnerEarning: {
         where: { entryType: 'CREDIT' },
         select: { commissionAmount: true, paidAt: true }
       }
@@ -471,8 +471,8 @@ async function getReferralsSummary(partnerId: string): Promise<ReferralsSummary>
   const topPerformers = referralsWithEarnings
     .map(r => ({
       referral: r,
-      totalRevenue: r.earnings.reduce((sum, e) => sum + Number(e.commissionAmount), 0),
-      lastPayment: r.earnings.filter(e => e.paidAt).sort((a, b) => 
+      totalRevenue: r.PartnerEarning.reduce((sum, e) => sum + Number(e.commissionAmount), 0),
+      lastPayment: r.PartnerEarning.filter(e => e.paidAt).sort((a, b) => 
         (b.paidAt?.getTime() || 0) - (a.paidAt?.getTime() || 0)
       )[0]?.paidAt
     }))
@@ -485,10 +485,10 @@ async function getReferralsSummary(partnerId: string): Promise<ReferralsSummary>
     lastPaymentDate: Date | null = null
   ): ReferredTenantInfo => ({
     referralId: referral.id,
-    tenantId: referral.tenant.id,
-    tenantName: referral.tenant.name,
-    tenantSlug: referral.tenant.slug,
-    tenantStatus: referral.tenant.status,
+    tenantId: referral.Tenant.id,
+    tenantName: referral.Tenant.name,
+    tenantSlug: referral.Tenant.slug,
+    tenantStatus: referral.Tenant.status,
     referredAt: referral.referredAt,
     attributionMethod: referral.attributionMethod,
     isLifetime: !referral.attributionWindowDays,
