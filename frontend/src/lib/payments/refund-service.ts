@@ -12,6 +12,7 @@
 import { prisma } from '@/lib/prisma'
 import { PayRefundReason, PayRefundStatus, PayRefundMethod, Prisma } from '@prisma/client'
 import { WalletService } from './wallet-service'
+import { withPrismaDefaults } from '@/lib/db/prismaDefaults'
 
 // ============================================================================
 // TYPES
@@ -87,7 +88,7 @@ export class RefundService {
     const refundNumber = await this.generateRefundNumber(tenantId)
 
     const refund = await prisma.pay_refunds.create({
-      data: {
+      data: withPrismaDefaults({
         tenantId,
         refundNumber,
         paymentId: input.paymentId,
@@ -98,7 +99,7 @@ export class RefundService {
         refundMethod: input.refundMethod || 'ORIGINAL_METHOD',
         status: 'PENDING',
         requestedBy,
-      },
+      }),
     })
 
     // Log event
@@ -330,13 +331,13 @@ export class RefundService {
   }
 
   private static async logEvent(tenantId: string, eventType: string, eventData: Record<string, unknown>) {
-    await prisma.payEventLog.create({
-      data: {
+    await prisma.pay_event_logs.create({
+      data: withPrismaDefaults({
         tenantId,
         eventType,
         eventData: eventData as Prisma.InputJsonValue,
         refundId: eventData.refundId as string | undefined,
-      },
+      }),
     })
   }
 }
