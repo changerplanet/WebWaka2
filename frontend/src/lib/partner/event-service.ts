@@ -23,6 +23,7 @@
 import { prisma } from '@/lib/prisma';
 import { getAttributionByTenant, lockAttribution } from './referral-service';
 import { calculateCommission } from './commission-service';
+import { withPrismaDefaults } from '@/lib/db/prismaDefaults';
 
 // ============================================================================
 // EVENT LOGGING
@@ -41,7 +42,7 @@ interface LogEventInput {
 export async function logPartnerEvent(input: LogEventInput): Promise<void> {
   try {
     await prisma.partner_event_logs_ext.create({
-      data: {
+      data: withPrismaDefaults({
         eventType: input.eventType,
         partnerId: input.partnerId,
         attributionId: input.attributionId,
@@ -50,7 +51,7 @@ export async function logPartnerEvent(input: LogEventInput): Promise<void> {
         actorType: input.actorType,
         eventData: input.eventData,
         occurredAt: new Date(),
-      },
+      }),
     });
   } catch (error) {
     console.error('Failed to log partner event:', error);
