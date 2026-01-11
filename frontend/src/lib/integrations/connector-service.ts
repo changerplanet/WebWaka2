@@ -72,7 +72,7 @@ export async function makeApiCall(
   const credentials = await getDecryptedCredentials(instanceId)
   
   // Build URL
-  const baseUrl = instance.provider.apiBaseUrl || ''
+  const baseUrl = instance.integration_providers.apiBaseUrl || ''
   let url = `${baseUrl}${options.path}`
   
   if (options.queryParams) {
@@ -83,7 +83,7 @@ export async function makeApiCall(
   // Build headers with authentication
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
-    ...buildAuthHeaders(instance.provider.key, credentials),
+    ...buildAuthHeaders(instance.integration_providers.key, credentials),
     ...options.headers,
   }
   
@@ -140,7 +140,7 @@ export async function makeApiCall(
       // Handle specific error codes
       if (response.status === 401) {
         // Try token refresh for supported providers
-        const refreshed = await tryTokenRefresh(instanceId, instance.provider.key, credentials)
+        const refreshed = await tryTokenRefresh(instanceId, instance.integration_providers.key, credentials)
         if (refreshed && retryCount < maxRetries) {
           retryCount++
           continue
