@@ -339,7 +339,7 @@ export async function initializeModule() {
           description: scope.description,
           isHighRisk: scope.isHighRisk,
         },
-        create: {
+        create: withPrismaDefaults({
           key: scope.key,
           name: scope.name,
           resource: scope.resource,
@@ -348,7 +348,7 @@ export async function initializeModule() {
           isHighRisk: scope.isHighRisk,
           moduleKey: scope.moduleKey,
           isActive: true,
-        },
+        }),
       })
       results.scopesCreated++
     } catch (error) {
