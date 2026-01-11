@@ -151,14 +151,14 @@ export class EmployeeService {
             leaveType: type,
           },
         },
-        create: {
+        create: withPrismaDefaults({
           tenantId,
           employeeProfileId,
           year,
           leaveType: type,
           entitlement,
           available: entitlement,
-        },
+        }),
         update: {
           entitlement,
           available: entitlement,
