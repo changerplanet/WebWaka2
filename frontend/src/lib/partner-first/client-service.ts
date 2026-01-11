@@ -540,7 +540,7 @@ export async function resendClientInvitation(
   
   // Generate new invitation URL
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
-  const invitationUrl = `${baseUrl}/signup/complete?tenant=${referral.tenant.slug}&email=${encodeURIComponent(adminEmail)}`
+  const invitationUrl = `${baseUrl}/signup/complete?tenant=${referral.Tenant.slug}&email=${encodeURIComponent(adminEmail)}`
   
   // TODO: Actually send email via Resend
   
