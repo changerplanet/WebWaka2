@@ -79,7 +79,7 @@ export async function listInstancesForTenant(
             isNigeriaFirst: true,
           },
         },
-        credentials: {
+        integration_credentials: {
           select: {
             key: true,
             maskedValue: true,
