@@ -256,7 +256,7 @@ export class AttendanceService {
     const lateThreshold = config?.lateThresholdMinutes || 15
 
     // Get schedule for this employee
-    const schedule = await prisma.hrWorkSchedule.findFirst({
+    const schedule = await prisma.hr_work_schedules.findFirst({
       where: {
         tenantId,
         employeeProfileId: record.employeeProfileId,
@@ -324,7 +324,7 @@ export class AttendanceService {
     }
 
     // Get schedule for overtime calculation
-    const schedule = await prisma.hrWorkSchedule.findFirst({
+    const schedule = await prisma.hr_work_schedules.findFirst({
       where: {
         tenantId,
         employeeProfileId: record.employeeProfileId,
