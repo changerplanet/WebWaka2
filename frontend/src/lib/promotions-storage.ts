@@ -339,7 +339,7 @@ export async function getPromotion(tenantId: string, promotionId: string): Promi
 
 export async function addPromotion(promotion: Promotion): Promise<void> {
   await prisma.svm_promotions.create({
-    data: {
+    data: withPrismaDefaults({
       id: promotion.id,
       tenantId: promotion.tenantId,
       name: promotion.name,
@@ -433,12 +433,12 @@ export async function recordUsage(
   discountApplied: number
 ): Promise<PromotionUsage> {
   const usage = await prisma.svm_promotion_usages.create({
-    data: {
+    data: withPrismaDefaults({
       promotionId,
       orderId,
       customerId,
       discountApplied
-    }
+    })
   })
   
   // Increment usage count on promotion
