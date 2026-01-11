@@ -257,7 +257,7 @@ export class AnalyticsConfigService {
 
       if (!existing) {
         const created = await prisma.analytics_dashboards.create({
-          data: {
+          data: withPrismaDefaults({
             tenantId,
             key: dashboard.key,
             name: dashboard.name,
@@ -265,13 +265,13 @@ export class AnalyticsConfigService {
             isDefault: dashboard.isDefault,
             isSystem: true,
             layout: dashboard.layout as Prisma.InputJsonValue,
-          },
+          }),
         })
 
         // Create widgets
         for (const widget of dashboard.widgets) {
           await prisma.analytics_dashboard_widgets.create({
-            data: {
+            data: withPrismaDefaults({
               dashboardId: created.id,
               title: widget.title,
               type: widget.type,
@@ -281,7 +281,7 @@ export class AnalyticsConfigService {
               gridY: widget.gridY,
               gridW: widget.gridW,
               gridH: widget.gridH,
-            },
+            }),
           })
         }
       }
