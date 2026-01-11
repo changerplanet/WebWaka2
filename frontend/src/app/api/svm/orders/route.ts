@@ -341,7 +341,7 @@ export async function GET(request: NextRequest) {
     // Get orders with items
     const orders = await prisma.svm_orders.findMany({
       where,
-      include: { items: true },
+      include: { svm_order_items: true },
       orderBy: { createdAt: 'desc' },
       skip: offset,
       take: limit
@@ -361,7 +361,7 @@ export async function GET(request: NextRequest) {
         customerPhone: order.customerPhone,
         customerName: order.customerName,
         channel: order.channel,
-        items: order.items.map(item => ({
+        items: order.svm_order_items.map((item: { id: string; productId: string; variantId: string | null; productName: string; sku: string | null; variantName: string | null; imageUrl: string | null; unitPrice: { toString: () => string }; quantity: number; lineTotal: { toString: () => string }; discountAmount: { toString: () => string }; taxAmount: { toString: () => string }; fulfilledQuantity: number; refundedQuantity: number }) => ({
           id: item.id,
           productId: item.productId,
           variantId: item.variantId,
