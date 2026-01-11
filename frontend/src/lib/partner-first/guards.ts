@@ -14,6 +14,7 @@
  */
 
 import { prisma } from '../prisma'
+import { withPrismaDefaults } from '../db/prismaDefaults'
 
 // ============================================================================
 // CONSTANTS
@@ -345,7 +346,7 @@ export async function getOrCreateWebWakaPartner(): Promise<{ id: string; name: s
   // Create if doesn't exist
   try {
     partner = await prisma.partner.create({
-      data: {
+      data: withPrismaDefaults({
         name: 'WebWaka Digital Services',
         slug: WEBWAKA_INTERNAL_PARTNER_SLUG,
         status: 'ACTIVE',
@@ -355,7 +356,7 @@ export async function getOrCreateWebWakaPartner(): Promise<{ id: string; name: s
           description: 'WebWaka internal partner for demos, pilots, and government projects',
           createdBy: 'PHASE_4A_MIGRATION',
         }
-      },
+      }),
       select: { id: true, name: true }
     })
     
