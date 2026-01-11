@@ -9,6 +9,7 @@
 
 import { prisma } from '@/lib/prisma'
 import { HrPaymentMethod, Prisma } from '@prisma/client'
+import { withPrismaDefaults } from '@/lib/db/prismaDefaults'
 
 // ============================================================================
 // TYPES
