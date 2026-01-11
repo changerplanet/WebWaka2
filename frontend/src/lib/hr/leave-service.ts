@@ -429,7 +429,7 @@ export class LeaveService {
           leaveType: input.leaveType,
         },
       },
-      create: {
+      create: withPrismaDefaults({
         tenantId,
         employeeProfileId: input.employeeProfileId,
         year: input.year,
@@ -437,7 +437,7 @@ export class LeaveService {
         adjustments: input.adjustment,
         available: input.adjustment,
         notes: input.reason,
-      },
+      }),
       update: {
         adjustments: { increment: input.adjustment },
         available: { increment: input.adjustment },
