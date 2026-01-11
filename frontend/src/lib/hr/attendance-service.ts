@@ -385,7 +385,7 @@ export class AttendanceService {
       offset?: number
     } = {}
   ) {
-    const where: Prisma.HrAttendanceRecordWhereInput = { tenantId }
+    const where: Prisma.hr_attendance_recordsWhereInput = { tenantId }
 
     if (options.employeeProfileId) where.employeeProfileId = options.employeeProfileId
     if (options.status) where.status = options.status
