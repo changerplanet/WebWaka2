@@ -183,7 +183,7 @@ export class PaymentService {
     })
 
     // Calculate fees
-    const config = await prisma.payConfiguration.findUnique({ where: { tenantId } })
+    const config = await prisma.pay_configurations.findUnique({ where: { tenantId } })
     const platformFee = config?.platformCommission
       ? (intent.amount.toNumber() * config.platformCommission.toNumber()) / 100
       : 0
