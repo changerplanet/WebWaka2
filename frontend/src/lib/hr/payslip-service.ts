@@ -38,7 +38,7 @@ export class PayslipService {
     }
 
     // Get calculations to generate payslips for
-    const calculationsWhere: Prisma.HrPayrollCalculationWhereInput = {
+    const calculationsWhere: Prisma.hr_payroll_calculationsWhereInput = {
       tenantId,
       payrollPeriodId: input.periodId,
       status: { in: ['APPROVED', 'FINALIZED'] },
