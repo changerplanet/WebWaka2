@@ -22,9 +22,9 @@ export type {
 
 export { RefundService } from './refund-service'
 
-export { PaymentConfigService } from './config-service'
+export { PayConfigService } from './config-service'
 
-export { PaymentEntitlementsService, PAYMENT_TIERS } from './entitlements-service'
+export { PayEntitlementsService, PayValidationService } from './entitlements-service'
 
 // S3 Canonical Services (New)
 export { 

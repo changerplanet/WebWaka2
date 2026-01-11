@@ -12,15 +12,16 @@
 
 // Re-export everything from the existing commission engine
 export {
-  CommissionEngine,
-  CommissionCalculator,
-  type CommissionRule,
+  calculateCommission,
+  COMMISSION_EXAMPLES,
+  type CommissionCalculationInput,
+  type CommissionCalculationResult,
+  type CommissionBreakdown,
   type CommissionTier,
-  type CommissionCalculation,
-  type CommissionType,
-  type TierType
+  type HybridRule,
+  type RuleCondition
 } from '../commission-engine'
 
 // Additional type aliases for canonical naming
-export type { CommissionRule as CommissionRuleConfig }
-export type { CommissionCalculation as CommissionResult }
+export type { CommissionCalculationInput as CommissionRule }
+export type { CommissionCalculationResult as CommissionCalculation }

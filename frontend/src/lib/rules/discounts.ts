@@ -15,11 +15,12 @@ export {
   getDiscountRule,
   getDiscountByCode,
   listDiscountRules,
-  updateDiscountRule,
-  deleteDiscountRule,
-  validateDiscountCode,
-  applyDiscountToOrder,
-  getDiscountUsageStats
+  deactivateDiscountRule,
+  validateDiscount,
+  calculateDiscount,
+  recordDiscountUsage,
+  getPartnerDiscounts,
+  createPartnerDiscount
 } from '../billing/discount-service'
 
 // Type alias for canonical naming
