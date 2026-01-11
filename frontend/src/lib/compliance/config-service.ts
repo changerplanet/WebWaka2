@@ -11,6 +11,7 @@
  */
 
 import { PrismaClient, ComplianceMaturityLevel } from '@prisma/client';
+import { withPrismaDefaults } from '@/lib/db/prismaDefaults';
 
 const prisma = new PrismaClient();
 
@@ -73,7 +74,7 @@ export async function getComplianceProfile(tenantId: string) {
   if (!profile) {
     // Create default profile (informal, no requirements)
     profile = await prisma.compliance_profiles.create({
-      data: {
+      data: withPrismaDefaults({
         tenantId,
         businessRegistered: false,
         vatRegistered: false,
@@ -83,17 +84,17 @@ export async function getComplianceProfile(tenantId: string) {
         auditTrailEnabled: true,
         reportingEnabled: false,
         progressiveActivation: true,
-        taxConfig: {
-          create: {
-            // tenantId is automatically set through the relation
+        tax_configurations: {
+          create: withPrismaDefaults({
+            tenantId,
             vatEnabled: false,
             vatRate: DEFAULT_VAT_RATE,
             vatInclusive: true,
             isSmallBusiness: true,
             multiStateEnabled: false,
-          },
+          }),
         },
-      },
+      }),
       include: { tax_configurations: true },
     });
   }
@@ -175,7 +176,7 @@ export async function getComplianceModuleStatus(tenantId?: string) {
     prisma.compliance_profiles.count(),
     prisma.tax_computation_records.count(),
     prisma.regulatory_reports.count(),
-    prisma.auditArtifact.count(),
+    prisma.audit_artifacts.count(),
     prisma.compliance_statuses.count({ where: { isResolved: false } }),
   ]);
   
