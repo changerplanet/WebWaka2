@@ -524,7 +524,7 @@ export async function getLedgerEntries(
 ) {
   const { limit = 50, offset = 0, entryType, referenceType, referenceId, startDate, endDate } = options || {}
 
-  const where: Prisma.CommerceWalletLedgerWhereInput = { walletId }
+  const where: Prisma.commerce_wallet_ledgerWhereInput = { walletId }
 
   if (entryType) where.entryType = entryType
   if (referenceType) where.referenceType = referenceType
