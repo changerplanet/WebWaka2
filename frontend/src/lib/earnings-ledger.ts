@@ -316,7 +316,7 @@ export async function clearEarning(earningId: string): Promise<EarningResult> {
     })
     
     await tx.auditLog.create({
-      data: {
+      data: withPrismaDefaults({
         action: 'EARNING_CLEARED',
         actorId: 'system',
         actorEmail: 'commission@webwaka.internal',
@@ -326,7 +326,7 @@ export async function clearEarning(earningId: string): Promise<EarningResult> {
           partnerId: earning.partnerId,
           amount: Number(earning.commissionAmount)
         }
-      }
+      })
     })
     
     return entry
@@ -369,7 +369,7 @@ export async function approveEarning(
     })
     
     await tx.auditLog.create({
-      data: {
+      data: withPrismaDefaults({
         action: 'EARNING_APPROVED',
         actorId: approverId,
         actorEmail: 'admin',
@@ -379,7 +379,7 @@ export async function approveEarning(
           partnerId: earning.partnerId,
           amount: Number(earning.commissionAmount)
         }
-      }
+      })
     })
     
     return entry
