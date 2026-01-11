@@ -245,7 +245,7 @@ async function seedDefaultZones(tenantId: string): Promise<ShippingZone[]> {
 
   // Create default International zone
   const intlZone = await prisma.svm_shipping_zones.create({
-    data: {
+    data: withPrismaDefaults({
       tenantId,
       name: 'International',
       description: 'Worldwide shipping (default)',
@@ -258,11 +258,11 @@ async function seedDefaultZones(tenantId: string): Promise<ShippingZone[]> {
       priority: 0,
       svm_shipping_rates: {
         create: [
-          {
+          withPrismaDefaults({
             name: 'International Standard',
             description: '14-21 business days',
             carrier: 'USPS',
-            rateType: 'FLAT',
+            rateType: 'FLAT' as const,
             flatRate: 19.99,
             minDays: 14,
             maxDays: 21,
@@ -272,12 +272,12 @@ async function seedDefaultZones(tenantId: string): Promise<ShippingZone[]> {
             excludedProductIds: [],
             allowedCategoryIds: [],
             excludedCategoryIds: []
-          },
-          {
+          }),
+          withPrismaDefaults({
             name: 'International Express',
             description: '5-10 business days',
             carrier: 'DHL',
-            rateType: 'FLAT',
+            rateType: 'FLAT' as const,
             flatRate: 39.99,
             minDays: 5,
             maxDays: 10,
@@ -287,10 +287,10 @@ async function seedDefaultZones(tenantId: string): Promise<ShippingZone[]> {
             excludedProductIds: [],
             allowedCategoryIds: [],
             excludedCategoryIds: []
-          }
+          })
         ]
       }
-    },
+    }),
     include: { svm_shipping_rates: true }
   })
 
