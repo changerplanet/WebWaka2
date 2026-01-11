@@ -413,32 +413,46 @@ export class InsightsService {
     return `Projection based on historical trends.`
   }
 
+  /**
+   * Map Prisma ai_insights model to service InsightOutput interface
+   * 
+   * Prisma fields → Service fields:
+   * - insightType → type
+   * - summary → description  
+   * - insightType (derived) → category
+   * - details → data
+   * - explanation → suggestedAction
+   * - (none) → actionUrl (null)
+   * - validTo → validUntil
+   */
   private static formatInsight(insight: {
     id: string
-    type: string
+    insightType: string
     title: string
-    description: string
+    summary: string
     severity: string
-    category: string
-    data: unknown
-    suggestedAction: string | null
-    actionUrl: string | null
+    details: unknown
+    explanation: string
+    relatedType?: string | null
+    relatedId?: string | null
     status: string
-    validUntil: Date | null
+    validTo: Date | null
     createdAt: Date
   }): InsightOutput {
     return {
       id: insight.id,
-      type: insight.type,
+      type: insight.insightType,
       title: insight.title,
-      description: insight.description,
-      severity: insight.severity as 'info' | 'warning' | 'critical',
-      category: insight.category,
-      data: insight.data as Record<string, unknown>,
-      suggestedAction: insight.suggestedAction,
-      actionUrl: insight.actionUrl,
+      description: insight.summary,
+      severity: insight.severity.toLowerCase() as 'info' | 'warning' | 'critical',
+      category: insight.insightType.split('_')[0] || 'GENERAL',
+      data: insight.details as Record<string, unknown>,
+      suggestedAction: insight.explanation,
+      actionUrl: insight.relatedType && insight.relatedId 
+        ? `/dashboard/${insight.relatedType.toLowerCase()}/${insight.relatedId}` 
+        : null,
       status: insight.status,
-      validUntil: insight.validUntil,
+      validUntil: insight.validTo,
       createdAt: insight.createdAt,
     }
   }
