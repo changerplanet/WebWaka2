@@ -181,7 +181,7 @@ export class RefundService {
       _sum: { amount: true },
     })
 
-    const paymentAmount = refund.payment.amount.toNumber()
+    const paymentAmount = refund.pay_payment_transactions.amount.toNumber()
     const refundedAmount = totalRefunded._sum.amount?.toNumber() || 0
 
     await prisma.pay_payment_transactions.update({
