@@ -125,7 +125,7 @@ function mapDbRateToInterface(dbRate: any): ShippingRate {
 async function seedDefaultZones(tenantId: string): Promise<ShippingZone[]> {
   // Create default US zone
   const usZone = await prisma.svm_shipping_zones.create({
-    data: {
+    data: withPrismaDefaults({
       tenantId,
       name: 'US Domestic',
       description: 'Shipping within the United States',
@@ -138,11 +138,11 @@ async function seedDefaultZones(tenantId: string): Promise<ShippingZone[]> {
       priority: 100,
       svm_shipping_rates: {
         create: [
-          {
+          withPrismaDefaults({
             name: 'Standard Shipping',
             description: '5-7 business days',
             carrier: 'USPS',
-            rateType: 'FLAT',
+            rateType: 'FLAT' as const,
             flatRate: 5.99,
             freeAbove: 50,
             minDays: 5,
@@ -153,12 +153,12 @@ async function seedDefaultZones(tenantId: string): Promise<ShippingZone[]> {
             excludedProductIds: [],
             allowedCategoryIds: [],
             excludedCategoryIds: []
-          },
-          {
+          }),
+          withPrismaDefaults({
             name: 'Express Shipping',
             description: '2-3 business days',
             carrier: 'UPS',
-            rateType: 'FLAT',
+            rateType: 'FLAT' as const,
             flatRate: 12.99,
             freeAbove: 100,
             minDays: 2,
@@ -169,12 +169,12 @@ async function seedDefaultZones(tenantId: string): Promise<ShippingZone[]> {
             excludedProductIds: [],
             allowedCategoryIds: [],
             excludedCategoryIds: []
-          },
-          {
+          }),
+          withPrismaDefaults({
             name: 'Overnight',
             description: 'Next business day',
             carrier: 'FedEx',
-            rateType: 'FLAT',
+            rateType: 'FLAT' as const,
             flatRate: 24.99,
             minDays: 1,
             maxDays: 1,
@@ -184,10 +184,10 @@ async function seedDefaultZones(tenantId: string): Promise<ShippingZone[]> {
             excludedProductIds: [],
             allowedCategoryIds: [],
             excludedCategoryIds: []
-          }
+          })
         ]
       }
-    },
+    }),
     include: { svm_shipping_rates: true }
   })
 
