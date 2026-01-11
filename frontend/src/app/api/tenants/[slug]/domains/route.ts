@@ -4,6 +4,7 @@ import { requireTenantAdminBySlug } from '@/lib/authorization'
 import { createAuditLog } from '@/lib/audit'
 import { verifyAndUpdateDomain, getVerificationInfo, isDomainAvailable } from '@/lib/domains'
 import { v4 as uuidv4 } from 'uuid'
+import { withPrismaDefaults } from '@/lib/db/prismaDefaults'
 
 type RouteParams = {
   params: Promise<{ slug: string }>

@@ -13,6 +13,7 @@ import { checkCapabilityForSession } from '@/lib/capabilities';
 import { prisma } from '@/lib/prisma';
 import { SegmentationService } from '@/lib/crm/segmentation-service';
 import { LoyaltyService } from '@/lib/crm/loyalty-service';
+import { withPrismaDefaults } from '@/lib/db/prismaDefaults';
 
 export async function GET(request: NextRequest) {
   try {

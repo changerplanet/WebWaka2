@@ -11,6 +11,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { PrismaClient, SvmCartStatus } from '@prisma/client'
 import { checkCapabilityGuard } from '@/lib/capabilities'
+import { withPrismaDefaults } from '@/lib/db/prismaDefaults'
 
 const prisma = new PrismaClient()
 

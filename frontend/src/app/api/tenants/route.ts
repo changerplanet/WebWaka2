@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { v4 as uuidv4 } from 'uuid'
 import { CapabilityActivationService } from '@/lib/capabilities/activation-service'
+import { withPrismaDefaults } from '@/lib/db/prismaDefaults'
 
 // GET /api/tenants - List all tenants (Super Admin only in production)
 export async function GET(request: NextRequest) {

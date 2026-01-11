@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { getCurrentSession, isSuperAdmin } from '@/lib/auth'
 import { v4 as uuidv4 } from 'uuid'
+import { withPrismaDefaults } from '@/lib/db/prismaDefaults'
 
 type RouteParams = {
   params: Promise<{ slug: string }>

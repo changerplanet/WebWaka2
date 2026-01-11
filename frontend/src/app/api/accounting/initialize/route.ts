@@ -14,6 +14,7 @@ import { getCurrentSession } from '@/lib/auth';
 import { ChartOfAccountService } from '@/lib/accounting/coa-service';
 import { checkCapabilityForSession } from '@/lib/capabilities';
 import { prisma } from '@/lib/prisma';
+import { withPrismaDefaults } from '@/lib/db/prismaDefaults';
 
 export async function POST(request: NextRequest) {
   try {
