@@ -220,7 +220,7 @@ export class B2BConfigService {
     for (const tier of defaultTiers) {
       await prisma.b2b_price_tiers.upsert({
         where: { tenantId_code: { tenantId, code: tier.code } },
-        create: {
+        create: withPrismaDefaults({
           tenantId,
           name: tier.name,
           code: tier.code,
@@ -228,7 +228,7 @@ export class B2BConfigService {
           priority: tier.priority,
           minOrderValue: tier.minOrderValue,
           description: `${tier.defaultDiscount}% discount tier`,
-        },
+        }),
         update: {},
       })
     }
@@ -248,13 +248,13 @@ export class B2BConfigService {
     for (const term of defaultTerms) {
       await prisma.b2b_credit_terms.upsert({
         where: { tenantId_code: { tenantId, code: term.code } },
-        create: {
+        create: withPrismaDefaults({
           tenantId,
           name: term.name,
           code: term.code,
           creditDays: term.creditDays,
           description: term.description,
-        },
+        }),
         update: {},
       })
     }
