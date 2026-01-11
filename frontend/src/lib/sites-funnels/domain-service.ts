@@ -317,8 +317,8 @@ export async function getSiteBranding(siteId: string): Promise<{
   // Merge branding with priority: Site > Tenant > Partner > Instance
   // Branding fields are directly on the models, not in a nested branding object
   return {
-    logoUrl: site.logoUrl || tenant?.logoUrl || instance?.logoUrl,
-    faviconUrl: site.faviconUrl || tenant?.faviconUrl || instance?.faviconUrl,
+    logoUrl: site.logoUrl || tenant?.logoUrl || instance?.logoUrl || undefined,
+    faviconUrl: site.faviconUrl || tenant?.faviconUrl || instance?.faviconUrl || undefined,
     primaryColor: site.primaryColor || tenant?.primaryColor || instance?.primaryColor || '#0066ff',
     secondaryColor: site.secondaryColor || tenant?.secondaryColor || instance?.secondaryColor || '#4d4d4d',
     fontFamily: site.fontFamily || 'Inter',
