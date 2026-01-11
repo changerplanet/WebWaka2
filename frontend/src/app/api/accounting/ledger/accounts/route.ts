@@ -49,8 +49,8 @@ export async function GET(request: NextRequest) {
     const accounts = await prisma.acct_ledger_accounts.findMany({
       where,
       orderBy: [
-        { chartOfAccount: { sortOrder: 'asc' } },
-        { chartOfAccount: { code: 'asc' } },
+        { acct_chart_of_accounts: { sortOrder: 'asc' } },
+        { acct_chart_of_accounts: { code: 'asc' } },
       ],
       include: {
         acct_chart_of_accounts: {
@@ -74,15 +74,15 @@ export async function GET(request: NextRequest) {
     const response = accounts.map((a) => ({
       id: a.id,
       chartOfAccountId: a.chartOfAccountId,
-      code: a.chartOfAccount.code,
-      name: a.chartOfAccount.name,
-      description: a.chartOfAccount.description,
-      accountType: a.chartOfAccount.accountType,
-      accountSubType: a.chartOfAccount.accountSubType,
-      normalBalance: a.chartOfAccount.normalBalance,
-      isActive: a.chartOfAccount.isActive,
-      isBankAccount: a.chartOfAccount.isBankAccount,
-      isTaxAccount: a.chartOfAccount.isTaxAccount,
+      code: a.acct_chart_of_accounts.code,
+      name: a.acct_chart_of_accounts.name,
+      description: a.acct_chart_of_accounts.description,
+      accountType: a.acct_chart_of_accounts.accountType,
+      accountSubType: a.acct_chart_of_accounts.accountSubType,
+      normalBalance: a.acct_chart_of_accounts.normalBalance,
+      isActive: a.acct_chart_of_accounts.isActive,
+      isBankAccount: a.acct_chart_of_accounts.isBankAccount,
+      isTaxAccount: a.acct_chart_of_accounts.isTaxAccount,
       currency: a.currency,
       currentBalance: a.currentBalance.toString(),
       openingBalance: a.openingBalance.toString(),
@@ -95,7 +95,7 @@ export async function GET(request: NextRequest) {
     // Calculate summary by account type
     const summary: Record<string, { count: number; totalBalance: string }> = {};
     for (const account of accounts) {
-      const type = account.chartOfAccount.accountType;
+      const type = account.acct_chart_of_accounts.accountType;
       if (!summary[type]) {
         summary[type] = { count: 0, totalBalance: '0' };
       }
