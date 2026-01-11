@@ -6,6 +6,7 @@
  */
 
 import { PrismaClient } from '@prisma/client';
+import { withPrismaDefaults } from '@/lib/db/prismaDefaults';
 
 const prisma = new PrismaClient();
 
@@ -27,8 +28,8 @@ interface LogEventInput {
 
 export async function logAIEvent(input: LogEventInput): Promise<void> {
   try {
-    await prisma.aIEventLog.create({
-      data: {
+    await prisma.ai_event_logs.create({
+      data: withPrismaDefaults({
         eventType: input.eventType,
         tenantId: input.tenantId,
         insightId: input.insightId,
@@ -39,7 +40,7 @@ export async function logAIEvent(input: LogEventInput): Promise<void> {
         actorType: input.actorType,
         eventData: input.eventData,
         occurredAt: new Date(),
-      },
+      }),
     });
   } catch (error) {
     console.error('Failed to log AI event:', error);
@@ -71,13 +72,13 @@ export async function getAIEvents(params: {
   }
   
   const [events, total] = await Promise.all([
-    prisma.aIEventLog.findMany({
+    prisma.ai_event_logs.findMany({
       where,
       skip: (page - 1) * limit,
       take: limit,
       orderBy: { occurredAt: 'desc' },
     }),
-    prisma.aIEventLog.count({ where }),
+    prisma.ai_event_logs.count({ where }),
   ]);
   
   return {

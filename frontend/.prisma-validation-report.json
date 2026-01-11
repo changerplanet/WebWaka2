@@ -1,15 +1,34 @@
 {
-  "timestamp": "2026-01-11T07:07:35.142Z",
+  "timestamp": "2026-01-11T07:08:01.781Z",
   "mode": "check",
   "summary": {
     "totalFiles": 1175,
     "totalReferences": 4191,
     "validModels": 365,
-    "totalErrors": 10,
+    "totalErrors": 9,
     "legacyIssues": 44,
-    "newErrors": 0,
+    "newErrors": 2,
     "baselinedIssues": 1201
   },
-  "newErrors": [],
-  "status": "PASSED"
+  "newErrors": [
+    {
+      "model": "aIEventLog",
+      "method": "findMany",
+      "line": 75,
+      "file": "/app/frontend/src/lib/ai/event-service.ts",
+      "key": "src/lib/ai/event-service.ts:75:aIEventLog",
+      "type": "UNKNOWN_MODEL",
+      "suggestion": null
+    },
+    {
+      "model": "aIEventLog",
+      "method": "count",
+      "line": 81,
+      "file": "/app/frontend/src/lib/ai/event-service.ts",
+      "key": "src/lib/ai/event-service.ts:81:aIEventLog",
+      "type": "UNKNOWN_MODEL",
+      "suggestion": null
+    }
+  ],
+  "status": "FAILED"
 }
