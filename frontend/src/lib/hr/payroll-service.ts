@@ -11,6 +11,7 @@
 import { prisma } from '@/lib/prisma'
 import { HrPayFrequency, HrPayrollPeriodStatus, HrPayrollCalculationStatus, HrPaymentMethod, Prisma } from '@prisma/client'
 import { AttendanceService } from './attendance-service'
+import { withPrismaDefaults } from '@/lib/db/prismaDefaults'
 
 // ============================================================================
 // TYPES
