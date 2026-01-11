@@ -229,7 +229,7 @@ export class EmployeeService {
       where: { id: profileId, tenantId },
       include: {
         hr_employment_contracts: { orderBy: { startDate: 'desc' }, take: 5 },
-        leaveBalances: { where: { year: new Date().getFullYear() } },
+        hr_leave_balances: { where: { year: new Date().getFullYear() } },
         _count: {
           select: {
             hr_attendance_records: true,
