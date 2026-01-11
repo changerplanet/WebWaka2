@@ -368,7 +368,7 @@ export class LeaveService {
       offset?: number
     } = {}
   ) {
-    const where: Prisma.HrLeaveRequestWhereInput = { tenantId }
+    const where: Prisma.hr_leave_requestsWhereInput = { tenantId }
 
     if (options.employeeProfileId) where.employeeProfileId = options.employeeProfileId
     if (options.status) where.status = options.status
