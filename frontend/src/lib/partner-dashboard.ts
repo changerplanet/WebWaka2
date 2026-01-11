@@ -524,7 +524,7 @@ async function getRecentActivity(partnerId: string): Promise<ActivityItem[]> {
     orderBy: { createdAt: 'desc' },
     take: 5,
     include: {
-      referral: {
+      PartnerReferral: {
         include: {
           Tenant: { select: { name: true } }
         }
@@ -537,7 +537,7 @@ async function getRecentActivity(partnerId: string): Promise<ActivityItem[]> {
       id: earning.id,
       type: 'EARNING',
       title: 'Commission Earned',
-      description: `Commission from ${earning.referral.tenant.name}`,
+      description: `Commission from ${earning.PartnerReferral.Tenant.name}`,
       amount: Number(earning.commissionAmount),
       currency: earning.currency,
       timestamp: earning.createdAt
@@ -559,7 +559,7 @@ async function getRecentActivity(partnerId: string): Promise<ActivityItem[]> {
       id: referral.id,
       type: 'REFERRAL',
       title: 'New Referral',
-      description: `${referral.tenant.name} was referred`,
+      description: `${referral.Tenant.name} was referred`,
       timestamp: referral.referredAt
     })
   }
@@ -620,7 +620,7 @@ export async function getPartnerPerformance(
   
   const newReferrals = referralsInPeriod.length
   const activatedReferrals = referralsInPeriod.filter(
-    r => r.tenant.status === 'ACTIVE'
+    r => r.Tenant.status === 'ACTIVE'
   ).length
   
   // Conversion rate
@@ -664,7 +664,7 @@ export async function getPartnerPerformance(
     where: {
       partnerId,
       referredAt: { lte: threeMonthsAgo },
-      tenant: { status: 'ACTIVE' }
+      Tenant: { status: 'ACTIVE' }
     }
   })
   
@@ -765,7 +765,7 @@ export async function getReferredTenants(
   const where: any = { partnerId }
   
   if (options?.status) {
-    where.tenant = { status: { in: options.status } }
+    where.Tenant = { status: { in: options.status } }
   }
   
   const [referrals, total] = await Promise.all([
@@ -775,7 +775,7 @@ export async function getReferredTenants(
         Tenant: {
           select: { id: true, name: true, slug: true, status: true }
         },
-        earnings: {
+        PartnerEarning: {
           where: { entryType: 'CREDIT' },
           select: { commissionAmount: true, paidAt: true }
         }
@@ -788,17 +788,17 @@ export async function getReferredTenants(
   ])
   
   const tenants: ReferredTenantInfo[] = referrals.map(r => {
-    const totalRevenue = r.earnings.reduce((sum, e) => sum + Number(e.commissionAmount), 0)
-    const lastPayment = r.earnings
+    const totalRevenue = r.PartnerEarning.reduce((sum, e) => sum + Number(e.commissionAmount), 0)
+    const lastPayment = r.PartnerEarning
       .filter(e => e.paidAt)
       .sort((a, b) => (b.paidAt?.getTime() || 0) - (a.paidAt?.getTime() || 0))[0]?.paidAt
     
     return {
       referralId: r.id,
-      tenantId: r.tenant.id,
-      tenantName: r.tenant.name,
-      tenantSlug: r.tenant.slug,
-      tenantStatus: r.tenant.status,
+      tenantId: r.Tenant.id,
+      tenantName: r.Tenant.name,
+      tenantSlug: r.Tenant.slug,
+      tenantStatus: r.Tenant.status,
       referredAt: r.referredAt,
       attributionMethod: r.attributionMethod,
       isLifetime: !r.attributionWindowDays,
