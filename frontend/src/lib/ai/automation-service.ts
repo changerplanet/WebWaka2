@@ -8,6 +8,7 @@
 
 import { PrismaClient } from '@prisma/client';
 import { logAIEvent } from './event-service';
+import { withPrismaDefaults } from '@/lib/db/prismaDefaults';
 
 const prisma = new PrismaClient();
 
@@ -62,7 +63,7 @@ export async function createAutomationRule(input: CreateRuleInput): Promise<{
     }
     
     const rule = await prisma.automation_rules.create({
-      data: {
+      data: withPrismaDefaults({
         tenantId: input.tenantId,
         name: input.name,
         description: input.description,
@@ -76,7 +77,7 @@ export async function createAutomationRule(input: CreateRuleInput): Promise<{
         triggerCount: 0,
         maxTriggersPerDay: input.maxTriggersPerDay,
         cooldownMinutes: input.cooldownMinutes,
-      },
+      }),
     });
     
     await logAIEvent({
