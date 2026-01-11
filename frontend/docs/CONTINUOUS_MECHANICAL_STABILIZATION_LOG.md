@@ -5,125 +5,55 @@
 
 ---
 
-## Wave 1 Summary
+## Wave 1 Summary (COMPLETE)
 
 ### Files Stabilized
 
-| # | File Path | Errors Found | Fix Pattern | Status |
+| # | File Path | Errors Fixed | Fix Pattern | Status |
 |---|-----------|--------------|-------------|--------|
-| 1 | `src/lib/partner-authorization.ts` | 6 | Relation name casing (`Partner` → `partner`, `Partner` access) | ✅ COMPLETE |
-| 2 | `src/lib/partner-dashboard.ts` | 12 | Relation name casing (`tenant` → `Tenant`, `earnings` → `PartnerEarning`) | ✅ COMPLETE |
-| 3 | `src/lib/partner-first/client-service.ts` | 8 | `withPrismaDefaults()` wrapper, relation casing (`tenant` → `Tenant`) | ✅ COMPLETE |
-| 4 | `src/lib/partner-first/guards.ts` | 2 | `withPrismaDefaults()` wrapper, relation casing (`partner` → `Partner`) | ✅ COMPLETE |
-| 5 | `src/lib/partner/commission-service.ts` | 2 | `withPrismaDefaults()` wrapper | ⚠️ PARTIAL |
+| 1 | `src/lib/partner-authorization.ts` | 6 | Relation name casing | ✅ COMPLETE |
+| 2 | `src/lib/partner-dashboard.ts` | 12 | Relation name casing | ✅ COMPLETE |
+| 3 | `src/lib/partner-first/client-service.ts` | 8 | `withPrismaDefaults()`, relation casing | ✅ COMPLETE |
+| 4 | `src/lib/partner-first/guards.ts` | 2 | `withPrismaDefaults()`, relation casing | ✅ COMPLETE |
+| 5 | `src/lib/partner/commission-service.ts` | 3 | `withPrismaDefaults()`, semantic fix (`READY`→`APPROVED`) | ✅ COMPLETE |
+| 6 | `src/lib/partner/config-service.ts` | 1 | `withPrismaDefaults()` | ✅ COMPLETE |
+| 7 | `src/lib/partner/entitlements-service.ts` | 1 | Relation name (`Plan`→`SubscriptionPlan`) | ✅ COMPLETE |
+| 8 | `src/lib/partner/event-service.ts` | 1 | `withPrismaDefaults()` | ✅ COMPLETE |
+| 9 | `src/lib/partner/onboarding-service.ts` | 4 | `withPrismaDefaults()` | ✅ COMPLETE |
+| 10 | `src/lib/partner/referral-service.ts` | 2 | `withPrismaDefaults()` | ✅ COMPLETE |
+
+**Total Errors Fixed in Wave 1**: ~40
 
 ---
 
-### Detailed Fix Log
+## Semantic Decision Applied
 
-#### 1. `src/lib/partner-authorization.ts`
-
-**Errors**:
-- Return type used `{ partner: Partner }` but Prisma schema has lowercase relation `partner`
-- Multiple `.Partner` accesses needed to be `.partner`
-
-**Fixes Applied**:
-- Changed return type annotation to `{ partner: Partner }`
-- Changed `include: { Partner: true }` to `include: { partner: true }`
-- Changed all `partnerUser.Partner` to `partnerUser.partner`
-- Changed `referralCode` to `PartnerReferralCode` in include clause
-
----
-
-#### 2. `src/lib/partner-dashboard.ts`
-
-**Errors**:
-- `tenant:` in where clauses should be `Tenant:`
-- `earnings:` in includes should be `PartnerEarning:`
-- `.tenant.` property access should be `.Tenant.`
-- `referral:` include should be `PartnerReferral:`
-
-**Fixes Applied**:
-- Changed all `tenant:` to `Tenant:` in where clauses
-- Changed `earnings:` to `PartnerEarning:` in includes
-- Changed all `.tenant.` to `.Tenant.`
-- Changed `referral:` to `PartnerReferral:` in includes
-
----
-
-#### 3. `src/lib/partner-first/client-service.ts`
-
-**Errors**:
-- Missing `id` and `updatedAt` in multiple `.create()` calls
-- `ref.tenant` should be `ref.Tenant`
-
-**Fixes Applied**:
-- Added `import { withPrismaDefaults } from '../db/prismaDefaults'`
-- Wrapped `tenant.create()` with `withPrismaDefaults()`
-- Wrapped `tenantDomain.create()` (x2) with `withPrismaDefaults()`
-- Wrapped `partnerReferral.create()` with `withPrismaDefaults()`
-- Wrapped `auditLog.create()` with `withPrismaDefaults()`
-- Changed `ref.tenant` to `ref.Tenant` (x2)
-- Changed `referral.tenant` to `referral.Tenant`
-
----
-
-#### 4. `src/lib/partner-first/guards.ts`
-
-**Errors**:
-- `code.partner.status` should be `code.Partner.status`
-- Missing `id` and `updatedAt` in `partner.create()`
-
-**Fixes Applied**:
-- Added `import { withPrismaDefaults } from '../db/prismaDefaults'`
-- Changed `code.partner.status` to `code.Partner.status`
-- Wrapped `partner.create()` with `withPrismaDefaults()`
-
----
-
-#### 5. `src/lib/partner/commission-service.ts`
-
-**Errors**:
-- Missing `id` and `updatedAt` in `partner_commission_rules_ext.create()`
-- Missing `id` and `updatedAt` in `partner_commission_records_ext.create()`
-
-**Fixes Applied**:
-- Added `import { withPrismaDefaults } from '@/lib/db/prismaDefaults'`
-- Wrapped both `.create()` calls with `withPrismaDefaults()`
-
-**STATUS**: ⚠️ BLOCKED - Semantic issue discovered (see below)
+**File**: `src/lib/partner/commission-service.ts`  
+**Line**: 396  
+**Decision**: Replace `'READY'` with `'APPROVED'` per user authorization.  
+**Rationale**: `'READY'` is not a valid `CommissionStatusExt` enum value. Schema integrity preserved.
 
 ---
 
 ## 🛑 STOP CONDITION REACHED
 
-**File**: `src/lib/partner/commission-service.ts`  
-**Line**: 396  
-**Error**: `This comparison appears to be unintentional because the types '"APPROVED" | "VOIDED" | "CLEARED" | "DISPUTED" | "REVERSED"' and '"READY"' have no overlap.`
+**New Failing File**: `src/lib/payments/config-service.ts`  
+**Line**: 64  
+**Error**: `Property 'payConfiguration' does not exist on type 'PrismaClient'. Did you mean 'pay_configurations'?`
 
-**Issue Classification**: SEMANTIC / DOMAIN DECISION REQUIRED
+**Issue Classification**: MODEL NAME MISMATCH (Mechanical)
 
-**Analysis**:
-The code is checking for a status value `'READY'` that doesn't exist in the `CommissionStatusExt` enum. The valid values are:
-- `APPROVED`
-- `VOIDED`  
-- `CLEARED`
-- `DISPUTED`
-- `REVERSED`
+**Why Stopped**: The file is in `src/lib/payments/**`, which is **outside the authorized scope**.
 
-**Why this is NOT a mechanical fix**:
-- Requires understanding if `'READY'` was meant to be added to the schema
-- Requires understanding what status should be used instead
-- May indicate missing enum value in schema
-- May indicate incorrect business logic
-
-**Required Decision**: User/architect must determine:
-1. Should `READY` be added to the `CommissionStatusExt` enum in the schema?
-2. Or should the code use a different existing status?
+Authorized directories:
+- `src/lib/partner-*`
+- `src/lib/integrations/**`
+- `src/lib/intent/**`
+- `src/lib/marketing/**`
 
 ---
 
-## Attestation
+## Final Attestation
 
 All fixes applied during this wave were mechanical, schema-conformant, and build-unblocking only.
 
@@ -131,6 +61,13 @@ No schemas were modified.
 
 No business logic was changed.
 
-No semantic assumptions were introduced.
+No semantic assumptions were introduced (except the explicitly authorized `READY`→`APPROVED` replacement).
 
-The stabilization process stopped at a semantic decision point as mandated.
+The stabilization process stopped when the build failed in an unauthorized directory as mandated.
+
+---
+
+## Next Steps
+
+Authorization required for mechanical stabilization of:
+- `src/lib/payments/**`
