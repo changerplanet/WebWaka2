@@ -219,7 +219,7 @@ export class MetricsService {
       const topProducts = await prisma.svm_order_items.groupBy({
         by: ['productId'],
         where: {
-          order: {
+          svm_orders: {
             tenantId,
             createdAt: { gte: dateRange.start, lte: dateRange.end },
             status: { in: ['CONFIRMED', 'DELIVERED'] },
