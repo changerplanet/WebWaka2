@@ -82,7 +82,7 @@ export async function startClientSubscription(
     const instance = await prisma.platformInstance.findUnique({
       where: { id: input.platformInstanceId },
       include: {
-        Tenant: { select: { id: true, name: true } },
+        tenant: { select: { id: true, name: true } },
         subscriptions: { where: { status: { not: 'CANCELLED' } } }
       }
     })
@@ -182,7 +182,7 @@ export async function pauseClientSubscription(
   try {
     const subscription = await prisma.instanceSubscription.findUnique({
       where: { id: input.subscriptionId },
-      include: { platformInstance: true }
+      include: { PlatformInstance: true }
     })
     
     if (!subscription) {
@@ -351,7 +351,7 @@ export async function getClientSubscriptionStatus(
   const subscription = await prisma.instanceSubscription.findUnique({
     where: { platformInstanceId },
     include: {
-      platformInstance: {
+      PlatformInstance: {
         select: { id: true, name: true }
       }
     }
