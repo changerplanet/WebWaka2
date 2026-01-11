@@ -316,7 +316,7 @@ export class B2BPricingService {
     createdBy?: string
   ): Promise<PriceRule> {
     const rule = await prisma.b2b_wholesale_price_rules.create({
-      data: {
+      data: withPrismaDefaults({
         tenantId,
         name: input.name,
         description: input.description,
@@ -330,7 +330,7 @@ export class B2BPricingService {
         validTo: input.validTo,
         priority: input.priority || 0,
         createdBy,
-      },
+      }),
     })
 
     return {
