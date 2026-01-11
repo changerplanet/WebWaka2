@@ -318,9 +318,9 @@ export class PaymentMethodAvailabilityService {
     }
 
     // Sort by Nigeria-first priority
-    const priorityOrder = { P0: 0, P1: 1, P2: 2 }
+    const priorityOrder: Record<string, number> = { P0: 0, P1: 1, P2: 2 }
     results.sort((a: any, b: any) => 
-      priorityOrder[a.method.nigeriaFirstPriority] - priorityOrder[b.method.nigeriaFirstPriority]
+      priorityOrder[a.method.nigeriaFirstPriority as string] - priorityOrder[b.method.nigeriaFirstPriority as string]
     )
 
     return results
