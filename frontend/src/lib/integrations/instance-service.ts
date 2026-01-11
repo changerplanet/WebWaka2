@@ -88,7 +88,7 @@ export async function listInstancesForTenant(
             expiresAt: true,
           },
         },
-        webhooks: {
+        integration_webhooks: {
           select: {
             id: true,
             name: true,
