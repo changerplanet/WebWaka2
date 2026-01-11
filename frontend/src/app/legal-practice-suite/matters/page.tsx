@@ -363,9 +363,9 @@ export default function MattersPage() {
                     <Tabs defaultValue="all" className="w-full">
                       <TabsList className="mb-4 flex flex-wrap h-auto gap-1">
                         <TabsTrigger value="all" className="text-xs">All ({templates.length})</TabsTrigger>
-                        {Object.entries(templatesByType).map(([type, items]: [string, unknown[]]) => (
+                        {Object.entries(templatesByType).map(([type, items]) => (
                           <TabsTrigger key={type} value={type} className="text-xs">
-                            {TYPE_LABELS[type] || type} ({items.length})
+                            {TYPE_LABELS[type] || type} ({(items as unknown[]).length})
                           </TabsTrigger>
                         ))}
                       </TabsList>
