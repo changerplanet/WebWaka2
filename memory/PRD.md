@@ -1,19 +1,23 @@
 # Deployable SaaS Platform - PRD
 
 ## Original Problem Statement
-Fix failing production build (`yarn build`) for Next.js application to unblock Vercel deployment. Build was failing due to TypeScript type errors caused by Prisma schema mismatches.
+Fix failing production build (`yarn build`) for Next.js application to unblock Vercel deployment. Build was failing due to TypeScript type errors caused by Prisma schema mismatches and Next.js dynamic route configuration issues.
 
-## Current Status: Build Stabilization Phase B Complete
+## Current Status: ✅ BUILD SUCCESSFUL
 - **TypeScript Compilation**: ✅ PASSING
-- **Static Generation**: ❌ FAILING (Dynamic server usage errors)
+- **Static Generation**: ✅ PASSING  
+- **Build Exit Code**: 0
+- **Build Time**: ~96 seconds
+
+---
 
 ## What's Been Implemented (December 2025)
 
-### Phase B - Global Mechanical Batch Stabilization (COMPLETE)
-All TypeScript/Prisma mismatch errors have been resolved:
+### Phase A - TypeScript/Prisma Mechanical Fixes (COMPLETE)
+All TypeScript/Prisma mismatch errors resolved:
 
 1. **POS Module** (`src/lib/pos/**`)
-   - Fixed `inv_audit_items` → `items` relation in `report-service.ts`, `sale-service.ts`, `shift-service.ts`
+   - Fixed `inv_audit_items` → `items` relation
 
 2. **Rules Module** (`src/lib/rules/**`)
    - Fixed type re-export syntax in `commission.ts` and `promotions.ts`
@@ -24,41 +28,44 @@ All TypeScript/Prisma mismatch errors have been resolved:
    - Added `withPrismaDefaults` for `id` and `updatedAt` fields
 
 4. **Sites-Funnels Module** (`src/lib/sites-funnels/**`)
-   - Removed non-existent `branding` relation, access fields directly on Tenant/PlatformInstance
-   - Fixed `status: 'ACTIVE'` → `isActive: true` in TenantMembership queries
-   - Fixed `'OWNER' || 'ADMIN'` → `'TENANT_ADMIN'` for TenantRole enum
-   - Fixed audit action type casting
-   - Fixed `ProductCategory` → `category` relation in template-service
+   - Removed non-existent `branding` relation
+   - Fixed `status: 'ACTIVE'` → `isActive: true` in TenantMembership
+   - Fixed role enum mismatch
+   - Fixed `ProductCategory` → `category` relation
 
-## Current Blocker
-Build fails during static page generation because API routes use `cookies()` without proper dynamic route configuration.
+### Phase B - Next.js Dynamic Route Fixes (COMPLETE)
+Added `export const dynamic = 'force-dynamic'` to 412 files:
 
-**Error**: `Route /api/... couldn't be rendered statically because it used 'cookies'`
+- **Wave 1**: 211 API routes (cookies/headers/session detection)
+- **Wave 2**: 198 API routes (request.url/request.headers detection)
+- **Wave 3**: 3 additional files (partner/settings, church, root layout)
 
-**Solution Required**: Add `export const dynamic = 'force-dynamic'` to all API routes using `getCurrentSession()` or `cookies()`.
+---
 
-## Prioritized Backlog
+## Remaining Items (Non-Blocking)
 
-### P0 - Critical (Build Blocking)
-- [ ] Add dynamic export to ~50+ API routes using session/cookies
+### P1 - React Hook Warnings (~56 warnings)
+- Missing dependency array warnings in useEffect/useCallback
+- These are ESLint warnings, not build errors
+- Can be addressed incrementally
 
-### P1 - Important
-- [ ] Fix ~56 React Hook dependency warnings
-- [ ] Semantic fixes in `src/lib/rules/**` (missing type definitions)
+### P2 - Code Quality
+- Consider addressing baselined Prisma validation issues (1201 baselined)
 
-### P2 - Nice to Have
-- [ ] Code quality hardening
-- [ ] Lint warning cleanup
-
-### Future Features
-- [ ] Guided Demo Tours (ALL SUITES)
+---
 
 ## Technical Architecture
 - **Framework**: Next.js 14.2.21
 - **Database**: Prisma ORM with PostgreSQL (Supabase)
-- **Deployment**: Vercel
+- **Deployment**: Vercel (now unblocked)
 
 ## Key Files
 - `/app/frontend/prisma/schema.prisma` - Source of truth for DB models
 - `/app/frontend/src/lib/db/prismaDefaults.ts` - Helper for required Prisma fields
-- `/app/frontend/docs/GLOBAL_MECHANICAL_ERROR_MAP.md` - Error classification report
+- `/app/frontend/docs/DYNAMIC_API_ROUTE_FIX_REPORT.md` - Complete fix report
+- `/app/frontend/docs/DYNAMIC_API_ROUTE_DETECTION_REPORT.md` - Detection report
+
+## Build Command
+```bash
+cd /app/frontend && NODE_OPTIONS="--max-old-space-size=4096" yarn build
+```
