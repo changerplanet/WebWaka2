@@ -15,6 +15,7 @@
  */
 
 import { PrismaClient, IntegrationCategory, IntegrationProviderStatus, IntegrationInstanceStatus } from '@prisma/client'
+import { withPrismaDefaults } from '@/lib/db/prismaDefaults'
 
 const prisma = new PrismaClient()
 
@@ -303,7 +304,7 @@ export async function initializeModule() {
           webhookSignatureAlgo: provider.webhookSignatureAlgo,
           defaultRateLimit: provider.defaultRateLimit,
         },
-        create: {
+        create: withPrismaDefaults({
           key: provider.key,
           name: provider.name,
           category: provider.category,
@@ -320,7 +321,7 @@ export async function initializeModule() {
           webhookSignatureAlgo: provider.webhookSignatureAlgo,
           defaultRateLimit: provider.defaultRateLimit,
           status: IntegrationProviderStatus.ACTIVE,
-        },
+        }),
       })
       results.providersCreated++
     } catch (error) {
@@ -331,7 +332,7 @@ export async function initializeModule() {
   // Create default scopes
   for (const scope of DEFAULT_SCOPES) {
     try {
-      await prisma.accessScope.upsert({
+      await prisma.access_scopes.upsert({
         where: { key: scope.key },
         update: {
           name: scope.name,
