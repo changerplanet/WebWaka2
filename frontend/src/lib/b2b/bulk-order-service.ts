@@ -319,14 +319,14 @@ export class B2BBulkOrderService {
     })
 
     // Log event
-    await prisma.b2BEventLog.create({
-      data: {
+    await prisma.b2b_event_logs.create({
+      data: withPrismaDefaults({
         tenantId,
         eventType: 'BULK_ORDER_CONVERTED',
         eventData: { draftId, orderId },
         profileId: draft.profileId,
         orderId,
-      },
+      }),
     })
 
     return this.formatDraft(draft)
