@@ -616,14 +616,14 @@ export async function updateTaxDocumentStatus(
       : 'TAX_DOCUMENT_SUBMITTED'
     
     await tx.auditLog.create({
-      data: {
+      data: withPrismaDefaults({
         action,
         actorId: updatedBy || 'system',
         actorEmail: 'tax@webwaka.internal',
         targetType: 'PartnerPayoutSettings',
         targetId: partnerId,
         metadata: { status, documentType }
-      }
+      })
     })
   })
 }
@@ -644,12 +644,12 @@ export async function applyPayoutHold(
   await prisma.$transaction(async (tx) => {
     await tx.partnerPayoutSettings.upsert({
       where: { partnerId },
-      create: {
+      create: withPrismaDefaults({
         partnerId,
         payoutHold: true,
         payoutHoldReason: reason,
         payoutHoldUntil: holdUntil
-      },
+      }),
       update: {
         payoutHold: true,
         payoutHoldReason: reason,
@@ -658,14 +658,14 @@ export async function applyPayoutHold(
     })
     
     await tx.auditLog.create({
-      data: {
+      data: withPrismaDefaults({
         action: 'PAYOUT_HOLD_APPLIED',
         actorId: appliedBy || 'system',
         actorEmail: 'admin',
         targetType: 'Partner',
         targetId: partnerId,
         metadata: { reason, holdUntil }
-      }
+      })
     })
   })
 }
