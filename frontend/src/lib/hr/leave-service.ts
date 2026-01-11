@@ -8,6 +8,7 @@
 import { prisma } from '@/lib/prisma'
 import { HrLeaveType, HrLeaveStatus, Prisma } from '@prisma/client'
 import { AttendanceService } from './attendance-service'
+import { withPrismaDefaults } from '@/lib/db/prismaDefaults'
 
 // ============================================================================
 // TYPES
@@ -95,7 +96,7 @@ export class LeaveService {
 
     // Create leave request
     const leaveRequest = await prisma.hr_leave_requests.create({
-      data: {
+      data: withPrismaDefaults({
         tenantId,
         employeeProfileId: input.employeeProfileId,
         leaveType: input.leaveType,
@@ -112,7 +113,7 @@ export class LeaveService {
         handoverNotes: input.handoverNotes,
         offlineId: input.offlineId,
         syncedAt: input.offlineId ? new Date() : null,
-      },
+      }),
     })
 
     // Update pending balance
