@@ -531,7 +531,7 @@ export class LeaveService {
     })
 
     // Get staff info
-    const staffIds = requests.map(r => r.employeeProfile.staffId)
+    const staffIds = requests.map(r => r.hr_employee_profiles.staffId)
     const staffRecords = await prisma.staffMember.findMany({
       where: { id: { in: staffIds } },
       select: { id: true, firstName: true, lastName: true },
@@ -540,7 +540,7 @@ export class LeaveService {
 
     return requests.map(r => ({
       ...r,
-      employeeName: staffMap.get(r.employeeProfile.staffId) || 'Unknown',
+      employeeName: staffMap.get(r.hr_employee_profiles.staffId) || 'Unknown',
     }))
   }
 }
