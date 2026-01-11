@@ -16,6 +16,7 @@
  */
 
 import { prisma } from '@/lib/prisma'
+import { withPrismaDefaults } from '@/lib/db/prismaDefaults'
 
 /**
  * Create default platform instance for a new tenant
@@ -51,7 +52,7 @@ export async function createDefaultInstanceForTenant(tenantId: string): Promise<
   // - suiteKeys: empty (means ALL capabilities visible)
   // - No custom branding (uses tenant branding)
   const instance = await prisma.platformInstance.create({
-    data: {
+    data: withPrismaDefaults({
       tenantId,
       name: `${tenant.name} Platform`,
       slug: 'default',
@@ -60,7 +61,7 @@ export async function createDefaultInstanceForTenant(tenantId: string): Promise<
       isDefault: true,
       isActive: true,
       // No branding overrides - falls back to tenant branding
-    }
+    })
   })
   
   return instance.id
