@@ -12,6 +12,7 @@
 
 import { PrismaClient, ApiKeyStatus, AccessScopeType } from '@prisma/client'
 import crypto from 'crypto'
+import { withPrismaDefaults } from '@/lib/db/prismaDefaults'
 
 const prisma = new PrismaClient()
 
@@ -44,7 +45,7 @@ export async function createDeveloperApp(data: {
   const clientSecret = `secret_${crypto.randomBytes(32).toString('hex')}`
   
   const app = await prisma.developer_apps.create({
-    data: {
+    data: withPrismaDefaults({
       tenantId: data.tenantId,
       name: data.name,
       description: data.description,
@@ -58,12 +59,12 @@ export async function createDeveloperApp(data: {
       allowedScopes: data.allowedScopes,
       isVerified: false,
       isActive: true,
-    },
+    }),
   })
   
   // Log event
   await prisma.integration_event_logs.create({
-    data: {
+    data: withPrismaDefaults({
       tenantId: data.tenantId,
       eventType: 'DEVELOPER_APP_CREATED',
       eventData: {
@@ -72,7 +73,7 @@ export async function createDeveloperApp(data: {
         developerEmail: data.developerEmail,
       },
       appId: app.id,
-    },
+    }),
   })
   
   // Return with unencrypted secret (only shown once!)
@@ -475,7 +476,7 @@ export async function listAccessScopes(options?: {
     where.moduleKey = options.moduleKey
   }
   
-  return prisma.accessScope.findMany({
+  return prisma.access_scopes.findMany({
     where,
     orderBy: [{ resource: 'asc' }, { permission: 'asc' }],
   })
@@ -485,7 +486,7 @@ export async function listAccessScopes(options?: {
  * Get scope by key
  */
 export async function getScopeByKey(key: string) {
-  return prisma.accessScope.findUnique({
+  return prisma.access_scopes.findUnique({
     where: { key },
   })
 }
