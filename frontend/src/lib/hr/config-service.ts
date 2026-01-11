@@ -5,6 +5,7 @@
 
 import { prisma } from '@/lib/prisma'
 import { HrPayFrequency, HrPaymentMethod, Prisma } from '@prisma/client'
+import { withPrismaDefaults } from '@/lib/db/prismaDefaults'
 
 // ============================================================================
 // TYPES
@@ -63,7 +64,7 @@ export class HrConfigurationService {
     }
 
     return prisma.hr_configurations.create({
-      data: {
+      data: withPrismaDefaults({
         tenantId,
         hrEnabled: input.hrEnabled ?? true,
         attendanceEnabled: input.attendanceEnabled ?? true,
@@ -94,7 +95,7 @@ export class HrConfigurationService {
         nhfRate: input.nhfRate || 2.5,
         operatingHours: input.operatingHours as Prisma.InputJsonValue,
         metadata: input.metadata as Prisma.InputJsonValue,
-      },
+      }),
     })
   }
 
