@@ -289,7 +289,7 @@ export async function configureCredentials(
     },
     include: {
       integration_providers: true,
-      credentials: {
+      integration_credentials: {
         select: {
           key: true,
           maskedValue: true,
