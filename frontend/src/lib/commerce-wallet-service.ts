@@ -135,7 +135,7 @@ export async function createLedgerEntry(params: LedgerEntryParams) {
   // Use transaction to ensure atomicity
   return prisma.$transaction(async (tx) => {
     // Get wallet with lock
-    const wallet = await tx.commerceWallet.findUnique({
+    const wallet = await tx.commerce_wallets.findUnique({
       where: { id: walletId }
     })
 
@@ -148,7 +148,7 @@ export async function createLedgerEntry(params: LedgerEntryParams) {
     }
 
     // Check for duplicate idempotency key
-    const existingEntry = await tx.commerceWalletLedger.findUnique({
+    const existingEntry = await tx.commerce_walletsLedger.findUnique({
       where: { idempotencyKey }
     })
 
@@ -188,7 +188,7 @@ export async function createLedgerEntry(params: LedgerEntryParams) {
     const newAvailableBalance = newBalance - newPendingBalance
 
     // Create ledger entry
-    const entry = await tx.commerceWalletLedger.create({
+    const entry = await tx.commerce_walletsLedger.create({
       data: {
         walletId,
         entryType,
@@ -210,7 +210,7 @@ export async function createLedgerEntry(params: LedgerEntryParams) {
     })
 
     // Update wallet balance cache
-    const updatedWallet = await tx.commerceWallet.update({
+    const updatedWallet = await tx.commerce_wallets.update({
       where: { id: walletId },
       data: {
         balance: newBalance,
@@ -245,8 +245,8 @@ export async function transferFunds(params: TransferParams) {
   // Use transaction for atomic transfer
   return prisma.$transaction(async (tx) => {
     // Get both wallets
-    const fromWallet = await tx.commerceWallet.findUnique({ where: { id: fromWalletId } })
-    const toWallet = await tx.commerceWallet.findUnique({ where: { id: toWalletId } })
+    const fromWallet = await tx.commerce_wallets.findUnique({ where: { id: fromWalletId } })
+    const toWallet = await tx.commerce_wallets.findUnique({ where: { id: toWalletId } })
 
     if (!fromWallet) throw new Error(`Source wallet not found: ${fromWalletId}`)
     if (!toWallet) throw new Error(`Destination wallet not found: ${toWalletId}`)
@@ -257,7 +257,7 @@ export async function transferFunds(params: TransferParams) {
     }
 
     // Check idempotency
-    const existingDebit = await tx.commerceWalletLedger.findUnique({
+    const existingDebit = await tx.commerce_walletsLedger.findUnique({
       where: { idempotencyKey: `${idempotencyKey}_debit` }
     })
     if (existingDebit) {
@@ -268,7 +268,7 @@ export async function transferFunds(params: TransferParams) {
     const newFromBalance = Number(fromWallet.balance) - amount
     const newFromAvailable = newFromBalance - Number(fromWallet.pendingBalance)
 
-    await tx.commerceWalletLedger.create({
+    await tx.commerce_walletsLedger.create({
       data: {
         walletId: fromWalletId,
         entryType: 'DEBIT_TRANSFER_OUT',
@@ -287,7 +287,7 @@ export async function transferFunds(params: TransferParams) {
       }
     })
 
-    await tx.commerceWallet.update({
+    await tx.commerce_wallets.update({
       where: { id: fromWalletId },
       data: {
         balance: newFromBalance,
@@ -299,7 +299,7 @@ export async function transferFunds(params: TransferParams) {
     const newToBalance = Number(toWallet.balance) + amount
     const newToAvailable = newToBalance - Number(toWallet.pendingBalance)
 
-    await tx.commerceWalletLedger.create({
+    await tx.commerce_walletsLedger.create({
       data: {
         walletId: toWalletId,
         entryType: 'CREDIT_TRANSFER_IN',
@@ -318,7 +318,7 @@ export async function transferFunds(params: TransferParams) {
       }
     })
 
-    await tx.commerceWallet.update({
+    await tx.commerce_wallets.update({
       where: { id: toWalletId },
       data: {
         balance: newToBalance,
