@@ -10,6 +10,7 @@
 
 import { prisma } from '../prisma'
 import { v4 as uuidv4 } from 'uuid'
+import { withPrismaDefaults } from '../db/prismaDefaults'
 
 // ============================================================================
 // TYPES
@@ -101,8 +102,7 @@ export async function createPartnerPackage(
     }
     
     const pkg = await prisma.partnerPackage.create({
-      data: {
-        id: uuidv4(),
+      data: withPrismaDefaults({
         partnerId: input.partnerId,
         name: input.name,
         slug,
@@ -118,7 +118,7 @@ export async function createPartnerPackage(
         features: input.features || undefined,
         isPublic: input.isPublic ?? true,
         sortOrder: input.sortOrder || 0,
-      }
+      })
     })
     
     return { success: true, package: pkg }
