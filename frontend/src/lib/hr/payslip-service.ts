@@ -60,7 +60,7 @@ export class PayslipService {
     }
 
     // Get staff info
-    const staffIds = calculations.map(c => c.employeeProfile.staffId)
+    const staffIds = calculations.map(c => c.hr_employee_profiles.staffId)
     const staffRecords = await prisma.staffMember.findMany({
       where: { id: { in: staffIds } },
       select: { id: true, firstName: true, lastName: true },
@@ -74,7 +74,7 @@ export class PayslipService {
       const existing = await prisma.hr_payslips.findFirst({
         where: {
           payrollPeriodId: input.periodId,
-          employeeProfileId: calc.employeeProfileId,
+          employeeProfileId: calc.hr_employee_profilesId,
         },
       })
 
@@ -83,7 +83,7 @@ export class PayslipService {
         continue
       }
 
-      const profile = calc.employeeProfile
+      const profile = calc.hr_employee_profiles
 
       // Generate unique payslip number
       const payslipNumber = await this.generatePayslipNumber(tenantId, period.periodStart)
@@ -97,11 +97,11 @@ export class PayslipService {
         data: {
           tenantId,
           payrollPeriodId: input.periodId,
-          employeeProfileId: calc.employeeProfileId,
+          employeeProfileId: calc.hr_employee_profilesId,
           payslipNumber,
           
           // Employee snapshot
-          employeeName: staffMap.get(calc.employeeProfile.staffId) || 'Unknown',
+          employeeName: staffMap.get(calc.hr_employee_profiles.staffId) || 'Unknown',
           employeeId: profile.staffId,
           department: profile.department,
           jobTitle: profile.jobTitle,
