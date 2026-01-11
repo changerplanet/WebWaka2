@@ -355,7 +355,7 @@ export async function generateZReport(
   // Get all sales for this shift
   const sales = await prisma.pos_sale.findMany({
     where: { shiftId },
-    include: { inv_audit_items: true },
+    include: { items: true },
   })
 
   // Calculate totals

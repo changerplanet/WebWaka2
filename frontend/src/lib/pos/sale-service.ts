@@ -338,7 +338,7 @@ export async function finalizeSale(
         })),
       },
     }),
-    include: { inv_audit_items: true },
+    include: { items: true },
   })
 
   // Update shift totals if in a shift
@@ -392,7 +392,7 @@ export async function voidSale(data: {
       id: data.saleId,
       status: 'COMPLETED',
     },
-    include: { inv_audit_items: true },
+    include: { items: true },
   })
 
   if (!sale) {
@@ -408,7 +408,7 @@ export async function voidSale(data: {
       voidedAt: new Date(),
       voidReason: data.voidReason,
     },
-    include: { inv_audit_items: true },
+    include: { items: true },
   })
 
   // Update shift totals if in a shift (reverse the sale)
@@ -444,7 +444,7 @@ export async function getSale(
 ): Promise<POSSale | null> {
   const sale = await prisma.pos_sale.findFirst({
     where: { tenantId, id: saleId },
-    include: { inv_audit_items: true },
+    include: { items: true },
   })
 
   return sale ? mapSaleToInterface(sale) : null
@@ -459,7 +459,7 @@ export async function getSaleBySaleNumber(
 ): Promise<POSSale | null> {
   const sale = await prisma.pos_sale.findFirst({
     where: { tenantId, saleNumber },
-    include: { inv_audit_items: true },
+    include: { items: true },
   })
 
   return sale ? mapSaleToInterface(sale) : null
@@ -498,7 +498,7 @@ export async function listSales(
   const [sales, total] = await Promise.all([
     prisma.pos_sale.findMany({
       where,
-      include: { inv_audit_items: true },
+      include: { items: true },
       orderBy: { saleDate: 'desc' },
       take: options?.limit ?? 50,
       skip: options?.offset ?? 0,
