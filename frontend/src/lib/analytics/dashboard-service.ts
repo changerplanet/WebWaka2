@@ -344,7 +344,7 @@ export class DashboardService {
       isSystem: dashboard.isSystem,
       isDefault: dashboard.isDefault,
       isActive: dashboard.isActive,
-      widgets: (dashboard as unknown as { analytics_dashboard_widgets?: Array<{ id: string; title: string; type: string; metricKeys: unknown; dimensions: unknown; config: unknown; gridX: number; gridY: number; gridW: number; gridH: number; isActive: boolean }> }).analytics_dashboard_widgets?.map(w => this.formatWidget(w)) || [],
+      widgets: (dashboard as unknown as { analytics_dashboard_widgets?: Array<{ id: string; title: string; type: string; metricKeys: unknown; dimensions: unknown; config: unknown; gridX: number; gridY: number; gridW: number; gridH: number; isActive: boolean; sortOrder: number }> }).analytics_dashboard_widgets?.map(w => this.formatWidget(w)) || [],
       createdAt: dashboard.createdAt,
       updatedAt: dashboard.updatedAt,
     }
