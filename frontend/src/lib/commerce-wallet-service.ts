@@ -148,7 +148,7 @@ export async function createLedgerEntry(params: LedgerEntryParams) {
     }
 
     // Check for duplicate idempotency key
-    const existingEntry = await tx.commerce_walletsLedger.findUnique({
+    const existingEntry = await tx.commerce_wallet_ledger.findUnique({
       where: { idempotencyKey }
     })
 
@@ -188,7 +188,7 @@ export async function createLedgerEntry(params: LedgerEntryParams) {
     const newAvailableBalance = newBalance - newPendingBalance
 
     // Create ledger entry
-    const entry = await tx.commerce_walletsLedger.create({
+    const entry = await tx.commerce_wallet_ledger.create({
       data: {
         walletId,
         entryType,
@@ -257,7 +257,7 @@ export async function transferFunds(params: TransferParams) {
     }
 
     // Check idempotency
-    const existingDebit = await tx.commerce_walletsLedger.findUnique({
+    const existingDebit = await tx.commerce_wallet_ledger.findUnique({
       where: { idempotencyKey: `${idempotencyKey}_debit` }
     })
     if (existingDebit) {
@@ -268,7 +268,7 @@ export async function transferFunds(params: TransferParams) {
     const newFromBalance = Number(fromWallet.balance) - amount
     const newFromAvailable = newFromBalance - Number(fromWallet.pendingBalance)
 
-    await tx.commerce_walletsLedger.create({
+    await tx.commerce_wallet_ledger.create({
       data: {
         walletId: fromWalletId,
         entryType: 'DEBIT_TRANSFER_OUT',
@@ -299,7 +299,7 @@ export async function transferFunds(params: TransferParams) {
     const newToBalance = Number(toWallet.balance) + amount
     const newToAvailable = newToBalance - Number(toWallet.pendingBalance)
 
-    await tx.commerce_walletsLedger.create({
+    await tx.commerce_wallet_ledger.create({
       data: {
         walletId: toWalletId,
         entryType: 'CREDIT_TRANSFER_IN',
