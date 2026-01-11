@@ -498,7 +498,7 @@ export async function disputeEarning(
           amount: Number(earning.commissionAmount),
           reason
         }
-      }
+      })
     })
     
     return entry
