@@ -177,7 +177,7 @@ async function seedDefaultPromotions(tenantId: string): Promise<Promotion[]> {
         isActive: true,
         stackable: true,
         priority: 10
-      }
+      })
     }),
     prisma.svm_promotions.create({
       data: withPrismaDefaults({
