@@ -599,7 +599,7 @@ export class CapabilityActivationService {
     reason?: string;
     metadata?: Record<string, unknown>;
   }): Promise<void> {
-    await prisma.capabilityEventLog.create({
+    await prisma.core_capability_event_logs.create({
       data: {
         eventType: data.eventType,
         tenantId: data.tenantId,
@@ -644,13 +644,13 @@ export class CapabilityActivationService {
     if (options?.eventType) where.eventType = options.eventType;
 
     const [events, total] = await Promise.all([
-      prisma.capabilityEventLog.findMany({
+      prisma.core_capability_event_logs.findMany({
         where,
         orderBy: { timestamp: 'desc' },
         take: options?.limit || 50,
         skip: options?.offset || 0,
       }),
-      prisma.capabilityEventLog.count({ where }),
+      prisma.core_capability_event_logs.count({ where }),
     ]);
 
     return {
