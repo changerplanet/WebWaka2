@@ -191,14 +191,14 @@ export class AnalyticsConfigService {
     ]
 
     for (const metric of defaultMetrics) {
-      await prisma.analyticsMetricDefinition.upsert({
+      await prisma.analytics_metric_definitions.upsert({
         where: { tenantId_key: { tenantId, key: metric.key } },
-        create: {
+        create: withPrismaDefaults({
           tenantId,
           ...metric,
           isSystem: true,
           isActive: true,
-        },
+        }),
         update: {},
       })
     }
