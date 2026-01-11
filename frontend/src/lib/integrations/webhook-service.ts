@@ -318,7 +318,7 @@ export async function sendOutboundWebhook(
         errorMessage: error instanceof Error ? error.message : 'Unknown error',
         retryCount,
         isRetry: retryCount > 0,
-      },
+      }),
     })
     
     // Retry if enabled
