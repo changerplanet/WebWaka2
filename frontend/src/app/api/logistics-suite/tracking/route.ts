@@ -76,7 +76,7 @@ export async function GET(request: NextRequest) {
           deliveryAddress: job.deliveryAddress,
           scheduledDeliveryTime: job.scheduledDeliveryTime,
           actualDeliveryTime: job.actualDeliveryTime,
-          statusHistory: job.statusHistory,
+          statusHistory: job.logistics_delivery_status_history,
           pod: job.pod,
         },
       });
