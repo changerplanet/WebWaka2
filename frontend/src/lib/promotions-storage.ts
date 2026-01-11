@@ -8,6 +8,7 @@
 import { prisma } from './prisma'
 import { Prisma } from '@prisma/client'
 import Decimal from 'decimal.js'
+import { withPrismaDefaults } from './db/prismaDefaults'
 
 // ============================================================================
 // TYPES (maintained for API compatibility)
@@ -135,7 +136,7 @@ async function seedDefaultPromotions(tenantId: string): Promise<Promotion[]> {
   
   const promotions = await prisma.$transaction([
     prisma.svm_promotions.create({
-      data: {
+      data: withPrismaDefaults({
         tenantId,
         name: 'Welcome Discount',
         description: '10% off your first order',
@@ -153,10 +154,10 @@ async function seedDefaultPromotions(tenantId: string): Promise<Promotion[]> {
         isActive: true,
         stackable: false,
         priority: 0
-      }
+      })
     }),
     prisma.svm_promotions.create({
-      data: {
+      data: withPrismaDefaults({
         tenantId,
         name: 'Seasonal Sale',
         description: '15% off orders over ₦20,000 (max ₦10,000 discount)',
