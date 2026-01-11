@@ -181,7 +181,7 @@ export class EmployeeService {
       offset?: number
     } = {}
   ) {
-    const where: Prisma.HrEmployeeProfileWhereInput = { tenantId }
+    const where: Prisma.hr_employee_profilesWhereInput = { tenantId }
 
     if (options.employmentType) where.employmentType = options.employmentType
     if (options.department) where.department = options.department
