@@ -284,7 +284,7 @@ export class ExecutionService {
 
     // Log the handoff
     await prisma.mkt_automation_logs.create({
-      data: {
+      data: withPrismaDefaults({
         tenantId: payload.tenantId as string,
         eventType: 'CORE_HANDOFF',
         eventData: {
@@ -292,7 +292,7 @@ export class ExecutionService {
           actionType,
           payload,
         } as Prisma.InputJsonValue,
-      },
+      }),
     })
 
     // In production, this would:
