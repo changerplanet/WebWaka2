@@ -329,7 +329,7 @@ export async function listAutomationRuns(params: {
       skip: (page - 1) * limit,
       take: limit,
       orderBy: { triggeredAt: 'desc' },
-      include: { rule: true },
+      include: { automation_rules: true },
     }),
     prisma.automation_runs.count({ where }),
   ]);
