@@ -298,9 +298,6 @@ export async function getSiteBranding(siteId: string): Promise<{
   // Get tenant branding if available
   const tenant = await prisma.tenant.findUnique({
     where: { id: site.tenantId },
-    include: {
-      branding: true,
-    },
   });
 
   // Get partner branding if available
@@ -314,16 +311,16 @@ export async function getSiteBranding(siteId: string): Promise<{
   const instance = site.platformInstanceId
     ? await prisma.platformInstance.findUnique({
         where: { id: site.platformInstanceId },
-        include: { branding: true },
       })
     : null;
 
   // Merge branding with priority: Site > Tenant > Partner > Instance
+  // Branding fields are directly on the models, not in a nested branding object
   return {
-    logoUrl: site.logoUrl || tenant?.branding?.logoUrl || instance?.branding?.logoUrl,
-    faviconUrl: site.faviconUrl || tenant?.branding?.faviconUrl || instance?.branding?.faviconUrl,
-    primaryColor: site.primaryColor || tenant?.branding?.primaryColor || instance?.branding?.primaryColor || '#0066ff',
-    secondaryColor: site.secondaryColor || tenant?.branding?.secondaryColor || instance?.branding?.secondaryColor || '#4d4d4d',
+    logoUrl: site.logoUrl || tenant?.logoUrl || instance?.logoUrl,
+    faviconUrl: site.faviconUrl || tenant?.faviconUrl || instance?.faviconUrl,
+    primaryColor: site.primaryColor || tenant?.primaryColor || instance?.primaryColor || '#0066ff',
+    secondaryColor: site.secondaryColor || tenant?.secondaryColor || instance?.secondaryColor || '#4d4d4d',
     fontFamily: site.fontFamily || 'Inter',
   };
 }
