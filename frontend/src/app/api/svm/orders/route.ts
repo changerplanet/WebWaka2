@@ -164,8 +164,10 @@ export async function POST(request: NextRequest) {
     // Create order with items in a transaction
     const order = await prisma.$transaction(async (tx) => {
       // Create the order
-      const newOrder = await tx.svmOrder.create({
+      const newOrder = await tx.svm_orders.create({
         data: {
+          id: generateOrderNumber().replace('ORD-', ''),
+          updatedAt: new Date(),
           tenantId,
           orderNumber: generateOrderNumber(),
           customerId: customerId || null,
@@ -192,8 +194,9 @@ export async function POST(request: NextRequest) {
           customerNotes: customerNotes || null,
           ipAddress: ipAddress || null,
           userAgent: userAgent || null,
-          items: {
+          svm_order_items: {
             create: orderItems.map(item => ({
+              id: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
               productId: item.productId,
               variantId: item.variantId || null,
               productName: item.productName,
@@ -208,12 +211,12 @@ export async function POST(request: NextRequest) {
             }))
           }
         },
-        include: { items: true }
+        include: { svm_order_items: true }
       })
 
       // If created from cart, mark cart as converted
       if (sourceCartId) {
-        await tx.svmCart.update({
+        await tx.svm_carts.update({
           where: { id: sourceCartId },
           data: { 
             status: 'CONVERTED',
