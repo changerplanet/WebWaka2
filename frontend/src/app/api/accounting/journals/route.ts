@@ -43,7 +43,7 @@ export async function GET(request: NextRequest) {
     });
 
     // Transform journals for response
-    const journals = result.journals.map((j) => ({
+    const journals = result.journals.map((j: { id: string; journalNumber: string; entryDate: Date; postDate: Date | null; description: string; sourceType: string; sourceModule: string | null; status: string; totalDebit: { toString: () => string }; totalCredit: { toString: () => string }; taxAmount: { toString: () => string } | null; taxCode: string | null; acct_financial_periods: { id: string; name: string; code: string } | null; acct_ledger_entries: unknown[]; createdAt: Date }) => ({
       id: j.id,
       journalNumber: j.journalNumber,
       entryDate: j.entryDate,
@@ -56,8 +56,8 @@ export async function GET(request: NextRequest) {
       totalCredit: j.totalCredit.toString(),
       taxAmount: j.taxAmount?.toString(),
       taxCode: j.taxCode,
-      period: j.period ? { id: j.period.id, name: j.period.name, code: j.period.code } : null,
-      lineCount: j.lines.length,
+      period: j.acct_financial_periods ? { id: j.acct_financial_periods.id, name: j.acct_financial_periods.name, code: j.acct_financial_periods.code } : null,
+      lineCount: j.acct_ledger_entries.length,
       createdAt: j.createdAt,
     }));
 
