@@ -358,14 +358,14 @@ export async function suspendInstance(
   
   // Log event
   await prisma.integration_event_logs.create({
-    data: {
+    data: withPrismaDefaults({
       tenantId: instance.tenantId,
       eventType: 'INTEGRATION_SUSPENDED',
       eventData: { instanceId, reason },
       instanceId,
       actorId: suspendedBy,
       actorType: 'system',
-    },
+    }),
   })
   
   return instance
@@ -391,7 +391,7 @@ export async function reactivateInstance(
   
   // Log event
   await prisma.integration_event_logs.create({
-    data: {
+    data: withPrismaDefaults({
       tenantId: instance.tenantId,
       eventType: 'INTEGRATION_REACTIVATED',
       eventData: { instanceId },
