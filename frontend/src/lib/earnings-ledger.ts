@@ -769,7 +769,7 @@ export async function processEventForCommission(
   
   // Get referral
   const referral = await prisma.partnerReferral.findFirst({
-    where: { partnerId: event.partnerId, tenant: { id: event.tenantId } }
+    where: { partnerId: event.partnerId, Tenant: { id: event.tenantId } }
   })
   
   if (!referral) {
