@@ -1,43 +1,15 @@
 {
-  "timestamp": "2026-01-11T10:23:49.250Z",
+  "timestamp": "2026-01-11T10:24:06.443Z",
   "mode": "check",
   "summary": {
     "totalFiles": 1175,
     "totalReferences": 4191,
     "validModels": 365,
-    "totalErrors": 3,
+    "totalErrors": 0,
     "legacyIssues": 11,
-    "newErrors": 3,
+    "newErrors": 0,
     "baselinedIssues": 1201
   },
-  "newErrors": [
-    {
-      "model": "integrationCredential",
-      "method": "upsert",
-      "line": 259,
-      "file": "/app/frontend/src/lib/integrations/instance-service.ts",
-      "key": "src/lib/integrations/instance-service.ts:259:integrationCredential",
-      "type": "UNKNOWN_MODEL",
-      "suggestion": null
-    },
-    {
-      "model": "integrationCredential",
-      "method": "findMany",
-      "line": 324,
-      "file": "/app/frontend/src/lib/integrations/instance-service.ts",
-      "key": "src/lib/integrations/instance-service.ts:324:integrationCredential",
-      "type": "UNKNOWN_MODEL",
-      "suggestion": null
-    },
-    {
-      "model": "integrationCredential",
-      "method": "delete",
-      "line": 427,
-      "file": "/app/frontend/src/lib/integrations/instance-service.ts",
-      "key": "src/lib/integrations/instance-service.ts:427:integrationCredential",
-      "type": "UNKNOWN_MODEL",
-      "suggestion": null
-    }
-  ],
-  "status": "FAILED"
+  "newErrors": [],
+  "status": "PASSED"
 }
