@@ -151,7 +151,7 @@ export class WorkflowService {
     }
 
     const workflow = await prisma.mkt_automation_workflows.create({
-      data: {
+      data: withPrismaDefaults({
         tenantId,
         name: input.name,
         description: input.description,
@@ -161,7 +161,7 @@ export class WorkflowService {
         offlineId: input.offlineId,
         createdBy,
         triggers: {
-          create: input.triggers.map((t, i) => ({
+          create: input.triggers.map((t, i) => withPrismaDefaults({
             type: t.type,
             eventName: t.eventName,
             conditions: t.conditions as Prisma.InputJsonValue || Prisma.JsonNull,
@@ -171,14 +171,14 @@ export class WorkflowService {
           })),
         },
         actions: {
-          create: input.actions.map((a, i) => ({
+          create: input.actions.map((a, i) => withPrismaDefaults({
             type: a.type,
             config: a.config as Prisma.InputJsonValue,
             delayMinutes: a.delayMinutes || 0,
             sortOrder: i,
           })),
         },
-      },
+      }),
       include: {
         triggers: { orderBy: { sortOrder: 'asc' } },
         actions: { orderBy: { sortOrder: 'asc' } },
