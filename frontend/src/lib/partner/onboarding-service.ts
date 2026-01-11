@@ -191,7 +191,7 @@ export async function submitVerificationDocuments(input: VerificationSubmission)
     // Update or create verification record
     const verification = await prisma.partner_verifications.upsert({
       where: { partnerId: input.partnerId },
-      create: {
+      create: withPrismaDefaults({
         partnerId: input.partnerId,
         documentType: input.documentType,
         documentNumber: input.documentNumber,
@@ -199,7 +199,7 @@ export async function submitVerificationDocuments(input: VerificationSubmission)
         status: 'IN_REVIEW',
         attempts: 1,
         lastAttemptAt: new Date(),
-      },
+      }),
       update: {
         documentType: input.documentType,
         documentNumber: input.documentNumber,
