@@ -692,7 +692,7 @@ export async function releasePayoutHold(
     })
     
     await tx.auditLog.create({
-      data: {
+      data: withPrismaDefaults({
         action: 'PAYOUT_HOLD_RELEASED',
         actorId: releasedBy || 'system',
         actorEmail: 'admin',
@@ -701,7 +701,7 @@ export async function releasePayoutHold(
         metadata: { 
           previousReason: settings?.payoutHoldReason 
         }
-      }
+      })
     })
   })
 }
