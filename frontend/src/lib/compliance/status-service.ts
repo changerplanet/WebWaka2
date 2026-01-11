@@ -9,6 +9,7 @@
 import { PrismaClient } from '@prisma/client';
 import { getComplianceProfile } from './config-service';
 import { logComplianceEvent } from './event-service';
+import { withPrismaDefaults } from '@/lib/db/prismaDefaults';
 
 const prisma = new PrismaClient();
 
@@ -33,7 +34,7 @@ export async function createComplianceStatus(input: CreateStatusInput): Promise<
 }> {
   try {
     const status = await prisma.compliance_statuses.create({
-      data: {
+      data: withPrismaDefaults({
         tenantId: input.tenantId,
         statusType: input.statusType,
         severity: input.severity || 'INFO',
@@ -42,7 +43,7 @@ export async function createComplianceStatus(input: CreateStatusInput): Promise<
         suggestedAction: input.suggestedAction,
         isDismissable: input.isDismissable ?? true,
         isResolved: false,
-      },
+      }),
     });
     
     await logComplianceEvent({
