@@ -15,6 +15,7 @@
 import { prisma } from '@/lib/prisma'
 import { Prisma } from '@prisma/client'
 import { MetricsService, DateRange } from './metrics-service'
+import { withPrismaDefaults } from '@/lib/db/prismaDefaults'
 
 // ============================================================================
 // TYPES
@@ -264,7 +265,7 @@ export class ReportsService {
     createdBy: string
   ): Promise<ReportDefinition> {
     const report = await prisma.analytics_report_definitions.create({
-      data: {
+      data: withPrismaDefaults({
         tenantId,
         key: input.key,
         name: input.name,
@@ -279,7 +280,7 @@ export class ReportsService {
         recipients: input.recipients as Prisma.InputJsonValue || Prisma.JsonNull,
         isSystem: false,
         createdBy,
-      },
+      }),
     })
 
     return this.formatReportDefinition(report)
