@@ -255,7 +255,7 @@ export async function getTemplate(idOrSlug: string): Promise<Template | null> {
       ],
       isActive: true,
     },
-    include: { ProductCategory: true },
+    include: { category: true },
   });
 
   if (!template) return null;
