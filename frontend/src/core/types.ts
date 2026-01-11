@@ -49,7 +49,7 @@ export type TenantWithAll = Prisma.TenantGetPayload<{
 export type UserWithMemberships = Prisma.UserGetPayload<{
   include: {
     memberships: {
-      include: { Tenant: true }
+      include: { tenant: true }
     }
   }
 }>
