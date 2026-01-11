@@ -26,7 +26,27 @@
 
 ---
 
-## Semantic Decision Applied
+## Wave 2 Summary (COMPLETE)
+
+### Files Stabilized
+
+| # | File Path | Errors Fixed | Fix Pattern | Status |
+|---|-----------|--------------|-------------|--------|
+| 11 | `src/lib/payments/config-service.ts` | 5 | Model name (`payConfiguration`→`pay_configurations`, `paySettlement`→`pay_settlements`), `withPrismaDefaults()` | ✅ COMPLETE |
+| 12 | `src/lib/payments/entitlements-service.ts` | 1 | Relation name (`Subscription`→`subscription`, `Plan`→`SubscriptionPlan`) | ✅ COMPLETE |
+| 13 | `src/lib/payments/index.ts` | 1 | Removed non-existent export `WalletBalance` | ✅ COMPLETE |
+| 14 | `src/lib/payments/methods-service.ts` | 1 | Type annotation for `priorityOrder` | ✅ COMPLETE |
+| 15 | `src/lib/payments/payment-service.ts` | 5 | `withPrismaDefaults()`, model name (`payConfiguration`→`pay_configurations`, `payEventLog`→`pay_event_logs`) | ✅ COMPLETE |
+| 16 | `src/lib/payments/proof-service.ts` | 1 | Type cast for `eventData` as `Prisma.InputJsonValue` | ✅ COMPLETE |
+| 17 | `src/lib/payments/refund-service.ts` | 4 | `withPrismaDefaults()`, relation name (`payment`→`pay_payment_transactions`), model name (`payEventLog`→`pay_event_logs`) | ✅ COMPLETE |
+| 18 | `src/lib/payments/wallet-service.ts` | 5 | `withPrismaDefaults()`, model name (`payEventLog`→`pay_event_logs`) | ✅ COMPLETE |
+| 19 | `src/lib/payout-readiness.ts` | 10 | `withPrismaDefaults()` for all `auditLog.create()`, `partnerPayoutSettings.create()`, `payoutBatch.create()` | ✅ COMPLETE |
+
+**Total Errors Fixed in Wave 2**: ~34
+
+---
+
+## Semantic Decision Applied (Wave 1)
 
 **File**: `src/lib/partner/commission-service.ts`  
 **Line**: 396  
@@ -37,25 +57,37 @@
 
 ## 🛑 STOP CONDITION REACHED
 
-**New Failing File**: `src/lib/payments/config-service.ts`  
-**Line**: 64  
-**Error**: `Property 'payConfiguration' does not exist on type 'PrismaClient'. Did you mean 'pay_configurations'?`
+**New Failing File**: `src/lib/phase-3/instance-financials.ts`  
+**Line**: 79  
+**Error**: `Object literal may only specify known properties, and 'financialSummary' does not exist in type 'PlatformInstanceInclude'`
 
-**Issue Classification**: MODEL NAME MISMATCH (Mechanical)
+**Issue Classification**: RELATION NAME MISMATCH (Mechanical)
 
-**Why Stopped**: The file is in `src/lib/payments/**`, which is **outside the authorized scope**.
+**Why Stopped**: The file is in `src/lib/phase-3/**`, which is **outside the authorized scope**.
 
 Authorized directories:
 - `src/lib/partner-*`
 - `src/lib/integrations/**`
 - `src/lib/intent/**`
 - `src/lib/marketing/**`
+- `src/lib/payments/**`
+
+---
+
+## Combined Session Totals
+
+| Metric | Count |
+|--------|-------|
+| Files Stabilized | 19 |
+| Total Errors Fixed | ~74 |
+| Semantic Decisions | 1 |
+| Waves Completed | 2 |
 
 ---
 
 ## Final Attestation
 
-All fixes applied during this wave were mechanical, schema-conformant, and build-unblocking only.
+All fixes applied during this session were mechanical, schema-conformant, and build-unblocking only.
 
 No schemas were modified.
 
@@ -70,4 +102,4 @@ The stabilization process stopped when the build failed in an unauthorized direc
 ## Next Steps
 
 Authorization required for mechanical stabilization of:
-- `src/lib/payments/**`
+- `src/lib/phase-3/**`
