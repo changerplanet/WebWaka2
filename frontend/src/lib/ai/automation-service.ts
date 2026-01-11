@@ -223,7 +223,7 @@ export async function triggerAutomationRule(input: TriggerRuleInput): Promise<{
     
     // Create run record
     const run = await prisma.automation_runs.create({
-      data: {
+      data: withPrismaDefaults({
         tenantId: rule.tenantId,
         ruleId: rule.id,
         triggeredAt: new Date(),
@@ -232,7 +232,7 @@ export async function triggerAutomationRule(input: TriggerRuleInput): Promise<{
         actionData: actionResult,
         status,
         resultMessage: actionResult.message,
-      },
+      }),
     });
     
     // Update rule stats
