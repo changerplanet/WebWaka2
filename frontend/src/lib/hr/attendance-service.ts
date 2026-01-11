@@ -201,7 +201,7 @@ export class AttendanceService {
           date,
         },
       },
-      create: {
+      create: withPrismaDefaults({
         tenantId,
         employeeProfileId: input.employeeProfileId,
         date,
@@ -216,7 +216,7 @@ export class AttendanceService {
         adminNotes: input.adminNotes,
         requiresApproval: input.requiresApproval ?? false,
         createdBy,
-      },
+      }),
       update: {
         clockIn: input.clockIn,
         clockOut: input.clockOut,
