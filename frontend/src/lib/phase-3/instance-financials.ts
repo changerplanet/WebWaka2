@@ -76,7 +76,7 @@ export async function getInstanceFinancials(
   const instance = await prisma.platformInstance.findUnique({
     where: { id: platformInstanceId },
     include: {
-      financialSummary: true,
+      InstanceFinancialSummary: true,
       createdByPartner: {
         select: { id: true, name: true }
       }
@@ -86,7 +86,7 @@ export async function getInstanceFinancials(
   if (!instance) return null
   
   const partnerId = instance.createdByPartnerId || ''
-  const summary = instance.financialSummary
+  const summary = instance.InstanceFinancialSummary
   
   if (!summary) {
     // Return default values if no summary exists yet
