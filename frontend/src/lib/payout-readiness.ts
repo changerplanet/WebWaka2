@@ -893,14 +893,14 @@ export async function cancelPayoutBatch(
     
     // Audit log
     await tx.auditLog.create({
-      data: {
+      data: withPrismaDefaults({
         action: 'PAYOUT_BATCH_CANCELLED',
         actorId: cancelledBy,
         actorEmail: 'admin',
         targetType: 'PayoutBatch',
         targetId: batchId,
         metadata: { reason }
-      }
+      })
     })
     
     return updated
