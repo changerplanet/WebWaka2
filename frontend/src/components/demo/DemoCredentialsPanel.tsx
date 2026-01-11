@@ -157,7 +157,7 @@ export function DemoCredentialsPanel({
       {/* Footer */}
       <div className="mt-3 pt-3 border-t border-slate-200">
         <p className="text-xs text-slate-500 text-center">
-          {DEMO_SUITES.length} suites • {DEMO_SUITES.reduce((acc: any, s: any) => acc + s.tenants.reduce((a, t) => a + t.credentials.length, 0), 0)} demo accounts
+          {DEMO_SUITES.length} suites • {DEMO_SUITES.reduce((acc: number, s: { tenants: { credentials: unknown[] }[] }) => acc + s.tenants.reduce((a: number, t: { credentials: unknown[] }) => a + t.credentials.length, 0), 0)} demo accounts
         </p>
       </div>
     </div>
