@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 /**
  * MODULE 1: Inventory & Warehouse Management
  * Record Audit Counts Route

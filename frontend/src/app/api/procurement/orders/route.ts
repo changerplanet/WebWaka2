@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 /**
  * MODULE 6: PROCUREMENT & SUPPLIER MANAGEMENT
  * Purchase Orders API Route

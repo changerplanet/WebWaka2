@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 /**
  * BILLING & SUBSCRIPTIONS SUITE
  * Statistics API Route

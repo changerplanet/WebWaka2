@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 /**
  * EDUCATION SUITE: Fees API Routes
  * 

@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 /**
  * MODULE 7: ANALYTICS & BUSINESS INTELLIGENCE
  * Main API Route

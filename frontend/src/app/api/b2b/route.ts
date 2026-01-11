@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 /**
  * MODULE 9: B2B & WHOLESALE
  * Main API Route

@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 /**
  * MODULE 3: CRM & Customer Engagement
  * Engagement & Events API

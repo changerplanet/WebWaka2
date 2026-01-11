@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 /**
  * BILLING & SUBSCRIPTIONS SUITE
  * Credit Notes API Route

@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 /**
  * PAYMENTS & COLLECTIONS SUITE
  * Bank Transfer API

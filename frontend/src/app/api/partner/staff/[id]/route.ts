@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 /**
  * PHASE 4B: Single Staff Member API
  * 

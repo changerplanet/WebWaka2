@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 /**
  * Get Current User's Partner Info
  * 

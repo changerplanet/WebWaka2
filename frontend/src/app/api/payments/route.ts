@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 /**
  * MODULE 10: PAYMENTS & WALLETS
  * Main API Route

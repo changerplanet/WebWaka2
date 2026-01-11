@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 /**
  * HEALTH SUITE: Encounters API (APPEND-ONLY)
  * 

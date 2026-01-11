@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 /**
  * MODULE 4: LOGISTICS & DELIVERY
  * Agents API Route

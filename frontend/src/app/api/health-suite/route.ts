@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 /**
  * HEALTH SUITE: Main API Routes
  * 

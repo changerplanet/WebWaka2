@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 /**
  * MODULE 4: LOGISTICS & DELIVERY
  * Utilities API Route - Entitlements, Statistics

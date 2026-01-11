@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 /**
  * MODULE 2: Accounting & Finance
  * Event-Based Journal Posting API

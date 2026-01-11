@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 /**
  * Auth API v2 - Identity Entry Layer
  * 

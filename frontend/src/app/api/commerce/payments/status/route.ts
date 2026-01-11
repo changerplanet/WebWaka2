@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 /**
  * PAYMENTS & COLLECTIONS SUITE
  * Payment Status API

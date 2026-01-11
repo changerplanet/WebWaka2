@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 /**
  * MODULE 5: HR & PAYROLL
  * Payroll Detail API Route

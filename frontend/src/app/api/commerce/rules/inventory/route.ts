@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 /**
  * COMMERCE RULES ENGINE
  * Inventory Rules API

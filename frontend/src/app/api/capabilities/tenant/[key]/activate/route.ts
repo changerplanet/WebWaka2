@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 /**
  * POST /api/capabilities/tenant/[key]/activate
  * 

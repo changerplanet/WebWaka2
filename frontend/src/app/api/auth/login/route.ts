@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 /**
  * Unified Auth Login Route (FOUNDATION)
  * 

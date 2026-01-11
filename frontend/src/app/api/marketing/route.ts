@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 /**
  * MODULE 8: MARKETING AUTOMATION
  * Main API Route

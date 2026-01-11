@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 /**
  * MODULE 2: Accounting & Finance
  * Single Journal Entry API

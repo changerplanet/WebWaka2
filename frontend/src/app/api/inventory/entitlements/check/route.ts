@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 /**
  * MODULE 1: Inventory & Warehouse Management
  * Entitlements Check API - Check specific entitlement
