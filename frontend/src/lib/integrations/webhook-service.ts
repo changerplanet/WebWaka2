@@ -10,6 +10,7 @@
 import { PrismaClient, WebhookDirection, WebhookStatus } from '@prisma/client'
 import crypto from 'crypto'
 import { getDecryptedCredentials } from './instance-service'
+import { withPrismaDefaults } from '@/lib/db/prismaDefaults'
 
 const prisma = new PrismaClient()
 

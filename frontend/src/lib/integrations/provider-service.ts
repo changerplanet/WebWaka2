@@ -7,6 +7,7 @@
  */
 
 import { PrismaClient, IntegrationCategory, IntegrationProviderStatus } from '@prisma/client'
+import { withPrismaDefaults } from '@/lib/db/prismaDefaults'
 
 const prisma = new PrismaClient()
 
