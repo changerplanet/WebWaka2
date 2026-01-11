@@ -151,7 +151,7 @@ export class B2BBulkOrderService {
   ): Promise<BulkOrderDraft> {
     const existing = await prisma.b2b_bulk_order_drafts.findUnique({
       where: { id: draftId, tenantId },
-      include: { profile: true },
+      include: { b2b_customer_profiles: true },
     })
 
     if (!existing) throw new Error('Draft not found')
@@ -180,8 +180,8 @@ export class B2BBulkOrderService {
           item.productId,
           item.quantity,
           { 
-            customerId: existing.profile.customerId,
-            priceTierId: existing.profile.priceTierId || undefined 
+            customerId: existing.b2b_customer_profiles.customerId,
+            priceTierId: existing.b2b_customer_profiles.priceTierId || undefined 
           }
         )
 
