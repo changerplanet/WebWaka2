@@ -18,6 +18,7 @@
 
 import { prisma } from '@/lib/prisma'
 import { Prisma } from '@prisma/client'
+import { withPrismaDefaults } from '@/lib/db/prismaDefaults'
 
 // Type definitions
 export interface PlatformInstanceBranding {
@@ -96,7 +97,7 @@ export async function createDefaultInstance(tenantId: string): Promise<string> {
 
   // Create default instance with all activated modules
   const instance = await prisma.platformInstance.create({
-    data: {
+    data: withPrismaDefaults({
       tenantId,
       name: `${tenant.name} Platform`,
       slug: 'default',
@@ -104,7 +105,7 @@ export async function createDefaultInstance(tenantId: string): Promise<string> {
       suiteKeys: tenant.activatedModules,
       isDefault: true,
       isActive: true,
-    }
+    })
   })
 
   return instance.id
