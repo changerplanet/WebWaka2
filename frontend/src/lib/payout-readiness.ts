@@ -23,6 +23,7 @@ import {
   EarningStatus
 } from '@prisma/client'
 import { Decimal } from '@prisma/client/runtime/library'
+import { withPrismaDefaults } from './db/prismaDefaults'
 
 // ============================================================================
 // TYPES
@@ -113,7 +114,7 @@ export async function getPayoutSettings(partnerId: string): Promise<PartnerPayou
   if (!settings) {
     // Create default settings
     settings = await prisma.partnerPayoutSettings.create({
-      data: {
+      data: withPrismaDefaults({
         partnerId,
         minimumPayout: 100.00,
         currency: 'USD',
@@ -122,7 +123,7 @@ export async function getPayoutSettings(partnerId: string): Promise<PartnerPayou
         taxDocumentStatus: 'NOT_SUBMITTED',
         paymentMethodVerified: false,
         payoutHold: false
-      }
+      })
     })
   }
   
