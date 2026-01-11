@@ -26,7 +26,7 @@ interface LogEventInput {
 
 export async function logComplianceEvent(input: LogEventInput): Promise<void> {
   try {
-    await prisma.complianceEventLog.create({
+    await prisma.compliance_event_logs.create({
       data: {
         eventType: input.eventType,
         tenantId: input.tenantId,
@@ -69,13 +69,13 @@ export async function getComplianceEvents(params: {
   }
   
   const [events, total] = await Promise.all([
-    prisma.complianceEventLog.findMany({
+    prisma.compliance_event_logs.findMany({
       where,
       skip: (page - 1) * limit,
       take: limit,
       orderBy: { occurredAt: 'desc' },
     }),
-    prisma.complianceEventLog.count({ where }),
+    prisma.compliance_event_logs.count({ where }),
   ]);
   
   return {
