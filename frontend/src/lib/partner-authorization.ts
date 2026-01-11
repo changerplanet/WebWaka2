@@ -244,7 +244,7 @@ export async function requirePartnerUser(): Promise<PartnerAuthorizationResult> 
   // Get partner membership
   const partnerUser = await prisma.partnerUser.findUnique({
     where: { userId: session.user.id },
-    include: { Partner: true }
+    include: { partner: true }
   })
   
   if (!partnerUser) {
@@ -263,7 +263,7 @@ export async function requirePartnerUser(): Promise<PartnerAuthorizationResult> 
     }
   }
   
-  if (partnerUser.Partner.status !== 'ACTIVE') {
+  if (partnerUser.partner.status !== 'ACTIVE') {
     return {
       authorized: false,
       error: 'Partner organization is not active',
@@ -275,7 +275,7 @@ export async function requirePartnerUser(): Promise<PartnerAuthorizationResult> 
     authorized: true,
     user: session.user,
     session,
-    partner: partnerUser.Partner,
+    partner: partnerUser.partner,
     partnerUser,
     role: partnerUser.role
   }
