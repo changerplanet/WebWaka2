@@ -1,15 +1,466 @@
 {
-  "timestamp": "2026-01-11T17:16:52.199Z",
+  "timestamp": "2026-01-11T18:26:13.812Z",
   "mode": "check",
   "summary": {
     "totalFiles": 1175,
     "totalReferences": 4191,
     "validModels": 365,
-    "totalErrors": 0,
-    "legacyIssues": 0,
-    "newErrors": 0,
+    "totalErrors": 602,
+    "legacyIssues": 54,
+    "newErrors": 602,
     "baselinedIssues": 1201
   },
-  "newErrors": [],
-  "status": "PASSED"
+  "newErrors": [
+    {
+      "model": "otpCode",
+      "method": "findMany",
+      "line": 136,
+      "file": "/app/frontend/src/app/api/admin/errors/route.ts",
+      "key": "src/app/api/admin/errors/route.ts:136:otpCode",
+      "type": "CASE_MISMATCH",
+      "suggestion": "OtpCode"
+    },
+    {
+      "model": "tenant",
+      "method": "count",
+      "line": 174,
+      "file": "/app/frontend/src/app/api/admin/errors/route.ts",
+      "key": "src/app/api/admin/errors/route.ts:174:tenant",
+      "type": "CASE_MISMATCH",
+      "suggestion": "Tenant"
+    },
+    {
+      "model": "partner",
+      "method": "count",
+      "line": 175,
+      "file": "/app/frontend/src/app/api/admin/errors/route.ts",
+      "key": "src/app/api/admin/errors/route.ts:175:partner",
+      "type": "CASE_MISMATCH",
+      "suggestion": "Partner"
+    },
+    {
+      "model": "subscription",
+      "method": "count",
+      "line": 207,
+      "file": "/app/frontend/src/app/api/admin/errors/route.ts",
+      "key": "src/app/api/admin/errors/route.ts:207:subscription",
+      "type": "CASE_MISMATCH",
+      "suggestion": "Subscription"
+    },
+    {
+      "model": "subscription",
+      "method": "count",
+      "line": 34,
+      "file": "/app/frontend/src/app/api/admin/financials/route.ts",
+      "key": "src/app/api/admin/financials/route.ts:34:subscription",
+      "type": "CASE_MISMATCH",
+      "suggestion": "Subscription"
+    },
+    {
+      "model": "subscription",
+      "method": "count",
+      "line": 35,
+      "file": "/app/frontend/src/app/api/admin/financials/route.ts",
+      "key": "src/app/api/admin/financials/route.ts:35:subscription",
+      "type": "CASE_MISMATCH",
+      "suggestion": "Subscription"
+    },
+    {
+      "model": "subscription",
+      "method": "count",
+      "line": 36,
+      "file": "/app/frontend/src/app/api/admin/financials/route.ts",
+      "key": "src/app/api/admin/financials/route.ts:36:subscription",
+      "type": "CASE_MISMATCH",
+      "suggestion": "Subscription"
+    },
+    {
+      "model": "subscription",
+      "method": "groupBy",
+      "line": 37,
+      "file": "/app/frontend/src/app/api/admin/financials/route.ts",
+      "key": "src/app/api/admin/financials/route.ts:37:subscription",
+      "type": "CASE_MISMATCH",
+      "suggestion": "Subscription"
+    },
+    {
+      "model": "instanceSubscription",
+      "method": "count",
+      "line": 49,
+      "file": "/app/frontend/src/app/api/admin/financials/route.ts",
+      "key": "src/app/api/admin/financials/route.ts:49:instanceSubscription",
+      "type": "CASE_MISMATCH",
+      "suggestion": "InstanceSubscription"
+    },
+    {
+      "model": "instanceSubscription",
+      "method": "count",
+      "line": 50,
+      "file": "/app/frontend/src/app/api/admin/financials/route.ts",
+      "key": "src/app/api/admin/financials/route.ts:50:instanceSubscription",
+      "type": "CASE_MISMATCH",
+      "suggestion": "InstanceSubscription"
+    },
+    {
+      "model": "instanceSubscription",
+      "method": "groupBy",
+      "line": 51,
+      "file": "/app/frontend/src/app/api/admin/financials/route.ts",
+      "key": "src/app/api/admin/financials/route.ts:51:instanceSubscription",
+      "type": "CASE_MISMATCH",
+      "suggestion": "InstanceSubscription"
+    },
+    {
+      "model": "instanceSubscription",
+      "method": "aggregate",
+      "line": 59,
+      "file": "/app/frontend/src/app/api/admin/financials/route.ts",
+      "key": "src/app/api/admin/financials/route.ts:59:instanceSubscription",
+      "type": "CASE_MISMATCH",
+      "suggestion": "InstanceSubscription"
+    },
+    {
+      "model": "partnerEarning",
+      "method": "aggregate",
+      "line": 76,
+      "file": "/app/frontend/src/app/api/admin/financials/route.ts",
+      "key": "src/app/api/admin/financials/route.ts:76:partnerEarning",
+      "type": "CASE_MISMATCH",
+      "suggestion": "PartnerEarning"
+    },
+    {
+      "model": "partnerEarning",
+      "method": "aggregate",
+      "line": 80,
+      "file": "/app/frontend/src/app/api/admin/financials/route.ts",
+      "key": "src/app/api/admin/financials/route.ts:80:partnerEarning",
+      "type": "CASE_MISMATCH",
+      "suggestion": "PartnerEarning"
+    },
+    {
+      "model": "partnerEarning",
+      "method": "aggregate",
+      "line": 85,
+      "file": "/app/frontend/src/app/api/admin/financials/route.ts",
+      "key": "src/app/api/admin/financials/route.ts:85:partnerEarning",
+      "type": "CASE_MISMATCH",
+      "suggestion": "PartnerEarning"
+    },
+    {
+      "model": "partnerEarning",
+      "method": "aggregate",
+      "line": 90,
+      "file": "/app/frontend/src/app/api/admin/financials/route.ts",
+      "key": "src/app/api/admin/financials/route.ts:90:partnerEarning",
+      "type": "CASE_MISMATCH",
+      "suggestion": "PartnerEarning"
+    },
+    {
+      "model": "invoice",
+      "method": "count",
+      "line": 104,
+      "file": "/app/frontend/src/app/api/admin/financials/route.ts",
+      "key": "src/app/api/admin/financials/route.ts:104:invoice",
+      "type": "CASE_MISMATCH",
+      "suggestion": "Invoice"
+    },
+    {
+      "model": "invoice",
+      "method": "count",
+      "line": 105,
+      "file": "/app/frontend/src/app/api/admin/financials/route.ts",
+      "key": "src/app/api/admin/financials/route.ts:105:invoice",
+      "type": "CASE_MISMATCH",
+      "suggestion": "Invoice"
+    },
+    {
+      "model": "invoice",
+      "method": "count",
+      "line": 106,
+      "file": "/app/frontend/src/app/api/admin/financials/route.ts",
+      "key": "src/app/api/admin/financials/route.ts:106:invoice",
+      "type": "CASE_MISMATCH",
+      "suggestion": "Invoice"
+    },
+    {
+      "model": "invoice",
+      "method": "aggregate",
+      "line": 107,
+      "file": "/app/frontend/src/app/api/admin/financials/route.ts",
+      "key": "src/app/api/admin/financials/route.ts:107:invoice",
+      "type": "CASE_MISMATCH",
+      "suggestion": "Invoice"
+    },
+    {
+      "model": "subscriptionEvent",
+      "method": "groupBy",
+      "line": 114,
+      "file": "/app/frontend/src/app/api/admin/financials/route.ts",
+      "key": "src/app/api/admin/financials/route.ts:114:subscriptionEvent",
+      "type": "CASE_MISMATCH",
+      "suggestion": "SubscriptionEvent"
+    },
+    {
+      "model": "partnerEarning",
+      "method": "groupBy",
+      "line": 121,
+      "file": "/app/frontend/src/app/api/admin/financials/route.ts",
+      "key": "src/app/api/admin/financials/route.ts:121:partnerEarning",
+      "type": "CASE_MISMATCH",
+      "suggestion": "PartnerEarning"
+    },
+    {
+      "model": "partner",
+      "method": "findMany",
+      "line": 131,
+      "file": "/app/frontend/src/app/api/admin/financials/route.ts",
+      "key": "src/app/api/admin/financials/route.ts:131:partner",
+      "type": "CASE_MISMATCH",
+      "suggestion": "Partner"
+    },
+    {
+      "model": "user",
+      "method": "count",
+      "line": 38,
+      "file": "/app/frontend/src/app/api/admin/health/route.ts",
+      "key": "src/app/api/admin/health/route.ts:38:user",
+      "type": "CASE_MISMATCH",
+      "suggestion": "User"
+    },
+    {
+      "model": "tenant",
+      "method": "count",
+      "line": 39,
+      "file": "/app/frontend/src/app/api/admin/health/route.ts",
+      "key": "src/app/api/admin/health/route.ts:39:tenant",
+      "type": "CASE_MISMATCH",
+      "suggestion": "Tenant"
+    },
+    {
+      "model": "partner",
+      "method": "count",
+      "line": 40,
+      "file": "/app/frontend/src/app/api/admin/health/route.ts",
+      "key": "src/app/api/admin/health/route.ts:40:partner",
+      "type": "CASE_MISMATCH",
+      "suggestion": "Partner"
+    },
+    {
+      "model": "platformInstance",
+      "method": "count",
+      "line": 41,
+      "file": "/app/frontend/src/app/api/admin/health/route.ts",
+      "key": "src/app/api/admin/health/route.ts:41:platformInstance",
+      "type": "CASE_MISMATCH",
+      "suggestion": "PlatformInstance"
+    },
+    {
+      "model": "session",
+      "method": "count",
+      "line": 42,
+      "file": "/app/frontend/src/app/api/admin/health/route.ts",
+      "key": "src/app/api/admin/health/route.ts:42:session",
+      "type": "CASE_MISMATCH",
+      "suggestion": "Session"
+    },
+    {
+      "model": "auditLog",
+      "method": "count",
+      "line": 43,
+      "file": "/app/frontend/src/app/api/admin/health/route.ts",
+      "key": "src/app/api/admin/health/route.ts:43:auditLog",
+      "type": "CASE_MISMATCH",
+      "suggestion": "AuditLog"
+    },
+    {
+      "model": "auditLog",
+      "method": "count",
+      "line": 49,
+      "file": "/app/frontend/src/app/api/admin/health/route.ts",
+      "key": "src/app/api/admin/health/route.ts:49:auditLog",
+      "type": "CASE_MISMATCH",
+      "suggestion": "AuditLog"
+    },
+    {
+      "model": "otpCode",
+      "method": "groupBy",
+      "line": 54,
+      "file": "/app/frontend/src/app/api/admin/health/route.ts",
+      "key": "src/app/api/admin/health/route.ts:54:otpCode",
+      "type": "CASE_MISMATCH",
+      "suggestion": "OtpCode"
+    },
+    {
+      "model": "tenant",
+      "method": "groupBy",
+      "line": 62,
+      "file": "/app/frontend/src/app/api/admin/health/route.ts",
+      "key": "src/app/api/admin/health/route.ts:62:tenant",
+      "type": "CASE_MISMATCH",
+      "suggestion": "Tenant"
+    },
+    {
+      "model": "partner",
+      "method": "groupBy",
+      "line": 68,
+      "file": "/app/frontend/src/app/api/admin/health/route.ts",
+      "key": "src/app/api/admin/health/route.ts:68:partner",
+      "type": "CASE_MISMATCH",
+      "suggestion": "Partner"
+    },
+    {
+      "model": "partner",
+      "method": "findUnique",
+      "line": 27,
+      "file": "/app/frontend/src/app/api/admin/migrate-webwaka-partner/route.ts",
+      "key": "src/app/api/admin/migrate-webwaka-partner/route.ts:27:partner",
+      "type": "CASE_MISMATCH",
+      "suggestion": "Partner"
+    },
+    {
+      "model": "partner",
+      "method": "create",
+      "line": 32,
+      "file": "/app/frontend/src/app/api/admin/migrate-webwaka-partner/route.ts",
+      "key": "src/app/api/admin/migrate-webwaka-partner/route.ts:32:partner",
+      "type": "CASE_MISMATCH",
+      "suggestion": "Partner"
+    },
+    {
+      "model": "tenant",
+      "method": "findMany",
+      "line": 54,
+      "file": "/app/frontend/src/app/api/admin/migrate-webwaka-partner/route.ts",
+      "key": "src/app/api/admin/migrate-webwaka-partner/route.ts:54:tenant",
+      "type": "CASE_MISMATCH",
+      "suggestion": "Tenant"
+    },
+    {
+      "model": "partnerReferral",
+      "method": "findFirst",
+      "line": 71,
+      "file": "/app/frontend/src/app/api/admin/migrate-webwaka-partner/route.ts",
+      "key": "src/app/api/admin/migrate-webwaka-partner/route.ts:71:partnerReferral",
+      "type": "CASE_MISMATCH",
+      "suggestion": "PartnerReferral"
+    },
+    {
+      "model": "partnerReferral",
+      "method": "create",
+      "line": 76,
+      "file": "/app/frontend/src/app/api/admin/migrate-webwaka-partner/route.ts",
+      "key": "src/app/api/admin/migrate-webwaka-partner/route.ts:76:partnerReferral",
+      "type": "CASE_MISMATCH",
+      "suggestion": "PartnerReferral"
+    },
+    {
+      "model": "auditLog",
+      "method": "create",
+      "line": 98,
+      "file": "/app/frontend/src/app/api/admin/migrate-webwaka-partner/route.ts",
+      "key": "src/app/api/admin/migrate-webwaka-partner/route.ts:98:auditLog",
+      "type": "CASE_MISMATCH",
+      "suggestion": "AuditLog"
+    },
+    {
+      "model": "partner",
+      "method": "findUnique",
+      "line": 29,
+      "file": "/app/frontend/src/app/api/admin/partners/[partnerId]/route.ts",
+      "key": "src/app/api/admin/partners/[partnerId]/route.ts:29:partner",
+      "type": "CASE_MISMATCH",
+      "suggestion": "Partner"
+    },
+    {
+      "model": "partnerEarning",
+      "method": "aggregate",
+      "line": 89,
+      "file": "/app/frontend/src/app/api/admin/partners/[partnerId]/route.ts",
+      "key": "src/app/api/admin/partners/[partnerId]/route.ts:89:partnerEarning",
+      "type": "CASE_MISMATCH",
+      "suggestion": "PartnerEarning"
+    },
+    {
+      "model": "partnerEarning",
+      "method": "count",
+      "line": 93,
+      "file": "/app/frontend/src/app/api/admin/partners/[partnerId]/route.ts",
+      "key": "src/app/api/admin/partners/[partnerId]/route.ts:93:partnerEarning",
+      "type": "CASE_MISMATCH",
+      "suggestion": "PartnerEarning"
+    },
+    {
+      "model": "partner",
+      "method": "findMany",
+      "line": 51,
+      "file": "/app/frontend/src/app/api/admin/partners/route.ts",
+      "key": "src/app/api/admin/partners/route.ts:51:partner",
+      "type": "CASE_MISMATCH",
+      "suggestion": "Partner"
+    },
+    {
+      "model": "partner",
+      "method": "count",
+      "line": 66,
+      "file": "/app/frontend/src/app/api/admin/partners/route.ts",
+      "key": "src/app/api/admin/partners/route.ts:66:partner",
+      "type": "CASE_MISMATCH",
+      "suggestion": "Partner"
+    },
+    {
+      "model": "partner",
+      "method": "groupBy",
+      "line": 70,
+      "file": "/app/frontend/src/app/api/admin/partners/route.ts",
+      "key": "src/app/api/admin/partners/route.ts:70:partner",
+      "type": "CASE_MISMATCH",
+      "suggestion": "Partner"
+    },
+    {
+      "model": "partner",
+      "method": "findUnique",
+      "line": 141,
+      "file": "/app/frontend/src/app/api/admin/partners/route.ts",
+      "key": "src/app/api/admin/partners/route.ts:141:partner",
+      "type": "CASE_MISMATCH",
+      "suggestion": "Partner"
+    },
+    {
+      "model": "partner",
+      "method": "update",
+      "line": 161,
+      "file": "/app/frontend/src/app/api/admin/partners/route.ts",
+      "key": "src/app/api/admin/partners/route.ts:161:partner",
+      "type": "CASE_MISMATCH",
+      "suggestion": "Partner"
+    },
+    {
+      "model": "partner",
+      "method": "update",
+      "line": 186,
+      "file": "/app/frontend/src/app/api/admin/partners/route.ts",
+      "key": "src/app/api/admin/partners/route.ts:186:partner",
+      "type": "CASE_MISMATCH",
+      "suggestion": "Partner"
+    },
+    {
+      "model": "partner",
+      "method": "update",
+      "line": 211,
+      "file": "/app/frontend/src/app/api/admin/partners/route.ts",
+      "key": "src/app/api/admin/partners/route.ts:211:partner",
+      "type": "CASE_MISMATCH",
+      "suggestion": "Partner"
+    },
+    {
+      "model": "tenant",
+      "method": "findUnique",
+      "line": 82,
+      "file": "/app/frontend/src/app/api/admin/tenants/[id]/members/route.ts",
+      "key": "src/app/api/admin/tenants/[id]/members/route.ts:82:tenant",
+      "type": "CASE_MISMATCH",
+      "suggestion": "Tenant"
+    }
+  ],
+  "status": "FAILED"
 }
