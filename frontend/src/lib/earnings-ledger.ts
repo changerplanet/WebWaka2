@@ -542,7 +542,7 @@ export async function voidEarning(
     })
     
     await tx.auditLog.create({
-      data: {
+      data: withPrismaDefaults({
         action: 'EARNING_VOIDED',
         actorId: voidedBy,
         actorEmail: 'void',
@@ -553,7 +553,7 @@ export async function voidEarning(
           amount: Number(earning.commissionAmount),
           reason
         }
-      }
+      })
     })
     
     return entry
