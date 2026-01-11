@@ -206,7 +206,7 @@ export async function listTemplates(options: {
   const [templates, total] = await Promise.all([
     prisma.sf_templates.findMany({
       where,
-      include: { ProductCategory: true },
+      include: { category: true },
       orderBy: [{ isPremium: 'desc' }, { name: 'asc' }],
       skip: (page - 1) * limit,
       take: limit,
