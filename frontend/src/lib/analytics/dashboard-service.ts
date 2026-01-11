@@ -154,7 +154,7 @@ export class DashboardService {
     const dashboard = await prisma.analytics_dashboards.findFirst({
       where: { tenantId, isDefault: true, isActive: true },
       include: {
-        widgets: {
+        analytics_dashboard_widgets: {
           where: { isActive: true },
           orderBy: { sortOrder: 'asc' },
         },
@@ -183,7 +183,7 @@ export class DashboardService {
         isSystem: false,
         createdBy,
       },
-      include: { widgets: true },
+      include: { analytics_dashboard_widgets: true },
     })
 
     return this.formatDashboard(dashboard)
@@ -205,7 +205,7 @@ export class DashboardService {
         ...(input.layout && { layout: input.layout as Prisma.InputJsonValue }),
         ...(input.isDefault !== undefined && { isDefault: input.isDefault }),
       },
-      include: { widgets: true },
+      include: { analytics_dashboard_widgets: true },
     })
 
     return this.formatDashboard(dashboard)
