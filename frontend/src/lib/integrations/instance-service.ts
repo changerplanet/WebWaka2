@@ -430,14 +430,14 @@ export async function revokeInstance(
   
   // Log event
   await prisma.integration_event_logs.create({
-    data: {
+    data: withPrismaDefaults({
       tenantId: instance.tenantId,
       eventType: 'INTEGRATION_REVOKED',
       eventData: { instanceId, reason },
       instanceId,
       actorId: revokedBy,
       actorType: 'system',
-    },
+    }),
   })
   
   return instance
