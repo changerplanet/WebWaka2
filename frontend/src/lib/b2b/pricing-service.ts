@@ -98,7 +98,7 @@ export class B2BPricingService {
     }
 
     // Find applicable price rules (ordered by priority)
-    const rules = await prisma.b2BWholesalePriceRule.findMany({
+    const rules = await prisma.b2b_wholesale_price_rules.findMany({
       where: {
         tenantId,
         isActive: true,
@@ -265,7 +265,7 @@ export class B2BPricingService {
       activeOnly?: boolean
     }
   ): Promise<PriceRule[]> {
-    const rules = await prisma.b2BWholesalePriceRule.findMany({
+    const rules = await prisma.b2b_wholesale_price_rules.findMany({
       where: {
         tenantId,
         ...(options?.productId && { productId: options.productId }),
@@ -314,7 +314,7 @@ export class B2BPricingService {
     },
     createdBy?: string
   ): Promise<PriceRule> {
-    const rule = await prisma.b2BWholesalePriceRule.create({
+    const rule = await prisma.b2b_wholesale_price_rules.create({
       data: {
         tenantId,
         name: input.name,
