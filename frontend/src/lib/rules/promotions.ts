@@ -53,8 +53,8 @@ export async function validatePromoCode(
   cartTotal: number = 0,
   customerId?: string
 ): Promise<{ valid: boolean; error?: string; promotion?: _Promotion }> {
-  // Get all promotions for tenant
-  const promotions = await _getPromotions(tenantId, { isActive: true })
+  // Get active promotions for tenant
+  const promotions = await _getActivePromotions(tenantId)
   
   // Find promotion by code
   const promotion = promotions.find((p: any) => p.code?.toLowerCase() === code.toLowerCase())
