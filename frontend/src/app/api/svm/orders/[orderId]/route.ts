@@ -305,7 +305,7 @@ export async function PUT(
     const updatedOrder = await prisma.svm_orders.update({
       where: { id: orderId },
       data: updateData,
-      include: { items: true }
+      include: { svm_order_items: true }
     })
 
     // Log events
@@ -332,7 +332,7 @@ export async function PUT(
         customerPhone: updatedOrder.customerPhone,
         customerName: updatedOrder.customerName,
         channel: updatedOrder.channel,
-        items: updatedOrder.items.map(item => ({
+        items: updatedOrder.svm_order_items.map((item: { id: string; productId: string; variantId: string | null; productName: string; sku: string | null; variantName: string | null; imageUrl: string | null; unitPrice: { toString: () => string }; quantity: number; lineTotal: { toString: () => string }; discountAmount: { toString: () => string }; taxAmount: { toString: () => string }; fulfilledQuantity: number; refundedQuantity: number }) => ({
           id: item.id,
           productId: item.productId,
           variantId: item.variantId,
