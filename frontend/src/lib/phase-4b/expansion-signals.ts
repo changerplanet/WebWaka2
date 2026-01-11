@@ -75,7 +75,7 @@ export async function detectExpansionSignals(
     where: { createdByPartnerId: partnerId },
     include: {
       tenant: { select: { id: true, name: true } },
-      subscriptions: true,
+      InstanceSubscription: true,
       InstanceFinancialSummary: true,
     }
   })
