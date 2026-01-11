@@ -613,15 +613,19 @@ export async function seedStarterTemplates(): Promise<void> {
   for (const template of templates) {
     if (!template.categoryId) continue;
 
+    const categoryId = template.categoryId;
+    
     await prisma.sf_templates.upsert({
       where: { slug: template.slug },
       update: {
         ...template,
+        categoryId,
         updatedAt: new Date(),
       },
       create: {
         id: randomUUID(),
         ...template,
+        categoryId,
         isActive: true,
         isPremium: false,
         version: '1.0.0',
