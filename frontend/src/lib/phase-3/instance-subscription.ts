@@ -15,6 +15,7 @@
 import { prisma } from '../prisma'
 import { InstanceSubscriptionStatus } from '@prisma/client'
 import { v4 as uuidv4 } from 'uuid'
+import { withPrismaDefaults } from '../db/prismaDefaults'
 
 // ============================================================================
 // TYPES
@@ -119,8 +120,7 @@ export async function createInstanceSubscription(
     
     // Create subscription
     const subscription = await prisma.instanceSubscription.create({
-      data: {
-        id: uuidv4(),
+      data: withPrismaDefaults({
         platformInstanceId: input.platformInstanceId,
         partnerId: input.partnerId,
         planId: input.planId || null,
@@ -135,7 +135,7 @@ export async function createInstanceSubscription(
         trialStart,
         trialEnd,
         metadata: input.metadata ? input.metadata : undefined,
-      }
+      })
     })
     
     // Update instance with partner if not set
