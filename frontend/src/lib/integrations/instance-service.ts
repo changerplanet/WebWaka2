@@ -398,7 +398,7 @@ export async function reactivateInstance(
       instanceId,
       actorId: reactivatedBy,
       actorType: 'tenant_admin',
-    },
+    }),
   })
   
   return instance
