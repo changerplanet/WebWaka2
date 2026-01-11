@@ -386,7 +386,7 @@ export default function MattersPage() {
                       {Object.entries(templatesByType).map(([type, items]) => (
                         <TabsContent key={type} value={type} className="mt-0">
                           <div className="grid gap-3 max-h-[50vh] overflow-y-auto pr-2">
-                            {items.map((template) => (
+                            {(items as typeof templates).map((template) => (
                               <TemplateCard 
                                 key={template.id} 
                                 template={template} 
