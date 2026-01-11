@@ -205,7 +205,7 @@ export class PayslipService {
       offset?: number
     } = {}
   ) {
-    const where: Prisma.HrPayslipWhereInput = { tenantId, employeeProfileId }
+    const where: Prisma.hr_payslipsWhereInput = { tenantId, employeeProfileId }
 
     if (options.year) {
       where.periodStart = {
@@ -319,7 +319,7 @@ export class PayslipService {
     tenantId: string,
     options: { year?: number; periodId?: string } = {}
   ) {
-    const where: Prisma.HrPayslipWhereInput = { tenantId }
+    const where: Prisma.hr_payslipsWhereInput = { tenantId }
 
     if (options.year) {
       where.periodStart = {
