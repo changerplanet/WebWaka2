@@ -215,13 +215,13 @@ export async function updateProvider(
   
   // Log event
   await prisma.integration_event_logs.create({
-    data: {
+    data: withPrismaDefaults({
       eventType: 'PROVIDER_UPDATED',
       eventData: { providerId, changes: data },
       providerId,
       actorId: data.updatedBy,
       actorType: 'super_admin',
-    },
+    }),
   })
   
   return provider
@@ -242,13 +242,13 @@ export async function updateProviderStatus(
   
   // Log event
   await prisma.integration_event_logs.create({
-    data: {
+    data: withPrismaDefaults({
       eventType: 'PROVIDER_STATUS_CHANGED',
       eventData: { providerId, newStatus: status },
       providerId,
       actorId: updatedBy,
       actorType: 'super_admin',
-    },
+    }),
   })
   
   return provider
