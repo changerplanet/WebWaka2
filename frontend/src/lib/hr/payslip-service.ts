@@ -95,7 +95,7 @@ export class PayslipService {
         : null
 
       const payslip = await prisma.hr_payslips.create({
-        data: {
+        data: withPrismaDefaults({
           tenantId,
           payrollPeriodId: input.periodId,
           employeeProfileId: calc.hr_employee_profiles.id,
@@ -152,7 +152,7 @@ export class PayslipService {
           // Immutable
           isFinalized: true,
           generatedBy,
-        },
+        }),
       })
 
       payslips.push(payslip)
