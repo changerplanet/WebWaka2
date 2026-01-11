@@ -80,7 +80,7 @@ export class B2BConfigService {
     ] = await Promise.all([
       prisma.b2b_customer_profiles.count({ where: { tenantId, status: 'ACTIVE' } }),
       prisma.b2b_price_tiers.count({ where: { tenantId, isActive: true } }),
-      prisma.b2BCreditTerm.count({ where: { tenantId, isActive: true } }),
+      prisma.b2b_credit_terms.count({ where: { tenantId, isActive: true } }),
       prisma.b2b_invoices.count({ where: { tenantId, status: { in: ['SENT', 'VIEWED', 'PARTIAL', 'OVERDUE'] } } }),
       prisma.b2b_customer_profiles.aggregate({
         where: { tenantId, status: 'ACTIVE' },
@@ -245,7 +245,7 @@ export class B2BConfigService {
     ]
 
     for (const term of defaultTerms) {
-      await prisma.b2BCreditTerm.upsert({
+      await prisma.b2b_credit_terms.upsert({
         where: { tenantId_code: { tenantId, code: term.code } },
         create: {
           tenantId,
