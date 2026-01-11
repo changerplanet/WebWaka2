@@ -83,7 +83,7 @@ export async function startClientSubscription(
       where: { id: input.platformInstanceId },
       include: {
         tenant: { select: { id: true, name: true } },
-        subscriptions: { where: { status: { not: 'CANCELLED' } } }
+        InstanceSubscription: true
       }
     })
     
