@@ -193,7 +193,7 @@ async function seedDefaultZones(tenantId: string): Promise<ShippingZone[]> {
 
   // Create default Canada zone
   const caZone = await prisma.svm_shipping_zones.create({
-    data: {
+    data: withPrismaDefaults({
       tenantId,
       name: 'Canada',
       description: 'Shipping to Canada',
@@ -206,11 +206,11 @@ async function seedDefaultZones(tenantId: string): Promise<ShippingZone[]> {
       priority: 90,
       svm_shipping_rates: {
         create: [
-          {
+          withPrismaDefaults({
             name: 'Standard Shipping',
             description: '7-14 business days',
             carrier: 'USPS',
-            rateType: 'FLAT',
+            rateType: 'FLAT' as const,
             flatRate: 9.99,
             freeAbove: 75,
             minDays: 7,
@@ -221,12 +221,12 @@ async function seedDefaultZones(tenantId: string): Promise<ShippingZone[]> {
             excludedProductIds: [],
             allowedCategoryIds: [],
             excludedCategoryIds: []
-          },
-          {
+          }),
+          withPrismaDefaults({
             name: 'Express Shipping',
             description: '3-5 business days',
             carrier: 'UPS',
-            rateType: 'FLAT',
+            rateType: 'FLAT' as const,
             flatRate: 19.99,
             minDays: 3,
             maxDays: 5,
@@ -236,10 +236,10 @@ async function seedDefaultZones(tenantId: string): Promise<ShippingZone[]> {
             excludedProductIds: [],
             allowedCategoryIds: [],
             excludedCategoryIds: []
-          }
+          })
         ]
       }
-    },
+    }),
     include: { svm_shipping_rates: true }
   })
 
