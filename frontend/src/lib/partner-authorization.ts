@@ -165,10 +165,10 @@ export function getPartnerPermissions(role: PartnerRole | 'SUPER_ADMIN'): Partne
 /**
  * Get user's partner membership (if any)
  */
-export async function getPartnerMembership(userId: string): Promise<(PartnerUser & { Partner: Partner }) | null> {
+export async function getPartnerMembership(userId: string): Promise<(PartnerUser & { partner: Partner }) | null> {
   return prisma.partnerUser.findUnique({
     where: { userId },
-    include: { Partner: true }
+    include: { partner: true }
   })
 }
 
