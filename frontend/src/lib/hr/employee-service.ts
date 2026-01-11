@@ -233,7 +233,7 @@ export class EmployeeService {
         _count: {
           select: {
             hr_attendance_records: true,
-            leaveRequests: true,
+            hr_leave_requests: true,
             hr_payslips: true,
           },
         },
