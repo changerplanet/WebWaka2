@@ -111,11 +111,13 @@ export async function POST(request: NextRequest) {
       netAmount: body.amount,
       currency: body.currency || 'USD',
       eventType: body.eventType || 'SUBSCRIPTION_RENEWED',
-      isFirstPayment: body.isFirstPayment || false
+      isFirstPayment: body.isFirstPayment || false,
+      periodStart: new Date(),
+      periodEnd: new Date()
     }
 
     // Calculate commission using the actual function
-    const result = calculateCommission(agreement as unknown as Parameters<typeof calculateCommission>[0], input)
+    const result = calculateCommission(agreement as unknown as Parameters<typeof calculateCommission>[0], input as unknown as Parameters<typeof calculateCommission>[1])
 
     return NextResponse.json({
       success: result.success,
