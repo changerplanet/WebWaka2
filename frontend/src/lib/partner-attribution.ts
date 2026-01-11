@@ -356,7 +356,7 @@ export async function getAttributionForTenant(tenantId: string): Promise<Partner
       Partner: {
         select: { id: true, name: true, slug: true, status: true }
       },
-      referralCode: {
+      PartnerReferralCode: {
         select: { id: true, code: true, campaignName: true }
       }
     }
