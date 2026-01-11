@@ -232,7 +232,7 @@ export class EmployeeService {
         leaveBalances: { where: { year: new Date().getFullYear() } },
         _count: {
           select: {
-            attendanceRecords: true,
+            hr_attendance_records: true,
             leaveRequests: true,
             hr_payslips: true,
           },
