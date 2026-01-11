@@ -287,7 +287,7 @@ export class B2BInvoiceService {
 
     // Create ledger entry
     const entry = await prisma.b2b_credit_ledger.create({
-      data: {
+      data: withPrismaDefaults({
         tenantId,
         profileId,
         transactionType,
@@ -297,7 +297,7 @@ export class B2BInvoiceService {
         invoiceId,
         description,
         dueDate,
-      },
+      }),
     })
 
     // Update profile's credit used
