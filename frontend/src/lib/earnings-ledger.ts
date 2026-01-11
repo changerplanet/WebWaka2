@@ -26,6 +26,7 @@ import {
 } from '@prisma/client'
 import { calculateCommission, CommissionCalculationResult } from './commission-engine'
 import { getPartnerEvents } from './subscription-events'
+import { withPrismaDefaults } from './db/prismaDefaults'
 
 // ============================================================================
 // TYPES
@@ -141,7 +142,7 @@ export async function createEarning(input: CreateEarningInput): Promise<EarningR
   // Create the earning entry
   const earning = await prisma.$transaction(async (tx) => {
     const entry = await tx.partnerEarning.create({
-      data: {
+      data: withPrismaDefaults({
         partnerId: input.partnerId,
         referralId: input.referralId,
         agreementId: input.agreementId,
@@ -160,12 +161,12 @@ export async function createEarning(input: CreateEarningInput): Promise<EarningR
         metadata: input.metadata,
         createdByUserId: input.createdByUserId || 'system',
         status: 'PENDING'
-      }
+      })
     })
     
     // Audit log
     await tx.auditLog.create({
-      data: {
+      data: withPrismaDefaults({
         action: 'EARNING_CREATED',
         actorId: input.createdByUserId || 'system',
         actorEmail: 'commission@webwaka.internal',
@@ -177,7 +178,7 @@ export async function createEarning(input: CreateEarningInput): Promise<EarningR
           currency: input.currency,
           idempotencyKey: input.idempotencyKey
         }
-      }
+      })
     })
     
     return entry
