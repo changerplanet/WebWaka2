@@ -269,14 +269,14 @@ export async function configureCredentials(
         lastRotated: new Date(),
         createdBy: configuredBy,
       },
-      create: {
+      create: withPrismaDefaults({
         instanceId,
         key,
         encryptedValue: encrypt(value),
         maskedValue: maskValue(value),
         isRequired: instance.integration_providers.requiredCredentials.includes(key),
         createdBy: configuredBy,
-      },
+      }),
     })
   }
   
