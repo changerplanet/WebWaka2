@@ -71,7 +71,7 @@ export class ExecutionService {
       where: {
         tenantId,
         status: 'ACTIVE',
-        triggers: {
+        mkt_automation_triggers: {
           some: {
             type: 'EVENT',
             eventName,
@@ -80,14 +80,14 @@ export class ExecutionService {
         },
       },
       include: {
-        triggers: { where: { isActive: true } },
-        actions: { where: { isActive: true }, orderBy: { sortOrder: 'asc' } },
+        mkt_automation_triggers: { where: { isActive: true } },
+        mkt_automation_actions: { where: { isActive: true }, orderBy: { sortOrder: 'asc' } },
       },
     })
 
     for (const workflow of workflows) {
       // Evaluate trigger conditions
-      const trigger = workflow.triggers.find(t => t.eventName === eventName)
+      const trigger = workflow.mkt_automation_triggers.find(t => t.eventName === eventName)
       if (!trigger) continue
 
       const shouldExecute = await this.evaluateTriggerConditions(
@@ -102,7 +102,7 @@ export class ExecutionService {
           eventData.customerId as string | undefined,
           eventName,
           eventData,
-          workflow.actions
+          workflow.mkt_automation_actions
         )
         results.push(result)
       }
