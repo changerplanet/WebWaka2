@@ -13,6 +13,7 @@
  */
 
 import { prisma } from '@/lib/prisma'
+import { withPrismaDefaults } from '@/lib/db/prismaDefaults'
 
 // ============================================================================
 // TYPES
@@ -61,7 +62,7 @@ export class PayConfigService {
    * Get payment status for tenant
    */
   static async getStatus(tenantId: string): Promise<PayStatus> {
-    const config = await prisma.payConfiguration.findUnique({
+    const config = await prisma.pay_configurations.findUnique({
       where: { tenantId },
     })
 
@@ -140,9 +141,9 @@ export class PayConfigService {
    * Initialize payments for tenant
    */
   static async initialize(tenantId: string, options?: Partial<PayConfig>): Promise<PayConfig> {
-    const config = await prisma.payConfiguration.upsert({
+    const config = await prisma.pay_configurations.upsert({
       where: { tenantId },
-      create: {
+      create: withPrismaDefaults({
         tenantId,
         paymentsEnabled: options?.paymentsEnabled ?? true,
         walletsEnabled: options?.walletsEnabled ?? true,
@@ -154,7 +155,7 @@ export class PayConfigService {
         bankTransferEnabled: options?.bankTransferEnabled ?? true,
         mobileMoneyEnabled: options?.mobileMoneyEnabled ?? false,
         offlineCashEnabled: options?.offlineCashEnabled ?? true,
-      },
+      }),
       update: {},
     })
 
@@ -191,7 +192,7 @@ export class PayConfigService {
    * Update payment configuration
    */
   static async updateConfig(tenantId: string, updates: Partial<PayConfig>): Promise<PayConfig> {
-    const config = await prisma.payConfiguration.update({
+    const config = await prisma.pay_configurations.update({
       where: { tenantId },
       data: {
         paymentsEnabled: updates.paymentsEnabled,
