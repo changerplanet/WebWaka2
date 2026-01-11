@@ -121,7 +121,7 @@ export async function GET(request: NextRequest) {
         where: { id: productId, tenantId },
         include: {
           ProductCategory: true,
-          variants: true
+          ProductVariant: true
         }
       })
       
@@ -145,7 +145,7 @@ export async function GET(request: NextRequest) {
         where: { slug, tenantId },
         include: {
           ProductCategory: true,
-          variants: true
+          ProductVariant: true
         }
       })
       
