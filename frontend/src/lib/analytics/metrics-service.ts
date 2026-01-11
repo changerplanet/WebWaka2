@@ -106,13 +106,13 @@ export class MetricsService {
     periodType: string,
     periodStart: Date
   ): Promise<MetricSnapshot | null> {
-    const metric = await prisma.analyticsMetricDefinition.findUnique({
+    const metric = await prisma.analytics_metric_definitions.findUnique({
       where: { tenantId_key: { tenantId, key: metricKey } },
     })
 
     if (!metric) return null
 
-    const snapshot = await prisma.analyticsMetricSnapshot.findFirst({
+    const snapshot = await prisma.analytics_metric_snapshots.findFirst({
       where: {
         tenantId,
         metricId: metric.id,
@@ -352,7 +352,7 @@ export class MetricsService {
 
       return inventory.reduce((total: number, item) => {
         const qty = Number(item.quantityOnHand || 0)
-        const cost = Number(item.product?.costPrice || 0)
+        const cost = Number(item.Product?.costPrice || 0)
         return total + (qty * cost)
       }, 0)
     } catch {
@@ -400,7 +400,7 @@ export class MetricsService {
     value: number,
     previousValue?: number
   ): Promise<void> {
-    const metric = await prisma.analyticsMetricDefinition.findUnique({
+    const metric = await prisma.analytics_metric_definitions.findUnique({
       where: { tenantId_key: { tenantId, key: metricKey } },
     })
 
@@ -410,7 +410,7 @@ export class MetricsService {
       ? ((value - previousValue) / previousValue) * 100
       : null
 
-    await prisma.analyticsMetricSnapshot.upsert({
+    await prisma.analytics_metric_snapshots.upsert({
       where: {
         metricId_periodType_periodStart_dimensionKey_dimensionValue: {
           metricId: metric.id,
