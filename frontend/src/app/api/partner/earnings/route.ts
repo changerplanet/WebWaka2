@@ -24,7 +24,7 @@ export async function GET(request: NextRequest) {
         isActive: true,
       },
       include: {
-        Partner: { select: { id: true, name: true } }
+        partner: { select: { id: true, name: true } }
       }
     })
     
