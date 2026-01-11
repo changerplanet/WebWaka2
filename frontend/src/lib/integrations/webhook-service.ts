@@ -167,7 +167,7 @@ export async function processInboundWebhook(
   
   // Log the webhook call
   const log = await prisma.integration_logs.create({
-    data: {
+    data: withPrismaDefaults({
       tenantId: webhook.instance.tenantId,
       instanceId: webhook.instanceId,
       logType: 'webhook_received',
@@ -178,7 +178,7 @@ export async function processInboundWebhook(
       requestBody: payload,
       startedAt,
       success: true,
-    },
+    }),
   })
   
   // Update webhook metrics
@@ -197,7 +197,7 @@ export async function processInboundWebhook(
   
   // Log the event emission
   await prisma.integration_event_logs.create({
-    data: {
+    data: withPrismaDefaults({
       tenantId: webhook.instance.tenantId,
       eventType: emittedEvent,
       eventData: {
@@ -207,7 +207,7 @@ export async function processInboundWebhook(
         logId: log.id,
       },
       instanceId: webhook.instanceId,
-    },
+    }),
   })
   
   return { success: true, eventEmitted: emittedEvent }
