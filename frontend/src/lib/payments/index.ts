@@ -16,8 +16,7 @@ export type { PaymentIntent, PaymentTransaction } from './payment-service'
 export { WalletService } from './wallet-service'
 export type { 
   Wallet, 
-  WalletTransaction, 
-  WalletBalance 
+  WalletTransaction
 } from './wallet-service'
 
 export { RefundService } from './refund-service'
