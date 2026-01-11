@@ -19,6 +19,7 @@
 
 import { prisma } from './prisma'
 import { AuditAction, AuditLog } from '@prisma/client'
+import { withPrismaDefaults } from './db/prismaDefaults'
 
 // ============================================================================
 // TYPES
@@ -134,7 +135,7 @@ export const PARTNER_AUDIT_ACTIONS: AuditAction[] = [
  */
 export async function createAuditEntry(input: AuditEntryInput): Promise<AuditLog> {
   return prisma.auditLog.create({
-    data: {
+    data: withPrismaDefaults({
       action: input.action,
       actorId: input.actorId,
       actorEmail: input.actorEmail,
@@ -147,7 +148,7 @@ export async function createAuditEntry(input: AuditEntryInput): Promise<AuditLog
         userAgent: input.userAgent,
         timestamp: new Date().toISOString()
       }
-    }
+    })
   })
 }
 
