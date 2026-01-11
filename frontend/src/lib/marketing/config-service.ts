@@ -101,7 +101,7 @@ export class MktConfigService {
     }
 
     const config = await prisma.mkt_configurations.create({
-      data: {
+      data: withPrismaDefaults({
         tenantId,
         automationEnabled: input?.automationEnabled ?? true,
         smsAutomation: input?.smsAutomation ?? true,
@@ -115,7 +115,7 @@ export class MktConfigService {
         smsFirst: input?.smsFirst ?? true,
         timezone: input?.timezone ?? 'Africa/Lagos',
         metadata: input?.metadata ? (input.metadata as Prisma.InputJsonValue) : Prisma.JsonNull,
-      },
+      }),
     })
 
     // Create default automation templates
