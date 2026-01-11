@@ -12,6 +12,7 @@
 
 import { prisma } from '@/lib/prisma'
 import { PayWalletOwnerType, PayWalletStatus, PayTransactionType, PayTransactionDirection, PayTxStatus, Prisma } from '@prisma/client'
+import { withPrismaDefaults } from '@/lib/db/prismaDefaults'
 
 // ============================================================================
 // TYPES
@@ -93,14 +94,14 @@ export class WalletService {
     const walletNumber = this.generateWalletNumber(ownerType, ownerId || tenantId)
     
     const wallet = await prisma.pay_wallets.create({
-      data: {
+      data: withPrismaDefaults({
         tenantId,
         ownerType,
         ownerId,
         walletNumber,
         name: name || `${ownerType} Wallet`,
         currency,
-      },
+      }),
     })
 
     return this.formatWallet(wallet)
@@ -203,7 +204,7 @@ export class WalletService {
     // Create transaction and update wallet in transaction
     const [transaction] = await prisma.$transaction([
       prisma.pay_wallet_transactions.create({
-        data: {
+        data: withPrismaDefaults({
           tenantId,
           walletId,
           transactionNumber,
@@ -219,7 +220,7 @@ export class WalletService {
           description: options.description,
           performedBy: options.performedBy,
           status: 'COMPLETED',
-        },
+        }),
       }),
       prisma.pay_wallets.update({
         where: { id: walletId },
@@ -284,7 +285,7 @@ export class WalletService {
     // Create transaction and update wallet in transaction
     const [transaction] = await prisma.$transaction([
       prisma.pay_wallet_transactions.create({
-        data: {
+        data: withPrismaDefaults({
           tenantId,
           walletId,
           transactionNumber,
@@ -300,7 +301,7 @@ export class WalletService {
           description: options.description,
           performedBy: options.performedBy,
           status: 'COMPLETED',
-        },
+        }),
       }),
       prisma.pay_wallets.update({
         where: { id: walletId },
@@ -545,13 +546,13 @@ export class WalletService {
   }
 
   private static async logEvent(tenantId: string, eventType: string, eventData: Record<string, unknown>) {
-    await prisma.payEventLog.create({
-      data: {
+    await prisma.pay_event_logs.create({
+      data: withPrismaDefaults({
         tenantId,
         eventType,
         eventData: eventData as Prisma.InputJsonValue,
         walletId: eventData.walletId as string | undefined,
-      },
+      }),
     })
   }
 }
