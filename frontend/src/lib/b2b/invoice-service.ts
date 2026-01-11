@@ -96,12 +96,12 @@ export class B2BInvoiceService {
     // Get profile and credit terms
     const profile = await prisma.b2b_customer_profiles.findUnique({
       where: { id: input.profileId },
-      include: { creditTerm: true },
+      include: { b2b_credit_terms: true },
     })
 
     if (!profile) throw new Error('B2B profile not found')
 
-    const creditDays = profile.creditTerm?.creditDays || 30
+    const creditDays = profile.b2b_credit_terms?.creditDays || 30
     const dueDate = new Date()
     dueDate.setDate(dueDate.getDate() + creditDays)
 
