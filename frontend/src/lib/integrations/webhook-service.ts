@@ -364,12 +364,12 @@ export async function deleteWebhook(webhookId: string) {
   
   // Log event
   await prisma.integration_event_logs.create({
-    data: {
+    data: withPrismaDefaults({
       tenantId: webhook.instance.tenantId,
       eventType: 'WEBHOOK_DELETED',
       eventData: { webhookId, name: webhook.name },
       instanceId: webhook.instanceId,
-    },
+    }),
   })
   
   return { success: true }
