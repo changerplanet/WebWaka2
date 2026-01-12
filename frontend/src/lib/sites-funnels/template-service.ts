@@ -273,7 +273,7 @@ export async function getTemplate(idOrSlug: string): Promise<Template | null> {
     industry: template.industry || undefined,
     useCase: template.useCase || undefined,
     pageType: template.pageType,
-    blocks: template.blocks as any[] || [],
+    blocks: parseTemplateBlocks(template.blocks),
     styles: template.styles || undefined,
     settings: template.settings || undefined,
     version: template.version,
