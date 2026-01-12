@@ -51,13 +51,8 @@ export default function TenantDetailPage() {
   const [error, setError] = useState<string | null>(null)
   const [actionLoading, setActionLoading] = useState(false)
 
-  useEffect(() => {
-    if (tenantId) {
-      fetchTenantDetails()
-    }
-  }, [tenantId])
-
-  async function fetchTenantDetails() {
+  // Phase 14B: Wrapped in useCallback - triggers on tenantId change
+  const fetchTenantDetails = useCallback(async () => {
     setLoading(true)
     setError(null)
     
@@ -75,7 +70,13 @@ export default function TenantDetailPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [tenantId])
+
+  useEffect(() => {
+    if (tenantId) {
+      fetchTenantDetails()
+    }
+  }, [tenantId, fetchTenantDetails])
 
   async function handleStatusChange(newStatus: string) {
     if (!tenant) return
