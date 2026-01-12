@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "yarn validate:schema && next build",
+    "build": "npm run validate:schema && next build",
     "start": "next start",
     "lint": "next lint",
     "test": "jest",
@@ -14,7 +14,7 @@
     "test:coverage": "jest --coverage",
     "test:watch": "jest --watch",
     "validate:schema": "node scripts/validation/validate-prisma-models.js",
-    "prebuild": "yarn validate:schema",
+    "prebuild": "npm run validate:schema",
     "prepare": "husky"
   },
   "dependencies": {
