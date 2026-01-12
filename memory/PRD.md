@@ -7,7 +7,7 @@ Fix failing production build (`yarn build`) for Next.js application to unblock V
 - **TypeScript Compilation**: ✅ PASSING
 - **Static Generation**: ✅ PASSING  
 - **Build Exit Code**: 0
-- **Build Time**: ~96 seconds
+- **Build Time**: ~101 seconds
 
 ---
 
@@ -34,36 +34,59 @@ All TypeScript/Prisma mismatch errors resolved:
    - Fixed `ProductCategory` → `category` relation
 
 ### Phase B - Next.js Dynamic Route Fixes (COMPLETE)
-Added `export const dynamic = 'force-dynamic'` to 412 files:
+Added `export const dynamic = 'force-dynamic'` to 485 API routes.
 
-- **Wave 1**: 211 API routes (cookies/headers/session detection)
-- **Wave 2**: 198 API routes (request.url/request.headers detection)
-- **Wave 3**: 3 additional files (partner/settings, church, root layout)
+### Phase 3 - React Hook Hygiene (COMPLETE)
+- Fixed 8 mechanical React Hook warnings
+- Baselined 52 semantic warnings (require domain expert review)
+- Report: `/app/frontend/docs/PHASE_3_REACT_HOOK_HYGIENE_REPORT.md`
+
+### Phase 4 - Legacy Debt Audit (COMPLETE)
+- Full read-only audit of remaining technical debt
+- Report: `/app/frontend/docs/PHASE_4_LEGACY_DEBT_MAP.md`
+
+### Phase 5 - Mechanical Type Cleanup (COMPLETE)
+- Created `toJsonValue` utility for JSON writes
+- Eliminated all 7 unsafe `as unknown as Prisma.InputJsonValue` casts
+- Report: `/app/frontend/docs/PHASE_5_MECHANICAL_TYPE_CLEANUP_REPORT.md`
+
+### Phase 6 - Runtime JSON Validation Cleanup (COMPLETE - December 2025)
+- Installed `zod` for runtime validation
+- Created `parseJsonField` utility in `src/lib/db/jsonValidation.ts`
+- Fixed 9 unsafe JSON read casts:
+  - `loyalty-service.ts`: 5 casts (TierConfig validation)
+  - `bulk-order-service.ts`: 2 casts (BulkOrderItem[] validation)  
+  - `commission-engine.ts`: 2 casts (CommissionTier/HybridRule validation)
+- Report: `/app/frontend/docs/PHASE_6_RUNTIME_JSON_VALIDATION_REPORT.md`
 
 ---
 
-## Remaining Items (Non-Blocking)
+## Remaining Items (Prioritized Backlog)
 
-### P1 - React Hook Warnings (~56 warnings)
-- Missing dependency array warnings in useEffect/useCallback
-- These are ESLint warnings, not build errors
-- Can be addressed incrementally
+### P1 - Remaining Type Safety Issues
+- Review remaining `as unknown` casts related to Prisma result type augmentation
+- Address ~235 `as any` casts (require domain expert review)
 
-### P2 - Code Quality
-- Consider addressing baselined Prisma validation issues (1201 baselined)
+### P2 - Legacy Debt
+- Fix 52 semantic React Hook warnings (baselined in Phase 3)
+- Address 1,201 baselined Prisma issues (requires schema governance)
+
+### P2 - Features (Backlog)
+- Guided Demo Tours (ALL SUITES)
 
 ---
 
 ## Technical Architecture
 - **Framework**: Next.js 14.2.21
 - **Database**: Prisma ORM with PostgreSQL (Supabase)
+- **Validation**: Zod (for runtime JSON validation)
 - **Deployment**: Vercel (now unblocked)
 
 ## Key Files
 - `/app/frontend/prisma/schema.prisma` - Source of truth for DB models
-- `/app/frontend/src/lib/db/prismaDefaults.ts` - Helper for required Prisma fields
-- `/app/frontend/docs/DYNAMIC_API_ROUTE_FIX_REPORT.md` - Complete fix report
-- `/app/frontend/docs/DYNAMIC_API_ROUTE_DETECTION_REPORT.md` - Detection report
+- `/app/frontend/src/lib/db/prismaDefaults.ts` - Helper for required Prisma fields & JSON writes
+- `/app/frontend/src/lib/db/jsonValidation.ts` - Zod schemas & JSON read validation
+- `/app/frontend/docs/` - All audit and remediation reports
 
 ## Build Command
 ```bash
