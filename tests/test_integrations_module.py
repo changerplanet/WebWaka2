@@ -18,7 +18,7 @@ import os
 import time
 from datetime import datetime, timedelta
 
-BASE_URL = os.environ.get('NEXT_PUBLIC_APP_URL', 'https://buildfix-6.preview.emergentagent.com').rstrip('/')
+BASE_URL = os.environ.get('NEXT_PUBLIC_APP_URL', 'https://code-hygiene-2.preview.emergentagent.com').rstrip('/')
 API_URL = f"{BASE_URL}/api/integrations"
 TEST_TENANT_ID = "test-tenant-integrations"
 

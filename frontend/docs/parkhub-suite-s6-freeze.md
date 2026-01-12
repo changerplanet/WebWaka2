@@ -86,7 +86,7 @@
 ### Frontend Testing Agent Results
 - **Date**: January 8, 2026
 - **Tests Passed**: 22/22 (100%)
-- **Production URL**: https://buildfix-6.preview.emergentagent.com/parkhub-demo
+- **Production URL**: https://code-hygiene-2.preview.emergentagent.com/parkhub-demo
 
 ### Test Categories Verified
 | Category | Tests | Status |

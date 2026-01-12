@@ -23,7 +23,7 @@ import requests
 import uuid
 from datetime import datetime
 
-BASE_URL = "https://buildfix-6.preview.emergentagent.com"
+BASE_URL = "https://code-hygiene-2.preview.emergentagent.com"
 
 # Generate unique IDs for this test run
 TEST_RUN_ID = uuid.uuid4().hex[:8]

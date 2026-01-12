@@ -15,7 +15,7 @@ import pytest
 import requests
 import os
 
-BASE_URL = os.environ.get('NEXT_PUBLIC_APP_URL', 'https://buildfix-6.preview.emergentagent.com')
+BASE_URL = os.environ.get('NEXT_PUBLIC_APP_URL', 'https://code-hygiene-2.preview.emergentagent.com')
 TENANT_ID = "demo-pm-tenant"
 
 class TestProjectManagementDashboard:
