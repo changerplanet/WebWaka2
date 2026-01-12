@@ -5,6 +5,9 @@ export const dynamic = 'force-dynamic'
  * 
  * GET - List service requests with filters
  * POST - Create request, update status
+ * 
+ * NOTE: Service layer uses its own enum values that differ from Prisma schema.
+ * Enum alignment deferred to Phase 10C pending domain approval.
  */
 
 import { NextRequest, NextResponse } from 'next/server';
@@ -20,11 +23,6 @@ import {
   getOverdueRequests,
   getServiceRequestStats,
 } from '@/lib/civic/service-request-service';
-import {
-  validateCivicRequestStatus,
-  validateCivicCategory,
-  validateCivicPriority,
-} from '@/lib/enums';
 
 export async function GET(request: NextRequest) {
   try {
