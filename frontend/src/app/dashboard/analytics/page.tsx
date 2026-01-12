@@ -86,11 +86,8 @@ export default function AnalyticsDashboard() {
   const [initialized, setInitialized] = useState(false)
   const [dateRange, setDateRange] = useState(30)
 
-  useEffect(() => {
-    initializeAndFetch()
-  }, [dateRange])
-
-  const initializeAndFetch = async () => {
+  // Phase 12B: Wrapped in useCallback for hook hygiene
+  const initializeAndFetch = useCallback(async () => {
     try {
       setLoading(true)
       setError(null)

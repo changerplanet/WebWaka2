@@ -102,11 +102,8 @@ export default function GuestsPage() {
   const [filterType, setFilterType] = useState<string>('all');
   const [filterLoyalty, setFilterLoyalty] = useState<string>('all');
 
-  useEffect(() => {
-    fetchGuests();
-  }, [filterType, filterLoyalty]);
-
-  const fetchGuests = async () => {
+  // Phase 12B: Wrapped in useCallback for hook hygiene
+  const fetchGuests = useCallback(async () => {
     try {
       setLoading(true);
       const params = new URLSearchParams();

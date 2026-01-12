@@ -56,16 +56,8 @@ export default function AccountingDashboard() {
   const [metrics, setMetrics] = useState<DashboardMetrics | null>(null)
   const [refreshing, setRefreshing] = useState(false)
 
-  useEffect(() => {
-    if (tenantSlug) {
-      fetchDashboardData()
-    } else {
-      setError('No tenant specified')
-      setLoading(false)
-    }
-  }, [tenantSlug])
-
-  async function fetchDashboardData() {
+  // Phase 12B: Wrapped in useCallback for hook hygiene
+  const fetchDashboardData = useCallback(async () => {
     try {
       setRefreshing(true)
       

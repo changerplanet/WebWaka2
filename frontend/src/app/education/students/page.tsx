@@ -71,12 +71,8 @@ export default function StudentsPage() {
   const [classes, setClasses] = useState<ClassOption[]>([]);
   const [pagination, setPagination] = useState({ page: 1, limit: 20, total: 0 });
 
-  useEffect(() => {
-    fetchStudents();
-    fetchClasses();
-  }, [selectedClass, selectedStatus, pagination.page]);
-
-  const fetchClasses = async () => {
+  // Phase 12B: Wrapped in useCallback for hook hygiene
+  const fetchClasses = useCallback(async () => {
     // Simulated - in production, fetch from API
     setClasses([
       { id: 'class_1', name: 'JSS 1', sections: ['A', 'B'] },

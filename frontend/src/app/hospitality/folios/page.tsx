@@ -128,11 +128,8 @@ export default function FoliosPage() {
   const [filterStatus, setFilterStatus] = useState<string>('all');
   const [selectedFolio, setSelectedFolio] = useState<Folio | null>(null);
 
-  useEffect(() => {
-    fetchFolios();
-  }, [filterStatus]);
-
-  const fetchFolios = async () => {
+  // Phase 12B: Wrapped in useCallback for hook hygiene
+  const fetchFolios = useCallback(async () => {
     try {
       setLoading(true);
       const params = new URLSearchParams();

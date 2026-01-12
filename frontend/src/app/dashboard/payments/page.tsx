@@ -84,11 +84,8 @@ export default function PaymentsDashboard() {
   const [initialized, setInitialized] = useState(false)
   const [dateRange] = useState(30)
 
-  useEffect(() => {
-    initializeAndFetch()
-  }, [dateRange])
-
-  const initializeAndFetch = async () => {
+  // Phase 12B: Wrapped in useCallback for hook hygiene
+  const initializeAndFetch = useCallback(async () => {
     try {
       setLoading(true)
       setError(null)

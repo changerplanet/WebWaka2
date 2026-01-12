@@ -115,11 +115,8 @@ export default function ReservationsPage() {
   const [filterStatus, setFilterStatus] = useState<string>('all');
   const [actionLoading, setActionLoading] = useState<string | null>(null);
 
-  useEffect(() => {
-    fetchReservations();
-  }, [filterStatus]);
-
-  const fetchReservations = async () => {
+  // Phase 12B: Wrapped in useCallback for hook hygiene
+  const fetchReservations = useCallback(async () => {
     try {
       setLoading(true);
       const params = new URLSearchParams();

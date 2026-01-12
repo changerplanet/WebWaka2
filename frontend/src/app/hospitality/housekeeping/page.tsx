@@ -101,11 +101,8 @@ export default function HousekeepingPage() {
   const [filterPriority, setFilterPriority] = useState<string>('all');
   const [actionLoading, setActionLoading] = useState<string | null>(null);
 
-  useEffect(() => {
-    fetchTasks();
-  }, [filterStatus, filterPriority]);
-
-  const fetchTasks = async () => {
+  // Phase 12B: Wrapped in useCallback for hook hygiene
+  const fetchTasks = useCallback(async () => {
     try {
       setLoading(true);
       const params = new URLSearchParams();

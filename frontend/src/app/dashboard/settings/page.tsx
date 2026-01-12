@@ -45,16 +45,8 @@ export default function SettingsPage() {
   const [userRole, setUserRole] = useState<'TENANT_ADMIN' | 'TENANT_USER' | null>(null)
   const [activeCapabilities, setActiveCapabilities] = useState<string[]>([])
   
-  useEffect(() => {
-    if (tenantSlug) {
-      fetchData()
-    } else {
-      setError('No tenant specified')
-      setLoading(false)
-    }
-  }, [tenantSlug])
-  
-  async function fetchData() {
+  // Phase 12B: Wrapped in useCallback for hook hygiene
+  const fetchData = useCallback(async () => {
     try {
       // Fetch session
       const sessionRes = await fetch('/api/auth/session')

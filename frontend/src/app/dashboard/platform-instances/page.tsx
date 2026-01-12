@@ -44,16 +44,8 @@ export default function PlatformInstancesPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   
-  useEffect(() => {
-    if (tenantSlug) {
-      fetchData()
-    } else {
-      setError('No tenant specified')
-      setLoading(false)
-    }
-  }, [tenantSlug])
-  
-  async function fetchData() {
+  // Phase 12B: Wrapped in useCallback for hook hygiene
+  const fetchData = useCallback(async () => {
     try {
       // Fetch session
       const sessionRes = await fetch('/api/auth/session')
