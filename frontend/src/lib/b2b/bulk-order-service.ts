@@ -11,7 +11,7 @@
 import { prisma } from '@/lib/prisma'
 import { B2BBulkOrderStatus, Prisma } from '@prisma/client'
 import { B2BPricingService } from './pricing-service'
-import { withPrismaDefaults } from '@/lib/db/prismaDefaults'
+import { withPrismaDefaults, toJsonValue } from '@/lib/db/prismaDefaults'
 
 // ============================================================================
 // TYPES
