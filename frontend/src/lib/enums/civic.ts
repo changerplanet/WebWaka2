@@ -518,3 +518,25 @@ export function validatePollStatus(
 ): CivicPollStatusService | undefined {
   return validateEnumValue(value, CIVIC_POLL_STATUS_SERVICE)
 }
+
+/**
+ * Poll type values.
+ * From: lib/civic/config.ts - POLL_TYPES
+ */
+export const CIVIC_POLL_TYPE_SERVICE = [
+  'ELECTION',
+  'DECISION',
+  'SURVEY',
+  'BUDGET_APPROVAL'
+] as const
+
+export type CivicPollTypeService = typeof CIVIC_POLL_TYPE_SERVICE[number]
+
+/**
+ * Validates poll type URL param.
+ */
+export function validatePollType(
+  value: string | null | undefined
+): CivicPollTypeService | undefined {
+  return validateEnumValue(value, CIVIC_POLL_TYPE_SERVICE)
+}
