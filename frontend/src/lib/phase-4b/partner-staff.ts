@@ -215,7 +215,7 @@ export async function getPartnerStaff(
     ]
   })
   
-  return staff as unknown as StaffMember[]
+  return mapStaffMembers(staff)
 }
 
 /**
@@ -231,7 +231,7 @@ export async function getStaffById(staffId: string): Promise<StaffMember | null>
     }
   })
   
-  return staff as unknown as StaffMember
+  return mapStaffMember(staff)
 }
 
 // ============================================================================
