@@ -53,7 +53,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
         {
           limit: limit ? parseInt(limit) : undefined,
           offset: offset ? parseInt(offset) : undefined,
-          transactionType: transactionType as any,
+          transactionType: validateTransactionType(transactionType),
         }
       );
 
