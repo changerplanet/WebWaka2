@@ -61,13 +61,12 @@ export async function GET(request: NextRequest) {
     }
     
     // Get list with filters
-    // Note: Service layer uses its own status/category/priority enums
-    // which differ from Prisma schema. Using `as any` until Phase 10C
-    // aligns service function signatures with Prisma types.
+    // Phase 10C: Using bidirectional enum validators to safely convert 
+    // URL params to service-layer enum values without unsafe casts.
     const options = {
-      status: searchParams.get('status') as any,
-      category: searchParams.get('category') as any,
-      priority: searchParams.get('priority') as any,
+      status: validateServiceRequestStatus(searchParams.get('status')),
+      category: validateServiceRequestCategory(searchParams.get('category')),
+      priority: validateServiceRequestPriority(searchParams.get('priority')),
       assignedTo: searchParams.get('assignedTo') || undefined,
       constituentId: searchParams.get('constituentId') || undefined,
       search: searchParams.get('search') || undefined,
