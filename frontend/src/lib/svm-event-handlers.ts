@@ -13,21 +13,29 @@
 import { prisma } from './prisma'
 import { createAuditLog } from './audit'
 import { AuditAction } from '@prisma/client'
+import {
+  type SVMEvent,
+  type SVMEventUnknown,
+  type SVMOrderPlacedEvent,
+  type SVMPaymentRequestedEvent,
+  type SVMOrderCancelledEvent,
+  type SVMRefundRequestedEvent,
+  type SVMOrderShippedEvent,
+  isSVMEvent,
+  type EventHandlerResult
+} from './events/eventTypes'
 
 // ============================================================================
-// TYPES
+// TYPES (Re-exports for backwards compatibility)
 // ============================================================================
 
-interface SVMEventBase {
-  eventId: string
-  eventType: string
-  timestamp: string
-  idempotencyKey: string
-}
-
-interface OrderPlacedPayload {
-  orderId: string
-  orderNumber: string
+export type { 
+  OrderPlacedPayload,
+  PaymentRequestedPayload,
+  OrderCancelledPayload,
+  SVMRefundRequestedPayload as RefundRequestedPayload,
+  OrderShippedPayload
+} from './events/eventTypes'
   tenantId: string
   customerId?: string
   guestEmail?: string
