@@ -29,7 +29,7 @@ import { HousekeepingStatus, HousekeepingTaskType } from '@/lib/hospitality/conf
 
 // Phase 13: Housekeeping validators
 const VALID_HOUSEKEEPING_STATUSES: HousekeepingStatus[] = ['PENDING', 'ASSIGNED', 'IN_PROGRESS', 'COMPLETED', 'INSPECTED', 'CANCELLED'];
-const VALID_TASK_TYPES: HousekeepingTaskType[] = ['CHECKOUT_CLEAN', 'STAYOVER_CLEAN', 'DEEP_CLEAN', 'TURNDOWN', 'INSPECTION', 'MAINTENANCE', 'AMENITY_RESTOCK'];
+const VALID_TASK_TYPES: HousekeepingTaskType[] = ['CHECKOUT_CLEAN', 'STAY_OVER', 'DEEP_CLEAN', 'TURNDOWN', 'INSPECTION', 'TOUCH_UP'];
 const VALID_PRIORITIES = ['LOW', 'MEDIUM', 'HIGH', 'URGENT'] as const;
 type HousekeepingPriority = typeof VALID_PRIORITIES[number];
 
