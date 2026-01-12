@@ -12,6 +12,53 @@
  * @module lib/enums/types
  */
 
+// =============================================================================
+// PHASE 10D: RUNTIME ENUM SAFETY NETS
+// =============================================================================
+
+/**
+ * Enum mismatch log entry structure
+ */
+export interface EnumMismatchLog {
+  /** Name of the enum being validated */
+  enumName: string
+  /** The invalid value encountered */
+  value: string | null | undefined
+  /** Source layer where mismatch occurred */
+  source: 'API' | 'Service' | 'DB'
+  /** Timestamp of the mismatch */
+  timestamp?: string
+}
+
+/**
+ * Logs an enum mismatch for observability.
+ * 
+ * PHASE 10D: Runtime safety net - logging only, no behavior change.
+ * 
+ * This function:
+ * - Does NOT throw errors
+ * - Does NOT change return values
+ * - Does NOT coerce values
+ * - ONLY logs for observability
+ * 
+ * @param entry - The mismatch details to log
+ */
+export function logEnumMismatch(entry: EnumMismatchLog): void {
+  const timestamp = entry.timestamp || new Date().toISOString()
+  
+  // Structured log format for easy parsing/filtering
+  console.warn(
+    `[EnumMismatch] ${entry.enumName} | ` +
+    `value="${entry.value ?? 'null'}" | ` +
+    `source=${entry.source} | ` +
+    `time=${timestamp}`
+  )
+}
+
+// =============================================================================
+// ENUM MAPPING RESULT TYPES
+// =============================================================================
+
 /**
  * Result of an enum mapping operation
  */
