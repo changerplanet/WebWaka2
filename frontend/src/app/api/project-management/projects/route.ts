@@ -42,10 +42,11 @@ export async function GET(request: Request) {
       return NextResponse.json(stats);
     }
 
+    // Phase 11B: Using type-safe enum validators
     const filters: ProjectFilters = {
-      status: searchParams.get('status') as any || undefined,
-      priority: searchParams.get('priority') as any || undefined,
-      health: searchParams.get('health') as any || undefined,
+      status: validateProjectStatus(searchParams.get('status')),
+      priority: validateProjectPriority(searchParams.get('priority')),
+      health: validateProjectHealth(searchParams.get('health')),
       category: searchParams.get('category') || undefined,
       clientId: searchParams.get('clientId') || undefined,
       ownerId: searchParams.get('ownerId') || undefined,
