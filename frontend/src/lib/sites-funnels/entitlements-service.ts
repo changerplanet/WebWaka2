@@ -166,7 +166,8 @@ export async function getSitesFunnelsEntitlementStatus(
     }
 
     // Get configuration from activation metadata
-    const config = (activation.configuration as any) || {};
+    // Phase 11C: Using typed configuration parser
+    const config = parseActivationConfig(activation.configuration);
     const features = { ...DEFAULT_FEATURES, ...(config.features || {}) };
     const limits = { ...DEFAULT_LIMITS, ...(config.limits || {}) };
 
