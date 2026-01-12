@@ -10,7 +10,18 @@
 
 import { withPrismaDefaults } from '@/lib/db/prismaDefaults'
 import { prisma } from '../../prisma'
-import { HospitalityReservationType, HospitalityReservationStatus } from '@prisma/client'
+import { HospitalityReservationType, HospitalityReservationStatus, HospitalityRoomType } from '@prisma/client'
+
+// Phase 13: Room type validator
+const VALID_ROOM_TYPES: HospitalityRoomType[] = ['STANDARD', 'DELUXE', 'EXECUTIVE', 'SUITE', 'PRESIDENTIAL', 'STUDIO', 'APARTMENT', 'DORMITORY'];
+function validateRoomType(roomType: string | undefined): HospitalityRoomType | undefined {
+  if (!roomType) return undefined;
+  if (VALID_ROOM_TYPES.includes(roomType as HospitalityRoomType)) {
+    return roomType as HospitalityRoomType;
+  }
+  console.warn(`[Hospitality Reservation] Invalid roomType '${roomType}'`);
+  return undefined;
+}
 
 // ============================================================================
 // TYPES
