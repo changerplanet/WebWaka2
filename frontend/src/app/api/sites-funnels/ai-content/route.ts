@@ -19,6 +19,7 @@ import {
   markAIContentEdited,
   getAIContentHistory,
 } from '@/lib/sites-funnels/ai-content-service';
+import { validateAiContentStatus, validateAiContentType } from '@/lib/enums';
 
 export async function GET(request: NextRequest) {
   const session = await getCurrentSession();
