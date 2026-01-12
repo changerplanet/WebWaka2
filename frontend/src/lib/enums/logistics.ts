@@ -131,16 +131,14 @@ export function mapDeliveryStatusToPrisma(
 // =============================================================================
 
 /**
- * ⚠️ CONDITIONAL: Not authorized for Phase 10B execution
+ * JOB STATUS - SERVICE-ONLY ENUM (Phase 10C APPROVED)
  * 
- * TODO: Phase 10C - Service-only enum, no Prisma equivalent
+ * This is a UI/workflow enum only - no Prisma mapping needed.
+ * Per PHASE_10_ENUM_AUTHORITY_MATRIX: SERVICE-ONLY enums don't need DB alignment.
  * 
  * Service values (full workflow):
  * - CREATED, PENDING, ASSIGNED, ACCEPTED, EN_ROUTE_PICKUP, AT_PICKUP,
  * - PICKED_UP, IN_TRANSIT, AT_DELIVERY, DELIVERED, COMPLETED, CANCELLED, FAILED
- * 
- * This is a UI/workflow enum only - no Prisma mapping needed.
- * May need validation utilities in Phase 10C.
  */
 export const LOGISTICS_JOB_STATUS_SERVICE = [
   'CREATED',
@@ -159,3 +157,69 @@ export const LOGISTICS_JOB_STATUS_SERVICE = [
 ] as const
 
 export type LogisticsJobStatusService = typeof LOGISTICS_JOB_STATUS_SERVICE[number]
+
+/**
+ * Validates and returns a valid job status value.
+ * Used at API boundaries for filter params.
+ */
+export function validateJobStatus(
+  value: string | null | undefined
+): LogisticsJobStatusService | undefined {
+  return validateEnumValue(value, LOGISTICS_JOB_STATUS_SERVICE)
+}
+
+// =============================================================================
+// JOB TYPE - SERVICE-ONLY ENUM (Phase 10C APPROVED)
+// =============================================================================
+
+/**
+ * Job types used in logistics service layer.
+ * No Prisma equivalent - these are UI/workflow enums.
+ */
+export const LOGISTICS_JOB_TYPE_SERVICE = [
+  'DELIVERY',
+  'PICKUP',
+  'PICKUP_DELIVERY',
+  'MULTI_STOP',
+  'TRANSPORT',
+  'FREIGHT',
+  'TRANSFER'
+] as const
+
+export type LogisticsJobTypeService = typeof LOGISTICS_JOB_TYPE_SERVICE[number]
+
+/**
+ * Validates and returns a valid job type value.
+ */
+export function validateJobType(
+  value: string | null | undefined
+): LogisticsJobTypeService | undefined {
+  return validateEnumValue(value, LOGISTICS_JOB_TYPE_SERVICE)
+}
+
+// =============================================================================
+// JOB PRIORITY - SERVICE-ONLY ENUM (Phase 10C APPROVED)
+// =============================================================================
+
+/**
+ * Job priority levels used in logistics service layer.
+ * No Prisma equivalent - these are UI/workflow enums.
+ */
+export const LOGISTICS_JOB_PRIORITY_SERVICE = [
+  'LOW',
+  'NORMAL',
+  'HIGH',
+  'URGENT',
+  'EXPRESS'
+] as const
+
+export type LogisticsJobPriorityService = typeof LOGISTICS_JOB_PRIORITY_SERVICE[number]
+
+/**
+ * Validates and returns a valid job priority value.
+ */
+export function validateJobPriority(
+  value: string | null | undefined
+): LogisticsJobPriorityService | undefined {
+  return validateEnumValue(value, LOGISTICS_JOB_PRIORITY_SERVICE)
+}
