@@ -22,6 +22,10 @@ import {
   recordAttendance,
   getEventStats,
 } from '@/lib/civic/event-service';
+import {
+  validateEventStatus,
+  validateEventType,
+} from '@/lib/enums';
 
 export async function GET(request: NextRequest) {
   try {

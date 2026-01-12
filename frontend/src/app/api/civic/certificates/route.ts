@@ -19,6 +19,10 @@ import {
   verifyCertificate,
   getCertificateStats,
 } from '@/lib/civic/certificate-service';
+import {
+  validateCertificateStatus,
+  validateCertificateType,
+} from '@/lib/enums';
 
 export async function GET(request: NextRequest) {
   try {

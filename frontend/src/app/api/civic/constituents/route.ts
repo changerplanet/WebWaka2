@@ -17,6 +17,10 @@ import {
   getWards,
   getZones,
 } from '@/lib/civic/constituent-service';
+import {
+  validateMembershipStatus,
+  validateMembershipType,
+} from '@/lib/enums';
 
 export async function GET(request: NextRequest) {
   try {
