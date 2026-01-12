@@ -21,6 +21,10 @@ import {
   getDriverPerformance,
   getDriverStats,
 } from '@/lib/logistics/driver-service';
+import {
+  validateAgentStatus,
+  validateLicenseType,
+} from '@/lib/enums';
 
 export async function GET(request: NextRequest) {
   try {
