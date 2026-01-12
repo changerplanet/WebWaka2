@@ -122,7 +122,7 @@ export async function GET(request: NextRequest) {
           return NextResponse.json({ success: false, error: 'Score required' }, { status: 400 });
         }
 
-        const result = getGradeFromScore(parseFloat(score), scale as any);
+        const result = getGradeFromScore(parseFloat(score), validateGradeScale(scale));
         return NextResponse.json({ success: true, result });
       }
 
