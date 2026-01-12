@@ -7,7 +7,7 @@
  * Read-only with PII masking and no raw stack traces.
  */
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { 
   AlertTriangle, XCircle, AlertCircle, Info, ArrowLeft, Loader2,
