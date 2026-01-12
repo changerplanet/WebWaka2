@@ -17,6 +17,10 @@ import {
   type CreateRentScheduleInput,
   type RentScheduleFilters 
 } from '@/lib/real-estate';
+import { getEnumParam } from '@/lib/utils/urlParams';
+
+// Valid enum values
+const RENT_PAYMENT_STATUSES = ['PENDING', 'PAID', 'PARTIAL', 'OVERDUE', 'WAIVED'] as const;
 
 // GET /api/real-estate/rent-schedules
 export async function GET(request: Request) {
@@ -44,7 +48,7 @@ export async function GET(request: Request) {
     const filters: RentScheduleFilters = {
       leaseId: searchParams.get('leaseId') || undefined,
       propertyId: searchParams.get('propertyId') || undefined,
-      status: searchParams.get('status') as any,
+      status: getEnumParam(searchParams, 'status', RENT_PAYMENT_STATUSES),
       dueDateFrom: searchParams.get('dueDateFrom') ? new Date(searchParams.get('dueDateFrom')!) : undefined,
       dueDateTo: searchParams.get('dueDateTo') ? new Date(searchParams.get('dueDateTo')!) : undefined,
       page: parseInt(searchParams.get('page') || '1'),
