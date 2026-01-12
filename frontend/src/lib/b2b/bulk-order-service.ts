@@ -120,7 +120,7 @@ export class B2BBulkOrderService {
         profileId: input.profileId,
         name: input.name,
         description: input.description,
-        items: itemsWithPricing as unknown as Prisma.InputJsonValue,
+        items: toJsonValue(itemsWithPricing),
         itemCount: itemsWithPricing.length,
         subtotal,
         discountTotal,
@@ -205,7 +205,7 @@ export class B2BBulkOrderService {
       data: {
         name: input.name,
         description: input.description,
-        items: items as unknown as Prisma.InputJsonValue,
+        items: toJsonValue(items),
         itemCount: items.length,
         subtotal,
         discountTotal,
@@ -247,7 +247,7 @@ export class B2BBulkOrderService {
       where: { id: draftId },
       data: {
         status: 'SUBMITTED',
-        pricingSnapshot: pricingSnapshot as unknown as Prisma.InputJsonValue,
+        pricingSnapshot: toJsonValue(pricingSnapshot),
         submittedBy,
         submittedAt: new Date(),
       },
