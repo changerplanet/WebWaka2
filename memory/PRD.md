@@ -134,13 +134,9 @@ Added `export const dynamic = 'force-dynamic'` to 485 API routes.
 
 ## Remaining Items (Prioritized Backlog)
 
-### P0 - Phase 10C Conditional Enums
+### P0 - Phase 10E Conditional Enums (Domain Approval Required)
 - `LogisticsDeliveryStatus` mapping requires domain approval (significant semantic drift)
 - `SvmOrderStatus` mapping (if needed)
-
-### P1 - Phase 10D Runtime Safety Nets
-- Optional non-fatal runtime guards for unexpected enum values
-- Logging/monitoring for enum validation failures
 
 ### P2 - Legacy Debt
 - Fix 52 semantic React Hook warnings (baselined in Phase 3)
