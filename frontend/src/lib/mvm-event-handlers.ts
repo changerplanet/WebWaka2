@@ -494,8 +494,8 @@ export async function handleCommissionEarned(
  * - Does NOT execute payout (handled by external system)
  */
 export async function handlePayoutReady(
-  event: MVMEventBase & { payload: PayoutReadyPayload }
-): Promise<{ success: boolean; error?: string }> {
+  event: MVMPayoutReadyEvent
+): Promise<EventHandlerResult> {
   const { idempotencyKey, payload } = event
 
   if (await isEventProcessed(idempotencyKey)) {
