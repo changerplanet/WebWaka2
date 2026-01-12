@@ -345,14 +345,13 @@ useEffect(() => {
 - Pattern: URL param or filter state triggers fetch
 - Fix: Wrap function in `useCallback` with matching deps
 
-### Category B: Intentional Empty Deps — Document Only (4 warnings)
-- #1, #2, #4, #9
-- Pattern: Mount-only or auth-state-only execution
+### Category B: Intentional Empty/Partial Deps — Document Only (5 warnings)
+- #1, #2, #4, #9, #11
+- Pattern: Mount-only, auth-state-only, or derive-initial-value execution
 - Fix: Add inline comment explaining intent
 
-### Category C: Requires Verification (1 warning)
-- #11 (POS slug)
-- Status: Need to locate exact file and understand context
+### Category C: Requires Verification (0 warnings)
+- All warnings verified
 
 ---
 
