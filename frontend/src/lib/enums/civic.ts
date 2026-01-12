@@ -246,29 +246,35 @@ export const mapServiceCategoryToPrisma = createEnumMapper<
 /**
  * Validates and returns a Prisma-compatible status value.
  * Use this when you know the input should already be a Prisma value.
+ * 
+ * Phase 10D: Logs mismatches for observability.
  */
 export function validateCivicRequestStatus(
   value: string | null | undefined
 ): CivicRequestStatusPrisma | undefined {
-  return validateEnumValue(value, CIVIC_REQUEST_STATUS_PRISMA)
+  return validateEnumValue(value, CIVIC_REQUEST_STATUS_PRISMA, 'CivicRequestStatusPrisma', 'DB')
 }
 
 /**
  * Validates and returns a Prisma-compatible priority value.
+ * 
+ * Phase 10D: Logs mismatches for observability.
  */
 export function validateCivicPriority(
   value: string | null | undefined
 ): CivicCasePriorityPrisma | undefined {
-  return validateEnumValue(value, CIVIC_CASE_PRIORITY_PRISMA)
+  return validateEnumValue(value, CIVIC_CASE_PRIORITY_PRISMA, 'CivicCasePriorityPrisma', 'DB')
 }
 
 /**
  * Validates and returns a Prisma-compatible category value.
+ * 
+ * Phase 10D: Logs mismatches for observability.
  */
 export function validateCivicCategory(
   value: string | null | undefined
 ): CivicServiceCategoryPrisma | undefined {
-  return validateEnumValue(value, CIVIC_SERVICE_CATEGORY_PRISMA)
+  return validateEnumValue(value, CIVIC_SERVICE_CATEGORY_PRISMA, 'CivicServiceCategoryPrisma', 'DB')
 }
 
 // =============================================================================
