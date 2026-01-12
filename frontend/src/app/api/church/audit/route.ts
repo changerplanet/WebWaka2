@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 /**
  * Church Suite — Audit API
  * Phase 1: Registry & Membership

@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 /**
  * Church Suite — Regulator Access API
  * Phase 4: Governance, Audit & Transparency

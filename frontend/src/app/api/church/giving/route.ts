@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 /**
  * Church Suite — Giving Summary API
  * Phase 3: Giving & Financial Facts

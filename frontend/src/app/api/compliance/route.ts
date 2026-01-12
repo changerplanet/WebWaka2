@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 /**
  * MODULE 13: COMPLIANCE & TAX (NIGERIA-FIRST)
  * API Routes

@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 /**
  * Domain-Instance Mapping API (Phase 2.1)
  * 

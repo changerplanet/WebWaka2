@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 /**
  * Platform Instance Detail API (Phase 2.1)
  * 

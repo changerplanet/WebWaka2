@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 /**
  * MODULE 11: PARTNER & RESELLER PLATFORM
  * API Routes

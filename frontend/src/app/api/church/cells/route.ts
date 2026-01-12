@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 /**
  * Church Suite — Cell Groups API
  * Phase 1: Registry & Membership

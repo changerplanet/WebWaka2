@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 /**
  * MODULE 12: SUBSCRIPTION & BILLING EXTENSIONS
  * API Routes

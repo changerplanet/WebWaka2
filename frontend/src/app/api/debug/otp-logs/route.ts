@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 /**
  * DEBUG ENDPOINT - OTP TEST LOGS
  * 

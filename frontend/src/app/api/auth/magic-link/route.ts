@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 import { NextRequest, NextResponse } from 'next/server'
 import { createMagicLink } from '@/lib/auth'
 import { resend, EMAIL_FROM } from '@/lib/resend'

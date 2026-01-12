@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 /**
  * Church Suite — Guardian Links API
  * Phase 1: Registry & Membership

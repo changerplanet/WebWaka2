@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 /**
  * Church Suite — Service Detail API
  * Phase 2: Ministries, Services & Events

@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 /**
  * Church Suite — Role Assignments API
  * Phase 1: Registry & Membership
