@@ -54,7 +54,8 @@ export async function GET(request: NextRequest) {
   try {
     switch (action) {
       case 'list': {
-        const status = searchParams.get('status') as any;
+        // Phase 11C: Using type-safe enum validator
+        const status = validateFunnelStatus(searchParams.get('status'));
         const partnerId = searchParams.get('partnerId') || undefined;
         const siteId = searchParams.get('siteId') || undefined;
         const search = searchParams.get('search') || undefined;
