@@ -85,7 +85,7 @@ export function buildDeliveryAssignmentCreate(
     estimatedDurationMin: input.estimatedDurationMin ?? null,
     scheduledPickupAt: input.scheduledPickupAt ?? null,
     scheduledDeliveryAt: input.scheduledDeliveryAt ?? null,
-    packageDetails: input.packageDetails ?? Prisma.JsonNull,
+    packageDetails: input.packageDetails ? input.packageDetails as Prisma.InputJsonValue : Prisma.JsonNull,
     deliveryInstructions: input.deliveryInstructions ?? null,
     metadata: input.metadata ?? Prisma.JsonNull,
     autoAssigned: input.autoAssigned ?? false,
