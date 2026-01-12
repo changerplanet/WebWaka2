@@ -110,7 +110,7 @@ export function buildDeliveryAssignmentUpdate(
   if (input.actualFee !== undefined) update.actualFee = input.actualFee;
   if (input.actualDistanceKm !== undefined) update.actualDistanceKm = input.actualDistanceKm;
   if (input.actualDurationMin !== undefined) update.actualDurationMin = input.actualDurationMin;
-  if (input.metadata !== undefined) update.metadata = input.metadata ?? Prisma.JsonNull;
+  if (input.metadata !== undefined) update.metadata = input.metadata ? input.metadata as Prisma.InputJsonValue : Prisma.JsonNull;
   
   update.updatedAt = new Date();
   
@@ -185,7 +185,7 @@ export function buildDeliveryZoneUpdate(
   if (input.polygon !== undefined) update.polygon = input.polygon ?? Prisma.JsonNull;
   if (input.status !== undefined) update.status = input.status as LogisticsZoneStatus;
   if (input.sortOrder !== undefined) update.sortOrder = input.sortOrder;
-  if (input.metadata !== undefined) update.metadata = input.metadata ?? Prisma.JsonNull;
+  if (input.metadata !== undefined) update.metadata = input.metadata ? input.metadata as Prisma.InputJsonValue : Prisma.JsonNull;
   
   update.updatedAt = new Date();
   
