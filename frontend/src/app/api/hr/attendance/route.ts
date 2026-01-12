@@ -9,6 +9,10 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getCurrentSession } from '@/lib/auth'
 import { AttendanceService } from '@/lib/hr/attendance-service'
 import { HrEntitlementsService } from '@/lib/hr/entitlements-service'
+import { getEnumParam } from '@/lib/utils/urlParams'
+
+// Valid enum values
+const ATTENDANCE_STATUSES = ['PRESENT', 'ABSENT', 'LATE', 'HALF_DAY', 'LEAVE', 'HOLIDAY', 'REST_DAY'] as const;
 
 /**
  * GET /api/hr/attendance
@@ -31,7 +35,7 @@ export async function GET(request: NextRequest) {
     }
     
     const employeeProfileId = searchParams.get('employeeProfileId') || undefined
-    const status = searchParams.get('status') as any
+    const status = getEnumParam(searchParams, 'status', ATTENDANCE_STATUSES)
     const dateFrom = searchParams.get('dateFrom') ? new Date(searchParams.get('dateFrom')!) : undefined
     const dateTo = searchParams.get('dateTo') ? new Date(searchParams.get('dateTo')!) : undefined
     const limit = searchParams.get('limit') ? parseInt(searchParams.get('limit')!) : undefined

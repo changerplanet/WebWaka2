@@ -9,6 +9,11 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getCurrentSession } from '@/lib/auth'
 import { LeaveService } from '@/lib/hr/leave-service'
 import { HrEntitlementsService } from '@/lib/hr/entitlements-service'
+import { getEnumParam } from '@/lib/utils/urlParams'
+
+// Valid enum values
+const LEAVE_STATUSES = ['DRAFT', 'PENDING', 'APPROVED', 'REJECTED', 'CANCELLED', 'COMPLETED'] as const;
+const LEAVE_TYPES = ['ANNUAL', 'SICK', 'CASUAL', 'MATERNITY', 'PATERNITY', 'COMPASSIONATE', 'UNPAID', 'STUDY'] as const;
 
 /**
  * GET /api/hr/leave
@@ -47,8 +52,8 @@ export async function GET(request: NextRequest) {
     }
     
     const employeeProfileId = searchParams.get('employeeProfileId') || undefined
-    const status = searchParams.get('status') as any
-    const leaveType = searchParams.get('leaveType') as any
+    const status = getEnumParam(searchParams, 'status', LEAVE_STATUSES)
+    const leaveType = getEnumParam(searchParams, 'leaveType', LEAVE_TYPES)
     const dateFrom = searchParams.get('dateFrom') ? new Date(searchParams.get('dateFrom')!) : undefined
     const dateTo = searchParams.get('dateTo') ? new Date(searchParams.get('dateTo')!) : undefined
     const limit = searchParams.get('limit') ? parseInt(searchParams.get('limit')!) : undefined
