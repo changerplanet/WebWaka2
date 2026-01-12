@@ -24,6 +24,10 @@ import {
   getPollResults,
   getPollStats,
 } from '@/lib/civic/voting-service';
+import {
+  validatePollStatus,
+  validatePollType,
+} from '@/lib/enums';
 
 export async function GET(request: NextRequest) {
   try {
