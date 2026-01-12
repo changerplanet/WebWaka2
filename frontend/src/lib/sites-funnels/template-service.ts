@@ -71,9 +71,9 @@ const TemplateBlockSchema = z.object({
   id: z.string().optional(),
   type: z.string().default('section'),
   name: z.string().default('Block'),
-  content: z.record(z.any()).optional().default({}),
-  styles: z.record(z.any()).optional(),
-  settings: z.record(z.any()).optional(),
+  content: z.record(z.string(), z.any()).optional().default({}),
+  styles: z.record(z.string(), z.any()).optional(),
+  settings: z.record(z.string(), z.any()).optional(),
 });
 
 const TemplateBlocksSchema = z.array(TemplateBlockSchema);
