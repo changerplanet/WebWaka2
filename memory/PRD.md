@@ -243,7 +243,7 @@ Added `export const dynamic = 'force-dynamic'` to 485 API routes.
 ### P3 - Optional Enhancements
 - Structured logging integration (Pino/Winston) for enum mismatches
 - SvmOrderStatus mapping (if needed, currently stub)
-- Fix DOMAIN_REQUIRED React Hook warnings (13 remaining - requires domain review)
+- Phase 15 — Shared `useFetch` hook abstraction (standardize data fetching patterns)
 
 ---
 
