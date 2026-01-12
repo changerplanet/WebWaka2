@@ -115,10 +115,11 @@ export const LOGISTICS_DELIVERY_STATUS_PRISMA = [
 export type LogisticsDeliveryStatusPrisma = typeof LOGISTICS_DELIVERY_STATUS_PRISMA[number]
 
 // Stub function - NOT IMPLEMENTED
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export function mapDeliveryStatusToPrisma(
-  _serviceStatus: string | null | undefined
+  serviceStatus: string | null | undefined
 ): LogisticsDeliveryStatusPrisma {
+  // Log the attempted usage for debugging
+  console.error('[Phase 10C Required] mapDeliveryStatusToPrisma called with:', serviceStatus)
   throw new Error(
     '[Phase 10C Required] mapDeliveryStatusToPrisma is not yet implemented. ' +
     'Requires domain approval for mapping decisions.'

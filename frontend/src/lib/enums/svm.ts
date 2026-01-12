@@ -73,10 +73,11 @@ export type SvmOrderStatusService = typeof SVM_ORDER_STATUS_SERVICE[number]
  * 2. Should OUT_FOR_DELIVERY be preserved in a separate field?
  * 3. What about partial returns?
  */
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export function mapSvmOrderStatusToPrisma(
-  _serviceStatus: string | null | undefined
+  serviceStatus: string | null | undefined
 ): SvmOrderStatusPrisma {
+  // Log the attempted usage for debugging
+  console.error('[Phase 10C Required] mapSvmOrderStatusToPrisma called with:', serviceStatus)
   throw new Error(
     '[Phase 10C Required] mapSvmOrderStatusToPrisma is not yet implemented. ' +
     'Requires product owner approval for mapping decisions.'
