@@ -189,6 +189,29 @@ export {
   validateTeamRole
 } from './project-management'
 
+// Sites & Funnels module enums (Phase 11C)
+export {
+  SF_SITE_STATUS,
+  SF_FUNNEL_STATUS,
+  SF_AI_CONTENT_STATUS,
+  SF_AI_CONTENT_TYPE,
+  SF_PERMISSION_ACTIONS,
+  type SfSiteStatusType,
+  type SfFunnelStatusType,
+  type SfAiContentStatusType,
+  type SfAiContentTypeType,
+  type SfPermissionActionType,
+  type TemplateBlock,
+  type ActivationConfiguration,
+  validateSiteStatus,
+  validateFunnelStatus,
+  validateAiContentStatus,
+  validateAiContentType,
+  constructSfPermissionAction,
+  parseTemplateBlocks,
+  parseActivationConfig
+} from './sites-funnels'
+
 // SVM module enums (stubs only)
 export {
   // Prisma canonical values
