@@ -18,7 +18,17 @@ import {
   getSubjectPerformance,
   getStudentsAtRisk,
 } from '@/lib/education/grading-service';
-import { getGradeFromScore, GRADE_SCALES } from '@/lib/education/config';
+import { getGradeFromScore, GRADE_SCALES, GradeScaleType } from '@/lib/education/config';
+
+// Phase 13: Grade scale validator
+const VALID_GRADE_SCALES = Object.keys(GRADE_SCALES) as GradeScaleType[];
+function validateGradeScale(scale: string): GradeScaleType {
+  if (VALID_GRADE_SCALES.includes(scale as GradeScaleType)) {
+    return scale as GradeScaleType;
+  }
+  console.warn(`[Education Grades] Invalid grade scale '${scale}', defaulting to WAEC`);
+  return 'WAEC';
+}
 
 /**
  * GET /api/education/grades
