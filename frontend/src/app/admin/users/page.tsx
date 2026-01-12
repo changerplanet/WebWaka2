@@ -115,7 +115,17 @@ export default function AllUsersPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [searchQuery, roleFilter, offset])
+
+  useEffect(() => {
+    checkAuth()
+  }, [checkAuth])
+
+  useEffect(() => {
+    if (currentUser) {
+      fetchUsers()
+    }
+  }, [currentUser, fetchUsers])
 
   async function handleRoleChange(userId: string, newRole: 'USER' | 'SUPER_ADMIN') {
     if (userId === currentUser?.id && newRole === 'USER') {
