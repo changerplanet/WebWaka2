@@ -159,25 +159,30 @@ Added `export const dynamic = 'force-dynamic'` to 485 API routes.
 
 **PHASE 11 SUMMARY: Total 35 casts eliminated (380 → 345)**
 
-### Phase 13 - CONDITIONAL `as any` Reduction Program (IN PROGRESS - December 2025)
+### Phase 13 - CONDITIONAL `as any` Reduction Program (COMPLETE - December 2025)
 
-**Phase 13A - Sites/Funnels Audit (COMPLETE)**
-- Read-only audit of 5 `as any` casts in sites-funnels module
-- Classified into: SAFE_WITH_MAPPING (4), DOMAIN_DECISION_REQUIRED (1)
-- Report: `/app/frontend/docs/PHASE_13A_SITES_FUNNELS_AS_ANY_AUDIT.md`
+**Execution Mode**: Continuous under standing authorization
 
-**Phase 13C - Sites/Funnels Reduction (COMPLETE)**
-- Created `TemplateBlockSchema` Zod validator for JSON field parsing
-- Replaced 4 `as any[]` casts with type-safe `parseTemplateBlocks()` function
-- Cast count: 5 → 1 (80% reduction in module)
-- 1 cast deferred (AuditAction enum - requires schema change)
-- Report: `/app/frontend/docs/PHASE_13C_SITES_FUNNELS_AS_ANY_REDUCTION_REPORT.md`
+**Module Results**:
+| Module | Before | After | Fixed | Deferred |
+|--------|--------|-------|-------|----------|
+| Sites/Funnels | 5 | 1 | 4 | 1 |
+| Education | 16 | 15 | 1 | 15 |
+| Hospitality | 5 | 0 | 5 | 0 |
+| Logistics | 13 | 13 | 0 | 13 |
+| Marketing | 0 | 0 | 0 | 0 |
+| CRM | 16 | 15 | 1 | 15 |
+| **Total** | 55 | 44 | 11 | 44 |
 
-**Next Modules in Queue:**
-- Education (low risk)
-- Content/CMS (medium risk)
-- SVM non-transactional (medium risk)
-- CRM non-billing (higher risk)
+**Key Fixes Applied**:
+- Zod-validated `parseTemplateBlocks()` for JSON template blocks
+- `validateGradeScale()` for education grade scales
+- `validateFolioStatus()`, `validateHousekeepingStatus()`, `validateTaskType()`, `validatePriority()`, `validateRoomType()` for hospitality
+- `validateTransactionType()` for CRM loyalty
+
+**Deferred Items**: 44 casts (mostly Prisma create/upsert entity type mismatches)
+
+**Report**: `/app/frontend/docs/PHASE_13_CONDITIONAL_AS_ANY_PROGRAM_REPORT.md`
 
 ---
 
