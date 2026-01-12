@@ -20,12 +20,11 @@ import {
   getOverdueRequests,
   getServiceRequestStats,
 } from '@/lib/civic/service-request-service';
-import { getEnumParam } from '@/lib/utils/urlParams';
-
-// Valid enum values
-const REQUEST_STATUSES = ['DRAFT', 'SUBMITTED', 'UNDER_REVIEW', 'PENDING_DOCUMENTS', 'PENDING_PAYMENT', 'PENDING_INSPECTION', 'APPROVED', 'REJECTED', 'CANCELLED', 'EXPIRED'] as const;
-const SERVICE_CATEGORIES = ['PERMITS', 'LICENSES', 'CERTIFICATES', 'REGISTRATIONS', 'APPROVALS', 'RENEWALS', 'COMPLAINTS', 'INQUIRIES', 'OTHER'] as const;
-const PRIORITIES = ['LOW', 'NORMAL', 'HIGH', 'URGENT'] as const;
+import {
+  validateCivicRequestStatus,
+  validateCivicCategory,
+  validateCivicPriority,
+} from '@/lib/enums';
 
 export async function GET(request: NextRequest) {
   try {
