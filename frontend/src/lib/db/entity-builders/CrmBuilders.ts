@@ -243,7 +243,7 @@ export function buildLoyaltyRuleCreate(
     name: input.name,
     description: input.description ?? null,
     ruleType: input.ruleType,
-    conditions: input.conditions ?? Prisma.JsonNull,
+    conditions: input.conditions ? input.conditions as Prisma.InputJsonValue : Prisma.JsonNull,
     pointsAwarded: input.pointsAwarded,
     multiplier: input.multiplier ?? 1,
     isActive: input.isActive ?? true,
