@@ -20,6 +20,12 @@ import {
   getOverdueRequests,
   getServiceRequestStats,
 } from '@/lib/civic/service-request-service';
+import { getEnumParam } from '@/lib/utils/urlParams';
+
+// Valid enum values
+const REQUEST_STATUSES = ['DRAFT', 'SUBMITTED', 'UNDER_REVIEW', 'PENDING_DOCUMENTS', 'PENDING_PAYMENT', 'PENDING_INSPECTION', 'APPROVED', 'REJECTED', 'CANCELLED', 'EXPIRED'] as const;
+const SERVICE_CATEGORIES = ['PERMITS', 'LICENSES', 'CERTIFICATES', 'REGISTRATIONS', 'APPROVALS', 'RENEWALS', 'COMPLAINTS', 'INQUIRIES', 'OTHER'] as const;
+const PRIORITIES = ['LOW', 'NORMAL', 'HIGH', 'URGENT'] as const;
 
 export async function GET(request: NextRequest) {
   try {
@@ -54,9 +60,9 @@ export async function GET(request: NextRequest) {
     
     // Get list with filters
     const options = {
-      status: searchParams.get('status') as any,
-      category: searchParams.get('category') as any,
-      priority: searchParams.get('priority') as any,
+      status: getEnumParam(searchParams, 'status', REQUEST_STATUSES),
+      category: getEnumParam(searchParams, 'category', SERVICE_CATEGORIES),
+      priority: getEnumParam(searchParams, 'priority', PRIORITIES),
       assignedTo: searchParams.get('assignedTo') || undefined,
       constituentId: searchParams.get('constituentId') || undefined,
       search: searchParams.get('search') || undefined,
