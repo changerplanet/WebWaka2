@@ -277,16 +277,47 @@ useEffect(() => {
 
 ---
 
-### Warning #11: `pos/page.tsx:451` — `slug`
+### Warning #11: `InstanceAdminPage.tsx:451` — `slug`
 
 | Property | Value |
 |----------|-------|
-| **File** | `/app/frontend/src/app/parkhub/pos/page.tsx` (or similar) |
-| **Line** | 451 (if file exists) |
-| **Hook** | `useEffect` with missing `slug` dependency |
-| **Note** | Need to verify exact file location |
+| **File** | `/app/frontend/src/components/platform-instance/InstanceAdminPage.tsx` |
+| **Line** | 451 |
+| **Hook** | `useEffect(() => { if (isCreate && name && !slug) setSlug(...) }, [name, isCreate])` |
+| **Missing Dependency** | `slug` |
+| **Current Behavior** | Auto-generates slug from name during creation |
 
-**Status:** Requires verification — line 451 exceeds some POS page lengths
+**Intent Analysis:**
+```typescript
+// Auto-generate slug from name
+useEffect(() => {
+  if (isCreate && name && !slug) {
+    setSlug(name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, ''))
+  }
+}, [name, isCreate])  // Intentionally excludes slug
+```
+
+**Why dependency was omitted:**
+- Effect checks `!slug` to avoid overwriting user edits
+- If `slug` was in deps, every auto-generated change would re-trigger
+- This is a "derive initial value" pattern, not a sync pattern
+
+**Intended Lifecycle:**
+- ✅ Run when `name` changes AND no slug exists yet
+- ❌ Do NOT re-run after slug is set (whether auto or manual)
+- ❌ Do NOT create infinite loop (setSlug → dep change → setSlug)
+
+**Domain Question:**
+> "Should auto-slug generation stop once any slug exists, or should it track name changes indefinitely?"
+
+**Proposed Strategy:**
+| Option | Description | Recommendation |
+|--------|-------------|----------------|
+| A | Add `slug` to deps | ❌ DANGEROUS (breaks the !slug guard logic) |
+| B | Keep current deps with inline comment | ✅ RECOMMENDED (intentional) |
+| C | Use `useRef` to track "hasUserEditedSlug" | ⚠️ OVERKILL for this case |
+
+**Classification:** Category B — Intentional exclusion, document only
 
 ---
 
