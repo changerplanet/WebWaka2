@@ -130,6 +130,14 @@ Added `export const dynamic = 'force-dynamic'` to 485 API routes.
 - Zero regressions, build passes
 - Report: `/app/frontend/docs/PHASE_10D_RUNTIME_ENUM_SAFETY_REPORT.md`
 
+**Phase 10E - Domain-Approved Delivery Status Mapping (COMPLETE - December 2025)**
+- Implemented `LogisticsDeliveryStatus` mapping with domain approval
+- Canonical mappings: READY→ASSIGNED, OUT_FOR_DELIVERY→IN_TRANSIT, COMPLETED→DELIVERED, CANCELLED→FAILED
+- Created `validateDeliveryStatusArray()` for comma-separated status filtering
+- Eliminated final `as any` cast in `/api/logistics/assignments`
+- **ENUM ALIGNMENT WORKSTREAM CLOSED** - 0 `as any` casts remaining in civic/logistics routes
+- Report: `/app/frontend/docs/PHASE_10E_DELIVERY_STATUS_MAPPING_REPORT.md`
+
 ---
 
 ## Remaining Items (Prioritized Backlog)
