@@ -94,18 +94,7 @@ export default function PartnerManagementPage() {
   const [selectedPartner, setSelectedPartner] = useState<PartnerDetail | null>(null)
   const [detailLoading, setDetailLoading] = useState(false)
 
-  useEffect(() => {
-    loadPartners()
-  }, [statusFilter])
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      loadPartners()
-    }, 300)
-    return () => clearTimeout(timer)
-  }, [searchQuery])
-
-  async function loadPartners() {
+  const loadPartners = useCallback(async () => {
     setLoading(true)
     try {
       const params = new URLSearchParams()
@@ -129,7 +118,11 @@ export default function PartnerManagementPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [searchQuery, statusFilter, pagination.page, pagination.limit])
+
+  useEffect(() => {
+    loadPartners()
+  }, [loadPartners])
 
   async function loadPartnerDetail(partnerId: string) {
     setDetailLoading(true)
