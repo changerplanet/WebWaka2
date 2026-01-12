@@ -112,10 +112,12 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ success: true, history });
     }
     
+    // Phase 10C: Using enum validators to safely convert URL params
+    // to service-layer enum values without unsafe casts.
     const { jobs, total, stats } = await getJobs(tenantId, {
-      status: searchParams.get('status') as any,
-      jobType: searchParams.get('jobType') as any,
-      priority: searchParams.get('priority') as any,
+      status: validateJobStatus(searchParams.get('status')),
+      jobType: validateJobType(searchParams.get('jobType')),
+      priority: validateJobPriority(searchParams.get('priority')),
       driverId: searchParams.get('driverId') || undefined,
       customerId: searchParams.get('customerId') || undefined,
       dateFrom: searchParams.get('dateFrom') || undefined,
