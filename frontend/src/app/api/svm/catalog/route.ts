@@ -167,9 +167,10 @@ export async function GET(request: NextRequest) {
     }
     
     // Build where clause for list/search
+    // Phase 11C: Using type-safe enum validator
     const where: Prisma.ProductWhereInput = {
       tenantId,
-      status: status as any
+      status: validateProductStatus(status)
     }
     
     if (categoryId) {
