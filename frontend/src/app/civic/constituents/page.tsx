@@ -4,7 +4,7 @@
  * CIVIC SUITE: Constituents/Members Page
  */
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import Link from 'next/link';
 import { 
   Users, 
