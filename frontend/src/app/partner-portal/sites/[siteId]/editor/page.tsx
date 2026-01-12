@@ -93,13 +93,8 @@ export default function SiteEditorPage() {
   const [showSettings, setShowSettings] = useState(false);
   const [showAddBlock, setShowAddBlock] = useState(false);
 
-  useEffect(() => {
-    if (siteId) {
-      fetchSite();
-    }
-  }, [siteId]);
-
-  const fetchSite = async () => {
+  // Phase 14B: Wrapped in useCallback - triggers on siteId change
+  const fetchSite = useCallback(async () => {
     try {
       setLoading(true);
       const res = await fetch(`/api/sites-funnels/sites?action=get&siteId=${siteId}`);
@@ -115,7 +110,13 @@ export default function SiteEditorPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [siteId]);
+
+  useEffect(() => {
+    if (siteId) {
+      fetchSite();
+    }
+  }, [siteId, fetchSite]);
 
   const handleSave = async () => {
     if (!selectedPage) return;
