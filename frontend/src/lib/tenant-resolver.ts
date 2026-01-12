@@ -76,14 +76,16 @@ export function isSuperAdminRoute(pathname: string): boolean {
  * Get the default platform instance for a tenant
  */
 async function getDefaultInstance(tenantId: string): Promise<PlatformInstanceWithTenant | null> {
-  return prisma.platformInstance.findFirst({
+  const result = await prisma.platformInstance.findFirst({
     where: { 
       tenantId, 
       isDefault: true,
       isActive: true
     },
     include: { tenant: true }
-  }) as unknown as PlatformInstanceWithTenant | null
+  })
+  
+  return mapPlatformInstanceWithTenant(result)
 }
 
 /**
