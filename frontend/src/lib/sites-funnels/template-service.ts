@@ -228,7 +228,7 @@ export async function listTemplates(options: {
       industry: t.industry || undefined,
       useCase: t.useCase || undefined,
       pageType: t.pageType,
-      blocks: t.blocks as any[] || [],
+      blocks: parseTemplateBlocks(t.blocks),
       styles: t.styles || undefined,
       settings: t.settings || undefined,
       version: t.version,
