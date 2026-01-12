@@ -11,7 +11,7 @@
  * - Read-only revenue summary
  */
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { 
   Building2, Users, Store, Search, Loader2, ArrowLeft, Check,
