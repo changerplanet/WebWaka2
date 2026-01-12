@@ -51,7 +51,7 @@ export function buildLoyaltyTransactionCreate(
     memo: input.memo ?? null,
     expiresAt: input.expiresAt ?? null,
     createdBy: input.createdBy ?? null,
-    metadata: input.metadata ?? Prisma.JsonNull,
+    metadata: input.metadata ? input.metadata as Prisma.InputJsonValue : Prisma.JsonNull,
   };
 }
 
@@ -97,7 +97,7 @@ export function buildEngagementEventCreate(
     deviceId: input.deviceId ?? null,
     ipAddress: input.ipAddress ?? null,
     userAgent: input.userAgent ?? null,
-    metadata: input.metadata ?? Prisma.JsonNull,
+    metadata: input.metadata ? input.metadata as Prisma.InputJsonValue : Prisma.JsonNull,
     occurredAt: input.occurredAt ?? new Date(),
   };
 }
