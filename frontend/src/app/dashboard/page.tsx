@@ -52,7 +52,8 @@ export default function TenantDashboard() {
     }
   }, [activeTenantId, tenant])
 
-  async function fetchActiveCapabilities() {
+  // Phase 12B: Wrapped in useCallback for hook hygiene
+  const fetchActiveCapabilities = useCallback(async () => {
     // Only fetch if we have an active tenant in the session
     if (!activeTenantId) return
     
@@ -70,13 +71,14 @@ export default function TenantDashboard() {
     } catch (err) {
       console.error('Failed to fetch capabilities:', err)
     }
-  }
+  }, [activeTenantId])
 
   async function handleLogout() {
     await logout()
   }
 
-  async function fetchTenant(slug: string) {
+  // Phase 12B: Wrapped in useCallback for hook hygiene
+  const fetchTenant = useCallback(async (slug: string) => {
     try {
       const res = await fetch(`/api/tenants/resolve?slug=${slug}`)
       const data = await res.json()
