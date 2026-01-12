@@ -134,6 +134,7 @@ export function buildCustomerSegmentCreate(
     priority: input.priority ?? 0,
     tags: input.tags ?? [],
     metadata: input.metadata ? input.metadata as Prisma.InputJsonValue : Prisma.JsonNull,
+    updatedAt: new Date(),
   };
 }
 
