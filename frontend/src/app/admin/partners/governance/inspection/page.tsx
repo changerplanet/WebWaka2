@@ -9,7 +9,7 @@
  * @phase Stop Point 4 - Audit & Governance Hooks
  */
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import {
   ArrowLeft, Activity, Search, Filter, ChevronDown, ChevronUp,
