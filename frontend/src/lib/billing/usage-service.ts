@@ -10,10 +10,9 @@
  * - No surprise billing logic
  */
 
-import { PrismaClient, UsageAggregationType } from '@prisma/client';
+import { UsageAggregationType } from '@prisma/client';
 import { logBillingEvent } from './event-service';
-
-const prisma = new PrismaClient();
+import { prisma } from '@/lib/prisma';
 
 // ============================================================================
 // USAGE METRIC MANAGEMENT

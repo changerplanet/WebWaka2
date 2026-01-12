@@ -6,10 +6,9 @@
  * Discounts apply at billing calculation time - no payment execution.
  */
 
-import { PrismaClient, DiscountType } from '@prisma/client';
+import { DiscountType } from '@prisma/client';
 import { logBillingEvent } from './event-service';
-
-const prisma = new PrismaClient();
+import { prisma } from '@/lib/prisma';
 
 // ============================================================================
 // DISCOUNT RULE MANAGEMENT

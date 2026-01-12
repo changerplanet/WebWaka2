@@ -11,11 +11,10 @@ export const dynamic = 'force-dynamic'
  */
 
 import { NextRequest, NextResponse } from 'next/server'
-import { PrismaClient, SvmCartStatus } from '@prisma/client'
+import { SvmCartStatus } from '@prisma/client'
 import { checkCapabilityGuard } from '@/lib/capabilities'
 import { withPrismaDefaults } from '@/lib/db/prismaDefaults'
-
-const prisma = new PrismaClient()
+import { prisma } from '@/lib/prisma'
 
 function generateCartId(): string {
   return `cart_${Date.now().toString(36)}${Math.random().toString(36).substring(2, 9)}`

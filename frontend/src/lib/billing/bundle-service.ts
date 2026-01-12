@@ -6,10 +6,8 @@
  * Bundles resolve into Core entitlements - no entitlement mutation outside Core APIs.
  */
 
-import { PrismaClient } from '@prisma/client';
 import { logBillingEvent } from './event-service';
-
-const prisma = new PrismaClient();
+import { prisma } from '@/lib/prisma';
 
 // ============================================================================
 // BUNDLE MANAGEMENT

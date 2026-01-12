@@ -13,10 +13,9 @@
  * - ZERO capabilities activated from intent
  */
 
-import { PrismaClient, IntentDomain, IntentSource } from '@prisma/client'
+import { IntentDomain, IntentSource } from '@prisma/client'
 import { withPrismaDefaults } from '@/lib/db/prismaDefaults'
-
-const prisma = new PrismaClient()
+import { prisma } from '@/lib/prisma'
 
 // ============================================================================
 // INTENT REGISTRY

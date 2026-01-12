@@ -7,11 +7,10 @@
  * Credentials are encrypted at rest.
  */
 
-import { PrismaClient, IntegrationInstanceStatus, IntegrationProviderStatus } from '@prisma/client'
+import { IntegrationInstanceStatus, IntegrationProviderStatus } from '@prisma/client'
 import crypto from 'crypto'
 import { withPrismaDefaults } from '@/lib/db/prismaDefaults'
-
-const prisma = new PrismaClient()
+import { prisma } from '@/lib/prisma'
 
 // Simple encryption for credentials (in production, use AWS KMS or similar)
 const ENCRYPTION_KEY = process.env.CREDENTIAL_ENCRYPTION_KEY || 'default-32-char-encryption-key!!'

@@ -6,11 +6,9 @@
  * Non-destructive actions only, fully auditable.
  */
 
-import { PrismaClient } from '@prisma/client';
 import { logAIEvent } from './event-service';
 import { withPrismaDefaults } from '@/lib/db/prismaDefaults';
-
-const prisma = new PrismaClient();
+import { prisma } from '@/lib/prisma';
 
 // ============================================================================
 // TRIGGER TYPES

@@ -6,10 +6,9 @@
  * Add-ons modify entitlements only - billing adjustments emitted as events.
  */
 
-import { PrismaClient, AddOnType, AddOnStatus } from '@prisma/client';
+import { AddOnType, AddOnStatus } from '@prisma/client';
 import { logBillingEvent } from './event-service';
-
-const prisma = new PrismaClient();
+import { prisma } from '@/lib/prisma';
 
 // ============================================================================
 // ADD-ON MANAGEMENT

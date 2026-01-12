@@ -10,10 +10,8 @@
  * - Core remains enforcement layer
  */
 
-import { PrismaClient } from '@prisma/client';
 import { logBillingEvent } from './event-service';
-
-const prisma = new PrismaClient();
+import { prisma } from '@/lib/prisma';
 
 // ============================================================================
 // GRACE POLICY MANAGEMENT

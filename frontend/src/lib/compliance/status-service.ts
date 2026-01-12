@@ -6,12 +6,10 @@
  * Non-threatening language, informational only.
  */
 
-import { PrismaClient } from '@prisma/client';
 import { getComplianceProfile } from './config-service';
 import { logComplianceEvent } from './event-service';
 import { withPrismaDefaults } from '@/lib/db/prismaDefaults';
-
-const prisma = new PrismaClient();
+import { prisma } from '@/lib/prisma';
 
 // ============================================================================
 // COMPLIANCE STATUS MANAGEMENT

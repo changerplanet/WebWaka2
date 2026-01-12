@@ -14,10 +14,9 @@
  * - Nigeria-first (Paystack, Moniepoint, NIBSS, GIG Logistics)
  */
 
-import { PrismaClient, IntegrationCategory, IntegrationProviderStatus, IntegrationInstanceStatus } from '@prisma/client'
+import { IntegrationCategory, IntegrationProviderStatus, IntegrationInstanceStatus } from '@prisma/client'
 import { withPrismaDefaults } from '@/lib/db/prismaDefaults'
-
-const prisma = new PrismaClient()
+import { prisma } from '@/lib/prisma'
 
 // Module metadata
 export const MODULE_KEY = 'integrations_hub'

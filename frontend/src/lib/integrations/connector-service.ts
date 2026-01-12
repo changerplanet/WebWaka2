@@ -10,11 +10,10 @@
  * - Resilient for unreliable internet (Nigeria-first)
  */
 
-import { PrismaClient, IntegrationInstanceStatus } from '@prisma/client'
+import { IntegrationInstanceStatus } from '@prisma/client'
 import { getDecryptedCredentials } from './instance-service'
 import { withPrismaDefaults } from '@/lib/db/prismaDefaults'
-
-const prisma = new PrismaClient()
+import { prisma } from '@/lib/prisma'
 
 interface ApiCallOptions {
   method: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE'

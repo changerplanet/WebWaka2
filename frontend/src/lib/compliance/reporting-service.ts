@@ -6,13 +6,11 @@
  * Reports are immutable once generated.
  */
 
-import { PrismaClient } from '@prisma/client';
 import { getComplianceProfile, getTaxConfiguration } from './config-service';
 import { getComputationSummary } from './tax-service';
 import { logComplianceEvent } from './event-service';
 import { withPrismaDefaults } from '@/lib/db/prismaDefaults';
-
-const prisma = new PrismaClient();
+import { prisma } from '@/lib/prisma';
 
 // ============================================================================
 // REPORT GENERATION

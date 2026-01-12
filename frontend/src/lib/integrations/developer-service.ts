@@ -10,11 +10,10 @@
  * - IP restrictions
  */
 
-import { PrismaClient, ApiKeyStatus, AccessScopeType } from '@prisma/client'
+import { ApiKeyStatus, AccessScopeType } from '@prisma/client'
 import crypto from 'crypto'
 import { withPrismaDefaults } from '@/lib/db/prismaDefaults'
-
-const prisma = new PrismaClient()
+import { prisma } from '@/lib/prisma'
 
 /**
  * Generate a secure API key

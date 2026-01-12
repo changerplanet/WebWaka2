@@ -6,11 +6,9 @@
  * No automatic actions, just informational.
  */
 
-import { PrismaClient } from '@prisma/client';
 import { logAIEvent } from './event-service';
 import { withPrismaDefaults } from '@/lib/db/prismaDefaults';
-
-const prisma = new PrismaClient();
+import { prisma } from '@/lib/prisma';
 
 // ============================================================================
 // INSIGHT TYPES

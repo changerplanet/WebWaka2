@@ -6,12 +6,10 @@
  * Computations derived from Accounting summaries - no remittance logic.
  */
 
-import { PrismaClient } from '@prisma/client';
 import { getTaxConfiguration, DEFAULT_VAT_RATE } from './config-service';
 import { logComplianceEvent } from './event-service';
 import { withPrismaDefaults } from '@/lib/db/prismaDefaults';
-
-const prisma = new PrismaClient();
+import { prisma } from '@/lib/prisma';
 
 // ============================================================================
 // TAX COMPUTATION (ADVISORY ONLY)

@@ -6,9 +6,7 @@
  * Module checks entitlements only - no pricing or plan awareness.
  */
 
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
+import { prisma } from '@/lib/prisma';
 
 // ============================================================================
 // BILLING ENTITLEMENTS

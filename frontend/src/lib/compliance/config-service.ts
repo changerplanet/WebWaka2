@@ -10,10 +10,9 @@
  * - Nigeria-first, globally extensible
  */
 
-import { PrismaClient, ComplianceMaturityLevel } from '@prisma/client';
+import { ComplianceMaturityLevel } from '@prisma/client';
 import { withPrismaDefaults } from '@/lib/db/prismaDefaults';
-
-const prisma = new PrismaClient();
+import { prisma } from '@/lib/prisma';
 
 // ============================================================================
 // MODULE MANIFEST

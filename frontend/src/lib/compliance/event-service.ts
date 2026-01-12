@@ -5,10 +5,8 @@
  * Event logging and processing for compliance module.
  */
 
-import { PrismaClient } from '@prisma/client';
 import { withPrismaDefaults } from '@/lib/db/prismaDefaults';
-
-const prisma = new PrismaClient();
+import { prisma } from '@/lib/prisma';
 
 // ============================================================================
 // EVENT LOGGING

@@ -6,10 +6,8 @@
  * Events must be idempotent with no synchronous dependencies.
  */
 
-import { PrismaClient } from '@prisma/client';
 import { startGracePeriod, endGracePeriod } from './grace-service';
-
-const prisma = new PrismaClient();
+import { prisma } from '@/lib/prisma';
 
 // ============================================================================
 // EVENT LOGGING

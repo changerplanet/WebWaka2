@@ -6,10 +6,9 @@
  * Adjustments are append-only and immutable.
  */
 
-import { PrismaClient, AdjustmentType, AdjustmentStatus } from '@prisma/client';
+import { AdjustmentType, AdjustmentStatus } from '@prisma/client';
 import { logBillingEvent } from './event-service';
-
-const prisma = new PrismaClient();
+import { prisma } from '@/lib/prisma';
 
 // ============================================================================
 // ADJUSTMENT MANAGEMENT

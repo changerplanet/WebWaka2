@@ -11,9 +11,8 @@
  */
 
 import { withPrismaDefaults } from '@/lib/db/prismaDefaults'
-import { PrismaClient, HealthEncounterStatus, HealthNoteType, HealthDiagnosisType, HealthDiagnosisStatus } from '@prisma/client'
-
-const prisma = new PrismaClient()
+import { HealthEncounterStatus, HealthNoteType, HealthDiagnosisType, HealthDiagnosisStatus } from '@prisma/client'
+import { prisma } from '@/lib/prisma'
 
 // ============================================================================
 // TYPES

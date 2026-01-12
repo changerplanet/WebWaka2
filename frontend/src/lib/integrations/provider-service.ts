@@ -6,10 +6,9 @@
  * Providers are Super Admin-managed; tenants can only enable from approved list.
  */
 
-import { PrismaClient, IntegrationCategory, IntegrationProviderStatus } from '@prisma/client'
+import { IntegrationCategory, IntegrationProviderStatus } from '@prisma/client'
 import { withPrismaDefaults } from '@/lib/db/prismaDefaults'
-
-const prisma = new PrismaClient()
+import { prisma } from '@/lib/prisma'
 
 /**
  * List all providers with optional filters

@@ -20,10 +20,9 @@
  */
 
 import { withPrismaDefaults } from '@/lib/db/prismaDefaults'
-import { PrismaClient, HealthBillingFactType, HealthBillingFactStatus } from '@prisma/client'
+import { HealthBillingFactType, HealthBillingFactStatus } from '@prisma/client'
 import { Prisma } from '@prisma/client'
-
-const prisma = new PrismaClient()
+import { prisma } from '@/lib/prisma'
 
 // ============================================================================
 // TYPES
