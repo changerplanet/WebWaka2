@@ -16,15 +16,19 @@
 
 import { prisma } from './prisma'
 import { Tenant, TenantDomain, PlatformInstance } from '@prisma/client'
+import { 
+  mapPlatformInstanceWithTenant,
+  mapDomainPlatformInstance,
+  type PlatformInstanceWithTenant 
+} from './db/prismaResultMappers'
 
 // Extended types for Phase 2
 export type TenantWithDomains = Tenant & {
   domains: TenantDomain[]
 }
 
-export type PlatformInstanceWithTenant = PlatformInstance & {
-  tenant: Tenant
-}
+// Re-export from mappers for backwards compatibility
+export type { PlatformInstanceWithTenant } from './db/prismaResultMappers'
 
 export type TenantContext = {
   tenant: TenantWithDomains
