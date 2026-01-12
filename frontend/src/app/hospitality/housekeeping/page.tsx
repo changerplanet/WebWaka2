@@ -126,7 +126,11 @@ export default function HousekeepingPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [filterStatus, filterPriority]);
+
+  useEffect(() => {
+    fetchTasks();
+  }, [fetchTasks]);
 
   const handleStartTask = async (taskId: string) => {
     try {

@@ -82,9 +82,10 @@ export default function StudentsPage() {
       { id: 'class_5', name: 'SS 2', sections: ['Science', 'Arts', 'Commercial'] },
       { id: 'class_6', name: 'SS 3', sections: ['Science', 'Arts', 'Commercial'] },
     ]);
-  };
+  }, []);
 
-  const fetchStudents = async () => {
+  // Phase 12B: Wrapped in useCallback for hook hygiene
+  const fetchStudents = useCallback(async () => {
     setLoading(true);
     // Simulated data - in production, fetches from Education API
     const mockStudents: Student[] = [
@@ -182,7 +183,12 @@ export default function StudentsPage() {
     setPagination(prev => ({ ...prev, total: filtered.length }));
     setStudents(filtered);
     setLoading(false);
-  };
+  }, [selectedClass, selectedStatus, search]);
+
+  useEffect(() => {
+    fetchStudents();
+    fetchClasses();
+  }, [fetchStudents, fetchClasses]);
 
   const getStatusColor = (status: string) => {
     switch (status) {

@@ -150,7 +150,11 @@ export default function FoliosPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [filterStatus]);
+
+  useEffect(() => {
+    fetchFolios();
+  }, [fetchFolios]);
 
   if (loading && folios.length === 0) {
     return (

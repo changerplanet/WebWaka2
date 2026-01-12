@@ -137,7 +137,11 @@ export default function ReservationsPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [filterStatus]);
+
+  useEffect(() => {
+    fetchReservations();
+  }, [fetchReservations]);
 
   const handleCheckIn = async (reservationId: string) => {
     try {

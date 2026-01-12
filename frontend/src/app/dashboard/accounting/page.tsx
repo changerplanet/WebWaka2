@@ -137,7 +137,16 @@ export default function AccountingDashboard() {
       setLoading(false)
       setRefreshing(false)
     }
-  }
+  }, [tenantSlug])
+
+  useEffect(() => {
+    if (tenantSlug) {
+      fetchDashboardData()
+    } else {
+      setError('No tenant specified')
+      setLoading(false)
+    }
+  }, [tenantSlug, fetchDashboardData])
 
   function getCurrentPeriodCode() {
     const now = new Date()

@@ -125,9 +125,11 @@ export default function PaymentsDashboard() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [dateRange])
 
-  const formatCurrency = (value: number, currency: string = 'NGN') => {
+  useEffect(() => {
+    initializeAndFetch()
+  }, [initializeAndFetch])
     return new Intl.NumberFormat('en-NG', {
       style: 'currency',
       currency,

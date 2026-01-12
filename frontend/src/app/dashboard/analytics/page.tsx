@@ -126,7 +126,11 @@ export default function AnalyticsDashboard() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [dateRange])
+
+  useEffect(() => {
+    initializeAndFetch()
+  }, [initializeAndFetch])
 
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('en-NG', {

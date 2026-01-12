@@ -99,9 +99,16 @@ export default function SettingsPage() {
     } finally {
       setLoading(false)
     }
-  }
-  
-  if (loading) {
+  }, [tenantSlug, router])
+
+  useEffect(() => {
+    if (tenantSlug) {
+      fetchData()
+    } else {
+      setError('No tenant specified')
+      setLoading(false)
+    }
+  }, [tenantSlug, fetchData])
     return (
       <div className="min-h-screen flex items-center justify-center bg-slate-100">
         <Loader2 className="w-8 h-8 animate-spin text-green-600" />
