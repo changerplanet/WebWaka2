@@ -131,8 +131,8 @@ export async function handleOrderPlaced(
  * Handle payment requested - Create payment intent
  */
 export async function handlePaymentRequested(
-  event: SVMEventBase & { payload: PaymentRequestedPayload }
-): Promise<{ success: boolean; error?: string; paymentIntentId?: string }> {
+  event: SVMPaymentRequestedEvent
+): Promise<EventHandlerResult & { paymentIntentId?: string }> {
   const { idempotencyKey, payload } = event
 
   if (await isEventProcessed(idempotencyKey)) {
@@ -180,8 +180,8 @@ export async function handlePaymentRequested(
  * Handle order cancelled - Release inventory, refund if needed
  */
 export async function handleOrderCancelled(
-  event: SVMEventBase & { payload: OrderCancelledPayload }
-): Promise<{ success: boolean; error?: string }> {
+  event: SVMOrderCancelledEvent
+): Promise<EventHandlerResult> {
   const { idempotencyKey, payload } = event
 
   if (await isEventProcessed(idempotencyKey)) {
