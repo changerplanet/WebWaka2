@@ -182,7 +182,7 @@ export function buildPurchaseRequestCreate(
     requiredByDate: input.requiredByDate ?? null,
     currency: input.currency ?? 'NGN',
     estimatedTotal: input.estimatedTotal ?? null,
-    attachments: input.attachments ?? Prisma.JsonNull,
+    attachments: input.attachments ? input.attachments as Prisma.InputJsonValue : Prisma.JsonNull,
     reviewedBy: input.reviewedBy ?? null,
     reviewedAt: input.reviewedAt ?? null,
     reviewNotes: input.reviewNotes ?? null,
