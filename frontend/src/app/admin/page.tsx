@@ -54,19 +54,7 @@ export default function SuperAdminDashboard() {
     router.replace(newUrl, { scroll: false })
   }, [router])
 
-  useEffect(() => {
-    checkAuth()
-  }, [])
-
-  // Fetch tenants when searchQuery or statusFilter changes (with debounce effect)
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      fetchTenants()
-    }, 300)
-    return () => clearTimeout(timer)
-  }, [searchQuery, statusFilter])
-
-  async function checkAuth() {
+  const checkAuth = useCallback(async () => {
     try {
       const res = await fetch('/api/auth/session')
       const data = await res.json()
@@ -85,9 +73,9 @@ export default function SuperAdminDashboard() {
     } catch (err) {
       router.push('/login')
     }
-  }
+  }, [router])
 
-  async function fetchTenants() {
+  const fetchTenants = useCallback(async () => {
     setLoading(true)
     try {
       const params = new URLSearchParams()
@@ -110,7 +98,19 @@ export default function SuperAdminDashboard() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [searchQuery, statusFilter, updateUrlParams])
+
+  useEffect(() => {
+    checkAuth()
+  }, [checkAuth])
+
+  // Fetch tenants when searchQuery or statusFilter changes (with debounce effect)
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      fetchTenants()
+    }, 300)
+    return () => clearTimeout(timer)
+  }, [fetchTenants])
 
   async function handleStatusChange(tenantId: string, newStatus: string) {
     setActionLoading(tenantId)
