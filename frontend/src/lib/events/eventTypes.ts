@@ -616,9 +616,14 @@ export type MVMEvent =
 /**
  * MVM event with unknown payload (for ingress before validation)
  */
-export interface MVMEventUnknown extends MVMEventBase {
+export interface MVMEventUnknown {
+  eventId: string
+  timestamp: string
+  idempotencyKey: string
+  tenantId: string
+  version: '1.0'
   eventType: string
-  payload: Record<string, unknown>
+  payload: unknown
 }
 
 /**
