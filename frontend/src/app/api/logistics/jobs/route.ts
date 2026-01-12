@@ -31,6 +31,11 @@ import {
   getTrackingBoard,
   getJobStatusHistory,
 } from '@/lib/logistics/tracking-service';
+import {
+  validateJobStatus,
+  validateJobType,
+  validateJobPriority,
+} from '@/lib/enums';
 
 export async function GET(request: NextRequest) {
   try {
