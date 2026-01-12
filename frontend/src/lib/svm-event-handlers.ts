@@ -354,41 +354,49 @@ export async function handleOrderShipped(
 // ============================================================================
 
 export async function handleSVMEvent(
-  event: SVMEventBase & { payload: Record<string, unknown> }
-): Promise<{ success: boolean; error?: string; data?: Record<string, unknown> }> {
+  event: SVMEventUnknown
+): Promise<EventHandlerResult> {
   console.log('[SVM] Received event:', event.eventType)
 
-  switch (event.eventType) {
-    case 'svm.order.placed':
-      return handleOrderPlaced(event as unknown as SVMEventBase & { payload: OrderPlacedPayload })
-    
-    case 'svm.order.payment_requested':
-      return handlePaymentRequested(event as unknown as SVMEventBase & { payload: PaymentRequestedPayload })
-    
-    case 'svm.order.cancelled':
-      return handleOrderCancelled(event as unknown as SVMEventBase & { payload: OrderCancelledPayload })
-    
-    case 'svm.order.refund_requested':
-      return handleRefundRequested(event as unknown as SVMEventBase & { payload: RefundRequestedPayload })
-    
-    case 'svm.order.shipped':
-      return handleOrderShipped(event as unknown as SVMEventBase & { payload: OrderShippedPayload })
-    
-    // Events that don't need Core action (just log)
-    case 'svm.order.created':
-    case 'svm.order.paid':
-    case 'svm.order.processing':
-    case 'svm.order.delivered':
-    case 'svm.order.fulfilled':
-    case 'svm.order.refunded':
-    case 'svm.order.status_changed':
-      console.log('[SVM] Event logged:', event.eventType, event.payload)
-      return { success: true }
-    
-    default:
-      console.log('[SVM] Unhandled event type:', event.eventType)
-      return { success: true }
+  // Use type guard to validate and narrow the event type
+  if (isSVMEvent(event)) {
+    // TypeScript now knows event is an SVMEvent (discriminated union)
+    switch (event.eventType) {
+      case 'svm.order.placed':
+        return handleOrderPlaced(event)
+      
+      case 'svm.order.payment_requested':
+        return handlePaymentRequested(event)
+      
+      case 'svm.order.cancelled':
+        return handleOrderCancelled(event)
+      
+      case 'svm.order.refund_requested':
+        return handleRefundRequested(event)
+      
+      case 'svm.order.shipped':
+        return handleOrderShipped(event)
+    }
   }
+
+  // Events that don't need Core action (just log)
+  const logOnlyEvents = [
+    'svm.order.created',
+    'svm.order.paid',
+    'svm.order.processing',
+    'svm.order.delivered',
+    'svm.order.fulfilled',
+    'svm.order.refunded',
+    'svm.order.status_changed'
+  ]
+
+  if (logOnlyEvents.includes(event.eventType)) {
+    console.log('[SVM] Event logged:', event.eventType, event.payload)
+    return { success: true }
+  }
+
+  console.log('[SVM] Unhandled event type:', event.eventType)
+  return { success: true }
 }
 
 // ============================================================================
