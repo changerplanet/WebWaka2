@@ -38,14 +38,7 @@ export interface LoyaltyProgramInput {
   tierConfig?: TierConfig;
 }
 
-export interface TierConfig {
-  tiers: Array<{
-    name: string;
-    minPoints: number;
-    multiplier?: number;
-    perks?: string[];
-  }>;
-}
+// TierConfig is now imported from @/lib/db/jsonValidation
 
 export interface EarnInput {
   customerId: string;
