@@ -87,15 +87,8 @@ export default function IntentSuggestionsPanel({
   const [isDismissed, setIsDismissed] = useState(false)
   const [loading, setLoading] = useState(true)
 
-  useEffect(() => {
-    if (intentKey) {
-      fetchSuggestions()
-    } else {
-      setLoading(false)
-    }
-  }, [intentKey])
-
-  const fetchSuggestions = async () => {
+  // Phase 12B: Wrapped in useCallback for hook hygiene
+  const fetchSuggestions = useCallback(async () => {
     try {
       const res = await fetch(`/api/intent?action=suggestions&key=${intentKey}`)
       const data = await res.json()
@@ -106,7 +99,15 @@ export default function IntentSuggestionsPanel({
     } finally {
       setLoading(false)
     }
-  }
+  }, [intentKey])
+
+  useEffect(() => {
+    if (intentKey) {
+      fetchSuggestions()
+    } else {
+      setLoading(false)
+    }
+  }, [intentKey, fetchSuggestions])
 
   const handleDismiss = () => {
     setIsDismissed(true)
