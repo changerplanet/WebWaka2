@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import { useAuth } from '@/components/AuthProvider'
 import { Building2, Users, Settings, LayoutDashboard, LogOut, ChevronRight, Activity, TrendingUp, Bell, UserCircle, Package, ShoppingCart, Store, Warehouse, Calculator, Heart, CreditCard, Handshake, Receipt, Plug, Truck, Briefcase, Megaphone, Shield, Brain, RefreshCw, Layers } from 'lucide-react'
