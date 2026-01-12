@@ -163,9 +163,25 @@ Added `export const dynamic = 'force-dynamic'` to 485 API routes.
 
 ## Remaining Items (Prioritized Backlog)
 
-### P2 - Phase 12: React Hook Warnings
-- Fix 52 baselined semantic React Hook warnings
-- Requires domain review for dependency array decisions
+### P2 - Phase 12: React Hook Warnings (COMPLETE - December 2025)
+
+**Phase 12A - Classification (COMPLETE)**
+- Read-only audit of 52 baselined React Hook dependency warnings
+- Classified into: SAFE (31), DOMAIN_REQUIRED (15), DO_NOT_TOUCH (6)
+- Report: `/app/frontend/docs/PHASE_12A_REACT_HOOK_CLASSIFICATION_REPORT.md`
+
+**Phase 12B - SAFE Remediation (COMPLETE)**
+- Applied `useCallback` wrapper pattern to all 31 SAFE warnings
+- Fixed 30 warnings across 27 files
+- Warning count reduced: 52 → 22
+- Zero regressions, build passes
+
+**Phase 12C - Documentation (COMPLETE)**
+- Created final hygiene report documenting all fixes and baselined warnings
+- 22 warnings remain baselined (9 DO_NOT_TOUCH + 13 DOMAIN_REQUIRED)
+- Report: `/app/frontend/docs/PHASE_12_REACT_HOOK_HYGIENE_REPORT.md`
+
+---
 
 ### P2 - Legacy Debt
 - Address ~310 remaining `as any` casts (CONDITIONAL/OUT OF SCOPE)
