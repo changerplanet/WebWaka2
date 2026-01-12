@@ -96,6 +96,8 @@ export default function PartnerDashboardPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
+  // Phase 14B: Intentional mount-only execution - auth check should not re-run on function identity change
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     checkAuthAndFetchDashboard()
   }, [])
