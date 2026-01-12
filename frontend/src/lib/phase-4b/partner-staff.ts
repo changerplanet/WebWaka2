@@ -43,23 +43,8 @@ export interface UpdateStaffInput {
   isActive?: boolean
 }
 
-export interface StaffMember {
-  id: string
-  partnerId: string
-  userId: string
-  role: PartnerRole
-  displayName: string | null
-  department: string | null
-  assignedTenantIds: string[]
-  isActive: boolean
-  createdAt: Date
-  user: {
-    id: string
-    name: string | null
-    email: string | null
-    phone: string | null
-  }
-}
+// Re-export StaffMemberViewModel as StaffMember for backwards compatibility
+export type StaffMember = StaffMemberViewModel
 
 export interface StaffResult {
   success: boolean
