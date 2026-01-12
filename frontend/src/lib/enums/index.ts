@@ -1,0 +1,90 @@
+/**
+ * ENUM MAPPING UTILITIES - PUBLIC API
+ * ====================================
+ * 
+ * Central export point for all enum mapping utilities.
+ * 
+ * USAGE:
+ * ```typescript
+ * import { mapCivicRequestStatusToPrisma, validateVehicleType } from '@/lib/enums'
+ * 
+ * // Map service value to Prisma
+ * const prismaStatus = mapCivicRequestStatusToPrisma(serviceStatus)
+ * 
+ * // Validate enum value
+ * const vehicleType = validateVehicleType(searchParams.get('vehicleType'))
+ * ```
+ * 
+ * @module lib/enums
+ */
+
+// Shared types and utilities
+export {
+  type EnumMappingResult,
+  createEnumMapper,
+  createEnumMapperWithResult,
+  isValidEnumValue,
+  validateEnumValue
+} from './types'
+
+// Civic module enums
+export {
+  // Prisma canonical values
+  CIVIC_REQUEST_STATUS_PRISMA,
+  CIVIC_CASE_PRIORITY_PRISMA,
+  CIVIC_SERVICE_CATEGORY_PRISMA,
+  type CivicRequestStatusPrisma,
+  type CivicCasePriorityPrisma,
+  type CivicServiceCategoryPrisma,
+  
+  // Service layer values
+  CIVIC_REQUEST_STATUS_SERVICE,
+  CIVIC_PRIORITY_SERVICE,
+  type CivicRequestStatusService,
+  type CivicPriorityService,
+  
+  // Mapping functions
+  mapCivicRequestStatusToPrisma,
+  mapCivicPriorityToPrisma,
+  validateCivicCategory,
+  validateCivicRequestStatus,
+  validateCivicPriority
+} from './civic'
+
+// Logistics module enums
+export {
+  // Prisma canonical values
+  LOGISTICS_VEHICLE_TYPE_PRISMA,
+  LOGISTICS_AGENT_STATUS_PRISMA,
+  LOGISTICS_DELIVERY_STATUS_PRISMA,
+  type LogisticsVehicleTypePrisma,
+  type LogisticsAgentStatusPrisma,
+  type LogisticsDeliveryStatusPrisma,
+  
+  // Service layer values
+  LOGISTICS_JOB_STATUS_SERVICE,
+  type LogisticsJobStatusService,
+  
+  // Validation functions
+  validateVehicleType,
+  validateAgentStatus,
+  
+  // Stub functions (Phase 10C)
+  mapDeliveryStatusToPrisma
+} from './logistics'
+
+// SVM module enums (stubs only)
+export {
+  // Prisma canonical values
+  SVM_ORDER_STATUS_PRISMA,
+  SVM_PAYMENT_STATUS_PRISMA,
+  type SvmOrderStatusPrisma,
+  type SvmPaymentStatusPrisma,
+  
+  // Service layer values
+  SVM_ORDER_STATUS_SERVICE,
+  type SvmOrderStatusService,
+  
+  // Stub functions (Phase 10C)
+  mapSvmOrderStatusToPrisma
+} from './svm'
