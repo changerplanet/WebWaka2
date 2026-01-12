@@ -139,11 +139,13 @@ export const BulkOrderItemsSchema = z.array(BulkOrderItemSchema)
 
 /**
  * Commission Tier Schema
+ * Matches the CommissionTier interface in commission-engine.ts
  */
 export const CommissionTierSchema = z.object({
-  minAmount: z.number(),
-  maxAmount: z.number().optional().nullable(),
-  percentage: z.number(),
+  minVolume: z.number(),
+  maxVolume: z.number().nullable(),
+  rate: z.number(),
+  fixedAmount: z.number().optional(),
 })
 
 export type CommissionTier = z.infer<typeof CommissionTierSchema>
@@ -151,13 +153,24 @@ export type CommissionTier = z.infer<typeof CommissionTierSchema>
 export const CommissionTiersSchema = z.array(CommissionTierSchema)
 
 /**
+ * Rule Condition Schema (for hybrid commission rules)
+ */
+export const RuleConditionSchema = z.object({
+  field: z.enum(['eventType', 'grossAmount', 'module', 'isFirstPayment', 'period']),
+  operator: z.enum(['equals', 'in', 'gt', 'gte', 'lt', 'lte']),
+  value: z.any(),
+})
+
+/**
  * Hybrid Rule Schema (for commission rules)
+ * Matches the HybridRule interface in commission-engine.ts
  */
 export const HybridRuleSchema = z.object({
+  condition: RuleConditionSchema,
   type: z.string(),
-  percentage: z.number().optional(),
-  flatAmount: z.number().optional(),
-  condition: z.any().optional(),
+  rate: z.number().optional(),
+  fixedAmount: z.number().optional(),
+  tiers: z.array(CommissionTierSchema).optional(),
 })
 
 export type HybridRule = z.infer<typeof HybridRuleSchema>
