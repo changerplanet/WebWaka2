@@ -221,11 +221,12 @@ export type LogisticsJobPriorityService = typeof LOGISTICS_JOB_PRIORITY_SERVICE[
 
 /**
  * Validates and returns a valid job priority value.
+ * Phase 10D: Logs mismatches for observability.
  */
 export function validateJobPriority(
   value: string | null | undefined
 ): LogisticsJobPriorityService | undefined {
-  return validateEnumValue(value, LOGISTICS_JOB_PRIORITY_SERVICE)
+  return validateEnumValue(value, LOGISTICS_JOB_PRIORITY_SERVICE, 'LogisticsJobPriority', 'API')
 }
 
 // =============================================================================
@@ -248,11 +249,12 @@ export type LogisticsLicenseTypeService = typeof LOGISTICS_LICENSE_TYPE_SERVICE[
 
 /**
  * Validates and returns a valid license type value.
+ * Phase 10D: Logs mismatches for observability.
  */
 export function validateLicenseType(
   value: string | null | undefined
 ): LogisticsLicenseTypeService | undefined {
-  return validateEnumValue(value, LOGISTICS_LICENSE_TYPE_SERVICE)
+  return validateEnumValue(value, LOGISTICS_LICENSE_TYPE_SERVICE, 'LogisticsLicenseType', 'API')
 }
 
 // =============================================================================
@@ -275,11 +277,12 @@ export type LogisticsDriverStatusService = typeof LOGISTICS_DRIVER_STATUS_SERVIC
 
 /**
  * Validates and returns a valid driver status value.
+ * Phase 10D: Logs mismatches for observability.
  */
 export function validateDriverStatus(
   value: string | null | undefined
 ): LogisticsDriverStatusService | undefined {
-  return validateEnumValue(value, LOGISTICS_DRIVER_STATUS_SERVICE)
+  return validateEnumValue(value, LOGISTICS_DRIVER_STATUS_SERVICE, 'LogisticsDriverStatus', 'API')
 }
 
 // =============================================================================
@@ -302,9 +305,10 @@ export type LogisticsVehicleStatusService = typeof LOGISTICS_VEHICLE_STATUS_SERV
 
 /**
  * Validates and returns a valid vehicle status value.
+ * Phase 10D: Logs mismatches for observability.
  */
 export function validateVehicleStatus(
   value: string | null | undefined
 ): LogisticsVehicleStatusService | undefined {
-  return validateEnumValue(value, LOGISTICS_VEHICLE_STATUS_SERVICE)
+  return validateEnumValue(value, LOGISTICS_VEHICLE_STATUS_SERVICE, 'LogisticsVehicleStatus', 'API')
 }
