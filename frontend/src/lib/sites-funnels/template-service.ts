@@ -57,6 +57,45 @@ export interface TemplateBlock {
 }
 
 // ============================================================================
+// PHASE 13C: TEMPLATE BLOCKS VALIDATION
+// ============================================================================
+
+import { z } from 'zod';
+import { Prisma } from '@prisma/client';
+
+/**
+ * Zod schema for template block validation
+ * Matches the TemplateBlock interface with runtime safety
+ */
+const TemplateBlockSchema = z.object({
+  id: z.string().optional(),
+  type: z.string().default('section'),
+  name: z.string().default('Block'),
+  content: z.record(z.any()).optional().default({}),
+  styles: z.record(z.any()).optional(),
+  settings: z.record(z.any()).optional(),
+});
+
+const TemplateBlocksSchema = z.array(TemplateBlockSchema);
+
+/**
+ * Safely parse template blocks from Prisma Json field
+ * Returns empty array on validation failure (non-fatal, matches existing behavior)
+ */
+function parseTemplateBlocks(blocks: Prisma.JsonValue): TemplateBlock[] {
+  if (!blocks || !Array.isArray(blocks)) {
+    return [];
+  }
+  
+  const result = TemplateBlocksSchema.safeParse(blocks);
+  if (!result.success) {
+    console.warn('[Sites/Funnels] Invalid template blocks structure:', result.error.message);
+    return [];
+  }
+  return result.data as TemplateBlock[];
+}
+
+// ============================================================================
 // INDUSTRY TAXONOMY
 // ============================================================================
 
