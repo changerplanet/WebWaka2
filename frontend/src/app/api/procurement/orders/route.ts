@@ -9,6 +9,12 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getCurrentSession } from '@/lib/auth'
 import { PurchaseOrderService } from '@/lib/procurement/purchase-order-service'
 import { ProcEntitlementsService } from '@/lib/procurement/entitlements-service'
+import {
+  validatePurchaseOrderStatusArray,
+  validateProcPriorityArray,
+  validateProcOrderOrderBy,
+  validateOrderDir,
+} from '@/lib/enums'
 
 /**
  * GET /api/procurement/orders
