@@ -273,7 +273,8 @@ export async function getTemplate(idOrSlug: string): Promise<Template | null> {
     industry: template.industry || undefined,
     useCase: template.useCase || undefined,
     pageType: template.pageType,
-    blocks: parseTemplateBlocks(template.blocks),
+    // Phase 11C: Using typed cast for JSON template blocks
+    blocks: (template.blocks as TemplateBlock[]) || [],
     styles: template.styles || undefined,
     settings: template.settings || undefined,
     version: template.version,
