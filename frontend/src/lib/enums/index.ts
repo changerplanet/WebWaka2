@@ -167,6 +167,28 @@ export {
   validateOrderDir
 } from './procurement'
 
+// Project Management module enums (Phase 11B)
+export {
+  PM_PROJECT_STATUS,
+  PM_PROJECT_PRIORITY,
+  PM_PROJECT_HEALTH,
+  PM_TASK_STATUS,
+  PM_TASK_PRIORITY,
+  PM_TEAM_ROLE,
+  type PmProjectStatusType,
+  type PmProjectPriorityType,
+  type PmProjectHealthType,
+  type PmTaskStatusType,
+  type PmTaskPriorityType,
+  type PmTeamRoleType,
+  validateProjectStatus,
+  validateProjectPriority,
+  validateProjectHealth,
+  validateTaskStatus,
+  validateTaskPriority,
+  validateTeamRole
+} from './project-management'
+
 // SVM module enums (stubs only)
 export {
   // Prisma canonical values
