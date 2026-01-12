@@ -8,6 +8,17 @@ export const dynamic = 'force-dynamic'
 import { NextRequest, NextResponse } from 'next/server'
 import { getCurrentSession } from '@/lib/auth'
 import { GoodsReceiptService } from '@/lib/procurement/goods-receipt-service'
+import {
+  validateReceiptStatusArray,
+  validateOrderDir,
+} from '@/lib/enums'
+
+// Receipt order-by fields
+type ReceiptOrderByField = 'receivedDate' | 'createdAt'
+function validateReceiptOrderBy(value: string | null | undefined): ReceiptOrderByField {
+  if (value === 'receivedDate' || value === 'createdAt') return value
+  return 'receivedDate'
+}
 
 /**
  * GET /api/procurement/receipts
