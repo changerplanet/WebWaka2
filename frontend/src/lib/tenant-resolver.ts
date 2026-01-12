@@ -404,7 +404,7 @@ export async function resolveInstanceFromDomain(domain: string): Promise<Platfor
   })
   
   if (domainEntry?.platformInstance) {
-    return domainEntry.platformInstance as unknown as PlatformInstanceWithTenant
+    return mapDomainPlatformInstance(domainEntry)
   }
   
   // Fallback to default instance of the tenant
