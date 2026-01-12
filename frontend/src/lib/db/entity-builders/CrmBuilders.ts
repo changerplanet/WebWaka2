@@ -192,13 +192,16 @@ export interface LoyaltyProgramInput {
   tenantId: string;
   name: string;
   description?: string | null;
-  currency?: string;
-  pointsPerUnit?: number;
   isActive?: boolean;
+  startsAt?: Date | null;
+  endsAt?: Date | null;
+  pointsName?: string;
+  pointsSymbol?: string;
+  pointsPerCurrency?: number;
+  currencyPerPoint?: number | null;
   pointsExpireMonths?: number | null;
   tierConfig?: Record<string, unknown> | null;
-  earnRules?: Record<string, unknown> | null;
-  redeemRules?: Record<string, unknown> | null;
+  metadata?: Record<string, unknown> | null;
   createdBy?: string | null;
 }
 
@@ -210,13 +213,17 @@ export function buildLoyaltyProgramCreate(
     tenantId: input.tenantId,
     name: input.name,
     description: input.description ?? null,
-    currency: input.currency ?? 'NGN',
-    pointsPerUnit: input.pointsPerUnit ?? 1,
     isActive: input.isActive ?? true,
+    startsAt: input.startsAt ?? null,
+    endsAt: input.endsAt ?? null,
+    pointsName: input.pointsName ?? 'Points',
+    pointsSymbol: input.pointsSymbol ?? 'pts',
+    pointsPerCurrency: input.pointsPerCurrency ?? 1,
+    currencyPerPoint: input.currencyPerPoint ?? null,
     pointsExpireMonths: input.pointsExpireMonths ?? null,
     tierConfig: input.tierConfig ? input.tierConfig as Prisma.InputJsonValue : Prisma.JsonNull,
-    earnRules: input.earnRules ? input.earnRules as Prisma.InputJsonValue : Prisma.JsonNull,
-    redeemRules: input.redeemRules ? input.redeemRules as Prisma.InputJsonValue : Prisma.JsonNull,
+    metadata: input.metadata ? input.metadata as Prisma.InputJsonValue : Prisma.JsonNull,
+    updatedAt: new Date(),
     createdBy: input.createdBy ?? null,
   };
 }
