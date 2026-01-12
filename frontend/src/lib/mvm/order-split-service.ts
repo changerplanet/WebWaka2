@@ -8,7 +8,7 @@
  * @canonical PC-SCP Phase S3
  */
 
-import { withPrismaDefaults } from '@/lib/db/prismaDefaults'
+import { withPrismaDefaults, toJsonValue } from '@/lib/db/prismaDefaults'
 import { prisma } from '../prisma'
 import { Prisma, MvmSubOrderStatus } from '@prisma/client'
 import { VendorService } from './vendor-service'
