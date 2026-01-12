@@ -137,7 +137,7 @@ export default function AccountingDashboard() {
       setLoading(false)
       setRefreshing(false)
     }
-  }, [tenantSlug])
+  }, [])
 
   useEffect(() => {
     if (tenantSlug) {
