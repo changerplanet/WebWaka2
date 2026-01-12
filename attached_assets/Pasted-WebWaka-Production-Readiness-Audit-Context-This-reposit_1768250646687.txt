@@ -1,0 +1,132 @@
+WebWaka Production Readiness Audit
+
+Context:
+This repository is WebWaka, a large-scale Next.js (App Router) fullstack application using:
+	•	Prisma + PostgreSQL (Supabase target)
+	•	Next.js API routes (FastAPI proxy may exist but is optional)
+	•	Multi-tenant, role-based platform with multiple suites (Education, Logistics, CRM, etc.)
+	•	Intended deployment target: Vercel (production)
+	•	Database target: Supabase (Postgres)
+	•	Secrets managed via platform env vars (no .env committed)
+
+⸻
+
+🎯 Your Task
+
+Perform a thorough, production-focused audit of this codebase and report everything required before a safe production deployment.
+
+This is NOT a refactor task.
+This is a review + gap analysis only.
+
+⸻
+
+🔍 Audit Scope (MANDATORY)
+
+Please review and report on all of the following areas:
+
+1️⃣ Build & Runtime Readiness
+	•	Does yarn build / npm run build succeed?
+	•	Any Next.js App Router misconfigurations?
+	•	Any dev-only code paths (next dev, debug flags, console noise)?
+	•	Any API routes or edge functions incompatible with Vercel?
+
+2️⃣ Environment Variables & Secrets
+	•	List ALL required environment variables (frontend + backend)
+	•	Identify:
+	•	Required vs optional
+	•	Build-time vs runtime
+	•	Confirm no secrets are hardcoded
+	•	Flag missing or undocumented env vars
+
+3️⃣ Database & Prisma
+	•	Prisma schema validity
+	•	Migration readiness (prisma migrate deploy)
+	•	Any schema patterns unsafe for production?
+	•	Connection pooling considerations for Vercel + Supabase
+	•	Long-running queries or N+1 risks (high level)
+
+4️⃣ Auth, Security & Multi-Tenancy
+	•	Auth flow correctness (JWT/session handling)
+	•	Tenant isolation risks
+	•	Role/permission enforcement gaps
+	•	API routes missing auth guards
+	•	Any insecure defaults
+
+5️⃣ Performance & Scalability
+	•	Obvious bottlenecks in API routes
+	•	Large server-side computations in request paths
+	•	Missing caching opportunities
+	•	Over-fetching in React components
+
+6️⃣ Logging, Monitoring & Error Handling
+	•	Are errors swallowed?
+	•	Is logging production-safe?
+	•	What is missing for observability (Sentry, logs, etc.)?
+
+7️⃣ CI / Deployment Compatibility (Vercel)
+	•	Anything that will break on Vercel specifically
+	•	Edge vs Node compatibility issues
+	•	File-system writes
+	•	Background jobs assumptions
+
+⸻
+
+📄 Required Output Format
+
+Produce ONE structured report with the following sections:
+
+## Production Readiness Report — WebWaka
+
+### Overall Status
+PASS / PASS WITH WARNINGS / BLOCKED
+
+### Critical Blockers (Must Fix Before Deploy)
+- [ ] Item
+- [ ] Item
+
+### High-Risk Issues
+- …
+
+### Medium / Low-Risk Issues
+- …
+
+### Required Environment Variables
+| Variable | Required | Scope | Notes |
+
+### Prisma & Database Notes
+
+### Vercel-Specific Notes
+
+### Recommended Pre-Launch Checklist
+1.
+2.
+3.
+
+### Explicit “Safe to Deploy?” Verdict
+YES / NO (with reason)
+
+
+⸻
+
+🚫 Constraints
+	•	❌ Do NOT refactor code
+	•	❌ Do NOT add files
+	•	❌ Do NOT change configs
+	•	❌ Do NOT assume MongoDB or Kubernetes
+	•	✅ Assume Supabase + Vercel + Replit
+
+⸻
+
+🧠 Evaluation Standard
+
+Review this like:
+
+“Would I confidently deploy this to production for a paying customer?”
+
+Be strict, realistic, and explicit.
+
+⸻
+
+Once the report is generated, stop and wait for next instructions.
+
+⸻
