@@ -75,17 +75,7 @@ export interface LoyaltyRuleInput {
 }
 
 // ============================================================================
-// DEFAULT TIER CONFIGURATION (Nigeria SME)
-// ============================================================================
-
-export const DEFAULT_TIER_CONFIG: TierConfig = {
-  tiers: [
-    { name: 'Bronze', minPoints: 0, multiplier: 1, perks: ['Basic rewards'] },
-    { name: 'Silver', minPoints: 1000, multiplier: 1.25, perks: ['5% bonus points', 'Birthday reward'] },
-    { name: 'Gold', minPoints: 5000, multiplier: 1.5, perks: ['10% bonus points', 'Priority support', 'Exclusive offers'] },
-    { name: 'Platinum', minPoints: 10000, multiplier: 2, perks: ['20% bonus points', 'VIP events', 'Free delivery'] },
-  ],
-};
+// DEFAULT_TIER_CONFIG is now imported from @/lib/db/jsonValidation
 
 // ============================================================================
 // LOYALTY SERVICE
