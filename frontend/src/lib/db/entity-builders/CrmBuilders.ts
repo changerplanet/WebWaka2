@@ -204,9 +204,9 @@ export function buildLoyaltyProgramCreate(
     pointsPerUnit: input.pointsPerUnit ?? 1,
     isActive: input.isActive ?? true,
     pointsExpireMonths: input.pointsExpireMonths ?? null,
-    tierConfig: input.tierConfig ?? Prisma.JsonNull,
-    earnRules: input.earnRules ?? Prisma.JsonNull,
-    redeemRules: input.redeemRules ?? Prisma.JsonNull,
+    tierConfig: input.tierConfig ? input.tierConfig as Prisma.InputJsonValue : Prisma.JsonNull,
+    earnRules: input.earnRules ? input.earnRules as Prisma.InputJsonValue : Prisma.JsonNull,
+    redeemRules: input.redeemRules ? input.redeemRules as Prisma.InputJsonValue : Prisma.JsonNull,
     createdBy: input.createdBy ?? null,
   };
 }
