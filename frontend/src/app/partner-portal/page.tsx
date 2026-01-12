@@ -165,7 +165,7 @@ export default function PartnerPortal() {
     if (partnerId) {
       fetchPartnerData()
     }
-  }, [partnerId])
+  }, [partnerId, fetchPartnerData])
 
   const fetchSession = async () => {
     try {
@@ -243,7 +243,8 @@ export default function PartnerPortal() {
     }
   }
 
-  const fetchPartnerData = async () => {
+  // Phase 14B: Wrapped in useCallback - triggers on partnerId change
+  const fetchPartnerData = useCallback(async () => {
     if (!partnerId) return
     
     try {
