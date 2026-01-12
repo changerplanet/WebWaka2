@@ -12,6 +12,11 @@ import { prisma } from '@/lib/prisma'
 import { B2BBulkOrderStatus, Prisma } from '@prisma/client'
 import { B2BPricingService } from './pricing-service'
 import { withPrismaDefaults, toJsonValue } from '@/lib/db/prismaDefaults'
+import { 
+  parseJsonField, 
+  BulkOrderItemsSchema, 
+  type BulkOrderItem as ValidatedBulkOrderItem 
+} from '@/lib/db/jsonValidation'
 
 // ============================================================================
 // TYPES

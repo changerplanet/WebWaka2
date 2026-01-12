@@ -24,6 +24,13 @@ import {
   SubscriptionEventType 
 } from '@prisma/client'
 import { Decimal } from '@prisma/client/runtime/library'
+import { 
+  parseJsonField, 
+  CommissionTiersSchema, 
+  CommissionRulesSchema,
+  type CommissionTier as ValidatedCommissionTier,
+  type HybridRule as ValidatedHybridRule
+} from '@/lib/db/jsonValidation'
 
 // ============================================================================
 // TYPES
