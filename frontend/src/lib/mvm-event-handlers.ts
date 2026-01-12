@@ -392,8 +392,8 @@ export async function handleSubOrderDelivered(
  * - Releases inventory reservation
  */
 export async function handleSubOrderCancelled(
-  event: MVMEventBase & { payload: SubOrderCancelledPayload }
-): Promise<{ success: boolean; error?: string }> {
+  event: MVMSubOrderCancelledEvent
+): Promise<EventHandlerResult> {
   const { idempotencyKey, payload } = event
 
   if (await isEventProcessed(idempotencyKey)) {
@@ -445,8 +445,8 @@ export async function handleSubOrderCancelled(
  * - Does NOT move money
  */
 export async function handleCommissionEarned(
-  event: MVMEventBase & { payload: CommissionEarnedPayload }
-): Promise<{ success: boolean; error?: string }> {
+  event: MVMCommissionEarnedEvent
+): Promise<EventHandlerResult> {
   const { idempotencyKey, payload } = event
 
   if (await isEventProcessed(idempotencyKey)) {
