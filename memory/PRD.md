@@ -122,6 +122,14 @@ Added `export const dynamic = 'force-dynamic'` to 485 API routes.
 - Remaining 1 cast: `LogisticsDeliveryStatus` (CONDITIONAL - requires domain approval)
 - Report: `/app/frontend/docs/PHASE_10C_ENUM_ALIGNMENT_REPORT.md`
 
+**Phase 10D - Runtime Safety Nets (COMPLETE - December 2025)**
+- Added `logEnumMismatch()` utility for runtime observability
+- Updated `validateEnumValue()` to log invalid values without changing return behavior
+- All 22 validators now include enum names and source tracking
+- Logging only, no behavior changes - purely diagnostic
+- Zero regressions, build passes
+- Report: `/app/frontend/docs/PHASE_10D_RUNTIME_ENUM_SAFETY_REPORT.md`
+
 ---
 
 ## Remaining Items (Prioritized Backlog)
