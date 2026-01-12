@@ -123,14 +123,14 @@ export function validatePurchaseRequestStatusArray(
 }
 
 // =============================================================================
-// RECEIPT STATUS (Common pattern)
+// GOODS RECEIPT STATUS (Prisma: ProcGoodsReceiptStatus)
 // =============================================================================
 
 export const PROC_RECEIPT_STATUS = [
   'PENDING',
-  'PARTIAL',
-  'COMPLETE',
-  'CANCELLED'
+  'VERIFIED',
+  'REJECTED',
+  'ACCEPTED'
 ] as const
 
 export type ProcReceiptStatusType = typeof PROC_RECEIPT_STATUS[number]
