@@ -191,7 +191,7 @@ export class ExecutionService {
         status,
         completedAt: new Date(),
         actionsExecuted: results.filter(r => r.success).length,
-        actionResults: results as unknown as Prisma.InputJsonValue,
+        actionResults: toJsonValue(results),
       },
     })
 
