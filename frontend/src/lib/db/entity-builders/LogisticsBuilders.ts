@@ -80,7 +80,7 @@ export function buildDeliveryAssignmentCreate(
     estimatedFee: input.estimatedFee ?? null,
     actualFee: input.actualFee ?? null,
     currency: input.currency ?? 'NGN',
-    feeCalculation: input.feeCalculation ?? Prisma.JsonNull,
+    feeCalculation: input.feeCalculation ? input.feeCalculation as Prisma.InputJsonValue : Prisma.JsonNull,
     estimatedDistanceKm: input.estimatedDistanceKm ?? null,
     estimatedDurationMin: input.estimatedDurationMin ?? null,
     scheduledPickupAt: input.scheduledPickupAt ?? null,
