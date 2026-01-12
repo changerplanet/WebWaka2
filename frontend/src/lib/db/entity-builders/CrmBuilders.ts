@@ -125,7 +125,7 @@ export function buildCustomerSegmentCreate(
     name: input.name,
     description: input.description ?? null,
     segmentType: input.segmentType,
-    rules: input.rules ?? Prisma.JsonNull,
+    rules: input.rules ? input.rules as Prisma.InputJsonValue : Prisma.JsonNull,
     isActive: input.isActive ?? true,
     createdBy: input.createdBy ?? null,
   };
