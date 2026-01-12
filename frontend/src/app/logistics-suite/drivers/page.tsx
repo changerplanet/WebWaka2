@@ -95,11 +95,8 @@ export default function DriversPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState<string>('all');
 
-  useEffect(() => {
-    fetchDrivers();
-  }, [filterStatus]);
-
-  const fetchDrivers = async () => {
+  // Phase 12B: Wrapped in useCallback for hook hygiene
+  const fetchDrivers = useCallback(async () => {
     try {
       setLoading(true);
       const params = new URLSearchParams();
@@ -117,7 +114,11 @@ export default function DriversPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [filterStatus]);
+
+  useEffect(() => {
+    fetchDrivers();
+  }, [fetchDrivers]);
 
   const filteredDrivers = drivers.filter(driver => {
     if (!searchTerm) return true;
