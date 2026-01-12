@@ -21,10 +21,12 @@
 // Shared types and utilities
 export {
   type EnumMappingResult,
+  type EnumMismatchLog,
   createEnumMapper,
   createEnumMapperWithResult,
   isValidEnumValue,
-  validateEnumValue
+  validateEnumValue,
+  logEnumMismatch
 } from './types'
 
 // Civic module enums
