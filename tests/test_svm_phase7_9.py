@@ -11,7 +11,7 @@ import os
 import hashlib
 import time
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://trusting-buck.preview.emergentagent.com').rstrip('/')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://typesafe-nextjs.preview.emergentagent.com').rstrip('/')
 
 # Test tenant IDs
 TEST_TENANT_ID = "test-tenant-phase7-9"

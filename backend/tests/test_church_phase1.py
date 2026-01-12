@@ -22,7 +22,7 @@ import json
 from typing import Dict, Any, Optional
 
 # API Base URL as specified in review request
-BASE_URL = "https://trusting-buck.preview.emergentagent.com"
+BASE_URL = "https://typesafe-nextjs.preview.emergentagent.com"
 
 # Required headers as specified in review request
 TEST_TENANT_ID = "test-tenant-new"

@@ -15,7 +15,7 @@ import os
 import time
 import re
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://trusting-buck.preview.emergentagent.com').rstrip('/')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://typesafe-nextjs.preview.emergentagent.com').rstrip('/')
 
 class TestSignupOptions:
     """Test GET /api/auth/v2?action=signup-options"""

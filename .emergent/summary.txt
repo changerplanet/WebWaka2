@@ -4,128 +4,111 @@ info Visit https://yarnpkg.com/en/docs/cli/run for documentation about this comm
 **User's preferred language**: English
 
 **what currently exists?**
-The application build is stable (yarn run v1.22.22
-info Visit https://yarnpkg.com/en/docs/cli/run for documentation about this command. passes) and all local services are running. A comprehensive, multi-phase technical debt reduction initiative is well underway.
--   **Phases 1-8**: Completed prior to this session, stabilizing the build and refactoring major systems like events.
--   **Phase 10 (A-E)**: Now fully complete. This phase systematically eliminated all  casts related to enum drift by creating a robust, bidirectional enum mapping and validation infrastructure in . It also added non-fatal runtime logging for any enum mismatches. All 18 targeted casts were resolved.
--   **Phase 11 (A-C)**: Now fully complete. This phase targeted remaining  casts unrelated to enums. A full audit was performed, and all casts deemed SAFE (e.g., URL parameters, sort direction) were fixed by creating new enum validators and shared types. This reduced the  count from 380 to 345. Casts touching domain logic or auth/billing were correctly deferred.
--   **Phase 12A**: Complete. All 52 baselined React Hook dependency warnings were audited and classified into SAFE, DOMAIN_REQUIRED, and DO_NOT_TOUCH categories.
+The application build was stable prior to the current task. A comprehensive, multi-phase technical debt reduction initiative is in its final stages.
+-   **Phases 1-12**: Completed. Stabilized the build, resolved all enum-related  casts, and fixed all SAFE React Hook dependency warnings.
+-   **Phase 13 (Continuous)**: Completed. Systematically audited and fixed all low-risk,   casts across multiple modules (Sites/Funnels, Education, Hospitality, CRM).
+-   **Phase 14**: Completed. Audited and resolved all 13  React Hook warnings, fixing some and documenting others as intentional.
+-   **Phase 16A**: Completed. A full, read-only audit of all remaining Prisma entity-related technical debt was performed, categorized, and documented.
+-   **Phase 16B (Wave 1)**: The agent has begun implementing the Entity Builder pattern to fix Prisma write-path  casts. Initial builder files have been created, but this has introduced build-breaking TypeScript errors due to schema mismatches.
 
 **Last working item**:
--   **Last item agent was working**: The agent was executing **Phase 12B — SAFE React Hook Remediation**. Following a strict user mandate, the agent was applying the  wrapper pattern to fix  warnings that were classified as SAFE. It successfully remediated warnings on several dashboard and module pages (, , ) and was in the process of applying the same pattern to other component files like .
+-   **Last item agent was working**: The agent was executing **Phase 16B Wave 1 — Entity Builder Implementation**. It created several builder files (e.g., , ) but discovered they were causing yarn run v1.22.22
+info Visit https://yarnpkg.com/en/docs/cli/run for documentation about this command. to fail. The failures were due to incorrect assumptions about the Prisma schema, leading to type errors (missing required fields, incorrect field names, wrong JSON types). The agent's last action was pivoting to a new strategy: refactoring the builders to be simpler and more flexible, focusing only on adding common required fields (like uid=0(root) gid=0(root) groups=0(root), ) and handling JSON types correctly, rather than attempting to create a perfect, all-encompassing type mapping.
 -   **Status**: IN PROGRESS
--   **Agent Testing Done**: Y (The agent has been consistently running yarn run v1.22.22
-info Visit https://yarnpkg.com/en/docs/cli/run for documentation about this command. after batches of changes, which is the required verification step for this phase. The build was passing.)
--   **Which testing method agent to use?**: Continue using yarn run v1.22.22
-info Visit https://yarnpkg.com/en/docs/cli/run for documentation about this command. to verify that fixes do not introduce regressions and that the warning count decreases.
+-   **Agent Testing Done**: Y (The agent ran yarn run v1.22.22
+info Visit https://yarnpkg.com/en/docs/cli/run for documentation about this command., which is the required test for this phase. The build is currently failing.)
+-   **Which testing method agent to use?**: Frontend testing agent. Specifically, continue using the command yarn run v1.22.22
+info Visit https://yarnpkg.com/en/docs/cli/run for documentation about this command. to validate that the entity builders are correctly typed and that all TypeScript errors are resolved.
 -   **User Testing Done**: N
 
 **All Pending/In progress Issue list**:
--   **Issue 1: Complete Phase 12B React Hook Remediation (P0)**
-    -   **Description**: The  ESLint rule is flagging functions inside  dependency arrays that are not wrapped in . This can lead to infinite loops or stale closures. The task is to fix the remaining warnings classified as .
+-   **Issue 1: Fix failing build caused by new Entity Builders (P0)**
+    -   **Description**: The yarn run v1.22.22
+info Visit https://yarnpkg.com/en/docs/cli/run for documentation about this command. command is failing due to TypeScript errors in the new Entity Builder files located in . The builders were created with incorrect assumptions about the Prisma schema, resulting in type mismatches.
+    -   **Attempted fixes**: The agent's initial attempt to create fully-typed builders failed. The current plan is to simplify the builders to only handle the most common issues: adding missing required fields (like uid=0(root) gid=0(root) groups=0(root) with /, ) and correctly typing JSON fields (), while allowing the service layer to pass through the rest of the data.
     -   **Next debug checklist**:
-        1.  Continue systematically through the list of  warnings in .
-        2.  For each, open the file and wrap the function referenced in the  hook with , ensuring its own dependencies are correctly listed.
-        3.  Add the memoized function to the  dependency array.
-        4.  Run yarn run v1.22.22
-info Visit https://yarnpkg.com/en/docs/cli/run for documentation about this command. periodically to ensure no regressions are introduced.
-        5.  Once all  warnings are addressed, proceed to Phase 12C.
-    -   **Why fix this issue and what will be achieved with the fix?**: This will improve the correctness and performance of React components by preventing unnecessary re-renders and potential bugs, while also cleaning the build output.
+        1.  Systematically review each builder file in .
+        2.  For each builder, consult the actual  to confirm field names, required status, and types.
+        3.  Refactor the builders to adopt the simpler, more flexible pattern: accept a partial input, add required fields with default values (uid=0(root) gid=0(root) groups=0(root), ), and correctly handle JSON types.
+        4.  Integrate the refactored builders into the corresponding service files in , replacing the  casts.
+        5.  Run yarn run v1.22.22
+info Visit https://yarnpkg.com/en/docs/cli/run for documentation about this command. after refactoring each module's builders to incrementally validate the fixes.
+    -   **Why fix this issue and what will be achieved with the fix?**: Resolving the build failure is critical to completing Phase 16B. This will eliminate ~30 low-risk  casts from Prisma write paths, significantly improving the application's type safety and maintainability.
     -   **Status**: IN PROGRESS
     -   **Is recurring issue?**: N
     -   **Should Test frontend/backend/both after fix?**: Frontend (build process).
     -   **Blocked on other issue**: None.
 
 **In progress Task List**:
--   **Task 1: Finish Phase 12B — SAFE React Hook Remediation (P0)**
-    -   **Where to resume**: Continue applying the  pattern to the remaining SAFE warnings identified in the Phase 12A report. The agent was last working on component files like .
-    -   **What will be achieved with this?**: The resolution of ~25-28 identified React hook warnings, leading to a cleaner, more correct, and more maintainable frontend codebase.
+-   **Task 1: Complete Phase 16B Wave 1 — Entity Builder Implementation (P0)**
+    -   **Where to resume**: Resume by refactoring the entity builder files in  using the simplified strategy. The immediate next step is to fix  based on the actual Prisma schema, then proceed to the other builders.
+    -   **What will be achieved with this?**: The successful removal of ~30  casts from the codebase, replacing them with type-safe Entity Builder functions for the CRM, Logistics, Education, and Procurement modules.
     -   **Status**: IN PROGRESS
     -   **Should Test frontend/backend/both after fix?**: Frontend (build process).
-    -   **Blocked on something**: None.
+    -   **Blocked on something**: The failing build (see Issue 1).
 
 **Upcoming and Future Tasks**
 -   **Upcoming Tasks:**
-    -   **P0: Phase 12C (Hook Hygiene Documentation)**: After completing 12B, create the final report () and update the ESLint baseline to formally accept the remaining  and  warnings.
-    -   **P1: Address CONDITIONAL  Casts**: Revisit  to decide on a strategy for the ~247  casts, which require domain knowledge (mostly related to Prisma  and  calls).
+    -   **P0: Phase 16B Wave 1 Report**: After the build is fixed and the implementation is complete, create the final report ().
+    -   **P1: Phase 16C (CONDITIONAL Prisma Items)**: Address the  items from the Phase 16A audit, which require more domain-specific logic.
+    -   **P1: Phase 15 (Shared  Hook)**: Create a standardized, reusable React hook for data fetching to encapsulate the / pattern and prevent future hook warnings.
 -   **Future Tasks:**
-    -   **P2: Address  React Hook Warnings**: The 13 warnings related to complex state logic in auth and governance pages, requiring domain-expert review.
-    -   **P2: Address Legacy Prisma Debt**: Tackle the 1,201 baselined Prisma type issues in a separate, long-term initiative.
-    -   **P2: Implement Guided Demo Tours**: A feature request from the original problem statement that is currently in the backlog.
+    -   **P2: Address  Prisma Debt**: Tackle the high-risk Prisma debt related to Auth, Billing, and Tenant models in a long-term initiative.
+    -   **P2: Phase 17 (Prisma Schema Governance)**: A long-term project to align Prisma models with service layer objects to prevent future debt.
+    -   **P2: Implement Guided Demo Tours**: An original feature request from the PRD, currently in the backlog.
 
 **Completed work in this session**
--   **Phase 10C**: Completed Enum Alignment, fixing 17  casts in API routes.
--   **Phase 10D**: Completed Runtime Enum Safety, adding non-fatal logging to all enum validators.
--   **Phase 10E**: Completed Delivery Status Mapping, fixing the final enum-related  cast based on a domain decision.
--   **Phase 11A**: Completed  Classification, auditing and categorizing all 380 remaining casts.
--   **Phase 11B**: Completed SAFE  Reduction, fixing 26 casts related to API params and simple DTOs.
--   **Phase 11C**: Completed Extended SAFE  Reduction, fixing 9 more casts in  and  modules.
--   **Phase 12A**: Completed React Hook Classification, auditing and categorizing all 52 hook warnings.
--   **Phase 12B**: Started SAFE React Hook Remediation, fixing ~20 of the 31 SAFE warnings.
-
-**Earlier issues found/mentioned but not fixed**
--   ** casts (~345 remaining)**: Casts classified as  (247) or  (57) in the Phase 11A report remain and are intentionally deferred.
--   **React Hook Warnings (~32 remaining)**: Warnings classified as  (13) or  (8) in the Phase 12A report will be baselined.
--   **Baselined Prisma Issues (1,201)**: The largest category of technical debt, deferred to a long-term initiative.
+-   **Phase 12B & 12C**: Completed SAFE React Hook Remediation and documentation.
+-   **Phase 13 (Continuous)**: Completed  reduction for Sites/Funnels, Education, Hospitality, and CRM modules.
+-   **Phase 14A & 14B**: Completed audit and controlled remediation of all DOMAIN_REQUIRED React Hook warnings.
+-   **Phase 16A**: Completed a comprehensive, read-only audit of all Prisma entity-related technical debt.
 
 **Code Architecture**
 
 
 **Key Technical Concepts**
--   **Phased Remediation**: A strict, user-mandated approach to cleaning technical debt in categorized batches (Phases 10, 11, 12).
--   **Bidirectional Enum Mapping**: The core concept of Phase 10, successfully implemented to create adapter functions that safely translate enum values between API, Service, and Prisma layers.
--   **Runtime Safety Nets**: Non-fatal logging implemented in Phase 10D to report enum mismatches in production without altering behavior.
--   **Structurally Safe Refactoring**: The principle guiding Phases 11 and 12, where changes are limited to mechanical type-straightening and hook hygiene, avoiding any modification of business logic.
-
-**key DB schema**
--   Source of truth is . No changes were made to the schema during this session, as per the user's strict mandates.
+-   **Phased Remediation**: A strict, user-mandated approach to cleaning technical debt in categorized batches.
+-   **Entity Builders**: The core pattern for Phase 16. These are functions designed to transform service-layer objects into type-safe inputs for Prisma write operations (, ), systematically eliminating  casts.
 
 **All files of reference**
--   : **Crucial.** Governs the scope of the current task (Phase 12B).
--   : Defines the scope of remaining  work.
--   All  reports in .
--   : Contains the high-level history and backlog.
+-   : **Crucial.** Governs the scope of the current task (Phase 16B).
+-   : **Crucial.** The source of truth for all database models; must be consulted to fix the builders.
+-   : The directory where new builder files are being created and need to be fixed.
+-   Service files in  that contain the  casts being fixed.
 
 **Critical Info for New Agent**
--   You are executing **Phase 12B**. Your task is to fix the remaining **SAFE** React Hook warnings identified in the Phase 12A report.
--   **The only allowed fix pattern is wrapping functions in **. Do not use  or refactor component logic.
--   **Your scope is strictly defined**. Do not touch any warnings classified as  or , especially in files like , , or any auth-related components.
--   After every few fixes, run yarn run v1.22.22
-info Visit https://yarnpkg.com/en/docs/cli/run for documentation about this command. to verify you have not introduced any regressions.
--   Once all SAFE warnings are fixed, you must proceed to **Phase 12C**, which involves creating the final report.
+-   You are executing **Phase 16B (Wave 1)**. Your immediate priority is to fix the **failing build** caused by the new Entity Builder files.
+-   The previous agent's key insight was to pivot to **simpler, more flexible builders**. Do not try to create perfect, exhaustive models. Focus on solving the specific type errors: add default required fields (uid=0(root) gid=0(root) groups=0(root), ), ensure correct field names, and correctly type JSON fields.
+-   **Always refer to  as the single source of truth** before modifying any builder.
+-   Your scope is strictly limited to the  items in the CRM, Logistics, Education, and Procurement modules as defined in the Phase 16A report.
+-   After every major change, run yarn run v1.22.22
+info Visit https://yarnpkg.com/en/docs/cli/run for documentation about this command. to check your work.
 
 **documents and test reports created in this job**
--   /app/frontend/docs/PHASE_10C_ENUM_ALIGNMENT_REPORT.md
--   /app/frontend/docs/PHASE_10D_RUNTIME_ENUM_SAFETY_REPORT.md
--   /app/frontend/docs/PHASE_10E_DELIVERY_STATUS_MAPPING_REPORT.md
--   /app/frontend/docs/PHASE_11A_AS_ANY_CLASSIFICATION_REPORT.md
--   /app/frontend/docs/PHASE_11B_SAFE_AS_ANY_REDUCTION_REPORT.md
--   /app/frontend/docs/PHASE_11C_SAFE_AS_ANY_REDUCTION_REPORT.md
--   /app/frontend/docs/PHASE_12A_REACT_HOOK_CLASSIFICATION_REPORT.md
--   /app/memory/PRD.md (Updated multiple times)
+-   /app/frontend/docs/PHASE_12_REACT_HOOK_HYGIENE_REPORT.md
+-   /app/frontend/docs/PHASE_13A_SITES_FUNNELS_AS_ANY_AUDIT.md
+-   /app/frontend/docs/PHASE_13C_SITES_FUNNELS_AS_ANY_REDUCTION_REPORT.md
+-   /app/frontend/docs/PHASE_13_EDUCATION_AS_ANY_REPORT.md
+-   /app/frontend/docs/PHASE_13_CONDITIONAL_AS_ANY_PROGRAM_REPORT.md
+-   /app/frontend/docs/PHASE_14_DOMAIN_INTENT_MATRIX.md
+-   /app/frontend/docs/PHASE_14_REACT_HOOK_DOMAIN_REPORT.md
+-   /app/frontend/docs/PHASE_16A_PRISMA_ENTITY_DEBT_MAP.md
+-   /app/frontend/src/lib/db/entity-builders/CrmBuilders.ts
+-   /app/frontend/src/lib/db/entity-builders/LogisticsBuilders.ts
+-   /app/frontend/src/lib/db/entity-builders/EducationBuilders.ts
+-   /app/frontend/src/lib/db/entity-builders/ProcurementBuilders.ts
+-   /app/frontend/src/lib/db/entity-builders/index.ts
 
 **Last 10 User Messages and any pending HUMAN messages**
-The user messages have been a series of formal, written Mandates authorizing each micro-phase of the technical debt cleanup (11C, 12A, 12B). The user is highly structured, providing explicit scopes, rules, deliverables, and stop conditions for each step. The last user message authorized the execution of Phase 12B, which is currently in progress. There are no pending human messages.
+The user's recent messages have been formal, detailed Mandates authorizing each phase of the technical debt cleanup (14A, 14B, 16A, and 16B). The last message provided explicit authorization for the current task (Phase 16B, Wave 1), defining the scope, the required Entity Builder implementation pattern, and strict safety rules. There are no pending messages from the user.
 
 **Project Health Check:**
--   **Broken**: No. The application build passes consistently, and services run correctly.
+-   **Broken**: Yes. The yarn run v1.22.22
+info Visit https://yarnpkg.com/en/docs/cli/run for documentation about this command. command is currently failing due to TypeScript errors introduced during the implementation of Phase 16B.
 -   **Mocked**: N/A
 
 **3rd Party Integrations**
 -   Supabase (PostgreSQL)
 -   Prisma ORM
 -   Next.js
--   Zod
-
-**Testing status**
--   **Testing agent used after significant changes**: NO
--   **Troubleshoot agent used after agent stuck in loop**: NO
--   **Test files created**: []
--   **Known regressions**: None. The agent has been diligent in following mandates and verifying with yarn run v1.22.22
-info Visit https://yarnpkg.com/en/docs/cli/run for documentation about this command., successfully reverting changes that caused issues (e.g., during Phase 11C).
-
-**Credentials to test flow:**
-N/A
-
-**What agent forgot to execute**
-The agent has followed the user's detailed, phased plan with high precision and has not forgotten any steps.</analysis>
+-   Zod</analysis>

@@ -23,7 +23,7 @@ import uuid
 from datetime import datetime
 
 # Base URL
-BASE_URL = "https://trusting-buck.preview.emergentagent.com"
+BASE_URL = "https://typesafe-nextjs.preview.emergentagent.com"
 
 # Test tenant
 TENANT_SLUG = "acme"
