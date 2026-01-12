@@ -250,3 +250,30 @@ export function validateLicenseType(
 ): LogisticsLicenseTypeService | undefined {
   return validateEnumValue(value, LOGISTICS_LICENSE_TYPE_SERVICE)
 }
+
+// =============================================================================
+// DRIVER STATUS - SERVICE-ONLY ENUM (Phase 10C APPROVED)
+// =============================================================================
+
+/**
+ * Driver status values used in logistics service layer.
+ * Different from Prisma LogisticsAgentStatus - this is operational status.
+ */
+export const LOGISTICS_DRIVER_STATUS_SERVICE = [
+  'AVAILABLE',
+  'ON_TRIP',
+  'OFF_DUTY',
+  'ON_BREAK',
+  'SUSPENDED'
+] as const
+
+export type LogisticsDriverStatusService = typeof LOGISTICS_DRIVER_STATUS_SERVICE[number]
+
+/**
+ * Validates and returns a valid driver status value.
+ */
+export function validateDriverStatus(
+  value: string | null | undefined
+): LogisticsDriverStatusService | undefined {
+  return validateEnumValue(value, LOGISTICS_DRIVER_STATUS_SERVICE)
+}
