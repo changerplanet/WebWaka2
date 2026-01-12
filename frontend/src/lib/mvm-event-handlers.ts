@@ -196,8 +196,8 @@ export async function handleVendorApproved(
  * Handle vendor suspended
  */
 export async function handleVendorSuspended(
-  event: MVMEventBase & { payload: VendorStatusChangedPayload }
-): Promise<{ success: boolean; error?: string }> {
+  event: MVMVendorSuspendedEvent
+): Promise<EventHandlerResult> {
   const { idempotencyKey, payload } = event
 
   if (await isEventProcessed(idempotencyKey)) {
@@ -243,8 +243,8 @@ export async function handleVendorSuspended(
  * - Updates parent order metadata (if needed)
  */
 export async function handleOrderSplit(
-  event: MVMEventBase & { payload: OrderSplitPayload }
-): Promise<{ success: boolean; error?: string }> {
+  event: MVMOrderSplitEvent
+): Promise<EventHandlerResult> {
   const { idempotencyKey, payload } = event
 
   if (await isEventProcessed(idempotencyKey)) {
