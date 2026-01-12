@@ -7,93 +7,28 @@
 import { prisma } from './prisma'
 import { createAuditLog } from './audit'
 import { AuditAction } from '@prisma/client'
+import {
+  type POSEvent,
+  type POSEventUnknown,
+  type POSSaleCompletedEvent,
+  type POSSaleCancelledEvent,
+  type POSPaymentCapturedEvent,
+  type POSRefundCreatedEvent,
+  isPOSEvent,
+  type EventHandlerResult
+} from './events/eventTypes'
 
 // ============================================================================
-// TYPES
+// TYPES (Local extensions only - canonical types in eventTypes.ts)
 // ============================================================================
 
-interface POSEventBase {
-  eventId: string
-  eventType: string
-  timestamp: string
-  idempotencyKey: string
-}
-
-interface SaleCompletedPayload {
-  saleId: string
-  saleNumber: string
-  tenantId: string
-  staffId: string
-  subtotal: number
-  discountTotal: number
-  taxTotal: number
-  grandTotal: number
-  lineItems: Array<{
-    lineItemId: string
-    productId: string
-    variantId?: string
-    quantity: number
-    unitPrice: number
-  }>
-  payments: Array<{
-    paymentId: string
-    method: string
-    amount: number
-  }>
-  completedAt: string
-  offlineId?: string
-}
-
-interface SaleCancelledPayload {
-  saleId: string
-  saleNumber: string
-  tenantId: string
-  staffId: string
-  voidedByStaffId: string
-  reason: string
-  lineItems: Array<{
-    lineItemId: string
-    productId: string
-    quantity: number
-  }>
-  cancelledAt: string
-}
-
-interface PaymentCapturedPayload {
-  paymentId: string
-  saleId: string
-  tenantId: string
-  staffId: string
-  method: 'CASH' | 'CARD' | 'MOBILE_PAYMENT' | 'SPLIT'
-  amount: number
-  tipAmount?: number
-  totalAmount: number
-  currency: string
-  cashReceived?: number
-  changeGiven?: number
-  processedAt: string
-  offlineId?: string
-}
-
-interface RefundCreatedPayload {
-  refundId: string
-  refundNumber: string
-  originalSaleId?: string
-  tenantId: string
-  staffId: string
-  approvedByStaffId?: string
-  totalRefunded: number
-  refundMethod: string
-  reason: string
-  items: Array<{
-    lineItemId: string
-    productId: string
-    quantity: number
-    refundAmount: number
-    restock: boolean
-  }>
-  processedAt: string
-}
+// Re-export for backwards compatibility
+export type { 
+  SaleCompletedPayload,
+  SaleCancelledPayload,
+  PaymentCapturedPayload,
+  RefundCreatedPayload
+} from './events/eventTypes'
 
 // ============================================================================
 // IDEMPOTENCY CHECK
