@@ -47,11 +47,8 @@ export default function AuditInspectionPage() {
     demoOnly: undefined as boolean | undefined,
   })
 
-  useEffect(() => {
-    loadAuditData()
-  }, [filters])
-
-  function loadAuditData() {
+  // Phase 14B: Wrapped in useCallback - triggers on filters change
+  const loadAuditData = useCallback(() => {
     const { events: auditEvents, total: totalCount } = queryAuditEvents({
       actorType: filters.actorType || undefined,
       surface: filters.surface || undefined,
@@ -67,7 +64,11 @@ export default function AuditInspectionPage() {
     setTotal(totalCount)
     setStats(getAuditStatistics())
     setWarnings(getMissingAuditWarnings())
-  }
+  }, [filters])
+
+  useEffect(() => {
+    loadAuditData()
+  }, [loadAuditData])
 
   const getActorIcon = (actorType: AuditActorType) => {
     switch (actorType) {
