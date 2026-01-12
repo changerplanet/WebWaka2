@@ -58,11 +58,7 @@ export default function ErrorLogPage() {
   const [severityFilter, setSeverityFilter] = useState('')
   const [serviceFilter, setServiceFilter] = useState('')
 
-  useEffect(() => {
-    loadErrors()
-  }, [timeRange, severityFilter, serviceFilter])
-
-  async function loadErrors() {
+  const loadErrors = useCallback(async () => {
     setLoading(true)
     try {
       const params = new URLSearchParams()
@@ -84,7 +80,11 @@ export default function ErrorLogPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [timeRange, severityFilter, serviceFilter])
+
+  useEffect(() => {
+    loadErrors()
+  }, [loadErrors])
 
   const getSeverityIcon = (severity: string) => {
     switch (severity) {
