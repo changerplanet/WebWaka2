@@ -32,6 +32,11 @@ import {
   getTrackingBoard,
   getJobStatusHistory,
 } from '@/lib/logistics/tracking-service';
+import {
+  validateJobStatus,
+  validateJobType,
+  validateJobPriority,
+} from '@/lib/enums';
 
 export async function GET(request: NextRequest) {
   try {
@@ -108,10 +113,11 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ success: true, history });
     }
     
+    // Phase 11B: Using type-safe enum validators
     const { jobs, total, stats } = await getJobs(tenantId, {
-      status: searchParams.get('status') as any,
-      jobType: searchParams.get('jobType') as any,
-      priority: searchParams.get('priority') as any,
+      status: validateJobStatus(searchParams.get('status')),
+      jobType: validateJobType(searchParams.get('jobType')),
+      priority: validateJobPriority(searchParams.get('priority')),
       driverId: searchParams.get('driverId') || undefined,
       customerId: searchParams.get('customerId') || undefined,
       dateFrom: searchParams.get('dateFrom') || undefined,

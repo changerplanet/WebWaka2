@@ -19,6 +19,10 @@ import {
   createVehicle,
   getFleetStats,
 } from '@/lib/logistics/fleet-service';
+import {
+  validateVehicleType,
+  validateVehicleStatus,
+} from '@/lib/enums';
 
 export async function GET(request: NextRequest) {
   try {
@@ -40,7 +44,8 @@ export async function GET(request: NextRequest) {
     }
     
     if (query === 'available') {
-      const vehicleType = searchParams.get('vehicleType') as any;
+      // Phase 11B: Using type-safe enum validator
+      const vehicleType = validateVehicleType(searchParams.get('vehicleType'));
       const available = await getAvailableVehicles(tenantId, vehicleType);
       return NextResponse.json({ success: true, vehicles: available, count: available.length });
     }
@@ -50,9 +55,10 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ success: true, stats });
     }
     
+    // Phase 11B: Using type-safe enum validators
     const { vehicles, total, stats } = await getVehicles(tenantId, {
-      vehicleType: searchParams.get('vehicleType') as any,
-      status: searchParams.get('status') as any,
+      vehicleType: validateVehicleType(searchParams.get('vehicleType')),
+      status: validateVehicleStatus(searchParams.get('status')),
       isActive: searchParams.get('isActive') === 'true' ? true : searchParams.get('isActive') === 'false' ? false : undefined,
       hasDriver: searchParams.get('hasDriver') === 'true' ? true : searchParams.get('hasDriver') === 'false' ? false : undefined,
       page: searchParams.get('page') ? parseInt(searchParams.get('page')!) : 1,
