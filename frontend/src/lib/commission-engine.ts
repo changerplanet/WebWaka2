@@ -350,7 +350,7 @@ function calculateTieredCommission(
     }
   }
   
-  const tiers = agreement.commissionTiers as unknown as CommissionTier[]
+  const tiers = parseJsonField(agreement.commissionTiers, CommissionTiersSchema, [])
   const volume = input.historicalVolume ?? input.grossAmount
   
   // Find applicable tier based on volume
@@ -461,7 +461,8 @@ function calculateHybridCommission(
     }
   }
   
-  const rules = (agreement.commissionRules as unknown as { rules: HybridRule[] }).rules
+  const parsedRules = parseJsonField(agreement.commissionRules, CommissionRulesSchema, { rules: [] })
+  const rules = parsedRules.rules
   const breakdown: CommissionBreakdown[] = []
   let totalCommission = 0
   
