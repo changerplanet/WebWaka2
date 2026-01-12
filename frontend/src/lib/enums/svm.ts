@@ -1,14 +1,76 @@
 /**
- * SVM ENUM MAPPERS (STUB)
- * =======================
+ * SVM ENUM MAPPERS
+ * ================
  * 
- * ⚠️ CONDITIONAL: Not authorized for Phase 10B execution
+ * Type-safe validators for SVM module enums.
  * 
- * This file contains stub definitions only.
- * Actual mapping implementation requires domain approval in Phase 10C.
+ * Status:
+ * - ✅ ProductStatus (Phase 11C APPROVED - SAFE)
+ * - ⚠️ OrderStatus (CONDITIONAL - STUB ONLY)
+ * - ⚠️ PaymentStatus (CONDITIONAL - STUB ONLY)
  * 
  * @module lib/enums/svm
  */
+
+import { validateEnumValue } from './types'
+
+// =============================================================================
+// PRODUCT STATUS (Phase 11C APPROVED - SAFE)
+// =============================================================================
+
+/**
+ * Product status values (Prisma: ProductStatus)
+ */
+export const SVM_PRODUCT_STATUS = [
+  'DRAFT',
+  'ACTIVE',
+  'ARCHIVED'
+] as const
+
+export type SvmProductStatusType = typeof SVM_PRODUCT_STATUS[number]
+
+/**
+ * Validates product status value.
+ * Phase 11C: Safe to use at API boundaries.
+ */
+export function validateProductStatus(
+  value: string | null | undefined
+): SvmProductStatusType | undefined {
+  return validateEnumValue(value, SVM_PRODUCT_STATUS, 'ProductStatus', 'API')
+}
+
+// =============================================================================
+// CATALOG SORT OPTIONS (Phase 11C APPROVED - SAFE)
+// =============================================================================
+
+export const SVM_CATALOG_SORT_BY = [
+  'price',
+  'createdAt',
+  'name'
+] as const
+
+export type SvmCatalogSortByType = typeof SVM_CATALOG_SORT_BY[number]
+
+export function validateCatalogSortBy(
+  value: string | null | undefined
+): SvmCatalogSortByType {
+  if (value && SVM_CATALOG_SORT_BY.includes(value as SvmCatalogSortByType)) {
+    return value as SvmCatalogSortByType
+  }
+  return 'name' // default
+}
+
+export const SVM_SORT_ORDER = ['asc', 'desc'] as const
+export type SvmSortOrderType = typeof SVM_SORT_ORDER[number]
+
+export function validateSortOrder(
+  value: string | null | undefined
+): SvmSortOrderType {
+  if (value === 'asc' || value === 'desc') {
+    return value
+  }
+  return 'asc' // default
+}
 
 // =============================================================================
 // ORDER STATUS (CONDITIONAL - STUB ONLY)
