@@ -41,11 +41,12 @@ export type LogisticsVehicleTypePrisma = typeof LOGISTICS_VEHICLE_TYPE_PRISMA[nu
 /**
  * Validates and returns a Prisma-compatible vehicle type.
  * Vehicle types are aligned between service and Prisma.
+ * Phase 10D: Logs mismatches for observability.
  */
 export function validateVehicleType(
   value: string | null | undefined
 ): LogisticsVehicleTypePrisma | undefined {
-  return validateEnumValue(value, LOGISTICS_VEHICLE_TYPE_PRISMA)
+  return validateEnumValue(value, LOGISTICS_VEHICLE_TYPE_PRISMA, 'LogisticsVehicleType', 'API')
 }
 
 // =============================================================================
@@ -67,11 +68,12 @@ export type LogisticsAgentStatusPrisma = typeof LOGISTICS_AGENT_STATUS_PRISMA[nu
 
 /**
  * Validates and returns a Prisma-compatible agent status.
+ * Phase 10D: Logs mismatches for observability.
  */
 export function validateAgentStatus(
   value: string | null | undefined
 ): LogisticsAgentStatusPrisma | undefined {
-  return validateEnumValue(value, LOGISTICS_AGENT_STATUS_PRISMA)
+  return validateEnumValue(value, LOGISTICS_AGENT_STATUS_PRISMA, 'LogisticsAgentStatus', 'API')
 }
 
 // =============================================================================
@@ -161,11 +163,12 @@ export type LogisticsJobStatusService = typeof LOGISTICS_JOB_STATUS_SERVICE[numb
 /**
  * Validates and returns a valid job status value.
  * Used at API boundaries for filter params.
+ * Phase 10D: Logs mismatches for observability.
  */
 export function validateJobStatus(
   value: string | null | undefined
 ): LogisticsJobStatusService | undefined {
-  return validateEnumValue(value, LOGISTICS_JOB_STATUS_SERVICE)
+  return validateEnumValue(value, LOGISTICS_JOB_STATUS_SERVICE, 'LogisticsJobStatus', 'API')
 }
 
 // =============================================================================
@@ -190,11 +193,12 @@ export type LogisticsJobTypeService = typeof LOGISTICS_JOB_TYPE_SERVICE[number]
 
 /**
  * Validates and returns a valid job type value.
+ * Phase 10D: Logs mismatches for observability.
  */
 export function validateJobType(
   value: string | null | undefined
 ): LogisticsJobTypeService | undefined {
-  return validateEnumValue(value, LOGISTICS_JOB_TYPE_SERVICE)
+  return validateEnumValue(value, LOGISTICS_JOB_TYPE_SERVICE, 'LogisticsJobType', 'API')
 }
 
 // =============================================================================
