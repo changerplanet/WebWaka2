@@ -79,11 +79,7 @@ export default function AdminCapabilitiesPage() {
   const [filterDomain, setFilterDomain] = useState<string>('all')
   const [selectedCapability, setSelectedCapability] = useState<CapabilityWithStats | null>(null)
 
-  useEffect(() => {
-    fetchCapabilities()
-  }, [filterDomain])
-
-  async function fetchCapabilities() {
+  const fetchCapabilities = useCallback(async () => {
     try {
       setLoading(true)
       const url = filterDomain === 'all' 
@@ -110,7 +106,11 @@ export default function AdminCapabilitiesPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [filterDomain])
+
+  useEffect(() => {
+    fetchCapabilities()
+  }, [fetchCapabilities])
 
   async function seedCapabilities() {
     try {
