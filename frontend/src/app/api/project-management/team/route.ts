@@ -62,9 +62,10 @@ export async function GET(request: Request) {
       return NextResponse.json({ workload });
     }
 
+    // Phase 11B: Using type-safe enum validator
     const filters: TeamMemberFilters = {
       projectId,
-      role: searchParams.get('role') as any || undefined,
+      role: validateTeamRole(searchParams.get('role')),
       memberType: searchParams.get('memberType') || undefined,
       isActive: searchParams.get('isActive') === 'true' ? true : 
                 searchParams.get('isActive') === 'false' ? false : undefined,
