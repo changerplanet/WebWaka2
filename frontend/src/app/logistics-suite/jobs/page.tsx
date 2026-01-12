@@ -129,11 +129,8 @@ export default function JobsPage() {
   const [actionLoading, setActionLoading] = useState<string | null>(null);
   const [selectedJob, setSelectedJob] = useState<Job | null>(null);
 
-  useEffect(() => {
-    fetchJobs();
-  }, [filterStatus, filterPriority]);
-
-  const fetchJobs = async () => {
+  // Phase 12B: Wrapped in useCallback for hook hygiene
+  const fetchJobs = useCallback(async () => {
     try {
       setLoading(true);
       const params = new URLSearchParams();
@@ -152,7 +149,11 @@ export default function JobsPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [filterStatus, filterPriority]);
+
+  useEffect(() => {
+    fetchJobs();
+  }, [fetchJobs]);
 
   const handleUpdateStatus = async (jobId: string, newStatus: string) => {
     try {

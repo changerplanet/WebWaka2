@@ -93,11 +93,8 @@ export default function FleetPage() {
   const [filterType, setFilterType] = useState<string>('all');
   const [filterStatus, setFilterStatus] = useState<string>('all');
 
-  useEffect(() => {
-    fetchVehicles();
-  }, [filterType, filterStatus]);
-
-  const fetchVehicles = async () => {
+  // Phase 12B: Wrapped in useCallback for hook hygiene
+  const fetchVehicles = useCallback(async () => {
     try {
       setLoading(true);
       const params = new URLSearchParams();
@@ -118,7 +115,11 @@ export default function FleetPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [filterType, filterStatus]);
+
+  useEffect(() => {
+    fetchVehicles();
+  }, [fetchVehicles]);
 
   if (loading && vehicles.length === 0) {
     return (

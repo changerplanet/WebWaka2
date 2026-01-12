@@ -204,14 +204,8 @@ export default function MattersPage() {
   const [matterTitle, setMatterTitle] = useState('');
   const [court, setCourt] = useState('');
 
-  // Fetch templates on dialog open
-  useEffect(() => {
-    if (templateDialogOpen && templates.length === 0) {
-      fetchTemplates();
-    }
-  }, [templateDialogOpen]);
-
-  const fetchTemplates = async () => {
+  // Phase 12B: Wrapped in useCallback for hook hygiene
+  const fetchTemplates = useCallback(async () => {
     setLoadingTemplates(true);
     try {
       const res = await fetch('/api/legal-practice/templates');
@@ -222,7 +216,14 @@ export default function MattersPage() {
     } finally {
       setLoadingTemplates(false);
     }
-  };
+  }, []);
+
+  // Fetch templates on dialog open
+  useEffect(() => {
+    if (templateDialogOpen && templates.length === 0) {
+      fetchTemplates();
+    }
+  }, [templateDialogOpen, templates.length, fetchTemplates]);
 
   const handleSelectTemplate = (template: MatterTemplate) => {
     setSelectedTemplate(template);
