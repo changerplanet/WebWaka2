@@ -443,7 +443,8 @@ function InstanceEditor({
   const [saving, setSaving] = useState(false)
   const [showPreview, setShowPreview] = useState(false)
 
-  // Auto-generate slug from name
+  // Phase 14B: Derive-initial-value pattern - slug intentionally excluded to prevent overwriting user edits
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     if (isCreate && name && !slug) {
       setSlug(name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, ''))
