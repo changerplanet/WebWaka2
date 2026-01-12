@@ -212,9 +212,20 @@ export {
   parseActivationConfig
 } from './sites-funnels'
 
-// SVM module enums (stubs only)
+// SVM module enums
 export {
-  // Prisma canonical values
+  // Product status (Phase 11C - SAFE)
+  SVM_PRODUCT_STATUS,
+  SVM_CATALOG_SORT_BY,
+  SVM_SORT_ORDER,
+  type SvmProductStatusType,
+  type SvmCatalogSortByType,
+  type SvmSortOrderType,
+  validateProductStatus,
+  validateCatalogSortBy,
+  validateSortOrder,
+  
+  // Order status (CONDITIONAL - stubs)
   SVM_ORDER_STATUS_PRISMA,
   SVM_PAYMENT_STATUS_PRISMA,
   type SvmOrderStatusPrisma,
