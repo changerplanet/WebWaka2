@@ -130,6 +130,8 @@ export default function PaymentsDashboard() {
   useEffect(() => {
     initializeAndFetch()
   }, [initializeAndFetch])
+
+  const formatCurrency = (value: number, currency: string = 'NGN') => {
     return new Intl.NumberFormat('en-NG', {
       style: 'currency',
       currency,

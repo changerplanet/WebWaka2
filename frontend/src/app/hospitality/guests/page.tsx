@@ -127,7 +127,11 @@ export default function GuestsPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [filterType, filterLoyalty]);
+
+  useEffect(() => {
+    fetchGuests();
+  }, [fetchGuests]);
 
   const handleSearch = async () => {
     if (!searchTerm.trim()) {
