@@ -182,7 +182,7 @@ export function buildDeliveryZoneUpdate(
   if (input.centerLatitude !== undefined) update.centerLatitude = input.centerLatitude;
   if (input.centerLongitude !== undefined) update.centerLongitude = input.centerLongitude;
   if (input.radiusKm !== undefined) update.radiusKm = input.radiusKm;
-  if (input.polygon !== undefined) update.polygon = input.polygon ?? Prisma.JsonNull;
+  if (input.polygon !== undefined) update.polygon = input.polygon ? input.polygon as Prisma.InputJsonValue : Prisma.JsonNull;
   if (input.status !== undefined) update.status = input.status as LogisticsZoneStatus;
   if (input.sortOrder !== undefined) update.sortOrder = input.sortOrder;
   if (input.metadata !== undefined) update.metadata = input.metadata ? input.metadata as Prisma.InputJsonValue : Prisma.JsonNull;
