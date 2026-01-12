@@ -107,10 +107,10 @@ export async function GET(request: NextRequest) {
     
     // Regular listing with filters
     const { tasks, total, stats } = await getHousekeepingTasks(tenantId, {
-      status: searchParams.get('status') as any,
-      taskType: searchParams.get('taskType') as any,
+      status: validateHousekeepingStatus(searchParams.get('status')),
+      taskType: validateTaskType(searchParams.get('taskType')),
       assignedTo: searchParams.get('assignedTo') || undefined,
-      priority: searchParams.get('priority') as any,
+      priority: validatePriority(searchParams.get('priority')),
       date: searchParams.get('date') || undefined,
       page: searchParams.get('page') ? parseInt(searchParams.get('page')!) : 1,
       limit: searchParams.get('limit') ? parseInt(searchParams.get('limit')!) : 50,
