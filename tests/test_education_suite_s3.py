@@ -17,7 +17,7 @@ import pytest
 import requests
 import os
 
-BASE_URL = os.environ.get('NEXT_PUBLIC_APP_URL', 'https://prisma-enum-bridge.preview.emergentagent.com').rstrip('/')
+BASE_URL = os.environ.get('NEXT_PUBLIC_APP_URL', 'https://trusting-buck.preview.emergentagent.com').rstrip('/')
 
 # Test credentials from DEMO_CREDENTIALS_INDEX.md
 SCHOOL_ADMIN_EMAIL = "admin@demo-school.demo"

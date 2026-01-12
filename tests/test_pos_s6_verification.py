@@ -10,7 +10,7 @@ import os
 import uuid
 from datetime import datetime
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://prisma-enum-bridge.preview.emergentagent.com').rstrip('/')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://trusting-buck.preview.emergentagent.com').rstrip('/')
 TENANT_ID = 'demo-webwaka-pos'
 LOCATION_ID = 'ng-lagos-ikeja-01'
 

@@ -20,7 +20,7 @@ import os
 import json
 from datetime import datetime
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://prisma-enum-bridge.preview.emergentagent.com').rstrip('/')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://trusting-buck.preview.emergentagent.com').rstrip('/')
 
 # Test tenant IDs
 ACTIVATED_TENANT = "demo-tenant-001"

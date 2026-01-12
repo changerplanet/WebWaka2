@@ -12,7 +12,7 @@ import pytest
 import requests
 import os
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://prisma-enum-bridge.preview.emergentagent.com').rstrip('/')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://trusting-buck.preview.emergentagent.com').rstrip('/')
 
 # Test tenant - Acme Corporation
 ACME_TENANT_ID = "67846c4f-9b38-47c7-86d9-fff55aa4afda"

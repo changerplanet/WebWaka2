@@ -38,7 +38,7 @@ import uuid
 from datetime import datetime, timedelta
 
 # Base URL
-BASE_URL = "https://prisma-enum-bridge.preview.emergentagent.com"
+BASE_URL = "https://trusting-buck.preview.emergentagent.com"
 
 # Test tenant
 TENANT_SLUG = "acme"
