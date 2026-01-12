@@ -113,14 +113,26 @@ Added `export const dynamic = 'force-dynamic'` to 485 API routes.
 - Stub functions created for Phase 10C-requiring enums
 - Report: `/app/frontend/docs/PHASE_10B_ENUM_MAPPING_REPORT.md`
 
+**Phase 10C - Bidirectional Mapping Implementation (COMPLETE - December 2025)**
+- Implemented 22 enum validators for API → Service layer boundaries
+- Civic module: 13 validators (status, priority, category, events, constituents, certificates, dues, voting)
+- Logistics module: 9 validators (jobs, drivers, vehicles, license types)
+- Updated 8 API routes to use type-safe validators
+- Eliminated 17 of 18 `as any` casts in civic/logistics API routes (94% reduction)
+- Remaining 1 cast: `LogisticsDeliveryStatus` (CONDITIONAL - requires domain approval)
+- Report: `/app/frontend/docs/PHASE_10C_ENUM_ALIGNMENT_REPORT.md`
+
 ---
 
 ## Remaining Items (Prioritized Backlog)
 
-### P1 - Service Interface Alignment (Discovered Blocker)
-- Service functions expect their own enum types, not Prisma types
-- Options: (A) Refactor service signatures, (B) Bidirectional mappers, (C) Accept as technical debt
-- Requires domain/architecture decision
+### P0 - Phase 10C Conditional Enums
+- `LogisticsDeliveryStatus` mapping requires domain approval (significant semantic drift)
+- `SvmOrderStatus` mapping (if needed)
+
+### P1 - Phase 10D Runtime Safety Nets
+- Optional non-fatal runtime guards for unexpected enum values
+- Logging/monitoring for enum validation failures
 
 ### P2 - Legacy Debt
 - Fix 52 semantic React Hook warnings (baselined in Phase 3)
