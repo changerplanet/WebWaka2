@@ -24,6 +24,18 @@ import {
   postRoomCharge,
 } from '@/lib/hospitality/folio-service';
 
+// Phase 13: Folio status validator
+type FolioStatus = 'OPEN' | 'SETTLED' | 'CLOSED';
+const VALID_FOLIO_STATUSES: FolioStatus[] = ['OPEN', 'SETTLED', 'CLOSED'];
+function validateFolioStatus(status: string | null): FolioStatus | undefined {
+  if (!status) return undefined;
+  if (VALID_FOLIO_STATUSES.includes(status as FolioStatus)) {
+    return status as FolioStatus;
+  }
+  console.warn(`[Hospitality Folio] Invalid status '${status}'`);
+  return undefined;
+}
+
 export async function GET(request: NextRequest) {
   try {
     const tenantId = request.headers.get('x-tenant-id') || 'demo-hotel';
