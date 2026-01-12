@@ -17,6 +17,10 @@ import {
   createVehicle,
   getFleetStats,
 } from '@/lib/logistics/fleet-service';
+import { getEnumParam } from '@/lib/utils/urlParams';
+
+// Valid enum values
+const AGENT_STATUSES = ['ACTIVE', 'INACTIVE', 'ON_LEAVE', 'SUSPENDED', 'TERMINATED'] as const;
 
 export async function GET(request: NextRequest) {
   try {
@@ -38,7 +42,7 @@ export async function GET(request: NextRequest) {
     }
     
     if (query === 'available') {
-      const vehicleType = searchParams.get('vehicleType') as any;
+      const vehicleType = searchParams.get('vehicleType') || undefined;
       const available = await getAvailableVehicles(tenantId, vehicleType);
       return NextResponse.json({ success: true, vehicles: available, count: available.length });
     }
@@ -49,8 +53,8 @@ export async function GET(request: NextRequest) {
     }
     
     const { vehicles, total, stats } = await getVehicles(tenantId, {
-      vehicleType: searchParams.get('vehicleType') as any,
-      status: searchParams.get('status') as any,
+      vehicleType: searchParams.get('vehicleType') || undefined,
+      status: getEnumParam(searchParams, 'status', AGENT_STATUSES),
       isActive: searchParams.get('isActive') === 'true' ? true : searchParams.get('isActive') === 'false' ? false : undefined,
       hasDriver: searchParams.get('hasDriver') === 'true' ? true : searchParams.get('hasDriver') === 'false' ? false : undefined,
       page: searchParams.get('page') ? parseInt(searchParams.get('page')!) : 1,
