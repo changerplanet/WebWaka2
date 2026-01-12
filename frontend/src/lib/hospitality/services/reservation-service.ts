@@ -397,12 +397,15 @@ export async function checkRoomAvailability(
 
   const occupiedIds = new Set(occupiedRoomIds.map((r: any) => r.roomId))
 
+  // Validate and convert roomType
+  const validatedRoomType = validateRoomType(roomType);
+
   // Get all suitable rooms
   const rooms = await prisma.hospitality_room.findMany({
     where: {
       tenantId,
       venueId,
-      ...(roomType && { roomType: roomType as any }),
+      ...(validatedRoomType && { roomType: validatedRoomType }),
       ...(guests && { maxOccupancy: { gte: guests } }),
       status: 'AVAILABLE',
       isActive: true
