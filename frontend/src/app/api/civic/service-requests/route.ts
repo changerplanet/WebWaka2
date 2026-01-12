@@ -59,9 +59,9 @@ export async function GET(request: NextRequest) {
     
     // Get list with filters
     const options = {
-      status: searchParams.get('status') as any,
-      category: searchParams.get('category') as any,
-      priority: searchParams.get('priority') as any,
+      status: validateCivicRequestStatus(searchParams.get('status')),
+      category: validateCivicCategory(searchParams.get('category')),
+      priority: validateCivicPriority(searchParams.get('priority')),
       assignedTo: searchParams.get('assignedTo') || undefined,
       constituentId: searchParams.get('constituentId') || undefined,
       search: searchParams.get('search') || undefined,
