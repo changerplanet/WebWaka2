@@ -209,6 +209,11 @@ export const mapServicePriorityToPrisma = createEnumMapper<
 
 /**
  * Maps service-layer category to Prisma-compatible category.
+ * 
+ * Service layer has: INFRASTRUCTURE, SECURITY, SANITATION, UTILITIES,
+ *                    COMPLAINT, GENERAL_INQUIRY, CERTIFICATE, PERMIT
+ * Prisma has: PERMITS, LICENSES, CERTIFICATES, REGISTRATIONS, APPROVALS,
+ *             RENEWALS, COMPLAINTS, INQUIRIES, OTHER
  */
 export const mapServiceCategoryToPrisma = createEnumMapper<
   CivicCategoryService,
@@ -216,9 +221,11 @@ export const mapServiceCategoryToPrisma = createEnumMapper<
 >(
   'CivicCategory:Service→Prisma',
   {
+    'INFRASTRUCTURE': 'OTHER',
+    'SECURITY': 'OTHER',
+    'SANITATION': 'OTHER',
+    'UTILITIES': 'OTHER',
     'COMPLAINT': 'COMPLAINTS',
-    'GRIEVANCE': 'COMPLAINTS',
-    'FEEDBACK': 'INQUIRIES',
     'GENERAL_INQUIRY': 'INQUIRIES',
     'CERTIFICATE': 'CERTIFICATES',
     'PERMIT': 'PERMITS'
