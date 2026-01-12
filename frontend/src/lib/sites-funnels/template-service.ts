@@ -475,8 +475,7 @@ export async function clonePageFromTemplate(input: ClonePageFromTemplateInput): 
     });
 
     // Create page blocks
-    // Phase 11C: Using typed cast for JSON template blocks
-    const templateBlocks = (template.blocks as TemplateBlock[]) || [];
+    const templateBlocks = template.blocks as any[] || [];
     for (let i = 0; i < templateBlocks.length; i++) {
       const block = templateBlocks[i];
       await prisma.sf_page_blocks.create({
