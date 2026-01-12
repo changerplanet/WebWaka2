@@ -103,13 +103,8 @@ export default function FunnelEditorPage() {
   const [showSettings, setShowSettings] = useState(false);
   const [newStep, setNewStep] = useState({ name: '', slug: '', pageType: 'LANDING' });
 
-  useEffect(() => {
-    if (funnelId) {
-      fetchFunnel();
-    }
-  }, [funnelId]);
-
-  const fetchFunnel = async () => {
+  // Phase 14B: Wrapped in useCallback - triggers on funnelId change
+  const fetchFunnel = useCallback(async () => {
     try {
       setLoading(true);
       const res = await fetch(`/api/sites-funnels/funnels?action=get&funnelId=${funnelId}`);
@@ -125,7 +120,13 @@ export default function FunnelEditorPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [funnelId]);
+
+  useEffect(() => {
+    if (funnelId) {
+      fetchFunnel();
+    }
+  }, [funnelId, fetchFunnel]);
 
   const handleSave = async () => {
     if (!funnel) return;
