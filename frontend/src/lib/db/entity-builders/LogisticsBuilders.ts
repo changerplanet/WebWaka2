@@ -158,7 +158,7 @@ export function buildDeliveryZoneCreate(
     centerLatitude: input.centerLatitude ?? null,
     centerLongitude: input.centerLongitude ?? null,
     radiusKm: input.radiusKm ?? null,
-    polygon: input.polygon ?? Prisma.JsonNull,
+    polygon: input.polygon ? input.polygon as Prisma.InputJsonValue : Prisma.JsonNull,
     status: (input.status ?? 'ACTIVE') as LogisticsZoneStatus,
     sortOrder: input.sortOrder ?? 0,
     metadata: input.metadata ? input.metadata as Prisma.InputJsonValue : Prisma.JsonNull,
