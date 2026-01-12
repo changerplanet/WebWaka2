@@ -77,13 +77,20 @@ export {
   
   // Service layer values
   LOGISTICS_JOB_STATUS_SERVICE,
+  LOGISTICS_JOB_TYPE_SERVICE,
+  LOGISTICS_JOB_PRIORITY_SERVICE,
   type LogisticsJobStatusService,
+  type LogisticsJobTypeService,
+  type LogisticsJobPriorityService,
   
   // Validation functions
   validateVehicleType,
   validateAgentStatus,
+  validateJobStatus,
+  validateJobType,
+  validateJobPriority,
   
-  // Stub functions (Phase 10C)
+  // Stub functions (Phase 10C - CONDITIONAL)
   mapDeliveryStatusToPrisma
 } from './logistics'
 
