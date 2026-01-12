@@ -308,11 +308,12 @@ export type CivicEventStatusService = typeof CIVIC_EVENT_STATUS_SERVICE[number]
 
 /**
  * Validates event status URL param.
+ * Phase 10D: Logs mismatches for observability.
  */
 export function validateEventStatus(
   value: string | null | undefined
 ): CivicEventStatusService | undefined {
-  return validateEnumValue(value, CIVIC_EVENT_STATUS_SERVICE)
+  return validateEnumValue(value, CIVIC_EVENT_STATUS_SERVICE, 'CivicEventStatus', 'API')
 }
 
 /**
@@ -336,11 +337,12 @@ export type CivicEventTypeService = typeof CIVIC_EVENT_TYPE_SERVICE[number]
 
 /**
  * Validates event type URL param.
+ * Phase 10D: Logs mismatches for observability.
  */
 export function validateEventType(
   value: string | null | undefined
 ): CivicEventTypeService | undefined {
-  return validateEnumValue(value, CIVIC_EVENT_TYPE_SERVICE)
+  return validateEnumValue(value, CIVIC_EVENT_TYPE_SERVICE, 'CivicEventType', 'API')
 }
 
 // =============================================================================
@@ -363,11 +365,12 @@ export type CivicMembershipStatusService = typeof CIVIC_MEMBERSHIP_STATUS_SERVIC
 
 /**
  * Validates membership status URL param.
+ * Phase 10D: Logs mismatches for observability.
  */
 export function validateMembershipStatus(
   value: string | null | undefined
 ): CivicMembershipStatusService | undefined {
-  return validateEnumValue(value, CIVIC_MEMBERSHIP_STATUS_SERVICE)
+  return validateEnumValue(value, CIVIC_MEMBERSHIP_STATUS_SERVICE, 'CivicMembershipStatus', 'API')
 }
 
 /**
@@ -387,11 +390,12 @@ export type CivicMembershipTypeService = typeof CIVIC_MEMBERSHIP_TYPE_SERVICE[nu
 
 /**
  * Validates membership type URL param.
+ * Phase 10D: Logs mismatches for observability.
  */
 export function validateMembershipType(
   value: string | null | undefined
 ): CivicMembershipTypeService | undefined {
-  return validateEnumValue(value, CIVIC_MEMBERSHIP_TYPE_SERVICE)
+  return validateEnumValue(value, CIVIC_MEMBERSHIP_TYPE_SERVICE, 'CivicMembershipType', 'API')
 }
 
 // =============================================================================
