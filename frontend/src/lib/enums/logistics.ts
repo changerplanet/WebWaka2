@@ -223,3 +223,30 @@ export function validateJobPriority(
 ): LogisticsJobPriorityService | undefined {
   return validateEnumValue(value, LOGISTICS_JOB_PRIORITY_SERVICE)
 }
+
+// =============================================================================
+// LICENSE TYPE - SERVICE-ONLY ENUM (Phase 10C APPROVED)
+// =============================================================================
+
+/**
+ * Driver license types used in logistics service layer.
+ * No Prisma equivalent - these are UI/workflow enums.
+ */
+export const LOGISTICS_LICENSE_TYPE_SERVICE = [
+  'CLASS_A',
+  'CLASS_B',
+  'CLASS_C',
+  'CLASS_D',
+  'CLASS_E'
+] as const
+
+export type LogisticsLicenseTypeService = typeof LOGISTICS_LICENSE_TYPE_SERVICE[number]
+
+/**
+ * Validates and returns a valid license type value.
+ */
+export function validateLicenseType(
+  value: string | null | undefined
+): LogisticsLicenseTypeService | undefined {
+  return validateEnumValue(value, LOGISTICS_LICENSE_TYPE_SERVICE)
+}
