@@ -10,6 +10,7 @@ import { getCurrentSession } from '@/lib/auth'
 import { AssignmentService } from '@/lib/logistics/assignment-service'
 import { EntitlementsService } from '@/lib/logistics/entitlements-service'
 import { ConfigurationService } from '@/lib/logistics/config-service'
+import { validateDeliveryStatusArray } from '@/lib/enums'
 
 /**
  * GET /api/logistics/assignments
@@ -25,7 +26,8 @@ export async function GET(request: NextRequest) {
     const tenantId = session.activeTenantId
     const searchParams = request.nextUrl.searchParams
     
-    const status = searchParams.get('status')?.split(',') as any
+    // Phase 10E: Using type-safe enum validator instead of `as any`
+    const status = validateDeliveryStatusArray(searchParams.get('status'))
     const agentId = searchParams.get('agentId') || undefined
     const zoneId = searchParams.get('zoneId') || undefined
     const priority = searchParams.get('priority') as 'STANDARD' | 'EXPRESS' | 'SAME_DAY' | 'NEXT_DAY' | undefined
