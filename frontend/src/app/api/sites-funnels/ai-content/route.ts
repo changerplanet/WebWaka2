@@ -49,8 +49,9 @@ export async function GET(request: NextRequest) {
   try {
     switch (action) {
       case 'history': {
-        const status = searchParams.get('status') as any;
-        const contentType = searchParams.get('contentType') as any;
+        // Phase 11C: Using type-safe enum validators
+        const status = validateAiContentStatus(searchParams.get('status'));
+        const contentType = validateAiContentType(searchParams.get('contentType'));
         const page = parseInt(searchParams.get('page') || '1');
         const limit = parseInt(searchParams.get('limit') || '20');
 
