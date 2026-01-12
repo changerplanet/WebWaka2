@@ -92,7 +92,25 @@ export default function TenantDashboard() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [])
+
+  // Fetch tenant immediately when we have a slug
+  useEffect(() => {
+    if (tenantSlug && !tenant) {
+      fetchTenant(tenantSlug)
+    } else if (!tenantSlug && !authLoading) {
+      // Only show error after auth has finished loading
+      setLoading(false)
+      setError('No tenant specified. Use ?tenant=slug to view a tenant dashboard.')
+    }
+  }, [tenantSlug, tenant, authLoading, fetchTenant])
+
+  // Fetch capabilities when we have tenant context
+  useEffect(() => {
+    if (activeTenantId && tenant) {
+      fetchActiveCapabilities()
+    }
+  }, [activeTenantId, tenant, fetchActiveCapabilities])
 
   if (loading) {
     return (
