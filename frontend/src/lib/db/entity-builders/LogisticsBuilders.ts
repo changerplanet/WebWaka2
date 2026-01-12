@@ -72,7 +72,7 @@ export function buildDeliveryAssignmentCreate(
     deliveryLatitude: input.deliveryLatitude ?? null,
     deliveryLongitude: input.deliveryLongitude ?? null,
     pickupLocationId: input.pickupLocationId ?? null,
-    pickupAddress: input.pickupAddress ?? Prisma.JsonNull,
+    pickupAddress: input.pickupAddress ? input.pickupAddress as Prisma.InputJsonValue : Prisma.JsonNull,
     pickupLatitude: input.pickupLatitude ?? null,
     pickupLongitude: input.pickupLongitude ?? null,
     status: (hasAgent ? 'ASSIGNED' : (input.status ?? 'PENDING')) as LogisticsDeliveryStatus,
