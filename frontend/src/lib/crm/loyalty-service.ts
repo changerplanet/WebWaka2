@@ -517,7 +517,7 @@ export class LoyaltyService {
       },
       balance: customer.loyaltyPoints,
       tier: customer.loyaltyTier || currentTier?.name || 'Bronze',
-      tierPerks: currentTier?.perks || [],
+      tierPerks: currentTier?.benefits || [],
       nextTier: nextTier?.name,
       pointsToNextTier,
       stats: {
