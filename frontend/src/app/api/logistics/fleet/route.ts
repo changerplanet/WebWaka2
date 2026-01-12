@@ -21,6 +21,7 @@ import { getEnumParam } from '@/lib/utils/urlParams';
 
 // Valid enum values
 const AGENT_STATUSES = ['ACTIVE', 'INACTIVE', 'ON_LEAVE', 'SUSPENDED', 'TERMINATED'] as const;
+const VEHICLE_TYPES = ['MOTORCYCLE', 'CAR', 'VAN', 'PICKUP', 'TRICYCLE', 'TRUCK_SMALL', 'BUS_MINI', 'TRUCK_MEDIUM', 'BUS_STANDARD', 'BUS_LUXURY', 'TRUCK_LARGE'] as const;
 
 export async function GET(request: NextRequest) {
   try {
@@ -42,7 +43,7 @@ export async function GET(request: NextRequest) {
     }
     
     if (query === 'available') {
-      const vehicleType = searchParams.get('vehicleType') || undefined;
+      const vehicleType = getEnumParam(searchParams, 'vehicleType', VEHICLE_TYPES);
       const available = await getAvailableVehicles(tenantId, vehicleType);
       return NextResponse.json({ success: true, vehicles: available, count: available.length });
     }
@@ -53,7 +54,7 @@ export async function GET(request: NextRequest) {
     }
     
     const { vehicles, total, stats } = await getVehicles(tenantId, {
-      vehicleType: searchParams.get('vehicleType') || undefined,
+      vehicleType: getEnumParam(searchParams, 'vehicleType', VEHICLE_TYPES),
       status: getEnumParam(searchParams, 'status', AGENT_STATUSES),
       isActive: searchParams.get('isActive') === 'true' ? true : searchParams.get('isActive') === 'false' ? false : undefined,
       hasDriver: searchParams.get('hasDriver') === 'true' ? true : searchParams.get('hasDriver') === 'false' ? false : undefined,
