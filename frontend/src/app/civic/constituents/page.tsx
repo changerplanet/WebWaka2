@@ -82,11 +82,8 @@ export default function ConstituentsPage() {
   const [typeFilter, setTypeFilter] = useState<string>('');
   const [stats, setStats] = useState<any>(null);
 
-  useEffect(() => {
-    fetchConstituents();
-  }, [search, statusFilter, typeFilter]);
-
-  async function fetchConstituents() {
+  // Phase 12B: Wrapped in useCallback for hook hygiene
+  const fetchConstituents = useCallback(async () => {
     setLoading(true);
     try {
       const params = new URLSearchParams();
@@ -106,7 +103,11 @@ export default function ConstituentsPage() {
     } finally {
       setLoading(false);
     }
-  }
+  }, [search, statusFilter, typeFilter]);
+
+  useEffect(() => {
+    fetchConstituents();
+  }, [fetchConstituents]);
 
   async function updateStatus(id: string, status: string) {
     try {
