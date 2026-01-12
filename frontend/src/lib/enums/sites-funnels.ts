@@ -93,36 +93,6 @@ export function validateAiContentType(
 }
 
 // =============================================================================
-// SITES/FUNNELS PERMISSION ACTIONS (Service layer)
-// =============================================================================
-
-/**
- * Valid permission actions for the sites-funnels module.
- * Used to construct permission strings like "SITES_FUNNELS_VIEW".
- */
-export const SF_PERMISSION_ACTIONS = [
-  'VIEW',
-  'CREATE',
-  'EDIT',
-  'DELETE',
-  'PUBLISH',
-  'MANAGE',
-  'ADMIN'
-] as const
-
-export type SfPermissionActionType = typeof SF_PERMISSION_ACTIONS[number]
-
-/**
- * Constructs a type-safe sites/funnels permission string.
- * Replaces the `as any` cast in permissions-service.ts.
- */
-export function constructSfPermissionAction(
-  action: string
-): `SITES_FUNNELS_${Uppercase<string>}` {
-  return `SITES_FUNNELS_${action.toUpperCase()}` as `SITES_FUNNELS_${Uppercase<string>}`
-}
-
-// =============================================================================
 // TEMPLATE BLOCKS TYPE (JSON Schema)
 // =============================================================================
 
