@@ -181,9 +181,9 @@ frontend/node_modules/@next/swc-linux-arm64-musl/next-swc.linux-arm64-musl.node
 *.env
 *.env.*
 
-# Yarn lockfiles (ignore to prevent accidental staging)
-yarn.lock
-**/yarn.lock
+# Environment files
+*.env
+*.env.*
 -e 
 # Environment files
 *.env
