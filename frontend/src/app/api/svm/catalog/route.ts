@@ -190,13 +190,17 @@ export async function GET(request: NextRequest) {
     const total = await prisma.product.count({ where })
     
     // Get products
+    // Phase 11C: Using type-safe sort validators
+    const validatedSortBy = validateCatalogSortBy(sortBy)
+    const validatedSortOrder = validateSortOrder(sortOrder)
+    
     const orderBy: Prisma.ProductOrderByWithRelationInput = {}
-    if (sortBy === 'price') {
-      orderBy.price = sortOrder as any
-    } else if (sortBy === 'createdAt') {
-      orderBy.createdAt = sortOrder as any
+    if (validatedSortBy === 'price') {
+      orderBy.price = validatedSortOrder
+    } else if (validatedSortBy === 'createdAt') {
+      orderBy.createdAt = validatedSortOrder
     } else {
-      orderBy.name = sortOrder as any
+      orderBy.name = validatedSortOrder
     }
     
     const products = await prisma.product.findMany({
