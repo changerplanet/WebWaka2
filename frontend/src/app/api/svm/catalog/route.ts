@@ -11,6 +11,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { Prisma } from '@prisma/client'
 import { checkCapabilityGuard } from '@/lib/capabilities'
+import { validateProductStatus, validateCatalogSortBy, validateSortOrder } from '@/lib/enums'
 
 // ============================================================================
 // HELPERS
