@@ -312,7 +312,8 @@ export async function logSitesFunnelsAction(
     await prisma.auditLog.create({
       data: {
         id: `audit-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`,
-        action: `SITES_FUNNELS_${action.toUpperCase()}` as any,
+        // Phase 11C: Using typed permission action constructor
+        action: constructSfPermissionAction(action),
         actorId: data.userId,
         actorEmail: user?.email || 'unknown',
         targetType: data.siteId ? 'Site' : data.funnelId ? 'Funnel' : 'Page',
