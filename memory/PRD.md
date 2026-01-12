@@ -138,6 +138,18 @@ Added `export const dynamic = 'force-dynamic'` to 485 API routes.
 - **ENUM ALIGNMENT WORKSTREAM CLOSED** - 0 `as any` casts remaining in civic/logistics routes
 - Report: `/app/frontend/docs/PHASE_10E_DELIVERY_STATUS_MAPPING_REPORT.md`
 
+**Phase 11A - `as any` Classification (COMPLETE - December 2025)**
+- Read-only audit of 380 remaining `as any` casts
+- Classified into: OUT OF SCOPE (57), CONDITIONAL (247), SAFE (76)
+- Report: `/app/frontend/docs/PHASE_11A_AS_ANY_CLASSIFICATION_REPORT.md`
+
+**Phase 11B - SAFE `as any` Reduction (COMPLETE - December 2025)**
+- Eliminated 26 `as any` casts (380 → 354)
+- Created 21 new enum validators for Procurement and Project Management
+- Fixed 9 API routes across logistics-suite, procurement, and project-management
+- All fixes are mechanical type annotations with zero behavior changes
+- Report: `/app/frontend/docs/PHASE_11B_SAFE_AS_ANY_REDUCTION_REPORT.md`
+
 ---
 
 ## Remaining Items (Prioritized Backlog)
