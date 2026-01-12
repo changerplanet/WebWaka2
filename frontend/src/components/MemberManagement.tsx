@@ -33,11 +33,8 @@ export function MemberManagement({ tenantSlug, currentUserId }: MemberManagement
   const [inviting, setInviting] = useState(false)
   const [actionLoading, setActionLoading] = useState<string | null>(null)
   
-  useEffect(() => {
-    fetchMembers()
-  }, [tenantSlug])
-  
-  async function fetchMembers() {
+  // Phase 12B: Wrapped in useCallback for hook hygiene
+  const fetchMembers = useCallback(async () => {
     try {
       const res = await fetch(`/api/tenants/${tenantSlug}/members`)
       const data = await res.json()
@@ -52,7 +49,11 @@ export function MemberManagement({ tenantSlug, currentUserId }: MemberManagement
     } finally {
       setLoading(false)
     }
-  }
+  }, [tenantSlug])
+  
+  useEffect(() => {
+    fetchMembers()
+  }, [fetchMembers])
   
   async function handleInvite() {
     if (!inviteEmail) return

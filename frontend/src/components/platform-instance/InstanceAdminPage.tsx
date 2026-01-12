@@ -91,11 +91,8 @@ export function InstanceAdminPage({
   const [selectedInstance, setSelectedInstance] = useState<PlatformInstance | null>(null)
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null)
 
-  useEffect(() => {
-    fetchInstances()
-  }, [tenantSlug])
-
-  async function fetchInstances() {
+  // Phase 12B: Wrapped in useCallback for hook hygiene
+  const fetchInstances = useCallback(async () => {
     try {
       const res = await fetch(`/api/platform-instances?tenantId=${tenantSlug}`)
       const data = await res.json()
@@ -110,7 +107,11 @@ export function InstanceAdminPage({
     } finally {
       setLoading(false)
     }
-  }
+  }, [tenantSlug])
+
+  useEffect(() => {
+    fetchInstances()
+  }, [fetchInstances])
 
   function handleEdit(instance: PlatformInstance) {
     setSelectedInstance(instance)

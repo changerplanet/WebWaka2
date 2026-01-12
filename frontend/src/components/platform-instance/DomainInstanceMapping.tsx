@@ -50,11 +50,8 @@ export function DomainInstanceMapping({
   const [updating, setUpdating] = useState<string | null>(null)
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null)
 
-  useEffect(() => {
-    fetchDomains()
-  }, [tenantSlug])
-
-  async function fetchDomains() {
+  // Phase 12B: Wrapped in useCallback for hook hygiene
+  const fetchDomains = useCallback(async () => {
     try {
       const res = await fetch(`/api/tenants/${tenantSlug}/domains`)
       const data = await res.json()
@@ -69,7 +66,11 @@ export function DomainInstanceMapping({
     } finally {
       setLoading(false)
     }
-  }
+  }, [tenantSlug])
+
+  useEffect(() => {
+    fetchDomains()
+  }, [fetchDomains])
 
   async function handleMappingChange(domainId: string, instanceId: string | null) {
     setUpdating(domainId)

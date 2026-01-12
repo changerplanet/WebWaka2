@@ -58,11 +58,8 @@ export function ClientManagement({ partnerId }: ClientManagementProps) {
   const [showWizard, setShowWizard] = useState(false)
   const [selectedClient, setSelectedClient] = useState<ClientPlatform | null>(null)
   
-  useEffect(() => {
-    fetchClients()
-  }, [partnerId])
-  
-  async function fetchClients() {
+  // Phase 12B: Wrapped in useCallback for hook hygiene
+  const fetchClients = useCallback(async () => {
     try {
       const res = await fetch(`/api/partner/clients?search=${encodeURIComponent(search)}`)
       const data = await res.json()
@@ -77,7 +74,11 @@ export function ClientManagement({ partnerId }: ClientManagementProps) {
     } finally {
       setLoading(false)
     }
-  }
+  }, [search])
+  
+  useEffect(() => {
+    fetchClients()
+  }, [fetchClients])
   
   const filteredClients = clients.filter(c => 
     c.name.toLowerCase().includes(search.toLowerCase()) ||

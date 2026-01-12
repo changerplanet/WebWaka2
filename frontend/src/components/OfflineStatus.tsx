@@ -15,14 +15,8 @@ export function OfflineStatusBar({ tenantId }: OfflineStatusBarProps) {
   const [syncing, setSyncing] = useState(false)
   const [showDetails, setShowDetails] = useState(false)
 
-  // Auto-sync when coming back online
-  useEffect(() => {
-    if (isOnline && stats.pending > 0) {
-      handleSync()
-    }
-  }, [isOnline, stats.pending])
-
-  async function handleSync() {
+  // Phase 12B: Wrapped in useCallback for hook hygiene  
+  const handleSync = useCallback(async () => {
     setSyncing(true)
     try {
       triggerSync()
@@ -31,7 +25,14 @@ export function OfflineStatusBar({ tenantId }: OfflineStatusBarProps) {
     } finally {
       setSyncing(false)
     }
-  }
+  }, [triggerSync, refresh])
+
+  // Auto-sync when coming back online
+  useEffect(() => {
+    if (isOnline && stats.pending > 0) {
+      handleSync()
+    }
+  }, [isOnline, stats.pending, handleSync])
 
   async function handleRetry() {
     setSyncing(true)

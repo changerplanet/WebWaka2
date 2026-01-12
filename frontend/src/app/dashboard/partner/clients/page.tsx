@@ -24,11 +24,8 @@ export default function PartnerClientsPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   
-  useEffect(() => {
-    fetchPartnerInfo()
-  }, [])
-  
-  async function fetchPartnerInfo() {
+  // Phase 12B: Wrapped in useCallback for hook hygiene
+  const fetchPartnerInfo = useCallback(async () => {
     try {
       // Check session and partner access
       const sessionRes = await fetch('/api/auth/session')
@@ -55,7 +52,11 @@ export default function PartnerClientsPage() {
       setError('Failed to load partner information')
       setLoading(false)
     }
-  }
+  }, [router])
+  
+  useEffect(() => {
+    fetchPartnerInfo()
+  }, [fetchPartnerInfo])
   
   if (loading) {
     return (

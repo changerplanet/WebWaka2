@@ -46,17 +46,35 @@ function ReferralsContent() {
   const [offset, setOffset] = useState(0)
   const limit = 20
 
-  useEffect(() => {
-    checkAuthAndFetchData()
-  }, [])
-
-  useEffect(() => {
-    if (partnerId) {
-      fetchReferrals()
+  // Phase 12B: Wrapped in useCallback for hook hygiene
+  const fetchReferrals = useCallback(async () => {
+    setLoading(true)
+    try {
+      const params = new URLSearchParams()
+      if (statusFilter) params.set('status', statusFilter)
+      params.set('sortBy', sortBy)
+      params.set('sortOrder', sortOrder)
+      params.set('limit', limit.toString())
+      params.set('offset', offset.toString())
+      
+      const res = await fetch(`/api/partners/${partnerId}/dashboard/referrals?${params}`)
+      const data = await res.json()
+      
+      if (data.error) {
+        setError(data.error)
+      } else {
+        setReferrals(data.tenants || [])
+        setTotal(data.total || 0)
+      }
+    } catch (err) {
+      setError('Failed to load referrals')
+    } finally {
+      setLoading(false)
     }
   }, [partnerId, statusFilter, sortBy, sortOrder, offset])
 
-  async function checkAuthAndFetchData() {
+  // Phase 12B: Wrapped in useCallback for hook hygiene
+  const checkAuthAndFetchData = useCallback(async () => {
     try {
       const sessionRes = await fetch('/api/auth/session')
       const sessionData = await sessionRes.json()
@@ -82,33 +100,17 @@ function ReferralsContent() {
       setError('Failed to load data')
       setLoading(false)
     }
-  }
+  }, [router])
 
-  async function fetchReferrals() {
-    setLoading(true)
-    try {
-      const params = new URLSearchParams()
-      if (statusFilter) params.set('status', statusFilter)
-      params.set('sortBy', sortBy)
-      params.set('sortOrder', sortOrder)
-      params.set('limit', limit.toString())
-      params.set('offset', offset.toString())
-      
-      const res = await fetch(`/api/partners/${partnerId}/dashboard/referrals?${params}`)
-      const data = await res.json()
-      
-      if (data.error) {
-        setError(data.error)
-      } else {
-        setReferrals(data.tenants || [])
-        setTotal(data.total || 0)
-      }
-    } catch (err) {
-      setError('Failed to load referrals')
-    } finally {
-      setLoading(false)
+  useEffect(() => {
+    checkAuthAndFetchData()
+  }, [checkAuthAndFetchData])
+
+  useEffect(() => {
+    if (partnerId) {
+      fetchReferrals()
     }
-  }
+  }, [partnerId, fetchReferrals])
 
   async function handleLogout() {
     await fetch('/api/auth/logout', { method: 'POST' })
