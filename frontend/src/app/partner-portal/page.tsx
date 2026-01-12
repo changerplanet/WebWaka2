@@ -162,12 +162,6 @@ export default function PartnerPortal() {
     }
   }, [authLoading, isAuthenticated, user])
 
-  useEffect(() => {
-    if (partnerId) {
-      fetchPartnerData()
-    }
-  }, [partnerId, fetchPartnerData])
-
   const fetchSession = async () => {
     try {
       const res = await fetchWithRetry(() => fetch('/api/auth/session'), 3, 500);
