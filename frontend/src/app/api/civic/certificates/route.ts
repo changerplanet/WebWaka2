@@ -56,9 +56,10 @@ export async function GET(request: NextRequest) {
     }
     
     // Get list with filters
+    // Phase 10C: Using enum validators
     const options = {
-      status: searchParams.get('status') as any,
-      type: searchParams.get('type') as any,
+      status: validateCertificateStatus(searchParams.get('status')),
+      type: validateCertificateType(searchParams.get('type')),
       constituentId: searchParams.get('constituentId') || undefined,
       search: searchParams.get('search') || undefined,
       page: parseInt(searchParams.get('page') || '1'),

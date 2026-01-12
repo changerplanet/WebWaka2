@@ -52,9 +52,10 @@ export async function GET(request: NextRequest) {
     }
     
     // Get list with filters
+    // Phase 10C: Using enum validators
     const options = {
-      status: searchParams.get('status') as any,
-      type: searchParams.get('type') as any,
+      status: validateMembershipStatus(searchParams.get('status')),
+      type: validateMembershipType(searchParams.get('type')),
       ward: searchParams.get('ward') || undefined,
       zone: searchParams.get('zone') || undefined,
       search: searchParams.get('search') || undefined,
