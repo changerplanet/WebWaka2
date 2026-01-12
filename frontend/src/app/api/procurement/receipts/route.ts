@@ -40,9 +40,10 @@ export async function GET(request: NextRequest) {
       return NextResponse.json(stats)
     }
 
+    // Phase 11B: Using type-safe enum validators
     const options = {
       filters: {
-        ...(searchParams.get('status') && { status: searchParams.get('status')!.split(',') as any }),
+        ...(searchParams.get('status') && { status: validateReceiptStatusArray(searchParams.get('status')) }),
         ...(searchParams.get('purchaseOrderId') && { purchaseOrderId: searchParams.get('purchaseOrderId')! }),
         ...(searchParams.get('locationId') && { locationId: searchParams.get('locationId')! }),
         ...(searchParams.get('fromDate') && { fromDate: new Date(searchParams.get('fromDate')!) }),
@@ -51,8 +52,8 @@ export async function GET(request: NextRequest) {
       },
       page: parseInt(searchParams.get('page') || '1'),
       limit: parseInt(searchParams.get('limit') || '20'),
-      orderBy: (searchParams.get('orderBy') as any) || 'receivedDate',
-      orderDir: (searchParams.get('orderDir') as any) || 'desc',
+      orderBy: validateReceiptOrderBy(searchParams.get('orderBy')),
+      orderDir: validateOrderDir(searchParams.get('orderDir')),
     }
 
     const result = await GoodsReceiptService.listGoodsReceipts(tenantId, options)
