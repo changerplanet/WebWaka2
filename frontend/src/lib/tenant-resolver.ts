@@ -382,10 +382,12 @@ export async function getTenantFromDomain(domain: string): Promise<TenantWithDom
  * Phase 2: Get platform instance by ID with tenant
  */
 export async function getInstanceById(instanceId: string): Promise<PlatformInstanceWithTenant | null> {
-  return prisma.platformInstance.findUnique({
+  const result = await prisma.platformInstance.findUnique({
     where: { id: instanceId },
     include: { tenant: true }
-  }) as unknown as PlatformInstanceWithTenant | null
+  })
+  
+  return mapPlatformInstanceWithTenant(result)
 }
 
 /**
