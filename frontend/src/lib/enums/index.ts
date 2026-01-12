@@ -29,7 +29,15 @@ export {
 
 // Civic module enums
 export {
-  // Prisma canonical values
+  // Service layer values (for API → Service boundary)
+  CIVIC_REQUEST_STATUS_SERVICE,
+  CIVIC_PRIORITY_SERVICE,
+  CIVIC_CATEGORY_SERVICE,
+  type CivicRequestStatusService,
+  type CivicPriorityService,
+  type CivicCategoryService,
+  
+  // Prisma canonical values (for DB storage)
   CIVIC_REQUEST_STATUS_PRISMA,
   CIVIC_CASE_PRIORITY_PRISMA,
   CIVIC_SERVICE_CATEGORY_PRISMA,
@@ -37,18 +45,24 @@ export {
   type CivicCasePriorityPrisma,
   type CivicServiceCategoryPrisma,
   
-  // Service layer values
-  CIVIC_REQUEST_STATUS_SERVICE,
-  CIVIC_PRIORITY_SERVICE,
-  type CivicRequestStatusService,
-  type CivicPriorityService,
+  // API → Service validators (bidirectional part 1)
+  validateServiceRequestStatus,
+  validateServiceRequestPriority,
+  validateServiceRequestCategory,
   
-  // Mapping functions
-  mapCivicRequestStatusToPrisma,
-  mapCivicPriorityToPrisma,
+  // Service → Prisma mappers (bidirectional part 2)
+  mapServiceStatusToPrisma,
+  mapServicePriorityToPrisma,
+  mapServiceCategoryToPrisma,
+  
+  // Prisma validators
   validateCivicCategory,
   validateCivicRequestStatus,
-  validateCivicPriority
+  validateCivicPriority,
+  
+  // Legacy aliases
+  mapCivicRequestStatusToPrisma,
+  mapCivicPriorityToPrisma
 } from './civic'
 
 // Logistics module enums
