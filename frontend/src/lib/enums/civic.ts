@@ -128,33 +128,39 @@ export type CivicServiceCategoryPrisma = typeof CIVIC_SERVICE_CATEGORY_PRISMA[nu
  * Validates URL param against service-layer status values.
  * Use this when passing status to service functions.
  * 
+ * Phase 10D: Logs mismatches for observability.
+ * 
  * @param value - URL search param value
  * @returns Valid service status or undefined
  */
 export function validateServiceRequestStatus(
   value: string | null | undefined
 ): CivicRequestStatusService | undefined {
-  return validateEnumValue(value, CIVIC_REQUEST_STATUS_SERVICE)
+  return validateEnumValue(value, CIVIC_REQUEST_STATUS_SERVICE, 'CivicRequestStatus', 'API')
 }
 
 /**
  * Validates URL param against service-layer priority values.
  * Use this when passing priority to service functions.
+ * 
+ * Phase 10D: Logs mismatches for observability.
  */
 export function validateServiceRequestPriority(
   value: string | null | undefined
 ): CivicPriorityService | undefined {
-  return validateEnumValue(value, CIVIC_PRIORITY_SERVICE)
+  return validateEnumValue(value, CIVIC_PRIORITY_SERVICE, 'CivicPriority', 'API')
 }
 
 /**
  * Validates URL param against service-layer category values.
  * Use this when passing category to service functions.
+ * 
+ * Phase 10D: Logs mismatches for observability.
  */
 export function validateServiceRequestCategory(
   value: string | null | undefined
 ): CivicCategoryService | undefined {
-  return validateEnumValue(value, CIVIC_CATEGORY_SERVICE)
+  return validateEnumValue(value, CIVIC_CATEGORY_SERVICE, 'CivicCategory', 'API')
 }
 
 // =============================================================================
