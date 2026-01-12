@@ -11,6 +11,18 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getCurrentSession } from '@/lib/auth';
 import { checkCapabilityForSession } from '@/lib/capabilities';
 import { LoyaltyService } from '@/lib/crm/loyalty-service';
+import { CrmLoyaltyTransactionType } from '@prisma/client';
+
+// Phase 13: Transaction type validator
+const VALID_TRANSACTION_TYPES: CrmLoyaltyTransactionType[] = ['EARN', 'REDEEM', 'BONUS', 'ADJUSTMENT', 'EXPIRY', 'TRANSFER_IN', 'TRANSFER_OUT'];
+function validateTransactionType(type: string | null): CrmLoyaltyTransactionType | undefined {
+  if (!type) return undefined;
+  if (VALID_TRANSACTION_TYPES.includes(type as CrmLoyaltyTransactionType)) {
+    return type as CrmLoyaltyTransactionType;
+  }
+  console.warn(`[CRM Loyalty] Invalid transactionType '${type}'`);
+  return undefined;
+}
 
 interface RouteParams {
   params: Promise<{ id: string }>;
