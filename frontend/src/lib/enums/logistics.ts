@@ -77,29 +77,28 @@ export function validateAgentStatus(
 }
 
 // =============================================================================
-// DELIVERY STATUS (CONDITIONAL - STUB ONLY)
+// DELIVERY STATUS (PHASE 10E - DOMAIN APPROVED)
 // =============================================================================
 
 /**
- * ⚠️ CONDITIONAL: Not authorized for Phase 10B execution
+ * ✅ PHASE 10E: Domain approval received (December 2025)
  * 
- * TODO: Phase 10C - Requires domain approval for mapping decisions
+ * AUTHORITATIVE DECISION:
+ * - Database (Prisma schema) is the single source of truth
+ * - Service/UI statuses are semantic aliases mapped to Prisma statuses
  * 
- * Prisma values:
- * - PENDING, ASSIGNED, ACCEPTED, PICKING_UP, PICKED_UP, 
- * - IN_TRANSIT, ARRIVING, DELIVERED, FAILED, RETURNED
+ * CANONICAL STATUS MAPPING (Approved):
+ * - READY → ASSIGNED
+ * - OUT_FOR_DELIVERY → IN_TRANSIT
+ * - COMPLETED → DELIVERED
+ * - RETURNED → FAILED
  * 
- * Service values (richer workflow):
- * - CREATED, PENDING, ASSIGNED, ACCEPTED, EN_ROUTE_PICKUP, AT_PICKUP,
- * - PICKED_UP, IN_TRANSIT, AT_DELIVERY, DELIVERED, COMPLETED, CANCELLED, FAILED
+ * TERMINAL STATES (Final, no transitions allowed):
+ * - DELIVERED
+ * - FAILED
+ * - CANCELLED (maps to FAILED)
  * 
- * Mapping decisions required:
- * - CREATED → ? (no Prisma equivalent)
- * - EN_ROUTE_PICKUP → PICKING_UP?
- * - AT_PICKUP → PICKING_UP?
- * - AT_DELIVERY → ARRIVING?
- * - COMPLETED → DELIVERED?
- * - CANCELLED → FAILED?
+ * POLICY: Raw values preserved for audit, canonical values for business logic.
  */
 export const LOGISTICS_DELIVERY_STATUS_PRISMA = [
   'PENDING',
@@ -116,16 +115,118 @@ export const LOGISTICS_DELIVERY_STATUS_PRISMA = [
 
 export type LogisticsDeliveryStatusPrisma = typeof LOGISTICS_DELIVERY_STATUS_PRISMA[number]
 
-// Stub function - NOT IMPLEMENTED
+/**
+ * Service-layer delivery status aliases.
+ * These are semantic aliases that map to canonical Prisma statuses.
+ */
+export const LOGISTICS_DELIVERY_STATUS_SERVICE = [
+  // Direct mappings (same as Prisma)
+  'PENDING',
+  'ASSIGNED',
+  'ACCEPTED',
+  'PICKING_UP',
+  'PICKED_UP',
+  'IN_TRANSIT',
+  'ARRIVING',
+  'DELIVERED',
+  'FAILED',
+  'RETURNED',
+  // Semantic aliases (approved mappings)
+  'READY',           // → ASSIGNED
+  'OUT_FOR_DELIVERY', // → IN_TRANSIT  
+  'COMPLETED',       // → DELIVERED
+  'CANCELLED'        // → FAILED (terminal)
+] as const
+
+export type LogisticsDeliveryStatusService = typeof LOGISTICS_DELIVERY_STATUS_SERVICE[number]
+
+/**
+ * Maps service-layer delivery status to canonical Prisma status.
+ * 
+ * PHASE 10E: Domain-approved mapping implementation.
+ * 
+ * @param serviceStatus - Service/UI status value
+ * @returns Canonical Prisma status
+ */
 export function mapDeliveryStatusToPrisma(
   serviceStatus: string | null | undefined
-): LogisticsDeliveryStatusPrisma {
-  // Log the attempted usage for debugging
-  console.error('[Phase 10C Required] mapDeliveryStatusToPrisma called with:', serviceStatus)
-  throw new Error(
-    '[Phase 10C Required] mapDeliveryStatusToPrisma is not yet implemented. ' +
-    'Requires domain approval for mapping decisions.'
-  )
+): LogisticsDeliveryStatusPrisma | undefined {
+  if (!serviceStatus) {
+    return undefined
+  }
+  
+  // Direct mappings (already Prisma-compatible)
+  if (isValidEnumValue(serviceStatus, LOGISTICS_DELIVERY_STATUS_PRISMA)) {
+    return serviceStatus
+  }
+  
+  // Semantic alias mappings (approved by domain)
+  const aliasMap: Record<string, LogisticsDeliveryStatusPrisma> = {
+    'READY': 'ASSIGNED',
+    'OUT_FOR_DELIVERY': 'IN_TRANSIT',
+    'COMPLETED': 'DELIVERED',
+    'CANCELLED': 'FAILED'
+  }
+  
+  if (serviceStatus in aliasMap) {
+    return aliasMap[serviceStatus]
+  }
+  
+  // Unknown value - log and return undefined
+  logEnumMismatch({
+    enumName: 'LogisticsDeliveryStatus',
+    value: serviceStatus,
+    source: 'API'
+  })
+  
+  return undefined
+}
+
+/**
+ * Validates a delivery status value against Prisma canonical statuses.
+ * 
+ * PHASE 10E: Use this at API boundaries when the service expects Prisma types.
+ * Phase 10D: Logs mismatches for observability.
+ * 
+ * @param value - URL search param or input value
+ * @returns Valid Prisma delivery status or undefined
+ */
+export function validateDeliveryStatus(
+  value: string | null | undefined
+): LogisticsDeliveryStatusPrisma | undefined {
+  return validateEnumValue(value, LOGISTICS_DELIVERY_STATUS_PRISMA, 'LogisticsDeliveryStatus', 'API')
+}
+
+/**
+ * Validates and maps a comma-separated list of delivery statuses.
+ * 
+ * PHASE 10E: Handles array inputs from URL params (e.g., "PENDING,ASSIGNED,DELIVERED")
+ * 
+ * @param value - Comma-separated status string
+ * @returns Array of valid Prisma delivery statuses
+ */
+export function validateDeliveryStatusArray(
+  value: string | null | undefined
+): LogisticsDeliveryStatusPrisma[] | undefined {
+  if (!value) {
+    return undefined
+  }
+  
+  const statuses = value.split(',').map(s => s.trim())
+  const validStatuses: LogisticsDeliveryStatusPrisma[] = []
+  
+  for (const status of statuses) {
+    // First try direct Prisma mapping
+    const prismaStatus = mapDeliveryStatusToPrisma(status)
+    if (prismaStatus) {
+      // Avoid duplicates
+      if (!validStatuses.includes(prismaStatus)) {
+        validStatuses.push(prismaStatus)
+      }
+    }
+  }
+  
+  return validStatuses.length > 0 ? validStatuses : undefined
 }
 
 // =============================================================================
