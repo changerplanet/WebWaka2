@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { Globe, Plus, Check, X, AlertCircle, Loader2, Trash2, Star, Copy, RefreshCw } from 'lucide-react'
 
 interface Domain {
@@ -32,11 +32,8 @@ export function DomainManagement({ tenantSlug }: DomainManagementProps) {
   const [verifying, setVerifying] = useState<string | null>(null)
   const [copiedToken, setCopiedToken] = useState(false)
   
-  useEffect(() => {
-    fetchDomains()
-  }, [tenantSlug])
-  
-  async function fetchDomains() {
+  // Phase 12B: Wrapped in useCallback for hook hygiene
+  const fetchDomains = useCallback(async () => {
     try {
       const res = await fetch(`/api/tenants/${tenantSlug}/domains`)
       const data = await res.json()
@@ -51,7 +48,11 @@ export function DomainManagement({ tenantSlug }: DomainManagementProps) {
     } finally {
       setLoading(false)
     }
-  }
+  }, [tenantSlug])
+  
+  useEffect(() => {
+    fetchDomains()
+  }, [fetchDomains])
   
   async function handleAddDomain() {
     if (!newDomain) return
