@@ -497,7 +497,7 @@ export class LoyaltyService {
     ]);
 
     // Calculate tier progress
-    const tierConfig = program.tierConfig as unknown as TierConfig;
+    const tierConfig = parseJsonField(program.tierConfig, TierConfigSchema, DEFAULT_TIER_CONFIG);
     const currentTier = tierConfig?.tiers?.find(t => t.name === customer.loyaltyTier) ||
       tierConfig?.tiers?.[0];
     const nextTier = tierConfig?.tiers?.find(t => t.minPoints > customer.loyaltyPoints);
