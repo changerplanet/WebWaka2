@@ -362,9 +362,12 @@ export type SVMEvent =
 /**
  * SVM event with unknown payload (for ingress before validation)
  */
-export interface SVMEventUnknown extends SVMEventBase {
+export interface SVMEventUnknown {
+  eventId: string
+  timestamp: string
+  idempotencyKey: string
   eventType: string
-  payload: Record<string, unknown>
+  payload: unknown
 }
 
 /**
