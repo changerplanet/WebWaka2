@@ -53,12 +53,13 @@ export async function GET(request: Request) {
       return NextResponse.json({ tasks, total: tasks.length });
     }
 
+    // Phase 11B: Using type-safe enum validators
     const filters: TaskFilters = {
       projectId: searchParams.get('projectId') || undefined,
       milestoneId: searchParams.get('milestoneId') || undefined,
       assigneeId: searchParams.get('assigneeId') || undefined,
-      status: searchParams.get('status') as any || undefined,
-      priority: searchParams.get('priority') as any || undefined,
+      status: validateTaskStatus(searchParams.get('status')),
+      priority: validateTaskPriority(searchParams.get('priority')),
       overdue: searchParams.get('overdue') === 'true' || undefined,
       search: searchParams.get('search') || undefined,
       page: parseInt(searchParams.get('page') || '1'),
