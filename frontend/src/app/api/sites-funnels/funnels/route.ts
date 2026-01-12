@@ -23,6 +23,7 @@ import {
   pauseFunnel,
   getFunnelAnalytics,
 } from '@/lib/sites-funnels/funnel-service';
+import { validateFunnelStatus } from '@/lib/enums';
 
 export async function GET(request: NextRequest) {
   const session = await getCurrentSession();
