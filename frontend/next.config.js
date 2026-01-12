@@ -1,6 +1,5 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  allowedDevHosts: true,
   webpack: (config, { dev }) => {
     if (dev) {
       config.watchOptions = {
