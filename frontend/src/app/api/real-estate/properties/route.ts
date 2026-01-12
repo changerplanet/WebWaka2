@@ -16,6 +16,11 @@ import {
   type CreatePropertyInput,
   type PropertyFilters 
 } from '@/lib/real-estate';
+import { getEnumParam } from '@/lib/utils/urlParams';
+
+// Valid enum values for type safety
+const PROPERTY_STATUSES = ['AVAILABLE', 'OCCUPIED', 'MAINTENANCE', 'UNLISTED'] as const;
+const PROPERTY_TYPES = ['RESIDENTIAL', 'COMMERCIAL', 'MIXED', 'LAND'] as const;
 
 // GET /api/real-estate/properties
 export async function GET(request: Request) {
@@ -30,8 +35,8 @@ export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
     
     const filters: PropertyFilters = {
-      status: searchParams.get('status') as any,
-      propertyType: searchParams.get('propertyType') as any,
+      status: getEnumParam(searchParams, 'status', PROPERTY_STATUSES),
+      propertyType: getEnumParam(searchParams, 'propertyType', PROPERTY_TYPES),
       state: searchParams.get('state') || undefined,
       city: searchParams.get('city') || undefined,
       search: searchParams.get('search') || undefined,
