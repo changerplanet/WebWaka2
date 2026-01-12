@@ -68,7 +68,7 @@ export function buildDeliveryAssignmentCreate(
     ...(input.agentId && {
       logistics_delivery_agents: { connect: { id: input.agentId } }
     }),
-    deliveryAddress: input.deliveryAddress ?? Prisma.JsonNull,
+    deliveryAddress: input.deliveryAddress ? input.deliveryAddress as Prisma.InputJsonValue : Prisma.JsonNull,
     deliveryLatitude: input.deliveryLatitude ?? null,
     deliveryLongitude: input.deliveryLongitude ?? null,
     pickupLocationId: input.pickupLocationId ?? null,
