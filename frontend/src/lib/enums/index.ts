@@ -139,6 +139,34 @@ export {
   mapDeliveryStatusToPrisma
 } from './logistics'
 
+// Procurement module enums (Phase 11B)
+export {
+  PROC_PRIORITY,
+  PROC_PURCHASE_ORDER_STATUS,
+  PROC_PURCHASE_REQUEST_STATUS,
+  PROC_RECEIPT_STATUS,
+  PROC_ORDER_ORDER_BY_FIELDS,
+  PROC_REQUEST_ORDER_BY_FIELDS,
+  type ProcPriorityType,
+  type ProcPurchaseOrderStatusType,
+  type ProcPurchaseRequestStatusType,
+  type ProcReceiptStatusType,
+  type ProcOrderOrderByField,
+  type ProcRequestOrderByField,
+  type OrderDir,
+  validateProcPriority,
+  validateProcPriorityArray,
+  validatePurchaseOrderStatus,
+  validatePurchaseOrderStatusArray,
+  validatePurchaseRequestStatus,
+  validatePurchaseRequestStatusArray,
+  validateReceiptStatus,
+  validateReceiptStatusArray,
+  validateProcOrderOrderBy,
+  validateProcRequestOrderBy,
+  validateOrderDir
+} from './procurement'
+
 // SVM module enums (stubs only)
 export {
   // Prisma canonical values
