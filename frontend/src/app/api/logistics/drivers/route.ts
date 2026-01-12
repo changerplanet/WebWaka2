@@ -22,7 +22,7 @@ import {
   getDriverStats,
 } from '@/lib/logistics/driver-service';
 import {
-  validateAgentStatus,
+  validateDriverStatus,
   validateLicenseType,
 } from '@/lib/enums';
 
