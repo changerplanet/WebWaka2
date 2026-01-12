@@ -54,11 +54,10 @@ export function validateFunnelStatus(
 // =============================================================================
 
 export const SF_AI_CONTENT_STATUS = [
-  'GENERATING',
-  'COMPLETED',
-  'FAILED',
-  'DRAFT',
-  'PUBLISHED'
+  'pending',
+  'approved',
+  'rejected',
+  'edited'
 ] as const
 
 export type SfAiContentStatusType = typeof SF_AI_CONTENT_STATUS[number]
