@@ -5,14 +5,14 @@
  * Compatibility mapping layer for Logistics module enums.
  * 
  * SCOPE:
- * - ✅ VehicleType (APPROVED for Phase 10B)
- * - ⚠️ DeliveryStatus (CONDITIONAL - stub only)
- * - ⚠️ JobStatus (CONDITIONAL - stub only)
+ * - ✅ VehicleType (Phase 10B APPROVED)
+ * - ✅ DeliveryStatus (Phase 10E APPROVED - Domain decision received)
+ * - ✅ JobStatus (Phase 10C APPROVED - Service-only enum)
  * 
  * @module lib/enums/logistics
  */
 
-import { validateEnumValue } from './types'
+import { validateEnumValue, isValidEnumValue, logEnumMismatch } from './types'
 
 // =============================================================================
 // VEHICLE TYPE (APPROVED)
