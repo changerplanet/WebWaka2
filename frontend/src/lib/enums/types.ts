@@ -143,15 +143,37 @@ export function isValidEnumValue<T extends string>(
 }
 
 /**
- * Validates an enum value and returns it or undefined
- * Does NOT log - use when unknown values are expected
+ * Validates an enum value and returns it or undefined.
+ * 
+ * PHASE 10D: Now includes runtime logging for observability.
+ * - Logs mismatches when a non-null/undefined value is invalid
+ * - Does NOT change return behavior (still returns undefined for invalid)
+ * - Pass-through: original value is preserved in logs
+ * 
+ * @param value - The value to validate
+ * @param validValues - Array of valid enum values
+ * @param enumName - Optional name for logging (defaults to 'UnknownEnum')
+ * @param source - Optional source layer for logging (defaults to 'API')
  */
 export function validateEnumValue<T extends string>(
   value: string | null | undefined,
-  validValues: readonly T[]
+  validValues: readonly T[],
+  enumName?: string,
+  source?: 'API' | 'Service' | 'DB'
 ): T | undefined {
   if (isValidEnumValue(value, validValues)) {
     return value
   }
+  
+  // Phase 10D: Log mismatch for non-null/undefined invalid values
+  // Only log when there's an actual value that doesn't match
+  if (value !== null && value !== undefined) {
+    logEnumMismatch({
+      enumName: enumName || 'UnknownEnum',
+      value,
+      source: source || 'API',
+    })
+  }
+  
   return undefined
 }
