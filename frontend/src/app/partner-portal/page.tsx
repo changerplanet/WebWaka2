@@ -150,7 +150,8 @@ export default function PartnerPortal() {
     };
   }, []);
 
-  // Fetch initial partner when authenticated
+  // Phase 14B: Auth-state driven effect - fetchSession intentionally excluded to prevent duplicate fetches
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     if (!authLoading && isAuthenticated && user) {
       // Check if session already has partner info
