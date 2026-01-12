@@ -23,30 +23,36 @@
 import { prisma } from './prisma'
 import { createAuditLog } from './audit'
 import { AuditAction } from '@prisma/client'
+import {
+  type MVMEvent,
+  type MVMEventUnknown,
+  type MVMVendorOnboardedEvent,
+  type MVMVendorApprovedEvent,
+  type MVMVendorSuspendedEvent,
+  type MVMOrderSplitEvent,
+  type MVMSubOrderCreatedEvent,
+  type MVMSubOrderDeliveredEvent,
+  type MVMSubOrderCancelledEvent,
+  type MVMCommissionEarnedEvent,
+  type MVMPayoutReadyEvent,
+  isMVMEvent,
+  type EventHandlerResult
+} from './events/eventTypes'
 
 // ============================================================================
-// TYPES
+// TYPES (Re-exports for backwards compatibility)
 // ============================================================================
 
-interface MVMEventBase {
-  eventId: string
-  eventType: string
-  timestamp: string
-  idempotencyKey: string
-  tenantId: string
-  version: '1.0'
-}
-
-interface VendorOnboardedPayload {
-  vendorId: string
-  vendorName: string
-  tenantId: string
-  email: string
-  tierId?: string
-  tierName?: string
-  commissionRate: number
-  onboardedAt: string
-}
+export type {
+  VendorOnboardedPayload,
+  VendorStatusChangedPayload,
+  OrderSplitPayload,
+  SubOrderCreatedPayload,
+  SubOrderDeliveredPayload,
+  SubOrderCancelledPayload,
+  CommissionEarnedPayload,
+  PayoutReadyPayload
+} from './events/eventTypes'
 
 interface VendorStatusChangedPayload {
   vendorId: string
