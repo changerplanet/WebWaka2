@@ -305,6 +305,12 @@ export default function PartnerPortal() {
     }
   }, [partnerId, fetchWithRetry])
 
+  useEffect(() => {
+    if (partnerId) {
+      fetchPartnerData()
+    }
+  }, [partnerId, fetchPartnerData])
+
   const createReferralLink = async () => {
     if (!partnerId || !newLinkName.trim()) return
 
