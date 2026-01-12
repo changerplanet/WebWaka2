@@ -52,11 +52,14 @@ export type CivicPriorityService = typeof CIVIC_PRIORITY_SERVICE[number]
 
 /**
  * ServiceRequestCategory - Service layer values
+ * From: lib/civic/config.ts - SERVICE_REQUEST_CATEGORIES
  */
 export const CIVIC_CATEGORY_SERVICE = [
+  'INFRASTRUCTURE',
+  'SECURITY',
+  'SANITATION',
+  'UTILITIES',
   'COMPLAINT',
-  'GRIEVANCE',
-  'FEEDBACK',
   'GENERAL_INQUIRY',
   'CERTIFICATE',
   'PERMIT'
