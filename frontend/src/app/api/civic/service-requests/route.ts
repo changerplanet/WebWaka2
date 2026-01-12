@@ -23,6 +23,11 @@ import {
   getOverdueRequests,
   getServiceRequestStats,
 } from '@/lib/civic/service-request-service';
+import {
+  validateServiceRequestStatus,
+  validateServiceRequestPriority,
+  validateServiceRequestCategory,
+} from '@/lib/enums';
 
 export async function GET(request: NextRequest) {
   try {
