@@ -159,6 +159,26 @@ Added `export const dynamic = 'force-dynamic'` to 485 API routes.
 
 **PHASE 11 SUMMARY: Total 35 casts eliminated (380 → 345)**
 
+### Phase 13 - CONDITIONAL `as any` Reduction Program (IN PROGRESS - December 2025)
+
+**Phase 13A - Sites/Funnels Audit (COMPLETE)**
+- Read-only audit of 5 `as any` casts in sites-funnels module
+- Classified into: SAFE_WITH_MAPPING (4), DOMAIN_DECISION_REQUIRED (1)
+- Report: `/app/frontend/docs/PHASE_13A_SITES_FUNNELS_AS_ANY_AUDIT.md`
+
+**Phase 13C - Sites/Funnels Reduction (COMPLETE)**
+- Created `TemplateBlockSchema` Zod validator for JSON field parsing
+- Replaced 4 `as any[]` casts with type-safe `parseTemplateBlocks()` function
+- Cast count: 5 → 1 (80% reduction in module)
+- 1 cast deferred (AuditAction enum - requires schema change)
+- Report: `/app/frontend/docs/PHASE_13C_SITES_FUNNELS_AS_ANY_REDUCTION_REPORT.md`
+
+**Next Modules in Queue:**
+- Education (low risk)
+- Content/CMS (medium risk)
+- SVM non-transactional (medium risk)
+- CRM non-billing (higher risk)
+
 ---
 
 ## Remaining Items (Prioritized Backlog)
