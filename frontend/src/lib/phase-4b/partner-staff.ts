@@ -16,6 +16,11 @@ import { prisma } from '../prisma'
 import { PartnerRole } from '@prisma/client'
 import { v4 as uuidv4 } from 'uuid'
 import { withPrismaDefaults } from '../db/prismaDefaults'
+import { 
+  mapStaffMember, 
+  mapStaffMembers,
+  type StaffMemberViewModel 
+} from '../db/prismaResultMappers'
 
 // ============================================================================
 // TYPES
