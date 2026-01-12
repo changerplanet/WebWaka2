@@ -87,7 +87,7 @@ export function buildDeliveryAssignmentCreate(
     scheduledDeliveryAt: input.scheduledDeliveryAt ?? null,
     packageDetails: input.packageDetails ? input.packageDetails as Prisma.InputJsonValue : Prisma.JsonNull,
     deliveryInstructions: input.deliveryInstructions ?? null,
-    metadata: input.metadata ?? Prisma.JsonNull,
+    metadata: input.metadata ? input.metadata as Prisma.InputJsonValue : Prisma.JsonNull,
     autoAssigned: input.autoAssigned ?? false,
     assignedBy: input.assignedBy ?? null,
     assignedAt: hasAgent ? new Date() : null,
@@ -161,7 +161,7 @@ export function buildDeliveryZoneCreate(
     polygon: input.polygon ?? Prisma.JsonNull,
     status: (input.status ?? 'ACTIVE') as LogisticsZoneStatus,
     sortOrder: input.sortOrder ?? 0,
-    metadata: input.metadata ?? Prisma.JsonNull,
+    metadata: input.metadata ? input.metadata as Prisma.InputJsonValue : Prisma.JsonNull,
     createdBy: input.createdBy ?? null,
   };
 }
@@ -230,7 +230,7 @@ export function buildDeliveryAgentCreate(
     isAvailable: input.isAvailable ?? true,
     rating: input.rating ?? null,
     completedDeliveries: input.completedDeliveries ?? 0,
-    metadata: input.metadata ?? Prisma.JsonNull,
+    metadata: input.metadata ? input.metadata as Prisma.InputJsonValue : Prisma.JsonNull,
     createdBy: input.createdBy ?? null,
   };
 }
@@ -274,7 +274,7 @@ export function buildDeliveryProofCreate(
     notes: input.notes ?? null,
     latitude: input.latitude ?? null,
     longitude: input.longitude ?? null,
-    metadata: input.metadata ?? Prisma.JsonNull,
+    metadata: input.metadata ? input.metadata as Prisma.InputJsonValue : Prisma.JsonNull,
     capturedAt: input.capturedAt ?? new Date(),
     capturedBy: input.capturedBy ?? null,
   };
@@ -374,6 +374,6 @@ export function buildStatusHistoryCreate(
     changedByType: input.changedByType ?? 'SYSTEM',
     latitude: input.latitude ?? null,
     longitude: input.longitude ?? null,
-    metadata: input.metadata ?? Prisma.JsonNull,
+    metadata: input.metadata ? input.metadata as Prisma.InputJsonValue : Prisma.JsonNull,
   };
 }
