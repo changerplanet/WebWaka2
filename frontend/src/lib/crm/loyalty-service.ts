@@ -413,7 +413,7 @@ export class LoyaltyService {
       where: { id: customerId },
       data: {
         loyaltyPoints: newBalance,
-        loyaltyTier: this.calculateTier(newBalance, program.tierConfig as unknown as TierConfig),
+        loyaltyTier: this.calculateTier(newBalance, parseJsonField(program.tierConfig, TierConfigSchema, DEFAULT_TIER_CONFIG)),
       },
     });
 
