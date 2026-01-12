@@ -34,24 +34,6 @@ export default function TenantDashboard() {
 
   const tenantSlug = searchParams.get('tenant') || activeTenant?.tenantSlug
 
-  // Fetch tenant immediately when we have a slug
-  useEffect(() => {
-    if (tenantSlug && !tenant) {
-      fetchTenant(tenantSlug)
-    } else if (!tenantSlug && !authLoading) {
-      // Only show error after auth has finished loading
-      setLoading(false)
-      setError('No tenant specified. Use ?tenant=slug to view a tenant dashboard.')
-    }
-  }, [tenantSlug, tenant, authLoading])
-
-  // Fetch capabilities when we have tenant context
-  useEffect(() => {
-    if (activeTenantId && tenant) {
-      fetchActiveCapabilities()
-    }
-  }, [activeTenantId, tenant])
-
   // Phase 12B: Wrapped in useCallback for hook hygiene
   const fetchActiveCapabilities = useCallback(async () => {
     // Only fetch if we have an active tenant in the session
@@ -72,10 +54,6 @@ export default function TenantDashboard() {
       console.error('Failed to fetch capabilities:', err)
     }
   }, [activeTenantId])
-
-  async function handleLogout() {
-    await logout()
-  }
 
   // Phase 12B: Wrapped in useCallback for hook hygiene
   const fetchTenant = useCallback(async (slug: string) => {
@@ -99,7 +77,6 @@ export default function TenantDashboard() {
     if (tenantSlug && !tenant) {
       fetchTenant(tenantSlug)
     } else if (!tenantSlug && !authLoading) {
-      // Only show error after auth has finished loading
       setLoading(false)
       setError('No tenant specified. Use ?tenant=slug to view a tenant dashboard.')
     }
@@ -111,6 +88,10 @@ export default function TenantDashboard() {
       fetchActiveCapabilities()
     }
   }, [activeTenantId, tenant, fetchActiveCapabilities])
+
+  async function handleLogout() {
+    await logout()
+  }
 
   if (loading) {
     return (
