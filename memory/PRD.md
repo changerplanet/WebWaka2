@@ -82,19 +82,33 @@ Added `export const dynamic = 'force-dynamic'` to 485 API routes.
   - `mvm-event-handlers.ts`: 8 casts
 - Report: `/app/frontend/docs/PHASE_8_EVENT_TYPE_SYSTEM_REPORT.md`
 
+### Phase 9 - `as any` Reduction (COMPLETE - December 2025)
+
+**Phase 9A - Audit (COMPLETE)**
+- Audited all 419 `as any` casts across 169 files
+- Categorized by risk: SAFE (37%), CONDITIONAL (23%), DOMAIN_REQUIRED (39%)
+- Report: `/app/frontend/docs/PHASE_9A_AS_ANY_AUDIT_REPORT.md`
+
+**Phase 9B - Conservative Reduction (COMPLETE)**
+- Created URL param utility: `src/lib/utils/urlParams.ts`
+- Fixed 15 casts in 8 API route files (real-estate, HR, logistics)
+- Discovered systemic enum drift between service interfaces and Prisma schema
+- Several attempted fixes reverted to preserve behavior
+- Report: `/app/frontend/docs/PHASE_9B_AS_ANY_REDUCTION_REPORT.md`
+
 ---
 
 ## Remaining Items (Prioritized Backlog)
 
-### P1 - Selective `as any` Reduction (Phase 9 - READY)
-- Address ~235 `as any` casts
-- Strategy: Read-only audit first (Phase 9A), then authorized fix pass (Phase 9B)
-- Target: Service boundaries, API responses, utility functions
-- Skip: Deep domain logic, legacy untested flows, performance-critical paths
+### P1 - Enum Alignment (Discovered Issue)
+- Service function enum types don't match Prisma schema enums
+- Requires domain expert review to align interfaces
+- ~100+ casts blocked by this issue
 
 ### P2 - Legacy Debt
 - Fix 52 semantic React Hook warnings (baselined in Phase 3)
 - Address 1,201 baselined Prisma issues (requires schema governance)
+- Remaining ~400 `as any` casts (blocked by enum alignment)
 
 ### P2 - Features (Backlog)
 - Guided Demo Tours (ALL SUITES)
