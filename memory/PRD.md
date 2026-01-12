@@ -188,6 +188,24 @@ Added `export const dynamic = 'force-dynamic'` to 485 API routes.
 
 ## Remaining Items (Prioritized Backlog)
 
+### Phase 14 - DOMAIN_REQUIRED React Hook Resolution (COMPLETE - December 2025)
+
+**Phase 14A - Domain Intent Analysis (COMPLETE)**
+- Documented intended behavior for 13 DOMAIN_REQUIRED warnings
+- Created intent matrix with lifecycle expectations
+- Report: `/app/frontend/docs/PHASE_14_DOMAIN_INTENT_MATRIX.md`
+
+**Phase 14B - Controlled Remediation (COMPLETE)**
+- Fixed 6 warnings with `useCallback` wrapper pattern
+- Documented 5 warnings as intentional exclusions with inline comments
+- Warning count reduced: 22 → 16
+- Files: partner-portal, funnels/sites editors, governance pages, admin tenants
+
+**Phase 14C - Final Documentation (COMPLETE)**
+- All intentional exclusions documented with `eslint-disable` + rationale
+- Final attestation: No auth/tenant/partner behavior changed
+- Report: `/app/frontend/docs/PHASE_14_REACT_HOOK_DOMAIN_REPORT.md`
+
 ### P2 - Phase 12: React Hook Warnings (COMPLETE - December 2025)
 
 **Phase 12A - Classification (COMPLETE)**
