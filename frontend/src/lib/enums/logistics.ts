@@ -277,3 +277,30 @@ export function validateDriverStatus(
 ): LogisticsDriverStatusService | undefined {
   return validateEnumValue(value, LOGISTICS_DRIVER_STATUS_SERVICE)
 }
+
+// =============================================================================
+// VEHICLE STATUS - SERVICE-ONLY ENUM (Phase 10C APPROVED)
+// =============================================================================
+
+/**
+ * Vehicle status values used in logistics service layer.
+ * From: lib/logistics/config.ts - VEHICLE_STATUS
+ */
+export const LOGISTICS_VEHICLE_STATUS_SERVICE = [
+  'AVAILABLE',
+  'IN_USE',
+  'MAINTENANCE',
+  'OUT_OF_SERVICE',
+  'RESERVED'
+] as const
+
+export type LogisticsVehicleStatusService = typeof LOGISTICS_VEHICLE_STATUS_SERVICE[number]
+
+/**
+ * Validates and returns a valid vehicle status value.
+ */
+export function validateVehicleStatus(
+  value: string | null | undefined
+): LogisticsVehicleStatusService | undefined {
+  return validateEnumValue(value, LOGISTICS_VEHICLE_STATUS_SERVICE)
+}
