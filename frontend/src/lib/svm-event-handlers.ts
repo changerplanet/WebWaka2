@@ -237,8 +237,8 @@ export async function handleOrderCancelled(
  * Handle refund requested - Process refund and optionally restock
  */
 export async function handleRefundRequested(
-  event: SVMEventBase & { payload: RefundRequestedPayload }
-): Promise<{ success: boolean; error?: string; refundId?: string }> {
+  event: SVMRefundRequestedEvent
+): Promise<EventHandlerResult & { refundId?: string }> {
   const { idempotencyKey, payload } = event
 
   if (await isEventProcessed(idempotencyKey)) {
