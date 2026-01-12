@@ -146,8 +146,9 @@ export interface SegmentMembershipInput {
   segmentId: string;
   customerId: string;
   addedBy?: string | null;
-  source?: string | null;
-  expiresAt?: Date | null;
+  isManual?: boolean;
+  score?: number | null;
+  metadata?: Record<string, unknown> | null;
 }
 
 export function buildSegmentMembershipCreate(
@@ -161,8 +162,9 @@ export function buildSegmentMembershipCreate(
     },
     customerId: input.customerId,
     addedBy: input.addedBy ?? null,
-    source: input.source ?? null,
-    expiresAt: input.expiresAt ?? null,
+    isManual: input.isManual ?? false,
+    score: input.score ?? null,
+    metadata: input.metadata ? input.metadata as Prisma.InputJsonValue : Prisma.JsonNull,
   };
 }
 
@@ -175,8 +177,9 @@ export function buildSegmentMembershipCreateMany(
     segmentId: input.segmentId,
     customerId: input.customerId,
     addedBy: input.addedBy ?? null,
-    source: input.source ?? null,
-    expiresAt: input.expiresAt ?? null,
+    isManual: input.isManual ?? false,
+    score: input.score ?? null,
+    metadata: input.metadata ? input.metadata as Prisma.InputJsonValue : Prisma.JsonNull,
   }));
 }
 
