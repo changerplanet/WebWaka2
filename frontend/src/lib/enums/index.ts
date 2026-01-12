@@ -111,11 +111,13 @@ export {
   LOGISTICS_JOB_PRIORITY_SERVICE,
   LOGISTICS_LICENSE_TYPE_SERVICE,
   LOGISTICS_DRIVER_STATUS_SERVICE,
+  LOGISTICS_VEHICLE_STATUS_SERVICE,
   type LogisticsJobStatusService,
   type LogisticsJobTypeService,
   type LogisticsJobPriorityService,
   type LogisticsLicenseTypeService,
   type LogisticsDriverStatusService,
+  type LogisticsVehicleStatusService,
   
   // Validation functions
   validateVehicleType,
@@ -125,6 +127,7 @@ export {
   validateJobPriority,
   validateLicenseType,
   validateDriverStatus,
+  validateVehicleStatus,
   
   // Stub functions (Phase 10C - CONDITIONAL)
   mapDeliveryStatusToPrisma
