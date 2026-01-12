@@ -203,9 +203,15 @@ Added `export const dynamic = 'force-dynamic'` to 485 API routes.
 
 ---
 
+### P1 - CONDITIONAL `as any` Reduction (IN PROGRESS)
+- Module-by-module audit and remediation
+- Sites/Funnels: 5 → 1 (COMPLETE)
+- Remaining modules: Education, Content/CMS, SVM, CRM
+- ~240+ casts remaining across all modules
+
 ### P2 - Legacy Debt (Remaining)
-- Address ~310 remaining `as any` casts (CONDITIONAL/OUT OF SCOPE)
 - 1,201 baselined Prisma issues (requires schema governance)
+- 1 deferred AuditAction enum cast (requires schema migration)
 
 ### P3 - Features (Backlog)
 - Guided Demo Tours (ALL SUITES)
