@@ -7,7 +7,7 @@ Fix failing production build (`yarn build`) for Next.js application to unblock V
 - **TypeScript Compilation**: ✅ PASSING
 - **Static Generation**: ✅ PASSING  
 - **Build Exit Code**: 0
-- **Build Time**: ~103 seconds
+- **Build Time**: ~100 seconds
 
 ---
 
@@ -59,7 +59,7 @@ Added `export const dynamic = 'force-dynamic'` to 485 API routes.
   - `commission-engine.ts`: 2 casts (CommissionTier/HybridRule validation)
 - Report: `/app/frontend/docs/PHASE_6_RUNTIME_JSON_VALIDATION_REPORT.md`
 
-### Phase 7 - Prisma Result Typing (COMPLETE - December 2025)
+### Phase 7 - Prisma Result Typing (COMPLETE)
 - Created `prismaResultMappers.ts` with typed view models and mapper functions
 - Eliminated 5 unsafe Prisma result casts:
   - `tenant-resolver.ts`: 3 casts (PlatformInstanceWithTenant)
@@ -68,17 +68,29 @@ Added `export const dynamic = 'force-dynamic'` to 485 API routes.
 - Mapper functions: `mapPlatformInstanceWithTenant()`, `mapStaffMember()`, `mapStaffMembers()`, `mapDomainPlatformInstance()`
 - Report: `/app/frontend/docs/PHASE_7_PRISMA_RESULT_TYPING_REPORT.md`
 
+### Phase 8 - Event Type System (COMPLETE - December 2025)
+- Created centralized event type system in `src/lib/events/eventTypes.ts`
+- Implemented discriminated unions for all 3 module event systems:
+  - `POSEvent` (4 event types)
+  - `SVMEvent` (5 event types)
+  - `MVMEvent` (9 event types)
+- Introduced 3 type guard functions: `isPOSEvent()`, `isSVMEvent()`, `isMVMEvent()`
+- Centralized 18 payload type definitions
+- Eliminated 17 unsafe `as unknown` casts in event handlers:
+  - `pos-event-handlers.ts`: 4 casts
+  - `svm-event-handlers.ts`: 5 casts
+  - `mvm-event-handlers.ts`: 8 casts
+- Report: `/app/frontend/docs/PHASE_8_EVENT_TYPE_SYSTEM_REPORT.md`
+
 ---
 
 ## Remaining Items (Prioritized Backlog)
 
-### P1 - Event Type System (Domain Required)
-- 17 remaining `as unknown` casts in event handlers require discriminated union redesign
-- Files: `pos-event-handlers.ts`, `svm-event-handlers.ts`, `mvm-event-handlers.ts`
-- Blocked: Requires domain expert review of event payload contracts
-
-### P1 - Type Safety Issues
-- Address ~235 `as any` casts (require domain expert review)
+### P1 - Selective `as any` Reduction (Phase 9 - READY)
+- Address ~235 `as any` casts
+- Strategy: Read-only audit first (Phase 9A), then authorized fix pass (Phase 9B)
+- Target: Service boundaries, API responses, utility functions
+- Skip: Deep domain logic, legacy untested flows, performance-critical paths
 
 ### P2 - Legacy Debt
 - Fix 52 semantic React Hook warnings (baselined in Phase 3)
