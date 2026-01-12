@@ -27,6 +27,7 @@ import {
   updatePageBlocks,
 } from '@/lib/sites-funnels/site-service';
 import { listTemplates, getTemplate, cloneSiteFromTemplate } from '@/lib/sites-funnels/template-service';
+import { validateSiteStatus } from '@/lib/enums';
 
 export async function GET(request: NextRequest) {
   const session = await getCurrentSession();
