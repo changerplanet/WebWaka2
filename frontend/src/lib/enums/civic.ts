@@ -419,11 +419,12 @@ export type CivicCertificateStatusService = typeof CIVIC_CERTIFICATE_STATUS_SERV
 
 /**
  * Validates certificate status URL param.
+ * Phase 10D: Logs mismatches for observability.
  */
 export function validateCertificateStatus(
   value: string | null | undefined
 ): CivicCertificateStatusService | undefined {
-  return validateEnumValue(value, CIVIC_CERTIFICATE_STATUS_SERVICE)
+  return validateEnumValue(value, CIVIC_CERTIFICATE_STATUS_SERVICE, 'CivicCertificateStatus', 'API')
 }
 
 /**
@@ -445,11 +446,12 @@ export type CivicCertificateTypeService = typeof CIVIC_CERTIFICATE_TYPE_SERVICE[
 
 /**
  * Validates certificate type URL param.
+ * Phase 10D: Logs mismatches for observability.
  */
 export function validateCertificateType(
   value: string | null | undefined
 ): CivicCertificateTypeService | undefined {
-  return validateEnumValue(value, CIVIC_CERTIFICATE_TYPE_SERVICE)
+  return validateEnumValue(value, CIVIC_CERTIFICATE_TYPE_SERVICE, 'CivicCertificateType', 'API')
 }
 
 // =============================================================================
@@ -473,11 +475,12 @@ export type CivicPaymentStatusService = typeof CIVIC_PAYMENT_STATUS_SERVICE[numb
 
 /**
  * Validates payment/dues status URL param.
+ * Phase 10D: Logs mismatches for observability.
  */
 export function validatePaymentStatus(
   value: string | null | undefined
 ): CivicPaymentStatusService | undefined {
-  return validateEnumValue(value, CIVIC_PAYMENT_STATUS_SERVICE)
+  return validateEnumValue(value, CIVIC_PAYMENT_STATUS_SERVICE, 'CivicPaymentStatus', 'API')
 }
 
 /**
@@ -500,11 +503,12 @@ export type CivicDuesTypeService = typeof CIVIC_DUES_TYPE_SERVICE[number]
 
 /**
  * Validates dues type URL param.
+ * Phase 10D: Logs mismatches for observability.
  */
 export function validateDuesType(
   value: string | null | undefined
 ): CivicDuesTypeService | undefined {
-  return validateEnumValue(value, CIVIC_DUES_TYPE_SERVICE)
+  return validateEnumValue(value, CIVIC_DUES_TYPE_SERVICE, 'CivicDuesType', 'API')
 }
 
 // =============================================================================
