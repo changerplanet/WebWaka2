@@ -114,12 +114,14 @@ export {
   LOGISTICS_LICENSE_TYPE_SERVICE,
   LOGISTICS_DRIVER_STATUS_SERVICE,
   LOGISTICS_VEHICLE_STATUS_SERVICE,
+  LOGISTICS_DELIVERY_STATUS_SERVICE,
   type LogisticsJobStatusService,
   type LogisticsJobTypeService,
   type LogisticsJobPriorityService,
   type LogisticsLicenseTypeService,
   type LogisticsDriverStatusService,
   type LogisticsVehicleStatusService,
+  type LogisticsDeliveryStatusService,
   
   // Validation functions
   validateVehicleType,
@@ -130,8 +132,10 @@ export {
   validateLicenseType,
   validateDriverStatus,
   validateVehicleStatus,
+  validateDeliveryStatus,
+  validateDeliveryStatusArray,
   
-  // Stub functions (Phase 10C - CONDITIONAL)
+  // Phase 10E - Delivery status mapping (domain approved)
   mapDeliveryStatusToPrisma
 } from './logistics'
 
