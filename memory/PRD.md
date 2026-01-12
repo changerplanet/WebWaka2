@@ -183,24 +183,17 @@ Added `export const dynamic = 'force-dynamic'` to 485 API routes.
 
 ---
 
-### P2 - Legacy Debt
+### P2 - Legacy Debt (Remaining)
 - Address ~310 remaining `as any` casts (CONDITIONAL/OUT OF SCOPE)
 - 1,201 baselined Prisma issues (requires schema governance)
 
-### P2 - Features (Backlog)
+### P3 - Features (Backlog)
 - Guided Demo Tours (ALL SUITES)
 
-### P2 - Optional Enhancements
+### P3 - Optional Enhancements
 - Structured logging integration (Pino/Winston) for enum mismatches
 - SvmOrderStatus mapping (if needed, currently stub)
-
-### P2 - Legacy Debt
-- Fix 52 semantic React Hook warnings (baselined in Phase 3)
-- Address 1,201 baselined Prisma issues (requires schema governance)
-- Remaining ~400 `as any` casts (most blocked by domain-specific enum decisions)
-
-### P2 - Features (Backlog)
-- Guided Demo Tours (ALL SUITES)
+- Fix DOMAIN_REQUIRED React Hook warnings (13 remaining - requires domain review)
 
 ---
 
