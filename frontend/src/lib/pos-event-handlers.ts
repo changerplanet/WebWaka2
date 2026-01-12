@@ -239,23 +239,27 @@ export async function handleRefundCreated(
 // ============================================================================
 
 export async function handlePOSEvent(
-  event: POSEventBase & { payload: Record<string, unknown> }
-): Promise<{ success: boolean; error?: string }> {
+  event: POSEventUnknown
+): Promise<EventHandlerResult> {
   console.log('[POS] Received event:', event.eventType)
 
+  // Use type guard to validate and narrow the event type
+  if (!isPOSEvent(event)) {
+    console.log('[POS] Unhandled event type:', event.eventType)
+    return { success: true }
+  }
+
+  // TypeScript now knows event is a POSEvent (discriminated union)
   switch (event.eventType) {
     case 'pos.sale.completed':
-      return handleSaleCompleted(event as unknown as POSEventBase & { payload: SaleCompletedPayload })
+      return handleSaleCompleted(event)
     case 'pos.sale.cancelled':
     case 'pos.sale.voided':
-      return handleSaleCancelled(event as unknown as POSEventBase & { payload: SaleCancelledPayload })
+      return handleSaleCancelled(event)
     case 'pos.payment.captured':
-      return handlePaymentCaptured(event as unknown as POSEventBase & { payload: PaymentCapturedPayload })
+      return handlePaymentCaptured(event)
     case 'pos.refund.created':
-      return handleRefundCreated(event as unknown as POSEventBase & { payload: RefundCreatedPayload })
-    default:
-      console.log('[POS] Unhandled event type:', event.eventType)
-      return { success: true }
+      return handleRefundCreated(event)
   }
 }
 
