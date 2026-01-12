@@ -7,7 +7,7 @@
  * Includes: Basic info, domains, members, capabilities, instances.
  */
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useRouter, useParams } from 'next/navigation'
 import { 
   Building2, Users, Globe, Package, ArrowLeft, Loader2, AlertTriangle,
