@@ -69,17 +69,7 @@ export default function AllUsersPage() {
   const [selectedUser, setSelectedUser] = useState<UserData | null>(null)
   const [actionLoading, setActionLoading] = useState<string | null>(null)
 
-  useEffect(() => {
-    checkAuth()
-  }, [])
-
-  useEffect(() => {
-    if (currentUser) {
-      fetchUsers()
-    }
-  }, [currentUser, roleFilter, offset])
-
-  async function checkAuth() {
+  const checkAuth = useCallback(async () => {
     try {
       const res = await fetch('/api/auth/session')
       const data = await res.json()
@@ -98,9 +88,9 @@ export default function AllUsersPage() {
     } catch (err) {
       router.push('/login')
     }
-  }
+  }, [router])
 
-  async function fetchUsers() {
+  const fetchUsers = useCallback(async () => {
     setLoading(true)
     setError(null)
     try {
