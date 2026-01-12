@@ -55,21 +55,51 @@ export default function AuditPage() {
   const [offset, setOffset] = useState(0)
   const limit = 25
 
-  useEffect(() => {
-    checkAuthAndFetchData()
-  }, [])
-
-  useEffect(() => {
-    if (partnerId) {
-      if (viewMode === 'list') {
-        fetchAuditLogs()
+  // Phase 12B: Wrapped in useCallback for hook hygiene
+  const fetchAuditLogs = useCallback(async () => {
+    setLoading(true)
+    try {
+      const params = new URLSearchParams()
+      params.set('limit', limit.toString())
+      params.set('offset', offset.toString())
+      
+      const res = await fetch(`/api/partners/${partnerId}/audit?${params}`)
+      const data = await res.json()
+      
+      if (data.error) {
+        setError(data.error)
       } else {
-        fetchActivityReport()
+        setEntries(data.entries || [])
+        setTotal(data.total || 0)
       }
+    } catch (err) {
+      setError('Failed to load audit logs')
+    } finally {
+      setLoading(false)
     }
-  }, [partnerId, viewMode, offset])
+  }, [partnerId, offset])
 
-  async function checkAuthAndFetchData() {
+  // Phase 12B: Wrapped in useCallback for hook hygiene
+  const fetchActivityReport = useCallback(async () => {
+    setLoading(true)
+    try {
+      const res = await fetch(`/api/partners/${partnerId}/audit?report=activity`)
+      const data = await res.json()
+      
+      if (data.error) {
+        setError(data.error)
+      } else {
+        setReport(data)
+      }
+    } catch (err) {
+      setError('Failed to load activity report')
+    } finally {
+      setLoading(false)
+    }
+  }, [partnerId])
+
+  // Phase 12B: Wrapped in useCallback for hook hygiene
+  const checkAuthAndFetchData = useCallback(async () => {
     try {
       const sessionRes = await fetch('/api/auth/session')
       const sessionData = await sessionRes.json()
@@ -95,48 +125,21 @@ export default function AuditPage() {
       setError('Failed to load data')
       setLoading(false)
     }
-  }
+  }, [router])
 
-  async function fetchAuditLogs() {
-    setLoading(true)
-    try {
-      const params = new URLSearchParams()
-      params.set('limit', limit.toString())
-      params.set('offset', offset.toString())
-      
-      const res = await fetch(`/api/partners/${partnerId}/audit?${params}`)
-      const data = await res.json()
-      
-      if (data.error) {
-        setError(data.error)
-      } else {
-        setEntries(data.entries || [])
-        setTotal(data.total || 0)
-      }
-    } catch (err) {
-      setError('Failed to load audit logs')
-    } finally {
-      setLoading(false)
-    }
-  }
+  useEffect(() => {
+    checkAuthAndFetchData()
+  }, [checkAuthAndFetchData])
 
-  async function fetchActivityReport() {
-    setLoading(true)
-    try {
-      const res = await fetch(`/api/partners/${partnerId}/audit?report=activity`)
-      const data = await res.json()
-      
-      if (data.error) {
-        setError(data.error)
+  useEffect(() => {
+    if (partnerId) {
+      if (viewMode === 'list') {
+        fetchAuditLogs()
       } else {
-        setReport(data)
+        fetchActivityReport()
       }
-    } catch (err) {
-      setError('Failed to load activity report')
-    } finally {
-      setLoading(false)
     }
-  }
+  }, [partnerId, viewMode, offset, fetchAuditLogs, fetchActivityReport])
 
   async function handleLogout() {
     await fetch('/api/auth/logout', { method: 'POST' })

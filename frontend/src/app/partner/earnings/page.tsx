@@ -74,17 +74,28 @@ export default function EarningsPage() {
   const [error, setError] = useState<string | null>(null)
   const [selectedPeriod, setSelectedPeriod] = useState('12')
 
-  useEffect(() => {
-    checkAuthAndFetchData()
-  }, [])
-
-  useEffect(() => {
-    if (partnerId) {
-      fetchPerformance()
+  // Phase 12B: Wrapped in useCallback for hook hygiene
+  const fetchPerformance = useCallback(async () => {
+    try {
+      const endDate = new Date()
+      const startDate = new Date()
+      startDate.setMonth(startDate.getMonth() - parseInt(selectedPeriod))
+      
+      const res = await fetch(
+        `/api/partners/${partnerId}/dashboard/performance?start=${startDate.toISOString()}&end=${endDate.toISOString()}`
+      )
+      const data = await res.json()
+      
+      if (!data.error) {
+        setPerformance(data)
+      }
+    } catch (err) {
+      console.error('Failed to fetch performance:', err)
     }
   }, [partnerId, selectedPeriod])
 
-  async function checkAuthAndFetchData() {
+  // Phase 12B: Wrapped in useCallback for hook hygiene
+  const checkAuthAndFetchData = useCallback(async () => {
     try {
       const sessionRes = await fetch('/api/auth/session')
       const sessionData = await sessionRes.json()
@@ -121,26 +132,17 @@ export default function EarningsPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [router])
 
-  async function fetchPerformance() {
-    try {
-      const endDate = new Date()
-      const startDate = new Date()
-      startDate.setMonth(startDate.getMonth() - parseInt(selectedPeriod))
-      
-      const res = await fetch(
-        `/api/partners/${partnerId}/dashboard/performance?start=${startDate.toISOString()}&end=${endDate.toISOString()}`
-      )
-      const data = await res.json()
-      
-      if (!data.error) {
-        setPerformance(data)
-      }
-    } catch (err) {
-      console.error('Failed to fetch performance:', err)
+  useEffect(() => {
+    checkAuthAndFetchData()
+  }, [checkAuthAndFetchData])
+
+  useEffect(() => {
+    if (partnerId) {
+      fetchPerformance()
     }
-  }
+  }, [partnerId, fetchPerformance])
 
   async function handleLogout() {
     await fetch('/api/auth/logout', { method: 'POST' })
