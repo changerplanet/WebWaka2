@@ -36,10 +36,11 @@ export async function GET(request: NextRequest) {
       return NextResponse.json(stats)
     }
 
+    // Phase 11B: Using type-safe enum validators
     const options = {
       filters: {
-        ...(searchParams.get('status') && { status: searchParams.get('status')!.split(',') as any }),
-        ...(searchParams.get('priority') && { priority: searchParams.get('priority')!.split(',') as any }),
+        ...(searchParams.get('status') && { status: validatePurchaseOrderStatusArray(searchParams.get('status')) }),
+        ...(searchParams.get('priority') && { priority: validateProcPriorityArray(searchParams.get('priority')) }),
         ...(searchParams.get('supplierId') && { supplierId: searchParams.get('supplierId')! }),
         ...(searchParams.get('purchaseRequestId') && { purchaseRequestId: searchParams.get('purchaseRequestId')! }),
         ...(searchParams.get('isCashPurchase') && { isCashPurchase: searchParams.get('isCashPurchase') === 'true' }),
@@ -49,8 +50,8 @@ export async function GET(request: NextRequest) {
       },
       page: parseInt(searchParams.get('page') || '1'),
       limit: parseInt(searchParams.get('limit') || '20'),
-      orderBy: (searchParams.get('orderBy') as any) || 'createdAt',
-      orderDir: (searchParams.get('orderDir') as any) || 'desc',
+      orderBy: validateProcOrderOrderBy(searchParams.get('orderBy')),
+      orderDir: validateOrderDir(searchParams.get('orderDir')),
     }
 
     const result = await PurchaseOrderService.listPurchaseOrders(tenantId, options)
