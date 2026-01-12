@@ -288,8 +288,8 @@ export async function handleOrderSplit(
  * - Reserves inventory for vendor items
  */
 export async function handleSubOrderCreated(
-  event: MVMEventBase & { payload: SubOrderCreatedPayload }
-): Promise<{ success: boolean; error?: string; reservationId?: string }> {
+  event: MVMSubOrderCreatedEvent
+): Promise<EventHandlerResult & { reservationId?: string }> {
   const { idempotencyKey, payload } = event
 
   if (await isEventProcessed(idempotencyKey)) {
@@ -341,8 +341,8 @@ export async function handleSubOrderCreated(
  * - Marks vendor earnings as ready
  */
 export async function handleSubOrderDelivered(
-  event: MVMEventBase & { payload: SubOrderDeliveredPayload }
-): Promise<{ success: boolean; error?: string }> {
+  event: MVMSubOrderDeliveredEvent
+): Promise<EventHandlerResult> {
   const { idempotencyKey, payload } = event
 
   if (await isEventProcessed(idempotencyKey)) {
