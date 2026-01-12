@@ -109,11 +109,14 @@ export function buildEngagementEventCreate(
 export interface CustomerSegmentInput {
   tenantId: string;
   name: string;
+  slug?: string;
   description?: string | null;
-  segmentType: 'STATIC' | 'DYNAMIC';
+  segmentType?: 'STATIC' | 'DYNAMIC';
+  status?: 'ACTIVE' | 'INACTIVE' | 'ARCHIVED';
   rules?: Record<string, unknown> | null;
-  isActive?: boolean;
-  createdBy?: string | null;
+  priority?: number;
+  tags?: string[];
+  metadata?: Record<string, unknown> | null;
 }
 
 export function buildCustomerSegmentCreate(
@@ -123,11 +126,14 @@ export function buildCustomerSegmentCreate(
     id: randomUUID(),
     tenantId: input.tenantId,
     name: input.name,
+    slug: input.slug ?? input.name.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
     description: input.description ?? null,
-    segmentType: input.segmentType,
+    segmentType: (input.segmentType ?? 'DYNAMIC') as any,
+    status: (input.status ?? 'ACTIVE') as any,
     rules: input.rules ? input.rules as Prisma.InputJsonValue : Prisma.JsonNull,
-    isActive: input.isActive ?? true,
-    createdBy: input.createdBy ?? null,
+    priority: input.priority ?? 0,
+    tags: input.tags ?? [],
+    metadata: input.metadata ? input.metadata as Prisma.InputJsonValue : Prisma.JsonNull,
   };
 }
 
