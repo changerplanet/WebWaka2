@@ -116,7 +116,7 @@ export class LoyaltyService {
         pointsPerCurrency: input.pointsPerCurrency || 1,
         currencyPerPoint: input.currencyPerPoint,
         pointsExpireMonths: input.pointsExpireMonths,
-        tierConfig: (input.tierConfig || DEFAULT_TIER_CONFIG) as unknown as Prisma.InputJsonValue,
+        tierConfig: toJsonValue(input.tierConfig || DEFAULT_TIER_CONFIG),
         createdBy,
       },
     });
