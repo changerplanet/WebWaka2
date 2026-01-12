@@ -274,3 +274,247 @@ export const mapCivicRequestStatusToPrisma = mapServiceStatusToPrisma
 
 /** @deprecated Use mapServicePriorityToPrisma */
 export const mapCivicPriorityToPrisma = mapServicePriorityToPrisma
+
+// =============================================================================
+// EVENT STATUS & TYPE VALIDATORS (Phase 10C APPROVED)
+// =============================================================================
+
+/**
+ * Civic event status values.
+ * From: lib/civic/config.ts - EVENT_STATUS
+ */
+export const CIVIC_EVENT_STATUS_SERVICE = [
+  'DRAFT',
+  'SCHEDULED',
+  'ONGOING',
+  'COMPLETED',
+  'CANCELLED',
+  'POSTPONED'
+] as const
+
+export type CivicEventStatusService = typeof CIVIC_EVENT_STATUS_SERVICE[number]
+
+/**
+ * Validates event status URL param.
+ */
+export function validateEventStatus(
+  value: string | null | undefined
+): CivicEventStatusService | undefined {
+  return validateEnumValue(value, CIVIC_EVENT_STATUS_SERVICE)
+}
+
+/**
+ * Civic event type values.
+ * From: lib/civic/config.ts - EVENT_TYPES
+ */
+export const CIVIC_EVENT_TYPE_SERVICE = [
+  'AGM',
+  'EGM',
+  'EXECUTIVE',
+  'WARD',
+  'TOWN_HALL',
+  'COMMUNITY',
+  'SANITATION',
+  'CULTURAL',
+  'INAUGURATION',
+  'FUNDRAISING'
+] as const
+
+export type CivicEventTypeService = typeof CIVIC_EVENT_TYPE_SERVICE[number]
+
+/**
+ * Validates event type URL param.
+ */
+export function validateEventType(
+  value: string | null | undefined
+): CivicEventTypeService | undefined {
+  return validateEnumValue(value, CIVIC_EVENT_TYPE_SERVICE)
+}
+
+// =============================================================================
+// MEMBERSHIP STATUS & TYPE VALIDATORS (Phase 10C APPROVED)
+// =============================================================================
+
+/**
+ * Membership status values (for constituents).
+ * From: lib/civic/config.ts - MEMBERSHIP_STATUS
+ */
+export const CIVIC_MEMBERSHIP_STATUS_SERVICE = [
+  'ACTIVE',
+  'SUSPENDED',
+  'INACTIVE',
+  'PENDING',
+  'DECEASED'
+] as const
+
+export type CivicMembershipStatusService = typeof CIVIC_MEMBERSHIP_STATUS_SERVICE[number]
+
+/**
+ * Validates membership status URL param.
+ */
+export function validateMembershipStatus(
+  value: string | null | undefined
+): CivicMembershipStatusService | undefined {
+  return validateEnumValue(value, CIVIC_MEMBERSHIP_STATUS_SERVICE)
+}
+
+/**
+ * Membership type values (for constituents).
+ * From: lib/civic/config.ts - MEMBERSHIP_TYPES
+ */
+export const CIVIC_MEMBERSHIP_TYPE_SERVICE = [
+  'RESIDENT',
+  'LANDLORD',
+  'TENANT',
+  'BUSINESS',
+  'HONORARY',
+  'ASSOCIATE'
+] as const
+
+export type CivicMembershipTypeService = typeof CIVIC_MEMBERSHIP_TYPE_SERVICE[number]
+
+/**
+ * Validates membership type URL param.
+ */
+export function validateMembershipType(
+  value: string | null | undefined
+): CivicMembershipTypeService | undefined {
+  return validateEnumValue(value, CIVIC_MEMBERSHIP_TYPE_SERVICE)
+}
+
+// =============================================================================
+// CERTIFICATE STATUS & TYPE VALIDATORS (Phase 10C APPROVED)
+// =============================================================================
+
+/**
+ * Certificate status values.
+ * From: lib/civic/config.ts - CERTIFICATE_STATUS
+ */
+export const CIVIC_CERTIFICATE_STATUS_SERVICE = [
+  'PENDING',
+  'APPROVED',
+  'ISSUED',
+  'REJECTED',
+  'REVOKED',
+  'EXPIRED'
+] as const
+
+export type CivicCertificateStatusService = typeof CIVIC_CERTIFICATE_STATUS_SERVICE[number]
+
+/**
+ * Validates certificate status URL param.
+ */
+export function validateCertificateStatus(
+  value: string | null | undefined
+): CivicCertificateStatusService | undefined {
+  return validateEnumValue(value, CIVIC_CERTIFICATE_STATUS_SERVICE)
+}
+
+/**
+ * Certificate type values.
+ * From: lib/civic/config.ts - CERTIFICATE_TYPES
+ */
+export const CIVIC_CERTIFICATE_TYPE_SERVICE = [
+  'GOOD_STANDING',
+  'RESIDENCY',
+  'CHARACTER',
+  'MEMBERSHIP',
+  'CLEARANCE',
+  'INTRODUCTION_LETTER',
+  'INDIGENE',
+  'BUSINESS_PERMIT'
+] as const
+
+export type CivicCertificateTypeService = typeof CIVIC_CERTIFICATE_TYPE_SERVICE[number]
+
+/**
+ * Validates certificate type URL param.
+ */
+export function validateCertificateType(
+  value: string | null | undefined
+): CivicCertificateTypeService | undefined {
+  return validateEnumValue(value, CIVIC_CERTIFICATE_TYPE_SERVICE)
+}
+
+// =============================================================================
+// DUES STATUS & TYPE VALIDATORS (Phase 10C APPROVED)
+// =============================================================================
+
+/**
+ * Payment/dues status values.
+ * From: lib/civic/config.ts - PAYMENT_STATUS
+ */
+export const CIVIC_PAYMENT_STATUS_SERVICE = [
+  'PAID',
+  'PARTIAL',
+  'PENDING',
+  'OVERDUE',
+  'WAIVED',
+  'EXEMPT'
+] as const
+
+export type CivicPaymentStatusService = typeof CIVIC_PAYMENT_STATUS_SERVICE[number]
+
+/**
+ * Validates payment/dues status URL param.
+ */
+export function validatePaymentStatus(
+  value: string | null | undefined
+): CivicPaymentStatusService | undefined {
+  return validateEnumValue(value, CIVIC_PAYMENT_STATUS_SERVICE)
+}
+
+/**
+ * Dues type values.
+ * From: lib/civic/config.ts - DUES_TYPES
+ */
+export const CIVIC_DUES_TYPE_SERVICE = [
+  'DEVELOPMENT_LEVY',
+  'SERVICE_CHARGE',
+  'SECURITY_LEVY',
+  'TENEMENT_RATE',
+  'MEMBERSHIP_DUES',
+  'SPECIAL_LEVY',
+  'TITHE',
+  'OFFERING',
+  'WELFARE'
+] as const
+
+export type CivicDuesTypeService = typeof CIVIC_DUES_TYPE_SERVICE[number]
+
+/**
+ * Validates dues type URL param.
+ */
+export function validateDuesType(
+  value: string | null | undefined
+): CivicDuesTypeService | undefined {
+  return validateEnumValue(value, CIVIC_DUES_TYPE_SERVICE)
+}
+
+// =============================================================================
+// POLL/VOTING STATUS & TYPE VALIDATORS (Phase 10C APPROVED)
+// =============================================================================
+
+/**
+ * Poll status values.
+ * From: lib/civic/config.ts - POLL_STATUS
+ */
+export const CIVIC_POLL_STATUS_SERVICE = [
+  'DRAFT',
+  'SCHEDULED',
+  'ACTIVE',
+  'CLOSED',
+  'CANCELLED',
+  'RESULTS_DECLARED'
+] as const
+
+export type CivicPollStatusService = typeof CIVIC_POLL_STATUS_SERVICE[number]
+
+/**
+ * Validates poll status URL param.
+ */
+export function validatePollStatus(
+  value: string | null | undefined
+): CivicPollStatusService | undefined {
+  return validateEnumValue(value, CIVIC_POLL_STATUS_SERVICE)
+}
