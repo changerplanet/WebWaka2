@@ -203,7 +203,7 @@ export function buildPurchaseRequestUpdate(
   if (input.notes !== undefined) update.notes = input.notes;
   if (input.requiredByDate !== undefined) update.requiredByDate = input.requiredByDate;
   if (input.estimatedTotal !== undefined) update.estimatedTotal = input.estimatedTotal;
-  if (input.attachments !== undefined) update.attachments = input.attachments ?? Prisma.JsonNull;
+  if (input.attachments !== undefined) update.attachments = input.attachments ? input.attachments as Prisma.InputJsonValue : Prisma.JsonNull;
   if (input.reviewedBy !== undefined) update.reviewedBy = input.reviewedBy;
   if (input.reviewedAt !== undefined) update.reviewedAt = input.reviewedAt;
   if (input.reviewNotes !== undefined) update.reviewNotes = input.reviewNotes;
