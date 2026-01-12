@@ -14,6 +14,12 @@ import {
   type CreateMaintenanceRequestInput,
   type MaintenanceFilters 
 } from '@/lib/real-estate';
+import { getEnumParam } from '@/lib/utils/urlParams';
+
+// Valid enum values
+const MAINTENANCE_STATUSES = ['OPEN', 'ASSIGNED', 'IN_PROGRESS', 'COMPLETED', 'CANCELLED'] as const;
+const MAINTENANCE_PRIORITIES = ['LOW', 'MEDIUM', 'HIGH', 'EMERGENCY'] as const;
+const MAINTENANCE_CATEGORIES = ['PLUMBING', 'ELECTRICAL', 'STRUCTURAL', 'HVAC', 'CLEANING', 'SECURITY', 'OTHER'] as const;
 
 // GET /api/real-estate/maintenance-requests
 export async function GET(request: Request) {
@@ -42,9 +48,9 @@ export async function GET(request: Request) {
     const filters: MaintenanceFilters = {
       propertyId: searchParams.get('propertyId') || undefined,
       unitId: searchParams.get('unitId') || undefined,
-      status: searchParams.get('status') as any,
-      priority: searchParams.get('priority') as any,
-      category: searchParams.get('category') as any,
+      status: getEnumParam(searchParams, 'status', MAINTENANCE_STATUSES),
+      priority: getEnumParam(searchParams, 'priority', MAINTENANCE_PRIORITIES),
+      category: getEnumParam(searchParams, 'category', MAINTENANCE_CATEGORIES),
       assignedTo: searchParams.get('assignedTo') || undefined,
       dateFrom: searchParams.get('dateFrom') ? new Date(searchParams.get('dateFrom')!) : undefined,
       dateTo: searchParams.get('dateTo') ? new Date(searchParams.get('dateTo')!) : undefined,

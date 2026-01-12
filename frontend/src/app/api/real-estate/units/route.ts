@@ -16,6 +16,11 @@ import {
   type CreateUnitInput,
   type UnitFilters 
 } from '@/lib/real-estate';
+import { getEnumParam } from '@/lib/utils/urlParams';
+
+// Valid enum values
+const UNIT_STATUSES = ['VACANT', 'OCCUPIED', 'RESERVED', 'MAINTENANCE'] as const;
+const UNIT_TYPES = ['FLAT', 'ROOM', 'SHOP', 'OFFICE', 'WAREHOUSE', 'PARKING'] as const;
 
 // GET /api/real-estate/units
 export async function GET(request: Request) {
@@ -31,21 +36,21 @@ export async function GET(request: Request) {
     // Special endpoint for vacant units
     if (searchParams.get('vacant') === 'true') {
       const propertyId = searchParams.get('propertyId') ?? undefined;
-      const units = await getVacantUnits(tenantId, propertyId as any);
+      const units = await getVacantUnits(tenantId, propertyId);
       return NextResponse.json({ units });
     }
 
     // Special endpoint for stats
     if (searchParams.get('stats') === 'true') {
       const propertyId = searchParams.get('propertyId') ?? undefined;
-      const stats = await getUnitStats(tenantId, propertyId as any);
+      const stats = await getUnitStats(tenantId, propertyId);
       return NextResponse.json(stats);
     }
 
     const filters: UnitFilters = {
       propertyId: searchParams.get('propertyId') || undefined,
-      status: searchParams.get('status') as any,
-      unitType: searchParams.get('unitType') as any,
+      status: getEnumParam(searchParams, 'status', UNIT_STATUSES),
+      unitType: getEnumParam(searchParams, 'unitType', UNIT_TYPES),
       minRent: searchParams.get('minRent') ? parseFloat(searchParams.get('minRent')!) : undefined,
       maxRent: searchParams.get('maxRent') ? parseFloat(searchParams.get('maxRent')!) : undefined,
       bedrooms: searchParams.get('bedrooms') ? parseInt(searchParams.get('bedrooms')!) : undefined,

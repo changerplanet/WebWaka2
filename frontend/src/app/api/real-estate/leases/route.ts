@@ -14,6 +14,10 @@ import {
   type CreateLeaseInput,
   type LeaseFilters 
 } from '@/lib/real-estate';
+import { getEnumParam } from '@/lib/utils/urlParams';
+
+// Valid enum values
+const LEASE_STATUSES = ['DRAFT', 'ACTIVE', 'EXPIRED', 'TERMINATED', 'RENEWED'] as const;
 
 // GET /api/real-estate/leases
 export async function GET(request: Request) {
@@ -40,7 +44,7 @@ export async function GET(request: Request) {
     }
 
     const filters: LeaseFilters = {
-      status: searchParams.get('status') as any,
+      status: getEnumParam(searchParams, 'status', LEASE_STATUSES),
       unitId: searchParams.get('unitId') || undefined,
       propertyId: searchParams.get('propertyId') || undefined,
       tenantSearch: searchParams.get('tenantSearch') || undefined,
