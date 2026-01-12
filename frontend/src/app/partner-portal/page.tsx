@@ -308,7 +308,7 @@ export default function PartnerPortal() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [partnerId, fetchWithRetry])
 
   const createReferralLink = async () => {
     if (!partnerId || !newLinkName.trim()) return
