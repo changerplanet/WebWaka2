@@ -514,7 +514,7 @@ export async function clonePageFromTemplate(input: ClonePageFromTemplateInput): 
     });
 
     // Create page blocks
-    const templateBlocks = template.blocks as any[] || [];
+    const templateBlocks = parseTemplateBlocks(template.blocks);
     for (let i = 0; i < templateBlocks.length; i++) {
       const block = templateBlocks[i];
       await prisma.sf_page_blocks.create({
