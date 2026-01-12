@@ -532,11 +532,12 @@ export type CivicPollStatusService = typeof CIVIC_POLL_STATUS_SERVICE[number]
 
 /**
  * Validates poll status URL param.
+ * Phase 10D: Logs mismatches for observability.
  */
 export function validatePollStatus(
   value: string | null | undefined
 ): CivicPollStatusService | undefined {
-  return validateEnumValue(value, CIVIC_POLL_STATUS_SERVICE)
+  return validateEnumValue(value, CIVIC_POLL_STATUS_SERVICE, 'CivicPollStatus', 'API')
 }
 
 /**
@@ -554,9 +555,10 @@ export type CivicPollTypeService = typeof CIVIC_POLL_TYPE_SERVICE[number]
 
 /**
  * Validates poll type URL param.
+ * Phase 10D: Logs mismatches for observability.
  */
 export function validatePollType(
   value: string | null | undefined
 ): CivicPollTypeService | undefined {
-  return validateEnumValue(value, CIVIC_POLL_TYPE_SERVICE)
+  return validateEnumValue(value, CIVIC_POLL_TYPE_SERVICE, 'CivicPollType', 'API')
 }
