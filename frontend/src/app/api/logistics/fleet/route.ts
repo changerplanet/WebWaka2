@@ -49,9 +49,10 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ success: true, stats });
     }
     
+    // Phase 10C: Using enum validators
     const { vehicles, total, stats } = await getVehicles(tenantId, {
       vehicleType: validateVehicleType(searchParams.get('vehicleType')),
-      status: searchParams.get('status') as any, // TODO: Phase 10C - vehicle status enum
+      status: validateVehicleStatus(searchParams.get('status')),
       isActive: searchParams.get('isActive') === 'true' ? true : searchParams.get('isActive') === 'false' ? false : undefined,
       hasDriver: searchParams.get('hasDriver') === 'true' ? true : searchParams.get('hasDriver') === 'false' ? false : undefined,
       page: searchParams.get('page') ? parseInt(searchParams.get('page')!) : 1,
