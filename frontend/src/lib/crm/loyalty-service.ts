@@ -15,6 +15,7 @@
 import { prisma } from '@/lib/prisma';
 import { CrmLoyaltyTransactionType, Prisma } from '@prisma/client';
 import Decimal from 'decimal.js';
+import { toJsonValue } from '@/lib/db/prismaDefaults';
 
 // ============================================================================
 // TYPES
