@@ -328,7 +328,7 @@ export function buildCampaignAudienceCreate(
     openedAt: input.openedAt ?? null,
     clickedAt: input.clickedAt ?? null,
     respondedAt: input.respondedAt ?? null,
-    response: input.response ?? Prisma.JsonNull,
+    response: input.response ? input.response as Prisma.InputJsonValue : Prisma.JsonNull,
   };
 }
 
