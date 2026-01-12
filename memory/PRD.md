@@ -163,16 +163,12 @@ Added `export const dynamic = 'force-dynamic'` to 485 API routes.
 
 ## Remaining Items (Prioritized Backlog)
 
-### P1 - Phase 11C: Extended SAFE Reduction (Optional)
-- Sites/Funnels, SVM, Education module validators (~20 more casts)
-- Same mechanical pattern as 11B
-
 ### P2 - Phase 12: React Hook Warnings
 - Fix 52 baselined semantic React Hook warnings
 - Requires domain review for dependency array decisions
 
 ### P2 - Legacy Debt
-- Address ~300 remaining `as any` casts (CONDITIONAL/OUT OF SCOPE)
+- Address ~310 remaining `as any` casts (CONDITIONAL/OUT OF SCOPE)
 - 1,201 baselined Prisma issues (requires schema governance)
 
 ### P2 - Features (Backlog)
