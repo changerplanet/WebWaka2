@@ -85,7 +85,7 @@ export async function GET(request: NextRequest) {
     
     // Regular listing with filters
     const { folios, total, stats } = await getFolios(tenantId, {
-      status: searchParams.get('status') as any,
+      status: validateFolioStatus(searchParams.get('status')),
       guestId: searchParams.get('guestId') || undefined,
       reservationId: searchParams.get('reservationIdFilter') || undefined,
       page: searchParams.get('page') ? parseInt(searchParams.get('page')!) : 1,
