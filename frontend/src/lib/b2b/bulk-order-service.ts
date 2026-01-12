@@ -162,7 +162,7 @@ export class B2BBulkOrderService {
     if (!existing) throw new Error('Draft not found')
     if (existing.status !== 'DRAFT') throw new Error('Cannot update non-draft order')
 
-    let items = existing.items as unknown as BulkOrderItem[]
+    let items = parseJsonField(existing.items, BulkOrderItemsSchema, []) as BulkOrderItem[]
     let subtotal = existing.subtotal.toNumber()
     let discountTotal = existing.discountTotal.toNumber()
 
@@ -237,7 +237,7 @@ export class B2BBulkOrderService {
     if (draft.status !== 'DRAFT') throw new Error('Draft already submitted')
 
     // Capture current pricing snapshot
-    const items = draft.items as unknown as BulkOrderItem[]
+    const items = parseJsonField(draft.items, BulkOrderItemsSchema, []) as BulkOrderItem[]
     const pricingSnapshot = {
       capturedAt: new Date(),
       items: items.map(i => ({
