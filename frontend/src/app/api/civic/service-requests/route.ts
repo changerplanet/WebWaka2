@@ -60,9 +60,9 @@ export async function GET(request: NextRequest) {
     
     // Get list with filters
     const options = {
-      status: getEnumParam(searchParams, 'status', REQUEST_STATUSES),
-      category: getEnumParam(searchParams, 'category', SERVICE_CATEGORIES),
-      priority: getEnumParam(searchParams, 'priority', PRIORITIES),
+      status: searchParams.get('status') as any,
+      category: searchParams.get('category') as any,
+      priority: searchParams.get('priority') as any,
       assignedTo: searchParams.get('assignedTo') || undefined,
       constituentId: searchParams.get('constituentId') || undefined,
       search: searchParams.get('search') || undefined,
