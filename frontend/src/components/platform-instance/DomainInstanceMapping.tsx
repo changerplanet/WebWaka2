@@ -12,7 +12,7 @@
  * - No SSL provisioning
  */
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { Globe, Link2, Loader2, AlertCircle, Check, ChevronDown, Layers, Building2 } from 'lucide-react'
 
 interface Domain {

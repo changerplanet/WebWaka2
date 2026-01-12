@@ -6,7 +6,7 @@
  * Partner dashboard for viewing and managing client platforms.
  */
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { 
   Building2, Plus, Search, Filter, MoreHorizontal, 
   ExternalLink, Settings, RefreshCw, Loader2, AlertCircle,

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { Users, UserPlus, Shield, User, MoreVertical, Trash2, ArrowUp, ArrowDown, Loader2 } from 'lucide-react'
 
 interface Member {

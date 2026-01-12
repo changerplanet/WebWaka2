@@ -6,7 +6,7 @@
  * Main page for Partners to manage their client platforms.
  */
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import { ArrowLeft, Loader2, Shield, Building2 } from 'lucide-react'
 import { ClientManagement } from '@/components/partner'

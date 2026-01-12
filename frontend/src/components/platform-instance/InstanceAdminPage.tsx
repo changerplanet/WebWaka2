@@ -18,7 +18,7 @@
  * - Visibility filtering only
  */
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { 
   Layers, Plus, Settings, Trash2, Check, X, AlertCircle, Loader2,
   ChevronRight, Eye, Globe, Palette, Save, RotateCcw, Building2

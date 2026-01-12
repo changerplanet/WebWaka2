@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { Wifi, WifiOff, RefreshCw, Cloud, CloudOff, CheckCircle, AlertCircle, Loader2 } from 'lucide-react'
 import { useOnlineStatus, useServiceWorker, useOfflineQueue } from '@/lib/offline/hooks'
 
