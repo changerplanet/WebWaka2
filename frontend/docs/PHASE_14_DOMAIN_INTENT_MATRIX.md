@@ -334,7 +334,7 @@ useEffect(() => {
 | 7-8 | governance/audit/page.tsx:39,52 | `loadAuditData` | `useCallback` wrap |
 | 9 | governance/*/page.tsx:55 | `checkAuthAndLoadData` | Keep empty + comment |
 | 10 | admin/tenants/[id]/page.tsx:58 | `fetchTenantDetails` | `useCallback` wrap |
-| 11 | pos/page.tsx:451 | `slug` | Verify & assess |
+| 11 | InstanceAdminPage.tsx:451 | `slug` | Keep + comment (intentional) |
 
 ---
 
