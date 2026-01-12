@@ -25,6 +25,40 @@ import {
   getRoomStatusBoard,
   getHousekeepingStats,
 } from '@/lib/hospitality/housekeeping-service';
+import { HousekeepingStatus, HousekeepingTaskType } from '@/lib/hospitality/config';
+
+// Phase 13: Housekeeping validators
+const VALID_HOUSEKEEPING_STATUSES: HousekeepingStatus[] = ['PENDING', 'ASSIGNED', 'IN_PROGRESS', 'COMPLETED', 'INSPECTED', 'CANCELLED'];
+const VALID_TASK_TYPES: HousekeepingTaskType[] = ['CHECKOUT_CLEAN', 'STAYOVER_CLEAN', 'DEEP_CLEAN', 'TURNDOWN', 'INSPECTION', 'MAINTENANCE', 'AMENITY_RESTOCK'];
+const VALID_PRIORITIES = ['LOW', 'MEDIUM', 'HIGH', 'URGENT'] as const;
+type HousekeepingPriority = typeof VALID_PRIORITIES[number];
+
+function validateHousekeepingStatus(status: string | null): HousekeepingStatus | undefined {
+  if (!status) return undefined;
+  if (VALID_HOUSEKEEPING_STATUSES.includes(status as HousekeepingStatus)) {
+    return status as HousekeepingStatus;
+  }
+  console.warn(`[Hospitality Housekeeping] Invalid status '${status}'`);
+  return undefined;
+}
+
+function validateTaskType(taskType: string | null): HousekeepingTaskType | undefined {
+  if (!taskType) return undefined;
+  if (VALID_TASK_TYPES.includes(taskType as HousekeepingTaskType)) {
+    return taskType as HousekeepingTaskType;
+  }
+  console.warn(`[Hospitality Housekeeping] Invalid taskType '${taskType}'`);
+  return undefined;
+}
+
+function validatePriority(priority: string | null): HousekeepingPriority | undefined {
+  if (!priority) return undefined;
+  if (VALID_PRIORITIES.includes(priority as HousekeepingPriority)) {
+    return priority as HousekeepingPriority;
+  }
+  console.warn(`[Hospitality Housekeeping] Invalid priority '${priority}'`);
+  return undefined;
+}
 
 export async function GET(request: NextRequest) {
   try {
