@@ -50,6 +50,8 @@ export default function PartnerGovernanceDashboard() {
   const [user, setUser] = useState<{ email: string; globalRole: string } | null>(null)
   const [showQuickPreview, setShowQuickPreview] = useState(false)
 
+  // Phase 14B: Intentional mount-only execution - auth check should not re-run on function identity change
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     checkAuthAndLoadData()
   }, [])
