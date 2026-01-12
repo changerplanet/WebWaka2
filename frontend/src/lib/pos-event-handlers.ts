@@ -69,8 +69,8 @@ async function markEventProcessed(
 // ============================================================================
 
 export async function handleSaleCompleted(
-  event: POSEventBase & { payload: SaleCompletedPayload }
-): Promise<{ success: boolean; error?: string }> {
+  event: POSSaleCompletedEvent
+): Promise<EventHandlerResult> {
   const { idempotencyKey, payload } = event
 
   if (await isEventProcessed(idempotencyKey)) {
@@ -112,8 +112,8 @@ export async function handleSaleCompleted(
 }
 
 export async function handleSaleCancelled(
-  event: POSEventBase & { payload: SaleCancelledPayload }
-): Promise<{ success: boolean; error?: string }> {
+  event: POSSaleCancelledEvent
+): Promise<EventHandlerResult> {
   const { idempotencyKey, payload } = event
 
   if (await isEventProcessed(idempotencyKey)) {
@@ -153,8 +153,8 @@ export async function handleSaleCancelled(
 }
 
 export async function handlePaymentCaptured(
-  event: POSEventBase & { payload: PaymentCapturedPayload }
-): Promise<{ success: boolean; error?: string }> {
+  event: POSPaymentCapturedEvent
+): Promise<EventHandlerResult> {
   const { idempotencyKey, payload } = event
 
   if (await isEventProcessed(idempotencyKey)) {
@@ -194,8 +194,8 @@ export async function handlePaymentCaptured(
 }
 
 export async function handleRefundCreated(
-  event: POSEventBase & { payload: RefundCreatedPayload }
-): Promise<{ success: boolean; error?: string }> {
+  event: POSRefundCreatedEvent
+): Promise<EventHandlerResult> {
   const { idempotencyKey, payload } = event
 
   if (await isEventProcessed(idempotencyKey)) {
