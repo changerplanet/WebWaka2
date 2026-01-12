@@ -147,6 +147,7 @@ export async function listTemplateCategories(options: {
     } : undefined,
   });
 
+  // Phase 11C: Using type assertion for Prisma _count aggregation
   return categories.map(cat => ({
     id: cat.id,
     name: cat.name,
@@ -154,7 +155,7 @@ export async function listTemplateCategories(options: {
     description: cat.description || undefined,
     industry: cat.industry || undefined,
     icon: cat.icon || undefined,
-    templateCount: (cat as any)._count?.templates,
+    templateCount: (cat as { _count?: { templates?: number } })._count?.templates,
   }));
 }
 
