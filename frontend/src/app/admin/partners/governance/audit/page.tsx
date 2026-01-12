@@ -34,11 +34,8 @@ export default function GovernanceAuditPage() {
     toDate: '',
   })
 
-  useEffect(() => {
-    loadAuditData()
-  }, [filters])
-
-  function loadAuditData() {
+  // Phase 14B: Wrapped in useCallback - triggers on filters change
+  const loadAuditData = useCallback(() => {
     const { events: auditEvents } = getGovernanceAuditEvents({
       action: filters.action || undefined,
       fromDate: filters.fromDate || undefined,
@@ -47,7 +44,11 @@ export default function GovernanceAuditPage() {
     })
     setEvents(auditEvents)
     setStats(getGovernanceAuditStats())
-  }
+  }, [filters])
+
+  useEffect(() => {
+    loadAuditData()
+  }, [loadAuditData])
 
   const getActionIcon = (action: PartnerGovernanceAction) => {
     if (action.startsWith('partner.')) return Building2
