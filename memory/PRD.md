@@ -150,6 +150,15 @@ Added `export const dynamic = 'force-dynamic'` to 485 API routes.
 - All fixes are mechanical type annotations with zero behavior changes
 - Report: `/app/frontend/docs/PHASE_11B_SAFE_AS_ANY_REDUCTION_REPORT.md`
 
+**Phase 11C - Extended SAFE Reduction (COMPLETE - December 2025)**
+- Eliminated 9 additional `as any` casts (354 → 345)
+- Created validators for Sites/Funnels (6) and SVM (3) modules
+- Fixed 4 API routes and 1 service file
+- Documented casts that require schema/Prisma changes to fix
+- Report: `/app/frontend/docs/PHASE_11C_SAFE_AS_ANY_REDUCTION_REPORT.md`
+
+**PHASE 11 SUMMARY: Total 35 casts eliminated (380 → 345)**
+
 ---
 
 ## Remaining Items (Prioritized Backlog)
