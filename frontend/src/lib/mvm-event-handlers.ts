@@ -98,8 +98,8 @@ async function markEventProcessed(
  * - Could trigger welcome notification
  */
 export async function handleVendorOnboarded(
-  event: MVMEventBase & { payload: VendorOnboardedPayload }
-): Promise<{ success: boolean; error?: string }> {
+  event: MVMVendorOnboardedEvent
+): Promise<EventHandlerResult> {
   const { idempotencyKey, payload } = event
 
   if (await isEventProcessed(idempotencyKey)) {
@@ -150,8 +150,8 @@ export async function handleVendorOnboarded(
  * Handle vendor approved
  */
 export async function handleVendorApproved(
-  event: MVMEventBase & { payload: VendorStatusChangedPayload }
-): Promise<{ success: boolean; error?: string }> {
+  event: MVMVendorApprovedEvent
+): Promise<EventHandlerResult> {
   const { idempotencyKey, payload } = event
 
   if (await isEventProcessed(idempotencyKey)) {
