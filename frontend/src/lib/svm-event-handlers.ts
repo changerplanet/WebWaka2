@@ -79,8 +79,8 @@ async function markEventProcessed(
  * Handle order placed - Reserve inventory
  */
 export async function handleOrderPlaced(
-  event: SVMEventBase & { payload: OrderPlacedPayload }
-): Promise<{ success: boolean; error?: string; reservationId?: string }> {
+  event: SVMOrderPlacedEvent
+): Promise<EventHandlerResult & { reservationId?: string }> {
   const { idempotencyKey, payload } = event
 
   if (await isEventProcessed(idempotencyKey)) {
