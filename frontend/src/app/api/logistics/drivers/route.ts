@@ -52,7 +52,7 @@ export async function GET(request: NextRequest) {
     }
     
     if (query === 'available') {
-      const licenseType = searchParams.get('licenseType') as any;
+      const licenseType = validateLicenseType(searchParams.get('licenseType'));
       const available = await getAvailableDrivers(tenantId, licenseType);
       return NextResponse.json({ success: true, drivers: available, count: available.length });
     }
