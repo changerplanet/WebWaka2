@@ -168,9 +168,12 @@ export type POSEvent =
 /**
  * POS event with unknown payload (for ingress before validation)
  */
-export interface POSEventUnknown extends POSEventBase {
+export interface POSEventUnknown {
+  eventId: string
+  timestamp: string
+  idempotencyKey: string
   eventType: string
-  payload: Record<string, unknown>
+  payload: unknown
 }
 
 /**
