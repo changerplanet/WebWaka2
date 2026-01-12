@@ -1,0 +1,134 @@
+You are operating in STAGING MODE ONLY.
+
+Your task is to configure this repository to run correctly as a STAGING environment on Replit.
+This is NOT a production deployment.
+
+==============================
+SCOPE (ALLOWED)
+==============================
+You MAY:
+- Configure Replit run/start commands
+- Adjust build/start scripts ONLY if required for Replit
+- Verify Prisma + Supabase connectivity
+- Ensure Next.js runs correctly in Replit
+- Add or modify Replit-specific configuration files
+- Verify environment variable usage (do NOT create .env files)
+- Run read-only verification commands (npm install, npm run dev, prisma generate)
+
+You MUST:
+- Produce a written verification report
+- Explicitly confirm each checklist item below
+
+==============================
+OUT OF SCOPE (STRICT)
+==============================
+You MUST NOT:
+- Modify Prisma schema
+- Modify database data
+- Add migrations
+- Change auth logic
+- Change tenant isolation logic
+- Change production Vercel configuration
+- Add supervisor, Docker, or Kubernetes configs
+- Commit secrets or .env files
+- Remove or bypass security checks
+
+==============================
+STEP 1 — REPLIT RUNTIME CONFIG
+==============================
+1. Ensure Replit is using Node.js runtime
+2. Set the Replit run command to:
+
+   cd frontend && npm install && npm run dev
+
+3. Verify that:
+   - Dependencies install successfully
+   - Next.js dev server starts
+   - App is reachable via Replit URL
+
+==============================
+STEP 2 — ENVIRONMENT VERIFICATION
+==============================
+Verify (DO NOT CREATE) that the following environment variables exist in Replit Secrets:
+
+Required:
+- NODE_ENV
+- DATABASE_URL
+- DIRECT_URL
+- NEXT_PUBLIC_APP_URL
+- JWT_SECRET
+- SESSION_SECRET
+- SUPER_ADMIN_EMAIL
+
+Optional (only if features enabled):
+- RESEND_API_KEY
+- EMAIL_FROM
+- TERMII_API_KEY
+- TERMII_BASE_URL
+- TERMII_SENDER_ID
+- OTP_PROVIDER
+
+Confirm:
+- No .env files exist in the repo
+- No secrets are committed
+- App reads env vars correctly at runtime
+
+==============================
+STEP 3 — PRISMA STAGING CHECK
+==============================
+1. Run:
+   - npx prisma generate
+   - npx prisma db push (STAGING ONLY)
+
+2. Verify:
+   - Prisma client generates successfully
+   - Database connection works
+   - No migration commands are executed
+   - No schema changes are made
+
+==============================
+STEP 4 — NEXT.JS SAFETY CHECK
+==============================
+Verify:
+- No routes use Edge runtime
+- Prisma is executed only in Node runtime
+- Root layout does NOT block rendering
+- App Router works normally in dev mode
+
+==============================
+STEP 5 — BACKEND SCOPE CONFIRMATION
+==============================
+Confirm:
+- FastAPI backend is NOT started in Replit
+- All API traffic is handled via Next.js /app/api routes
+- No references to port 8001 are required for staging
+
+==============================
+STEP 6 — VERIFICATION REPORT (MANDATORY)
+==============================
+Produce a report with the following sections:
+
+1. Replit Runtime Status
+2. Environment Variable Verification
+3. Prisma Connectivity Status
+4. Next.js Server Status
+5. Known Limitations of Replit Staging
+6. Explicit "SAFE FOR STAGING" or "BLOCKED" verdict
+
+Use this exact format:
+
+STAGING_VERDICT: SAFE | BLOCKED
+
+If BLOCKED:
+- List exact blockers
+- Provide recommended fixes
+- Do NOT apply fixes automatically
+
+==============================
+FINAL RULE
+==============================
+DO NOT PROCEED SILENTLY.
+DO NOT ASSUME.
+DO NOT MODIFY OUT-OF-SCOPE AREAS.
+
+Verification and confirmation are REQUIRED.
