@@ -298,8 +298,8 @@ export async function handleRefundRequested(
  * Handle order shipped - Send notification to customer
  */
 export async function handleOrderShipped(
-  event: SVMEventBase & { payload: OrderShippedPayload }
-): Promise<{ success: boolean; error?: string }> {
+  event: SVMOrderShippedEvent
+): Promise<EventHandlerResult> {
   const { idempotencyKey, payload } = event
 
   if (await isEventProcessed(idempotencyKey)) {
