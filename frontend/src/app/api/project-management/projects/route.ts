@@ -16,6 +16,11 @@ import {
   type CreateProjectInput,
   type ProjectFilters,
 } from '@/lib/project-management/project-service';
+import {
+  validateProjectStatus,
+  validateProjectPriority,
+  validateProjectHealth,
+} from '@/lib/enums';
 
 // GET /api/project-management/projects
 export async function GET(request: Request) {
