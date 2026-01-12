@@ -227,7 +227,8 @@ export async function listTemplates(options: {
       industry: t.industry || undefined,
       useCase: t.useCase || undefined,
       pageType: t.pageType,
-      blocks: parseTemplateBlocks(t.blocks),
+      // Phase 11C: Using typed cast for JSON template blocks
+      blocks: (t.blocks as TemplateBlock[]) || [],
       styles: t.styles || undefined,
       settings: t.settings || undefined,
       version: t.version,
