@@ -108,14 +108,15 @@ export function validateTaskPriority(
 }
 
 // =============================================================================
-// TEAM MEMBER ROLE (Service layer)
+// TEAM MEMBER ROLE (Prisma: project_MemberRole)
 // =============================================================================
 
 export const PM_TEAM_ROLE = [
   'OWNER',
   'MANAGER',
+  'LEAD',
   'MEMBER',
-  'VIEWER'
+  'OBSERVER'
 ] as const
 
 export type PmTeamRoleType = typeof PM_TEAM_ROLE[number]
