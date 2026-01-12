@@ -23,7 +23,7 @@ import uuid
 from datetime import datetime
 
 # Base URL
-BASE_URL = "https://code-hygiene-2.preview.emergentagent.com"
+BASE_URL = "https://prisma-enum-bridge.preview.emergentagent.com"
 
 # Test tenant
 TENANT_SLUG = "acme"

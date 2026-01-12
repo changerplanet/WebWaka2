@@ -25,7 +25,7 @@ import os
 import uuid
 
 # Base URL from environment
-BASE_URL = os.environ.get('NEXT_PUBLIC_APP_URL', 'https://code-hygiene-2.preview.emergentagent.com').rstrip('/')
+BASE_URL = os.environ.get('NEXT_PUBLIC_APP_URL', 'https://prisma-enum-bridge.preview.emergentagent.com').rstrip('/')
 
 
 @pytest.fixture(scope="module")

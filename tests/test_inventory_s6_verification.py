@@ -51,7 +51,7 @@ import uuid
 from datetime import datetime
 
 # Base URL from environment
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://code-hygiene-2.preview.emergentagent.com').rstrip('/')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://prisma-enum-bridge.preview.emergentagent.com').rstrip('/')
 
 # Test IDs for dynamic routes
 TEST_WAREHOUSE_ID = "test-warehouse-id-123"

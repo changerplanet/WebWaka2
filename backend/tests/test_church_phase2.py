@@ -25,7 +25,7 @@ from typing import Dict, Any, Optional
 from datetime import datetime, timedelta
 
 # Use the production URL from the review request
-BASE_URL = "https://code-hygiene-2.preview.emergentagent.com"
+BASE_URL = "https://prisma-enum-bridge.preview.emergentagent.com"
 
 # Test tenant and user IDs as specified in the review request
 TEST_TENANT_ID = "test-tenant-p2"
