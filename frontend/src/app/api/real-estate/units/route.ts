@@ -35,14 +35,14 @@ export async function GET(request: Request) {
     
     // Special endpoint for vacant units
     if (searchParams.get('vacant') === 'true') {
-      const propertyId = searchParams.get('propertyId') ?? undefined;
-      const units = await getVacantUnits(tenantId, propertyId);
+      const limit = parseInt(searchParams.get('limit') || '10');
+      const units = await getVacantUnits(tenantId, limit);
       return NextResponse.json({ units });
     }
 
     // Special endpoint for stats
     if (searchParams.get('stats') === 'true') {
-      const propertyId = searchParams.get('propertyId') ?? undefined;
+      const propertyId = searchParams.get('propertyId') || undefined;
       const stats = await getUnitStats(tenantId, propertyId);
       return NextResponse.json(stats);
     }
