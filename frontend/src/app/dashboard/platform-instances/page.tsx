@@ -7,7 +7,7 @@
  * Admin-only access.
  */
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import { ArrowLeft, Loader2, Shield, Layers } from 'lucide-react'
 import { InstanceAdminPage } from '@/components/platform-instance'
