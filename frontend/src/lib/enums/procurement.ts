@@ -182,8 +182,7 @@ export function validateProcOrderOrderBy(
 
 export const PROC_REQUEST_ORDER_BY_FIELDS = [
   'createdAt',
-  'requestDate',
-  'requiredDate',
+  'neededByDate',
   'estimatedTotal'
 ] as const
 
