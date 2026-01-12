@@ -550,46 +550,49 @@ export async function handlePayoutReady(
  * Route MVM events to appropriate handlers
  */
 export async function handleMVMEvent(
-  event: MVMEventBase & { payload: Record<string, unknown> }
-): Promise<{ success: boolean; error?: string }> {
+  event: MVMEventUnknown
+): Promise<EventHandlerResult> {
   const { eventType } = event
 
   console.log('[MVM] Processing event:', eventType)
 
-  switch (eventType) {
+  // Use type guard to validate and narrow the event type
+  if (!isMVMEvent(event)) {
+    console.log('[MVM] Unknown event type:', eventType)
+    return { success: true } // Don't fail on unknown events
+  }
+
+  // TypeScript now knows event is an MVMEvent (discriminated union)
+  switch (event.eventType) {
     // Vendor lifecycle
     case 'mvm.vendor.onboarding_completed':
-      return handleVendorOnboarded(event as unknown as MVMEventBase & { payload: VendorOnboardedPayload })
+      return handleVendorOnboarded(event)
 
     case 'mvm.vendor.approved':
-      return handleVendorApproved(event as unknown as MVMEventBase & { payload: VendorStatusChangedPayload })
+      return handleVendorApproved(event)
 
     case 'mvm.vendor.suspended':
-      return handleVendorSuspended(event as unknown as MVMEventBase & { payload: VendorStatusChangedPayload })
+      return handleVendorSuspended(event)
 
     // Order splitting
     case 'mvm.order.split':
-      return handleOrderSplit(event as unknown as MVMEventBase & { payload: OrderSplitPayload })
+      return handleOrderSplit(event)
 
     case 'mvm.suborder.created':
-      return handleSubOrderCreated(event as unknown as MVMEventBase & { payload: SubOrderCreatedPayload })
+      return handleSubOrderCreated(event)
 
     case 'mvm.suborder.delivered':
-      return handleSubOrderDelivered(event as unknown as MVMEventBase & { payload: SubOrderDeliveredPayload })
+      return handleSubOrderDelivered(event)
 
     case 'mvm.suborder.cancelled':
-      return handleSubOrderCancelled(event as unknown as MVMEventBase & { payload: SubOrderCancelledPayload })
+      return handleSubOrderCancelled(event)
 
     // Commission & payout
     case 'mvm.commission.earned':
-      return handleCommissionEarned(event as unknown as MVMEventBase & { payload: CommissionEarnedPayload })
+      return handleCommissionEarned(event)
 
     case 'mvm.payout.ready':
-      return handlePayoutReady(event as unknown as MVMEventBase & { payload: PayoutReadyPayload })
-
-    default:
-      console.log('[MVM] Unknown event type:', eventType)
-      return { success: true } // Don't fail on unknown events
+      return handlePayoutReady(event)
   }
 }
 
