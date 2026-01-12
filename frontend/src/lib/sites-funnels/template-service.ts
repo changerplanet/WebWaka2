@@ -373,7 +373,8 @@ export async function cloneSiteFromTemplate(input: CloneSiteFromTemplateInput): 
     });
 
     // Create page blocks from template blocks
-    const templateBlocks = template.blocks as any[] || [];
+    // Phase 11C: Using typed template blocks
+    const templateBlocks = parseTemplateBlocks(template.blocks);
     for (let i = 0; i < templateBlocks.length; i++) {
       const block = templateBlocks[i];
       await prisma.sf_page_blocks.create({
