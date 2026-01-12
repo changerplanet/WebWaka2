@@ -18,6 +18,7 @@ import {
   type AddTeamMemberInput,
   type TeamMemberFilters,
 } from '@/lib/project-management/team-service';
+import { validateTeamRole } from '@/lib/enums';
 
 // GET /api/project-management/team
 export async function GET(request: Request) {
