@@ -19,6 +19,10 @@ import {
   type CreateTaskInput,
   type TaskFilters,
 } from '@/lib/project-management/task-service';
+import {
+  validateTaskStatus,
+  validateTaskPriority,
+} from '@/lib/enums';
 
 // GET /api/project-management/tasks
 export async function GET(request: Request) {
