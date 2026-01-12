@@ -15,6 +15,7 @@
 
 import { prisma } from '../prisma';
 import { CapabilityStatus } from '@prisma/client';
+import { parseActivationConfig } from '@/lib/enums';
 
 // ============================================================================
 // CONSTANTS
