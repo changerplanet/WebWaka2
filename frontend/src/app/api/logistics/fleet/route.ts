@@ -17,7 +17,7 @@ import {
   createVehicle,
   getFleetStats,
 } from '@/lib/logistics/fleet-service';
-import { validateVehicleType } from '@/lib/enums';
+import { validateVehicleType, validateVehicleStatus } from '@/lib/enums';
 
 export async function GET(request: NextRequest) {
   try {
