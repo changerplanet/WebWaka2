@@ -4,6 +4,8 @@ import "./globals.css"
 import { getTenantBranding, generateBrandingCSS } from "@/lib/branding"
 import { PWAProvider } from "@/components/PWAProvider"
 
+export const dynamic = 'force-dynamic'
+
 const inter = Inter({ subsets: ["latin"] })
 
 export async function generateMetadata(): Promise<Metadata> {

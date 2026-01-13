@@ -12,5 +12,5 @@ npm --prefix frontend run start -- -p $PORT -H 0.0.0.0 &
 # Wait for frontend
 sleep 4
 
-# Start FastAPI backend
-uvicorn backend.server:app --host 0.0.0.0 --port $PORT
+# Start FastAPI backend on port 8000
+uvicorn backend.server:app --host 0.0.0.0 --port 8000
