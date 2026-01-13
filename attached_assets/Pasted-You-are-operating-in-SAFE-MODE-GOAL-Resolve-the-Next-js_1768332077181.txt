@@ -1,0 +1,77 @@
+You are operating in SAFE MODE.
+
+GOAL:
+Resolve the Next.js build failure caused by JavaScript heap out-of-memory on Replit by:
+1) Increasing Node.js memory for the Next.js build
+2) Switching the deployment type to a memory-stable configuration
+
+STRICT RULES:
+- Do NOT modify application logic, database code, Prisma schema, or API routes
+- Do NOT add, remove, or rename files except where explicitly instructed
+- Do NOT change runtime behavior, auth logic, or environment variables
+- Do NOT modify dev or start scripts
+- Do NOT introduce new dependencies
+- All changes must be minimal, reversible, and documented
+
+--------------------------------------------------
+STEP 1 — Increase Node.js Memory for Build (CODE CHANGE)
+--------------------------------------------------
+
+Target file:
+frontend/package.json
+
+Action:
+Modify ONLY the "build" script to increase Node.js heap size.
+
+Current:
+"build": "next build"
+
+Replace with:
+"build": "NODE_OPTIONS=--max-old-space-size=4096 next build"
+
+IMPORTANT:
+- Do not change any other scripts
+- Do not add NODE_OPTIONS anywhere else
+- Do not modify dev or start commands
+
+--------------------------------------------------
+STEP 2 — Switch Deployment Type (CONFIGURATION CHANGE)
+--------------------------------------------------
+
+Action:
+Update the Replit Deployment configuration as follows:
+
+- Deployment type:
+  FROM: Autoscale (Cloud Run)
+  TO: Reserved VM → Web Server
+
+- Keep existing commands unchanged:
+  Install: npm install
+  Build: npm run build
+  Run (staging): npm run dev -- -p 5000 -H 0.0.0.0
+  Run (production): npm run start -- -p 5000 -H 0.0.0.0
+
+- Do NOT introduce npm --prefix usage
+- Do NOT hardcode ports in package.json
+
+--------------------------------------------------
+VERIFICATION REQUIRED
+--------------------------------------------------
+
+After applying Steps 1–2, verify and report:
+
+1) `npm run build` completes without JavaScript heap out-of-memory errors
+2) Next.js server starts successfully
+3) No new warnings or errors introduced
+4) List of files modified (should be exactly ONE file: frontend/package.json)
+5) Confirmation that deployment type is now Reserved VM
+
+--------------------------------------------------
+STOP CONDITION
+--------------------------------------------------
+
+Stop immediately after verification.
+Do NOT attempt redeploy unless explicitly instructed.
+Do NOT apply any additional optimizations or fixes.
+
+Return a concise execution report.
