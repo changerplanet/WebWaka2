@@ -94,11 +94,12 @@ export function DemoCredentialsPanel({
       <div className="flex items-center justify-between p-2 bg-white border border-slate-200 rounded-lg mb-3">
         <div>
           <span className="text-xs text-slate-500 block">Password (all accounts)</span>
-          <code className="text-sm font-mono text-slate-900">{DEMO_PASSWORD}</code>
+          <code className="text-sm font-mono text-slate-900">{DEMO_PASSWORD || 'Not configured'}</code>
         </div>
         <button
-          onClick={() => copyToClipboard(DEMO_PASSWORD, 'password')}
-          className="p-1.5 hover:bg-slate-100 rounded-md transition"
+          disabled={!DEMO_PASSWORD}
+          onClick={() => DEMO_PASSWORD && copyToClipboard(DEMO_PASSWORD, 'password')}
+          className={`p-1.5 rounded-md transition ${DEMO_PASSWORD ? 'hover:bg-slate-100' : 'opacity-50 cursor-not-allowed'}`}
           title="Copy password"
         >
           {copiedPassword ? (
