@@ -1,0 +1,32 @@
+{
+  "name": "workspace",
+  "version": "1.0.0",
+  "private": true,
+  "description": "",
+  "main": "index.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "install:frontend": "npm --prefix frontend ci",
+    "install:backend": "python -m pip install -r backend/requirements.txt || python3 -m pip install -r backend/requirements.txt || true",
+    "install:all": "npm run install:frontend && npm run install:backend",
+    "build:frontend": "npm --prefix frontend run build",
+    "build:all": "npm run build:frontend",
+    "start:frontend": "npm --prefix frontend run start -- -p $PORT -H 0.0.0.0",
+    "start:backend": "python backend/server.py",
+    "start": "concurrently \"npm run start:backend\" \"npm run start:frontend\"",
+    "dev:frontend": "npm --prefix frontend run dev",
+    "dev:backend": "python backend/server.py",
+    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\""
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "concurrently": "^9.0.0"
+  },
+  "engines": {
+    "node": ">=16"
+  }
+}

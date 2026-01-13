@@ -1,13 +1,13 @@
 /**
  * Phase 16B - Education Entity Builders
- * 
+ *
  * Pure, deterministic functions that transform service-layer inputs
  * into Prisma-compliant create/update input objects.
- * 
+ *
  * NO side effects, NO I/O, NO business logic.
  */
 
-import { Prisma, EduAssessmentType, EduGuardianRelation } from '@prisma/client';
+import { Prisma, EduAssessmentType, EduGuardianRelation, EduFeeType } from "@prisma/client";
 
 // ============================================================================
 // ASSESSMENTS
@@ -19,7 +19,16 @@ export interface AssessmentInput {
   classId: string;
   subjectId: string;
   termId: string;
-  assessmentType: EduAssessmentType | 'CLASSWORK' | 'HOMEWORK' | 'QUIZ' | 'TEST' | 'CA' | 'EXAM' | 'PROJECT' | 'PRACTICAL';
+  assessmentType:
+    | EduAssessmentType
+    | "CLASSWORK"
+    | "HOMEWORK"
+    | "QUIZ"
+    | "TEST"
+    | "CA"
+    | "EXAM"
+    | "PROJECT"
+    | "PRACTICAL";
   assessmentName?: string | null;
   maxScore?: number;
   score: number;
@@ -29,19 +38,27 @@ export interface AssessmentInput {
 }
 
 export function buildAssessmentCreate(
-  input: AssessmentInput
+  input: AssessmentInput,
 ): Prisma.edu_assessmentCreateInput {
   return {
     tenantId: input.tenantId,
-    studentId: input.studentId,
-    classId: input.classId,
-    subjectId: input.subjectId,
-    termId: input.termId,
+
+    // Prisma relations require connect
+    student: { connect: { id: input.studentId } },
+    class: { connect: { id: input.classId } },
+    subject: { connect: { id: input.subjectId } },
+    term: { connect: { id: input.termId } },
+
     assessmentType: input.assessmentType as EduAssessmentType,
     assessmentName: input.assessmentName ?? null,
-    maxScore: input.maxScore ?? 100,
-    score: input.score,
-    gradedById: input.gradedById ?? null,
+
+    maxScore: new Prisma.Decimal(input.maxScore ?? 100),
+    score: new Prisma.Decimal(input.score),
+
+    gradedBy: input.gradedById
+      ? { connect: { id: input.gradedById } }
+      : undefined,
+
     gradedAt: input.gradedAt ?? null,
     teacherComment: input.teacherComment ?? null,
   };
@@ -68,11 +85,12 @@ export interface GuardianInput {
 }
 
 export function buildGuardianCreate(
-  input: GuardianInput
+  input: GuardianInput,
 ): Prisma.edu_guardianCreateInput {
-  const fullName = input.fullName ?? 
-    `${input.firstName}${input.middleName ? ' ' + input.middleName : ''} ${input.lastName}`;
-  
+  const fullName =
+    input.fullName ??
+    `${input.firstName}${input.middleName ? " " + input.middleName : ""} ${input.lastName}`;
+
   return {
     tenantId: input.tenantId,
     platformInstanceId: input.platformInstanceId ?? null,
@@ -91,10 +109,10 @@ export function buildGuardianCreate(
 }
 
 export function buildGuardianUpdate(
-  input: Partial<GuardianInput>
+  input: Partial<GuardianInput>,
 ): Prisma.edu_guardianUpdateInput {
   const update: Prisma.edu_guardianUpdateInput = {};
-  
+
   if (input.firstName !== undefined) update.firstName = input.firstName;
   if (input.lastName !== undefined) update.lastName = input.lastName;
   if (input.middleName !== undefined) update.middleName = input.middleName;
@@ -105,15 +123,19 @@ export function buildGuardianUpdate(
   if (input.city !== undefined) update.city = input.city;
   if (input.state !== undefined) update.state = input.state;
   if (input.occupation !== undefined) update.occupation = input.occupation;
-  
+
   // Recompute fullName if name parts changed
-  if (input.firstName !== undefined || input.lastName !== undefined || input.middleName !== undefined) {
+  if (
+    input.firstName !== undefined ||
+    input.lastName !== undefined ||
+    input.middleName !== undefined
+  ) {
     // Note: Caller should provide complete fullName or we use partial update
     if (input.fullName) {
       update.fullName = input.fullName;
     }
   }
-  
+
   return update;
 }
 
@@ -127,35 +149,44 @@ export interface AttendanceInput {
   classId: string;
   termId: string;
   date: Date;
-  status: 'PRESENT' | 'ABSENT' | 'LATE' | 'EXCUSED';
+  status: "PRESENT" | "ABSENT" | "LATE" | "EXCUSED";
   markedById?: string | null;
   notes?: string | null;
 }
 
 export function buildAttendanceCreate(
-  input: AttendanceInput
+  input: AttendanceInput,
 ): Prisma.edu_attendanceCreateInput {
   return {
     tenantId: input.tenantId,
-    studentId: input.studentId,
-    classId: input.classId,
-    termId: input.termId,
-    date: input.date,
+
+    student: { connect: { id: input.studentId } },
+    class: { connect: { id: input.classId } },
+    term: { connect: { id: input.termId } },
+
+    attendanceDate: input.date,
+
     status: input.status,
-    markedById: input.markedById ?? null,
+
+    markedBy: input.markedById
+      ? { connect: { id: input.markedById } }
+      : undefined,
+
     notes: input.notes ?? null,
   };
 }
 
 export function buildAttendanceCreateMany(
-  inputs: AttendanceInput[]
+  inputs: AttendanceInput[],
 ): Prisma.edu_attendanceCreateManyInput[] {
-  return inputs.map(input => ({
+  return inputs.map((input) => ({
     tenantId: input.tenantId,
     studentId: input.studentId,
     classId: input.classId,
     termId: input.termId,
-    date: input.date,
+
+    attendanceDate: input.date,
+
     status: input.status,
     markedById: input.markedById ?? null,
     notes: input.notes ?? null,
@@ -180,16 +211,23 @@ export interface FeeStructureInput {
 }
 
 export function buildFeeStructureCreate(
-  input: FeeStructureInput
+  input: FeeStructureInput,
 ): Prisma.edu_fee_structureCreateInput {
   return {
     tenantId: input.tenantId,
-    termId: input.termId,
-    classId: input.classId ?? null,
-    feeType: input.feeType,
+
+    // Relations require connect
+    term: { connect: { id: input.termId } },
+
+    class: input.classId
+      ? { connect: { id: input.classId } }
+      : undefined,
+
+    feeType: input.feeType as EduFeeType,   // <-- FIX
+
     feeName: input.feeName,
     amount: input.amount,
-    currency: input.currency ?? 'NGN',
+    currency: input.currency ?? "NGN",
     isOptional: input.isOptional ?? false,
     dueDate: input.dueDate ?? null,
     description: input.description ?? null,
@@ -207,13 +245,13 @@ export interface FeeAssignmentInput {
   termId: string;
   amount: number;
   amountPaid?: number;
-  status?: 'PENDING' | 'PARTIAL' | 'PAID' | 'WAIVED' | 'OVERDUE';
+  status?: "PENDING" | "PARTIAL" | "PAID" | "WAIVED" | "OVERDUE";
   dueDate?: Date | null;
   notes?: string | null;
 }
 
 export function buildFeeAssignmentCreate(
-  input: FeeAssignmentInput
+  input: FeeAssignmentInput,
 ): Prisma.edu_fee_assignmentCreateInput {
   return {
     tenantId: input.tenantId,
@@ -222,23 +260,23 @@ export function buildFeeAssignmentCreate(
     termId: input.termId,
     amount: input.amount,
     amountPaid: input.amountPaid ?? 0,
-    status: input.status ?? 'PENDING',
+    status: input.status ?? "PENDING",
     dueDate: input.dueDate ?? null,
     notes: input.notes ?? null,
   };
 }
 
 export function buildFeeAssignmentCreateMany(
-  inputs: FeeAssignmentInput[]
+  inputs: FeeAssignmentInput[],
 ): Prisma.edu_fee_assignmentCreateManyInput[] {
-  return inputs.map(input => ({
+  return inputs.map((input) => ({
     tenantId: input.tenantId,
     studentId: input.studentId,
     feeStructureId: input.feeStructureId,
     termId: input.termId,
     amount: input.amount,
     amountPaid: input.amountPaid ?? 0,
-    status: input.status ?? 'PENDING',
+    status: input.status ?? "PENDING",
     dueDate: input.dueDate ?? null,
     notes: input.notes ?? null,
   }));
@@ -262,14 +300,14 @@ export interface ResultInput {
   gradePoint?: number | null;
   position?: number | null;
   teacherComment?: string | null;
-  status?: 'DRAFT' | 'SUBMITTED' | 'APPROVED' | 'PUBLISHED';
+  status?: "DRAFT" | "SUBMITTED" | "APPROVED" | "PUBLISHED";
   submittedAt?: Date | null;
   approvedById?: string | null;
   approvedAt?: Date | null;
 }
 
 export function buildResultCreate(
-  input: ResultInput
+  input: ResultInput,
 ): Prisma.edu_resultCreateInput {
   return {
     tenantId: input.tenantId,
@@ -285,16 +323,14 @@ export function buildResultCreate(
     gradePoint: input.gradePoint ?? null,
     position: input.position ?? null,
     teacherComment: input.teacherComment ?? null,
-    status: input.status ?? 'DRAFT',
+    status: input.status ?? "DRAFT",
     submittedAt: input.submittedAt ?? null,
     approvedById: input.approvedById ?? null,
     approvedAt: input.approvedAt ?? null,
   };
 }
 
-export function buildResultUpsert(
-  input: ResultInput
-): {
+export function buildResultUpsert(input: ResultInput): {
   where: Prisma.edu_resultWhereUniqueInput;
   create: Prisma.edu_resultCreateInput;
   update: Prisma.edu_resultUpdateInput;

@@ -1,16 +1,16 @@
 /**
  * Phase 16B - CRM Entity Builders (Simplified)
- * 
+ *
  * These builders provide minimal type-safe wrappers that:
  * 1. Generate required `id` fields
  * 2. Set required `updatedAt` timestamps
  * 3. Accept service-layer objects with explicit typing
- * 
+ *
  * The actual field mapping remains in the service layer.
  */
 
-import { Prisma } from '@prisma/client';
-import { randomUUID } from 'crypto';
+import { Prisma } from "@prisma/client";
+import { randomUUID } from "crypto";
 
 // ============================================================================
 // GENERIC BUILDER HELPERS
@@ -20,12 +20,13 @@ import { randomUUID } from 'crypto';
  * Wraps a data object with required id and timestamp fields
  */
 export function withCrmDefaults<T extends object>(
-  data: T
+  data: T,
 ): T & { id: string; updatedAt: Date } {
   return {
     id: randomUUID(),
     ...data,
-    updatedAt: new Date(),
+    updatedAt:
+      data && (data as any).updatedAt ? (data as any).updatedAt : new Date(),
   };
 }
 
@@ -33,9 +34,9 @@ export function withCrmDefaults<T extends object>(
  * For createMany operations, wraps each item with id
  */
 export function withCrmDefaultsMany<T extends object>(
-  items: T[]
+  items: T[],
 ): Array<T & { id: string }> {
-  return items.map(item => ({
+  return items.map((item) => ({
     id: randomUUID(),
     ...item,
   }));
@@ -47,11 +48,11 @@ export function withCrmDefaultsMany<T extends object>(
 
 export type LoyaltyTransactionData = Omit<
   Prisma.crm_loyalty_transactionsCreateInput,
-  'id' | 'createdAt'
+  "id" | "createdAt"
 >;
 
 export function buildLoyaltyTransaction(
-  data: LoyaltyTransactionData
+  data: LoyaltyTransactionData,
 ): Prisma.crm_loyalty_transactionsCreateInput {
   return {
     id: randomUUID(),
@@ -65,11 +66,11 @@ export function buildLoyaltyTransaction(
 
 export type EngagementEventData = Omit<
   Prisma.crm_engagement_eventsCreateInput,
-  'id' | 'createdAt'
+  "id" | "createdAt"
 >;
 
 export function buildEngagementEvent(
-  data: EngagementEventData
+  data: EngagementEventData,
 ): Prisma.crm_engagement_eventsCreateInput {
   return {
     id: randomUUID(),
@@ -83,16 +84,16 @@ export function buildEngagementEvent(
 
 export type CustomerSegmentData = Omit<
   Prisma.crm_customer_segmentsCreateInput,
-  'id' | 'createdAt'
+  "id" | "createdAt"
 >;
 
 export function buildCustomerSegment(
-  data: CustomerSegmentData
+  data: CustomerSegmentData,
 ): Prisma.crm_customer_segmentsCreateInput {
   return {
     id: randomUUID(),
-    updatedAt: new Date(),
     ...data,
+    updatedAt: data.updatedAt ?? new Date(),
   };
 }
 
@@ -102,11 +103,11 @@ export function buildCustomerSegment(
 
 export type SegmentMembershipData = Omit<
   Prisma.crm_segment_membershipsCreateInput,
-  'id' | 'joinedAt'
+  "id" | "joinedAt"
 >;
 
 export function buildSegmentMembership(
-  data: SegmentMembershipData
+  data: SegmentMembershipData,
 ): Prisma.crm_segment_membershipsCreateInput {
   return {
     id: randomUUID(),
@@ -124,9 +125,9 @@ export function buildSegmentMembershipsMany(
     isManual?: boolean;
     score?: number | null;
     metadata?: Prisma.InputJsonValue | null;
-  }>
+  }>,
 ): Prisma.crm_segment_membershipsCreateManyInput[] {
-  return items.map(item => ({
+  return items.map((item) => ({
     id: randomUUID(),
     tenantId: item.tenantId,
     segmentId: item.segmentId,
@@ -144,16 +145,16 @@ export function buildSegmentMembershipsMany(
 
 export type LoyaltyProgramData = Omit<
   Prisma.crm_loyalty_programsCreateInput,
-  'id' | 'createdAt'
+  "id" | "createdAt"
 >;
 
 export function buildLoyaltyProgram(
-  data: LoyaltyProgramData
+  data: LoyaltyProgramData,
 ): Prisma.crm_loyalty_programsCreateInput {
   return {
     id: randomUUID(),
-    updatedAt: new Date(),
     ...data,
+    updatedAt: data.updatedAt ?? new Date(),
   };
 }
 
@@ -163,16 +164,16 @@ export function buildLoyaltyProgram(
 
 export type LoyaltyRuleData = Omit<
   Prisma.crm_loyalty_rulesCreateInput,
-  'id' | 'createdAt'
+  "id" | "createdAt"
 >;
 
 export function buildLoyaltyRule(
-  data: LoyaltyRuleData
+  data: LoyaltyRuleData,
 ): Prisma.crm_loyalty_rulesCreateInput {
   return {
     id: randomUUID(),
-    updatedAt: new Date(),
     ...data,
+    updatedAt: data.updatedAt ?? new Date(),
   };
 }
 
@@ -182,16 +183,16 @@ export function buildLoyaltyRule(
 
 export type CampaignData = Omit<
   Prisma.crm_campaignsCreateInput,
-  'id' | 'createdAt'
+  "id" | "createdAt"
 >;
 
 export function buildCampaign(
-  data: CampaignData
+  data: CampaignData,
 ): Prisma.crm_campaignsCreateInput {
   return {
     id: randomUUID(),
-    updatedAt: new Date(),
     ...data,
+    updatedAt: data.updatedAt ?? new Date(),
   };
 }
 
@@ -201,11 +202,11 @@ export function buildCampaign(
 
 export type CampaignAudienceData = Omit<
   Prisma.crm_campaign_audiencesCreateInput,
-  'id' | 'createdAt'
+  "id" | "createdAt"
 >;
 
 export function buildCampaignAudience(
-  data: CampaignAudienceData
+  data: CampaignAudienceData,
 ): Prisma.crm_campaign_audiencesCreateInput {
   return {
     id: randomUUID(),
@@ -219,30 +220,29 @@ export function buildCampaignAudience(
 
 export function buildCrmConfigUpsert(
   tenantId: string,
-  configType: string,
+  // `crm_configurations` schema stores arbitrary JSON in `metadata`.
+  // Older code used `configType`/`configData` but the Prisma model
+  // expects `metadata` and does not have `configType`/`isActive` fields.
   configData: Prisma.InputJsonValue,
-  updatedBy?: string | null
+  updatedBy?: string | null,
 ): {
   where: Prisma.crm_configurationsWhereUniqueInput;
   create: Prisma.crm_configurationsCreateInput;
   update: Prisma.crm_configurationsUpdateInput;
 } {
-  const id = `${tenantId}_${configType}`;
+  // Use tenantId as the unique key (schema marks tenantId as @unique).
+  const id = tenantId;
   return {
-    where: { id },
+    where: { tenantId },
     create: {
       id,
       tenantId,
-      configType,
-      configData,
-      isActive: true,
-      createdBy: updatedBy ?? null,
+      // store incoming config JSON in `metadata`
+      metadata: configData ?? Prisma.JsonNull,
       updatedAt: new Date(),
     },
     update: {
-      configData,
-      isActive: true,
-      updatedBy: updatedBy ?? null,
+      metadata: configData ?? Prisma.JsonNull,
       updatedAt: new Date(),
     },
   };
