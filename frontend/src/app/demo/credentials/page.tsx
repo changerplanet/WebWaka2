@@ -282,7 +282,7 @@ function DemoCredentialsContent() {
                 <p className="text-sm text-slate-500">Universal Password (All Demo Accounts)</p>
                 <div className="flex items-center gap-2">
                   <code className="text-lg font-mono font-bold text-slate-900">
-                    {showPassword ? DEMO_PASSWORD : '••••••••'}
+                    {showPassword ? (DEMO_PASSWORD || 'Not configured') : '••••••••'}
                   </code>
                   <button
                     onClick={() => setShowPassword(!showPassword)}
@@ -299,8 +299,9 @@ function DemoCredentialsContent() {
               </div>
             </div>
             <button
-              onClick={() => copyToClipboard(DEMO_PASSWORD, 'password')}
-              className="px-4 py-2 bg-slate-100 hover:bg-slate-200 rounded-lg transition flex items-center gap-2"
+              disabled={!DEMO_PASSWORD}
+              onClick={() => DEMO_PASSWORD && copyToClipboard(DEMO_PASSWORD, 'password')}
+              className={`px-4 py-2 rounded-lg transition flex items-center gap-2 ${DEMO_PASSWORD ? 'bg-slate-100 hover:bg-slate-200' : 'bg-slate-50 cursor-not-allowed opacity-50'}`}
             >
               {copiedPassword ? (
                 <>
@@ -419,7 +420,7 @@ function DemoCredentialsContent() {
         <div className="mt-8 p-4 bg-slate-100 rounded-xl">
           <h3 className="font-semibold text-slate-900 mb-2">Notes</h3>
           <ul className="text-sm text-slate-600 space-y-1">
-            <li>• All demo accounts use the same password: <code className="bg-white px-1 rounded">{DEMO_PASSWORD}</code></li>
+            <li>• All demo accounts use the same password: <code className="bg-white px-1 rounded">{DEMO_PASSWORD || 'Not configured'}</code></li>
             <li>• Login URL: <code className="bg-white px-1 rounded">/login?demo=true</code></li>
             <li>• All demo tenants are linked to the Demo Partner Account</li>
             <li>• All suites are activated and non-expiring</li>
