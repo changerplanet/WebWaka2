@@ -1,0 +1,149 @@
+WebWaka (Replit = Dev/Staging Only)
+
+Context
+
+This project (WebWaka) is a Next.js 14 full-stack application using Prisma + PostgreSQL.
+Replit is NOT production. Replit is used only for development and staging validation.
+Production deployment will happen on Vercel.
+
+Your task is to stabilize and verify the Replit development deployment only, without introducing production-specific changes.
+
+⸻
+
+🎯 Your Mission (Strict Scope)
+
+Perform only the steps below, in order.
+Do not go beyond them unless explicitly instructed.
+
+⸻
+
+STEP 1 — Verify Replit Dev Environment Configuration (READ-ONLY unless broken)
+	1.	Confirm the following Replit deployment/run configuration:
+	•	Root directory: frontend
+	•	Install command: npm install
+	•	Build command: npm run build
+	•	Run command (dev/staging):
+
+npm run dev -- -p 5000 -H 0.0.0.0
+
+
+	2.	Verify that:
+	•	No npm --prefix commands are used
+	•	No hardcoded ports exist in source code
+	•	No .env files are committed
+
+📌 Do not modify scripts unless they are incorrect.
+
+⸻
+
+STEP 2 — Verify Required Replit Secrets (READ-ONLY)
+
+Confirm that the following secrets exist in Replit Secrets:
+
+NODE_ENV=development
+DATABASE_URL=***
+DIRECT_URL=***
+JWT_SECRET=***
+SESSION_SECRET=***
+SUPER_ADMIN_EMAIL=***
+NEXT_PUBLIC_APP_URL=https://<replit-app>.replit.app
+
+	•	Do NOT generate secrets
+	•	Do NOT change values
+	•	Only report missing ones
+
+⸻
+
+STEP 3 — Validate Dev Runtime Behavior
+
+Run and verify:
+	•	npm run dev starts successfully
+	•	App is accessible on port 5000
+	•	Homepage returns HTTP 200
+	•	/api/health returns HTTP 200
+	•	Prisma connects successfully
+	•	No runtime crashes
+
+📌 This is development runtime only, not production build optimization.
+
+⸻
+
+STEP 4 — Identify Replit-Specific Deployment Blockers
+
+If deployment fails on Replit Publishing:
+	1.	Identify only Replit-specific blockers, such as:
+	•	Memory limits
+	•	Publishing mode incompatibilities
+	•	Static pre-render issues unique to Replit
+	•	Next.js features unsupported by Replit Publishing
+	2.	Do NOT:
+	•	Refactor architecture
+	•	Optimize for Vercel
+	•	Change caching strategies
+	•	Modify Prisma schema
+	•	Introduce production-only flags
+
+⸻
+
+STEP 5 — Apply ONLY Low-Risk, Dev-Only Fixes (If Needed)
+
+You may apply fixes only if ALL conditions are met:
+	•	Fix is Replit-only
+	•	Fix does not affect production
+	•	Fix does not change business logic
+	•	Fix does not change database schema
+	•	Fix is reversible
+
+Examples of allowed fixes:
+	•	Guarding undefined env vars in dev UI
+	•	Disabling dev-only pages when secrets missing
+	•	Adjusting dev build commands
+	•	Adding conditional rendering for demo routes
+
+🚫 Disallowed:
+	•	Removing features
+	•	Changing auth flows
+	•	Changing tenant logic
+	•	Adding production flags
+	•	Changing Prisma models
+
+⸻
+
+STEP 6 — Produce a Final Replit Readiness Report
+
+When finished, output a structured report with:
+
+✅ VERIFIED
+	•	Dev server status
+	•	Prisma connectivity
+	•	API health
+	•	Secrets presence
+
+❌ BLOCKERS (if any)
+	•	Exact error
+	•	File + line
+	•	Why it blocks Replit
+	•	Whether it affects Vercel (Yes / No)
+
+🔧 FIXES APPLIED (if any)
+	•	Files modified
+	•	Exact diffs
+	•	Justification
+
+🚦 FINAL VERDICT
+
+One of:
+	•	READY for Replit Dev/Staging
+	•	BLOCKED on Replit only
+	•	BLOCKED globally (affects Vercel too)
+
+⸻
+
+⛔ Hard Rules
+	•	Do NOT optimize for production
+	•	Do NOT touch Vercel config
+	•	Do NOT introduce new dependencies
+	•	Do NOT change database behavior
+	•	Do NOT continue past this scope
+
+Stop after the report.
