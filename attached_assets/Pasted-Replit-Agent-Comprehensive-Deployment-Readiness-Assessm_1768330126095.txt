@@ -1,0 +1,125 @@
+Replit Agent — Comprehensive Deployment Readiness Assessment
+
+Context
+This application (WebWaka) is a Next.js 14 App Router fullstack application with:
+	•	Prisma + PostgreSQL (Supabase)
+	•	FastAPI backend (proxy-style)
+	•	Replit configured as staging only
+	•	Production target will be Vercel later
+
+The app runs locally in Replit, but deployment intermittently fails due to configuration/build issues (npm syntax, database diff checks, deployment pipeline inconsistencies).
+
+⸻
+
+🎯 Objective
+
+Perform a thorough, production-grade assessment of the current application state to determine:
+	1.	✅ What is correctly configured
+	2.	❌ What is blocking Replit from deploying successfully
+	3.	⚠️ What is risky or fragile (even if currently “working”)
+	4.	📋 What must be fixed before Replit deployment can be considered stable
+
+This is an analysis-only phase unless explicitly instructed otherwise.
+
+⸻
+
+🔎 Scope of Assessment (MANDATORY)
+
+1️⃣ Deployment Configuration
+	•	Verify Run / Deployment configuration
+	•	Root directory correctness
+	•	Install / Build / Run commands
+	•	Port binding & host exposure
+	•	Confirm no invalid npm flags (e.g. npm --prefix misuse)
+	•	Detect any implicit commands injected by Replit that may override user config
+
+2️⃣ Build & Install Pipeline
+	•	Validate:
+	•	npm install
+	•	npm run build
+	•	npm run dev / npm run start
+	•	Identify why build sometimes fails despite correct scripts
+	•	Detect race conditions or directory resolution issues
+
+3️⃣ Prisma & Database Lifecycle
+	•	Confirm:
+	•	Correct use of DATABASE_URL (pooled)
+	•	Correct use of DIRECT_URL (migrations)
+	•	Identify:
+	•	Any Prisma commands Replit tries to auto-run
+	•	Why “database diff” checks sometimes disconnect
+	•	Verify Prisma client generation timing vs build
+
+4️⃣ Environment Variables & Secrets
+	•	Confirm all required variables are present
+	•	Detect:
+	•	Variables required at build-time vs runtime
+	•	Any missing defaults or unsafe fallbacks
+	•	Flag any hardcoded secrets or demo credentials
+
+5️⃣ Runtime Architecture
+	•	Confirm:
+	•	Node runtime usage (no Edge runtime where Prisma is used)
+	•	No filesystem writes at runtime
+	•	Identify:
+	•	Blocking synchronous DB calls in layouts or middleware
+	•	Global dynamic rendering that harms stability
+
+6️⃣ Replit-Specific Constraints
+	•	Detect:
+	•	Background process assumptions
+	•	Long-running build steps
+	•	Memory / CPU pressure points
+	•	Confirm compatibility with Replit’s deployment model
+
+⸻
+
+📄 Required Output Format
+
+Produce a single structured report with:
+
+✅ VERIFIED WORKING
+
+List everything confirmed correct.
+
+❌ BLOCKERS (Must Fix)
+
+Each blocker must include:
+	•	Exact file / config
+	•	Why it breaks Replit deployment
+	•	Concrete fix recommendation
+
+⚠️ HIGH-RISK (Not Blocking Yet)
+
+Items that may cause instability under load or redeploys.
+
+🛠️ RECOMMENDED FIX ORDER
+
+A step-by-step remediation plan prioritized for Replit deployment stability.
+
+🚦 FINAL VERDICT
+
+One of:
+	•	READY FOR STABLE REPLIT DEPLOYMENT
+	•	CONDITIONALLY READY (with listed fixes)
+	•	BLOCKED
+
+⸻
+
+🛑 Constraints
+	•	❌ Do NOT modify code unless explicitly authorized
+	•	❌ Do NOT auto-fix issues
+	•	✅ Analysis, diagnostics, and recommendations only
+
+⸻
+
+🔐 Guiding Principle
+
+Assume this application will be used in production.
+Assess with the same rigor as a professional DevOps / Platform Engineer.
+
+⸻
+
+When finished, wait for explicit approval before applying any fixes.
+
+⸻
