@@ -1,32 +1,31 @@
 /**
  * Phase 16B - Entity Builders Index
- * 
+ *
  * Central export point for all entity builders.
  * These builders transform service-layer inputs into Prisma-compliant types.
  */
 
 // CRM Builders
 export {
-  buildLoyaltyTransactionCreate,
-  buildEngagementEventCreate,
-  buildCustomerSegmentCreate,
-  buildSegmentMembershipCreate,
-  buildSegmentMembershipCreateMany,
-  buildLoyaltyProgramCreate,
-  buildLoyaltyRuleCreate,
-  buildCampaignCreate,
-  buildCampaignAudienceCreate,
-  buildCrmConfigurationUpsert,
-  type LoyaltyTransactionInput,
-  type EngagementEventInput,
-  type CustomerSegmentInput,
-  type SegmentMembershipInput,
-  type LoyaltyProgramInput,
-  type LoyaltyRuleInput,
-  type CampaignInput,
-  type CampaignAudienceInput,
-  type CrmConfigurationInput,
-} from './CrmBuilders';
+  buildLoyaltyTransaction,
+  buildEngagementEvent,
+  buildCustomerSegment,
+  buildSegmentMembership,
+  buildSegmentMembershipsMany,
+  buildLoyaltyProgram,
+  buildLoyaltyRule,
+  buildCampaign,
+  buildCampaignAudience,
+  buildCrmConfigUpsert,
+  type LoyaltyTransactionData,
+  type EngagementEventData,
+  type CustomerSegmentData,
+  type SegmentMembershipData,
+  type LoyaltyProgramData,
+  type LoyaltyRuleData,
+  type CampaignData,
+  type CampaignAudienceData,
+} from "./CrmBuilders";
 
 // Logistics Builders
 export {
@@ -45,7 +44,7 @@ export {
   type DeliveryProofInput,
   type LogisticsConfigInput,
   type StatusHistoryInput,
-} from './LogisticsBuilders';
+} from "./LogisticsBuilders";
 
 // Education Builders
 export {
@@ -65,7 +64,7 @@ export {
   type FeeStructureInput,
   type FeeAssignmentInput,
   type ResultInput,
-} from './EducationBuilders';
+} from "./EducationBuilders";
 
 // Procurement Builders
 export {
@@ -79,4 +78,4 @@ export {
   type PurchaseOrderItemInput,
   type PurchaseRequestInput,
   type PurchaseRequestItemInput,
-} from './ProcurementBuilders';
+} from "./ProcurementBuilders";

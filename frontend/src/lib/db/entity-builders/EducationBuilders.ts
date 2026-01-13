@@ -7,7 +7,15 @@
  * NO side effects, NO I/O, NO business logic.
  */
 
-import { Prisma, EduAssessmentType, EduGuardianRelation, EduFeeType } from "@prisma/client";
+import {
+  Prisma,
+  EduAssessmentType,
+  EduGuardianRelation,
+  EduFeeType,
+  EduFeeAssignmentStatus,
+  EduAttendanceStatus,
+  EduResultStatus,
+} from "@prisma/client";
 
 // ============================================================================
 // ASSESSMENTS
@@ -42,23 +50,17 @@ export function buildAssessmentCreate(
 ): Prisma.edu_assessmentCreateInput {
   return {
     tenantId: input.tenantId,
-
-    // Prisma relations require connect
     student: { connect: { id: input.studentId } },
     class: { connect: { id: input.classId } },
     subject: { connect: { id: input.subjectId } },
     term: { connect: { id: input.termId } },
-
     assessmentType: input.assessmentType as EduAssessmentType,
     assessmentName: input.assessmentName ?? null,
-
-    maxScore: new Prisma.Decimal(input.maxScore ?? 100),
-    score: new Prisma.Decimal(input.score),
-
+    maxScore: input.maxScore ?? 100,
+    score: input.score,
     gradedBy: input.gradedById
       ? { connect: { id: input.gradedById } }
       : undefined,
-
     gradedAt: input.gradedAt ?? null,
     teacherComment: input.teacherComment ?? null,
   };
@@ -148,8 +150,8 @@ export interface AttendanceInput {
   studentId: string;
   classId: string;
   termId: string;
-  date: Date;
-  status: "PRESENT" | "ABSENT" | "LATE" | "EXCUSED";
+  attendanceDate: Date;
+  status: EduAttendanceStatus | "PRESENT" | "ABSENT" | "LATE" | "EXCUSED";
   markedById?: string | null;
   notes?: string | null;
 }
@@ -159,21 +161,17 @@ export function buildAttendanceCreate(
 ): Prisma.edu_attendanceCreateInput {
   return {
     tenantId: input.tenantId,
-
+    // use relation connect for nested create input
     student: { connect: { id: input.studentId } },
     class: { connect: { id: input.classId } },
     term: { connect: { id: input.termId } },
-
-    attendanceDate: input.date,
-
-    status: input.status,
-
+    attendanceDate: input.attendanceDate,
+    status: input.status as EduAttendanceStatus,
     markedBy: input.markedById
       ? { connect: { id: input.markedById } }
       : undefined,
-
     notes: input.notes ?? null,
-  };
+  } as Prisma.edu_attendanceCreateInput;
 }
 
 export function buildAttendanceCreateMany(
@@ -184,10 +182,8 @@ export function buildAttendanceCreateMany(
     studentId: input.studentId,
     classId: input.classId,
     termId: input.termId,
-
-    attendanceDate: input.date,
-
-    status: input.status,
+    attendanceDate: input.attendanceDate,
+    status: input.status as EduAttendanceStatus,
     markedById: input.markedById ?? null,
     notes: input.notes ?? null,
   }));
@@ -201,7 +197,7 @@ export interface FeeStructureInput {
   tenantId: string;
   termId: string;
   classId?: string | null;
-  feeType: string;
+  feeType: EduFeeType | string;
   feeName: string;
   amount: number;
   currency?: string;
@@ -215,20 +211,13 @@ export function buildFeeStructureCreate(
 ): Prisma.edu_fee_structureCreateInput {
   return {
     tenantId: input.tenantId,
-
-    // Relations require connect
-    term: { connect: { id: input.termId } },
-
-    class: input.classId
-      ? { connect: { id: input.classId } }
-      : undefined,
-
-    feeType: input.feeType as EduFeeType,   // <-- FIX
-
-    feeName: input.feeName,
+    // use relation connect for single-create inputs
+    term: input.termId ? { connect: { id: input.termId } } : undefined,
+    class: input.classId ? { connect: { id: input.classId } } : undefined,
+    feeType: input.feeType as EduFeeType,
+    name: input.feeName,
     amount: input.amount,
     currency: input.currency ?? "NGN",
-    isOptional: input.isOptional ?? false,
     dueDate: input.dueDate ?? null,
     description: input.description ?? null,
   };
@@ -242,10 +231,15 @@ export interface FeeAssignmentInput {
   tenantId: string;
   studentId: string;
   feeStructureId: string;
-  termId: string;
   amount: number;
   amountPaid?: number;
-  status?: "PENDING" | "PARTIAL" | "PAID" | "WAIVED" | "OVERDUE";
+  status?:
+    | EduFeeAssignmentStatus
+    | "PENDING"
+    | "PARTIAL"
+    | "PAID"
+    | "WAIVED"
+    | "OVERDUE";
   dueDate?: Date | null;
   notes?: string | null;
 }
@@ -255,12 +249,14 @@ export function buildFeeAssignmentCreate(
 ): Prisma.edu_fee_assignmentCreateInput {
   return {
     tenantId: input.tenantId,
-    studentId: input.studentId,
-    feeStructureId: input.feeStructureId,
-    termId: input.termId,
-    amount: input.amount,
+    student: { connect: { id: input.studentId } },
+    feeStructure: { connect: { id: input.feeStructureId } },
+    originalAmount: input.amount,
+    discountAmount: 0,
+    finalAmount: input.amount,
+    status: (input.status ?? "PENDING") as EduFeeAssignmentStatus,
     amountPaid: input.amountPaid ?? 0,
-    status: input.status ?? "PENDING",
+    amountOutstanding: input.amount - (input.amountPaid ?? 0),
     dueDate: input.dueDate ?? null,
     notes: input.notes ?? null,
   };
@@ -273,10 +269,12 @@ export function buildFeeAssignmentCreateMany(
     tenantId: input.tenantId,
     studentId: input.studentId,
     feeStructureId: input.feeStructureId,
-    termId: input.termId,
-    amount: input.amount,
+    originalAmount: input.amount,
+    discountAmount: 0,
+    finalAmount: input.amount,
     amountPaid: input.amountPaid ?? 0,
-    status: input.status ?? "PENDING",
+    amountOutstanding: input.amount - (input.amountPaid ?? 0),
+    status: (input.status ?? "PENDING") as EduFeeAssignmentStatus,
     dueDate: input.dueDate ?? null,
     notes: input.notes ?? null,
   }));
@@ -300,7 +298,13 @@ export interface ResultInput {
   gradePoint?: number | null;
   position?: number | null;
   teacherComment?: string | null;
-  status?: "DRAFT" | "SUBMITTED" | "APPROVED" | "PUBLISHED";
+  status?:
+    | EduResultStatus
+    | "DRAFT"
+    | "SUBMITTED"
+    | "APPROVED"
+    | "RELEASED"
+    | "LOCKED";
   submittedAt?: Date | null;
   approvedById?: string | null;
   approvedAt?: Date | null;
@@ -311,21 +315,23 @@ export function buildResultCreate(
 ): Prisma.edu_resultCreateInput {
   return {
     tenantId: input.tenantId,
-    studentId: input.studentId,
-    classId: input.classId,
-    subjectId: input.subjectId,
-    termId: input.termId,
-    sessionId: input.sessionId,
-    caScore: input.caScore ?? null,
-    examScore: input.examScore ?? null,
-    totalScore: input.totalScore ?? null,
+    student: { connect: { id: input.studentId } },
+    class: { connect: { id: input.classId } },
+    subject: { connect: { id: input.subjectId } },
+    term: { connect: { id: input.termId } },
+    session: { connect: { id: input.sessionId } },
+    caScore: input.caScore ?? 0,
+    examScore: input.examScore ?? 0,
+    totalScore: input.totalScore ?? 0,
     grade: input.grade ?? null,
     gradePoint: input.gradePoint ?? null,
-    position: input.position ?? null,
+    classPosition: input.position ?? null,
     teacherComment: input.teacherComment ?? null,
-    status: input.status ?? "DRAFT",
+    status: (input.status ?? "DRAFT") as EduResultStatus,
     submittedAt: input.submittedAt ?? null,
-    approvedById: input.approvedById ?? null,
+    approvedBy: input.approvedById
+      ? { connect: { id: input.approvedById } }
+      : undefined,
     approvedAt: input.approvedAt ?? null,
   };
 }
@@ -337,8 +343,7 @@ export function buildResultUpsert(input: ResultInput): {
 } {
   return {
     where: {
-      tenantId_studentId_subjectId_termId: {
-        tenantId: input.tenantId,
+      studentId_subjectId_termId: {
         studentId: input.studentId,
         subjectId: input.subjectId,
         termId: input.termId,
@@ -346,16 +351,18 @@ export function buildResultUpsert(input: ResultInput): {
     },
     create: buildResultCreate(input),
     update: {
-      caScore: input.caScore,
-      examScore: input.examScore,
-      totalScore: input.totalScore,
+      caScore: input.caScore ?? undefined,
+      examScore: input.examScore ?? undefined,
+      totalScore: input.totalScore ?? undefined,
       grade: input.grade,
       gradePoint: input.gradePoint,
-      position: input.position,
+      classPosition: input.position,
       teacherComment: input.teacherComment,
-      status: input.status,
+      status: input.status as any,
       submittedAt: input.submittedAt,
-      approvedById: input.approvedById,
+      approvedBy: input.approvedById
+        ? { connect: { id: input.approvedById } }
+        : undefined,
       approvedAt: input.approvedAt,
     },
   };

@@ -1,14 +1,19 @@
 /**
  * Phase 16B - Procurement Entity Builders
- * 
+ *
  * Pure, deterministic functions that transform service-layer inputs
  * into Prisma-compliant create/update input objects.
- * 
+ *
  * NO side effects, NO I/O, NO business logic.
  */
 
-import { Prisma, ProcPurchaseOrderStatus, ProcPurchaseRequestStatus, ProcPriority } from '@prisma/client';
-import { randomUUID } from 'crypto';
+import {
+  Prisma,
+  ProcPurchaseOrderStatus,
+  ProcPurchaseRequestStatus,
+  ProcPriority,
+} from "@prisma/client";
+import { randomUUID } from "crypto";
 
 // ============================================================================
 // PURCHASE ORDERS
@@ -17,8 +22,16 @@ import { randomUUID } from 'crypto';
 export interface PurchaseOrderInput {
   tenantId: string;
   poNumber: string;
-  status?: ProcPurchaseOrderStatus | 'DRAFT' | 'PENDING_APPROVAL' | 'APPROVED' | 'SENT' | 'PARTIALLY_RECEIVED' | 'RECEIVED' | 'CANCELLED';
-  priority?: ProcPriority | 'LOW' | 'NORMAL' | 'HIGH' | 'URGENT';
+  status?:
+    | ProcPurchaseOrderStatus
+    | "DRAFT"
+    | "PENDING_APPROVAL"
+    | "APPROVED"
+    | "SENT"
+    | "PARTIALLY_RECEIVED"
+    | "RECEIVED"
+    | "CANCELLED";
+  priority?: ProcPriority | "LOW" | "NORMAL" | "HIGH" | "URGENT";
   supplierId: string;
   supplierName?: string | null;
   warehouseId?: string | null;
@@ -39,57 +52,66 @@ export interface PurchaseOrderInput {
 }
 
 export function buildPurchaseOrderCreate(
-  input: PurchaseOrderInput
+  input: PurchaseOrderInput,
 ): Prisma.proc_purchase_ordersCreateInput {
   return {
     id: randomUUID(),
     tenantId: input.tenantId,
     poNumber: input.poNumber,
-    status: (input.status ?? 'DRAFT') as ProcPurchaseOrderStatus,
-    priority: (input.priority ?? 'NORMAL') as ProcPriority,
+    status: (input.status ?? "DRAFT") as ProcPurchaseOrderStatus,
+    priority: (input.priority ?? "NORMAL") as ProcPriority,
     supplierId: input.supplierId,
-    supplierName: input.supplierName ?? null,
-    warehouseId: input.warehouseId ?? null,
+    supplierName: input.supplierName ?? "",
+    shipToLocationId: input.warehouseId ?? null,
     purchaseRequestId: input.purchaseRequestId ?? null,
-    currency: input.currency ?? 'NGN',
+    currency: input.currency ?? "NGN",
     subtotal: input.subtotal,
-    taxTotal: input.taxTotal ?? 0,
-    discountTotal: input.discountTotal ?? 0,
-    grandTotal: input.grandTotal,
-    paymentTerms: input.paymentTerms ?? null,
-    deliveryTerms: input.deliveryTerms ?? null,
-    expectedDeliveryDate: input.expectedDeliveryDate ?? null,
-    notes: input.notes ?? null,
+    taxAmount: input.taxTotal ?? 0,
+    discount: input.discountTotal ?? 0,
+    totalAmount: input.grandTotal,
+    paymentTerms: input.paymentTerms ?? "NET30",
+    termsAndConditions: input.deliveryTerms ?? null,
+    expectedDelivery: input.expectedDeliveryDate ?? null,
+    supplierNotes: input.notes ?? null,
     internalNotes: input.internalNotes ?? null,
     createdBy: input.createdBy,
-    approvedBy: input.approvedBy ?? null,
-    approvedAt: input.approvedAt ?? null,
+    confirmedBy: input.approvedBy ?? null,
+    confirmedAt: input.approvedAt ?? null,
+    updatedAt: new Date(),
   };
 }
 
 export function buildPurchaseOrderUpdate(
-  input: Partial<PurchaseOrderInput>
+  input: Partial<PurchaseOrderInput>,
 ): Prisma.proc_purchase_ordersUpdateInput {
   const update: Prisma.proc_purchase_ordersUpdateInput = {};
-  
-  if (input.status !== undefined) update.status = input.status as ProcPurchaseOrderStatus;
-  if (input.priority !== undefined) update.priority = input.priority as ProcPriority;
-  if (input.supplierName !== undefined) update.supplierName = input.supplierName;
-  if (input.warehouseId !== undefined) update.warehouseId = input.warehouseId;
+
+  if (input.status !== undefined)
+    update.status = input.status as ProcPurchaseOrderStatus;
+  if (input.priority !== undefined)
+    update.priority = input.priority as ProcPriority;
+  if (input.supplierName !== undefined)
+    update.supplierName = input.supplierName ?? "";
+  if (input.warehouseId !== undefined)
+    update.shipToLocationId = input.warehouseId;
   if (input.subtotal !== undefined) update.subtotal = input.subtotal;
-  if (input.taxTotal !== undefined) update.taxTotal = input.taxTotal;
-  if (input.discountTotal !== undefined) update.discountTotal = input.discountTotal;
-  if (input.grandTotal !== undefined) update.grandTotal = input.grandTotal;
-  if (input.paymentTerms !== undefined) update.paymentTerms = input.paymentTerms;
-  if (input.deliveryTerms !== undefined) update.deliveryTerms = input.deliveryTerms;
-  if (input.expectedDeliveryDate !== undefined) update.expectedDeliveryDate = input.expectedDeliveryDate;
-  if (input.notes !== undefined) update.notes = input.notes;
-  if (input.internalNotes !== undefined) update.internalNotes = input.internalNotes;
-  if (input.approvedBy !== undefined) update.approvedBy = input.approvedBy;
-  if (input.approvedAt !== undefined) update.approvedAt = input.approvedAt;
-  
+  if (input.taxTotal !== undefined) update.taxAmount = input.taxTotal;
+  if (input.discountTotal !== undefined) update.discount = input.discountTotal;
+  if (input.grandTotal !== undefined) update.totalAmount = input.grandTotal;
+  if (input.paymentTerms !== undefined)
+    update.paymentTerms = input.paymentTerms ?? "NET30";
+  if (input.deliveryTerms !== undefined)
+    update.termsAndConditions = input.deliveryTerms;
+  if (input.expectedDeliveryDate !== undefined)
+    update.expectedDelivery = input.expectedDeliveryDate;
+  if (input.notes !== undefined) update.supplierNotes = input.notes;
+  if (input.internalNotes !== undefined)
+    update.internalNotes = input.internalNotes;
+  if (input.approvedBy !== undefined) update.confirmedBy = input.approvedBy;
+  if (input.approvedAt !== undefined) update.confirmedAt = input.approvedAt;
+
   update.updatedAt = new Date();
-  
+
   return update;
 }
 
@@ -116,12 +138,12 @@ export interface PurchaseOrderItemInput {
 }
 
 export function buildPurchaseOrderItemCreate(
-  input: PurchaseOrderItemInput
+  input: PurchaseOrderItemInput,
 ): Prisma.proc_purchase_order_itemsCreateInput {
   return {
     id: randomUUID(),
     proc_purchase_orders: {
-      connect: { id: input.purchaseOrderId }
+      connect: { id: input.purchaseOrderId },
     },
     productId: input.productId,
     productSku: input.productSku ?? null,
@@ -129,7 +151,7 @@ export function buildPurchaseOrderItemCreate(
     orderedQuantity: input.orderedQuantity,
     receivedQuantity: input.receivedQuantity ?? 0,
     pendingQuantity: input.pendingQuantity ?? input.orderedQuantity,
-    unit: input.unit ?? 'UNIT',
+    unit: input.unit ?? "UNIT",
     unitPrice: input.unitPrice,
     taxRate: input.taxRate ?? 0,
     discount: input.discount ?? 0,
@@ -147,9 +169,18 @@ export function buildPurchaseOrderItemCreate(
 export interface PurchaseRequestInput {
   tenantId: string;
   requestNumber: string;
-  status?: ProcPurchaseRequestStatus | 'DRAFT' | 'SUBMITTED' | 'UNDER_REVIEW' | 'APPROVED' | 'REJECTED' | 'CONVERTED' | 'CANCELLED';
-  priority?: ProcPriority | 'LOW' | 'NORMAL' | 'HIGH' | 'URGENT';
+  status?:
+    | ProcPurchaseRequestStatus
+    | "DRAFT"
+    | "SUBMITTED"
+    | "UNDER_REVIEW"
+    | "APPROVED"
+    | "REJECTED"
+    | "CONVERTED"
+    | "CANCELLED";
+  priority?: ProcPriority | "LOW" | "NORMAL" | "HIGH" | "URGENT";
   requestedBy: string;
+  title: string;
   department?: string | null;
   locationId?: string | null;
   preferredSupplierId?: string | null;
@@ -158,58 +189,64 @@ export interface PurchaseRequestInput {
   requiredByDate?: Date | null;
   currency?: string;
   estimatedTotal?: number | null;
-  attachments?: Record<string, unknown> | null;
   reviewedBy?: string | null;
   reviewedAt?: Date | null;
   reviewNotes?: string | null;
 }
 
 export function buildPurchaseRequestCreate(
-  input: PurchaseRequestInput
+  input: PurchaseRequestInput,
 ): Prisma.proc_purchase_requestsCreateInput {
   return {
     id: randomUUID(),
     tenantId: input.tenantId,
     requestNumber: input.requestNumber,
-    status: (input.status ?? 'DRAFT') as ProcPurchaseRequestStatus,
-    priority: (input.priority ?? 'NORMAL') as ProcPriority,
+    status: (input.status ?? "DRAFT") as ProcPurchaseRequestStatus,
+    priority: (input.priority ?? "NORMAL") as ProcPriority,
     requestedBy: input.requestedBy,
+    title: input.title,
     department: input.department ?? null,
     locationId: input.locationId ?? null,
     preferredSupplierId: input.preferredSupplierId ?? null,
     justification: input.justification ?? null,
     notes: input.notes ?? null,
-    requiredByDate: input.requiredByDate ?? null,
-    currency: input.currency ?? 'NGN',
+    neededByDate: input.requiredByDate ?? null,
     estimatedTotal: input.estimatedTotal ?? null,
-    attachments: input.attachments ? input.attachments as Prisma.InputJsonValue : Prisma.JsonNull,
-    reviewedBy: input.reviewedBy ?? null,
-    reviewedAt: input.reviewedAt ?? null,
-    reviewNotes: input.reviewNotes ?? null,
+    approvedBy: input.reviewedBy ?? null,
+    approvedAt: input.reviewedAt ?? null,
+    updatedAt: new Date(),
   };
 }
 
 export function buildPurchaseRequestUpdate(
-  input: Partial<PurchaseRequestInput>
+  input: Partial<PurchaseRequestInput>,
 ): Prisma.proc_purchase_requestsUpdateInput {
   const update: Prisma.proc_purchase_requestsUpdateInput = {};
-  
-  if (input.status !== undefined) update.status = input.status as ProcPurchaseRequestStatus;
-  if (input.priority !== undefined) update.priority = input.priority as ProcPriority;
+
+  if (input.status !== undefined)
+    update.status = input.status as ProcPurchaseRequestStatus;
+  if (input.priority !== undefined)
+    update.priority = input.priority as ProcPriority;
   if (input.department !== undefined) update.department = input.department;
   if (input.locationId !== undefined) update.locationId = input.locationId;
-  if (input.preferredSupplierId !== undefined) update.preferredSupplierId = input.preferredSupplierId;
-  if (input.justification !== undefined) update.justification = input.justification;
+  if (input.preferredSupplierId !== undefined)
+    update.preferredSupplierId = input.preferredSupplierId;
+  if (input.justification !== undefined)
+    update.justification = input.justification;
+  if (input.title !== undefined) update.title = input.title;
   if (input.notes !== undefined) update.notes = input.notes;
-  if (input.requiredByDate !== undefined) update.requiredByDate = input.requiredByDate;
-  if (input.estimatedTotal !== undefined) update.estimatedTotal = input.estimatedTotal;
-  if (input.attachments !== undefined) update.attachments = input.attachments ? input.attachments as Prisma.InputJsonValue : Prisma.JsonNull;
-  if (input.reviewedBy !== undefined) update.reviewedBy = input.reviewedBy;
-  if (input.reviewedAt !== undefined) update.reviewedAt = input.reviewedAt;
-  if (input.reviewNotes !== undefined) update.reviewNotes = input.reviewNotes;
-  
+  if (input.requiredByDate !== undefined)
+    update.neededByDate = input.requiredByDate;
+  if (input.estimatedTotal !== undefined)
+    update.estimatedTotal = input.estimatedTotal;
+  if (input.reviewedBy !== undefined)
+    update.approvedBy = input.reviewedBy ?? null;
+  if (input.reviewedAt !== undefined)
+    update.approvedAt = input.reviewedAt ?? null;
+  if (input.reviewNotes !== undefined) update.notes = input.reviewNotes;
+
   update.updatedAt = new Date();
-  
+
   return update;
 }
 
@@ -232,18 +269,18 @@ export interface PurchaseRequestItemInput {
 }
 
 export function buildPurchaseRequestItemCreate(
-  input: PurchaseRequestItemInput
+  input: PurchaseRequestItemInput,
 ): Prisma.proc_purchase_request_itemsCreateInput {
   return {
     id: randomUUID(),
     proc_purchase_requests: {
-      connect: { id: input.purchaseRequestId }
+      connect: { id: input.purchaseRequestId },
     },
     productId: input.productId,
     productSku: input.productSku ?? null,
     productName: input.productName,
     quantity: input.quantity,
-    unit: input.unit ?? 'UNIT',
+    unit: input.unit ?? "UNIT",
     estimatedUnitPrice: input.estimatedUnitPrice ?? null,
     estimatedTotal: input.estimatedTotal ?? null,
     specifications: input.specifications ?? null,

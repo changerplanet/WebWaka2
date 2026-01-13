@@ -1,16 +1,16 @@
 #!/bin/bash
 
-# Install dependencies if missing (optional safety)
+# Install dependencies
 npm --prefix frontend install
 
 # Build frontend
-npm --prefix frontend run build
+npm --prefix frontend run build || exit 1
 
-# Start Next.js frontend
-npm --prefix frontend run start -- -p 3000 -H 0.0.0.0 &
+# Start Next.js frontend (Replit uses $PORT)
+npm --prefix frontend run start -- -p $PORT -H 0.0.0.0 &
 
-# Wait for frontend to boot
+# Wait for frontend
 sleep 4
 
-# Start FastAPI backend on Replit exposed port
+# Start FastAPI backend
 uvicorn backend.server:app --host 0.0.0.0 --port $PORT
