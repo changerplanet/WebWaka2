@@ -27,8 +27,8 @@ export interface DemoSuite {
   tenants: DemoTenant[]
 }
 
-// Default password for ALL demo accounts
-export const DEMO_PASSWORD = 'Demo2026!'
+// Default password for ALL demo accounts - must be set via environment variable
+export const DEMO_PASSWORD = process.env.DEMO_PASSWORD
 
 // Partner-level demo accounts
 export const PARTNER_CREDENTIALS: DemoCredential[] = [

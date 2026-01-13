@@ -1,0 +1,133 @@
+🔐 REPLIT AGENT — RESTRICTED EXECUTION PROMPT
+
+Title: P0 Deployment Stabilization — Approved Fixes Only
+
+⸻
+
+You are operating under a STRICT, LIMITED MANDATE.
+Apply ONLY the fixes listed below.
+Do NOT make any other changes.
+
+⸻
+
+✅ APPROVED FIXES (ONLY THESE)
+
+FIX 1 — Remove Hardcoded Demo Password (SECURITY P0)
+
+File:
+
+frontend/src/lib/demo/credentials.ts
+
+Current issue:
+A hardcoded demo password exists in source code.
+
+Required change:
+	•	Replace the hardcoded password with an environment variable
+	•	Do NOT add a fallback value
+	•	Do NOT introduce defaults
+
+Expected result (example):
+
+export const DEMO_PASSWORD = process.env.DEMO_PASSWORD
+
+❌ Do NOT:
+	•	Keep 'Demo2026!'
+	•	Add fallback strings
+	•	Add demo logic
+	•	Modify authentication behavior
+
+⸻
+
+FIX 2 — Resolve Port Mismatch in start Script (DEPLOYMENT P0)
+
+File:
+
+frontend/package.json
+
+Current issue:
+start script hardcodes a port, conflicting with Replit/Vercel runtime ports.
+
+Required change:
+Change:
+
+"start": "next start -p 3000 -H 0.0.0.0"
+
+To:
+
+"start": "next start"
+
+❌ Do NOT:
+	•	Add new scripts
+	•	Change dev/build scripts
+	•	Modify run commands elsewhere
+
+⸻
+
+FIX 3 — NODE_ENV VERIFICATION ONLY (NO CODE CHANGE)
+
+Action:
+	•	Verify that NODE_ENV is NOT hardcoded anywhere in the repository
+	•	Do NOT modify code
+	•	Do NOT add .env files
+	•	Confirm it is expected to be injected via Replit Secrets
+
+Output required:
+A short confirmation that:
+	•	NODE_ENV is not hardcoded
+	•	Environment control remains external
+
+⸻
+
+🛑 EXPLICITLY FORBIDDEN ACTIONS
+
+You must NOT:
+	•	Refactor Prisma usage
+	•	Modify layout.tsx
+	•	Add caching
+	•	Change database configuration
+	•	Touch migrations or schema
+	•	Modify middleware
+	•	Add logging, monitoring, or audits
+	•	Install or upgrade dependencies
+	•	Run npm audit fix
+	•	Touch saas-core/
+	•	Change deployment configs beyond what is listed
+
+⸻
+
+✅ REQUIRED VERIFICATION STEPS (AFTER FIXES)
+
+After applying the changes:
+	1.	Run:
+
+npm run build
+
+	2.	Start the app:
+
+npm run dev
+
+	3.	Confirm:
+
+	•	No build errors
+	•	No runtime errors
+	•	No missing environment variable warnings (except DEMO_PASSWORD if not yet set)
+
+⸻
+
+📄 REQUIRED OUTPUT
+
+Provide a concise report with:
+	•	Files modified (exact paths)
+	•	Diff summary (1–2 lines per file)
+	•	Build result (PASS/FAIL)
+	•	Confirmation that no other files were touched
+
+⸻
+
+🚨 STOP CONDITION
+
+If any step requires additional changes outside this mandate, STOP immediately and report why.
+
+⸻
+
+Begin execution now.
