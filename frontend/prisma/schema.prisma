@@ -17176,3 +17176,558 @@ model chu_transparency_report {
   @@index([reportPeriod])
   @@index([status])
 }
+
+// =============================================================================
+// REAL ESTATE SUITE - Property Management
+// Added: Phase D2.5 - Schema Implementation
+// =============================================================================
+
+model realestate_config {
+  id              String    @id @default(uuid())
+  tenantId        String
+  partnerId       String
+  
+  // Configuration
+  companyName     String
+  companyLogo     String?
+  currency        String    @default("NGN")
+  timezone        String    @default("Africa/Lagos")
+  
+  // Settings
+  defaultLeaseTermMonths Int    @default(12)
+  lateFeePercentage      Float  @default(5.0)
+  gracePeriodDays        Int    @default(7)
+  
+  // Contact
+  address         String?
+  phone           String?
+  email           String?
+  
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  
+  @@unique([tenantId])
+  @@index([partnerId])
+}
+
+model realestate_property {
+  id              String    @id @default(uuid())
+  tenantId        String
+  partnerId       String
+  
+  // Property Details
+  name            String
+  propertyType    String    // "RESIDENTIAL", "COMMERCIAL", "MIXED_USE", "LAND"
+  address         String
+  city            String
+  state           String
+  country         String    @default("Nigeria")
+  
+  // Location
+  lga             String?   // Local Government Area
+  latitude        Float?
+  longitude       Float?
+  
+  // Specs
+  totalUnits      Int       @default(1)
+  totalFloors     Int       @default(1)
+  yearBuilt       Int?
+  landSize        Float?    // in square meters
+  
+  // Financials
+  marketValue     Float?
+  acquisitionCost Float?
+  acquisitionDate DateTime?
+  
+  // Status
+  status          String    @default("ACTIVE")  // "ACTIVE", "INACTIVE", "UNDER_RENOVATION"
+  
+  // Media
+  images          String?   @db.Text  // JSON array of image URLs
+  
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  
+  // Relations
+  units           realestate_unit[]
+  
+  @@index([tenantId])
+  @@index([partnerId])
+  @@index([propertyType])
+  @@index([status])
+}
+
+model realestate_unit {
+  id              String    @id @default(uuid())
+  tenantId        String
+  partnerId       String
+  propertyId      String
+  
+  // Unit Details
+  unitNumber      String
+  unitType        String    // "FLAT", "DUPLEX", "SHOP", "OFFICE", "WAREHOUSE"
+  floor           Int?
+  
+  // Specs
+  bedrooms        Int?
+  bathrooms       Int?
+  size            Float?    // in square meters
+  
+  // Pricing
+  monthlyRent     Float
+  securityDeposit Float?
+  serviceCharge   Float?    @default(0)
+  
+  // Status
+  status          String    @default("VACANT")  // "VACANT", "OCCUPIED", "RESERVED", "MAINTENANCE"
+  
+  // Amenities
+  amenities       String?   @db.Text  // JSON array
+  description     String?   @db.Text
+  
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  
+  // Relations
+  property        realestate_property @relation(fields: [propertyId], references: [id])
+  leases          realestate_lease[]
+  
+  @@index([tenantId])
+  @@index([partnerId])
+  @@index([propertyId])
+  @@index([status])
+}
+
+model realestate_tenant_profile {
+  id              String    @id @default(uuid())
+  tenantId        String    // Platform tenant
+  partnerId       String
+  
+  // Personal Info
+  firstName       String
+  lastName        String
+  email           String
+  phone           String
+  alternatePhone  String?
+  
+  // Identification
+  idType          String?   // "NIN", "VOTERS_CARD", "DRIVERS_LICENSE", "PASSPORT"
+  idNumber        String?
+  
+  // Employment
+  occupation      String?
+  employer        String?
+  employerAddress String?
+  monthlyIncome   Float?
+  
+  // Emergency Contact
+  emergencyName   String?
+  emergencyPhone  String?
+  emergencyRelation String?
+  
+  // Status
+  status          String    @default("ACTIVE")  // "ACTIVE", "INACTIVE", "BLACKLISTED"
+  
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  
+  // Relations
+  leases          realestate_lease[]
+  payments        realestate_payment[]
+  
+  @@index([tenantId])
+  @@index([partnerId])
+  @@index([email])
+  @@index([phone])
+}
+
+model realestate_lease {
+  id              String    @id @default(uuid())
+  tenantId        String
+  partnerId       String
+  unitId          String
+  tenantProfileId String
+  
+  // Lease Terms
+  startDate       DateTime
+  endDate         DateTime
+  monthlyRent     Float
+  securityDeposit Float
+  serviceCharge   Float     @default(0)
+  
+  // Payment Terms
+  paymentDueDay   Int       @default(1)  // Day of month rent is due
+  gracePeriodDays Int       @default(7)
+  lateFeeType     String    @default("PERCENTAGE")  // "PERCENTAGE", "FIXED"
+  lateFeeAmount   Float     @default(5.0)
+  
+  // Status
+  status          String    @default("ACTIVE")  // "DRAFT", "ACTIVE", "EXPIRED", "TERMINATED"
+  
+  // Documents
+  leaseDocument   String?   // URL to signed lease
+  
+  // Notes
+  notes           String?   @db.Text
+  
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  
+  // Relations
+  unit            realestate_unit @relation(fields: [unitId], references: [id])
+  tenantProfile   realestate_tenant_profile @relation(fields: [tenantProfileId], references: [id])
+  payments        realestate_payment[]
+  
+  @@index([tenantId])
+  @@index([partnerId])
+  @@index([unitId])
+  @@index([tenantProfileId])
+  @@index([status])
+  @@index([endDate])
+}
+
+model realestate_payment {
+  id              String    @id @default(uuid())
+  tenantId        String
+  partnerId       String
+  leaseId         String
+  tenantProfileId String
+  
+  // Payment Details
+  paymentType     String    // "RENT", "SECURITY_DEPOSIT", "SERVICE_CHARGE", "LATE_FEE", "OTHER"
+  amount          Float
+  periodStart     DateTime?
+  periodEnd       DateTime?
+  dueDate         DateTime
+  
+  // Payment Info
+  paymentDate     DateTime?
+  paymentMethod   String?   // "BANK_TRANSFER", "CASH", "CARD", "USSD"
+  paymentReference String?
+  
+  // Status
+  status          String    @default("PENDING")  // "PENDING", "PAID", "PARTIAL", "OVERDUE", "CANCELLED"
+  
+  // Notes
+  notes           String?
+  
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  
+  // Relations
+  lease           realestate_lease @relation(fields: [leaseId], references: [id])
+  tenantProfile   realestate_tenant_profile @relation(fields: [tenantProfileId], references: [id])
+  
+  @@index([tenantId])
+  @@index([partnerId])
+  @@index([leaseId])
+  @@index([tenantProfileId])
+  @@index([status])
+  @@index([dueDate])
+}
+
+// =============================================================================
+// POLITICAL SUITE - Campaign Management
+// Added: Phase D2.5 - Schema Implementation
+// =============================================================================
+
+model political_config {
+  id              String    @id @default(uuid())
+  tenantId        String
+  partnerId       String
+  
+  // Configuration
+  organizationName String
+  logo            String?
+  currency        String    @default("NGN")
+  timezone        String    @default("Africa/Lagos")
+  
+  // Settings
+  donationMinimum Float     @default(1000)
+  donationMaximum Float?
+  enableAnonymousDonations Boolean @default(false)
+  
+  // Contact
+  headquarters    String?
+  phone           String?
+  email           String?
+  website         String?
+  
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  
+  @@unique([tenantId])
+  @@index([partnerId])
+}
+
+model political_party {
+  id              String    @id @default(uuid())
+  tenantId        String
+  partnerId       String
+  
+  // Party Info
+  name            String
+  abbreviation    String
+  slogan          String?
+  logo            String?
+  
+  // Details
+  foundedDate     DateTime?
+  ideology        String?
+  description     String?   @db.Text
+  
+  // Contact
+  headquarters    String?
+  phone           String?
+  email           String?
+  website         String?
+  
+  // Status
+  status          String    @default("ACTIVE")  // "ACTIVE", "INACTIVE", "SUSPENDED"
+  
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  
+  // Relations
+  campaigns       political_campaign[]
+  candidates      political_candidate[]
+  members         political_member[]
+  
+  @@index([tenantId])
+  @@index([partnerId])
+  @@index([abbreviation])
+}
+
+model political_campaign {
+  id              String    @id @default(uuid())
+  tenantId        String
+  partnerId       String
+  partyId         String?
+  
+  // Campaign Info
+  name            String
+  electionType    String    // "PRESIDENTIAL", "GUBERNATORIAL", "SENATORIAL", "HOUSE_OF_REPS", "STATE_ASSEMBLY", "LOCAL_GOVT"
+  position        String    // Position being contested
+  constituency    String    // Area of coverage
+  
+  // Dates
+  electionDate    DateTime?
+  campaignStart   DateTime?
+  campaignEnd     DateTime?
+  
+  // Financials
+  budgetTarget    Float?
+  budgetSpent     Float     @default(0)
+  
+  // Status
+  status          String    @default("PLANNING")  // "PLANNING", "ACTIVE", "COMPLETED", "CANCELLED"
+  
+  // Description
+  manifesto       String?   @db.Text
+  
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  
+  // Relations
+  party           political_party? @relation(fields: [partyId], references: [id])
+  candidates      political_candidate[]
+  donations       political_donation[]
+  events          political_event[]
+  
+  @@index([tenantId])
+  @@index([partnerId])
+  @@index([partyId])
+  @@index([electionType])
+  @@index([status])
+}
+
+model political_candidate {
+  id              String    @id @default(uuid())
+  tenantId        String
+  partnerId       String
+  partyId         String?
+  campaignId      String?
+  
+  // Personal Info
+  firstName       String
+  lastName        String
+  middleName      String?
+  dateOfBirth     DateTime?
+  gender          String?
+  
+  // Contact
+  email           String?
+  phone           String?
+  address         String?
+  
+  // Political Info
+  position        String    // Position contesting for
+  constituency    String?
+  
+  // Profile
+  education       String?   @db.Text  // JSON array
+  experience      String?   @db.Text  // JSON array
+  biography       String?   @db.Text
+  photo           String?
+  
+  // Status
+  status          String    @default("ACTIVE")  // "ACTIVE", "WITHDRAWN", "DISQUALIFIED", "ELECTED", "LOST"
+  
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  
+  // Relations
+  party           political_party? @relation(fields: [partyId], references: [id])
+  campaign        political_campaign? @relation(fields: [campaignId], references: [id])
+  
+  @@index([tenantId])
+  @@index([partnerId])
+  @@index([partyId])
+  @@index([campaignId])
+  @@index([status])
+}
+
+model political_member {
+  id              String    @id @default(uuid())
+  tenantId        String
+  partnerId       String
+  partyId         String
+  
+  // Personal Info
+  firstName       String
+  lastName        String
+  email           String?
+  phone           String
+  alternatePhone  String?
+  
+  // Demographics
+  dateOfBirth     DateTime?
+  gender          String?
+  occupation      String?
+  
+  // Location
+  address         String?
+  ward            String?
+  lga             String?   // Local Government Area
+  state           String?
+  pollingUnit     String?
+  
+  // Membership
+  membershipNumber String?
+  membershipType   String   @default("ORDINARY")  // "ORDINARY", "EXECUTIVE", "PATRON"
+  joinDate         DateTime @default(now())
+  
+  // Status
+  status          String    @default("ACTIVE")  // "ACTIVE", "INACTIVE", "SUSPENDED"
+  
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  
+  // Relations
+  party           political_party @relation(fields: [partyId], references: [id])
+  donations       political_donation[]
+  
+  @@index([tenantId])
+  @@index([partnerId])
+  @@index([partyId])
+  @@index([phone])
+  @@index([ward])
+  @@index([lga])
+}
+
+model political_donation {
+  id              String    @id @default(uuid())
+  tenantId        String
+  partnerId       String
+  campaignId      String?
+  memberId        String?
+  
+  // Donor Info (if not member)
+  donorName       String?
+  donorEmail      String?
+  donorPhone      String?
+  isAnonymous     Boolean   @default(false)
+  
+  // Donation Details
+  amount          Float
+  currency        String    @default("NGN")
+  donationType    String    @default("CASH")  // "CASH", "BANK_TRANSFER", "KIND", "PLEDGE"
+  
+  // Payment Info
+  paymentDate     DateTime?
+  paymentMethod   String?   // "BANK_TRANSFER", "CASH", "CARD", "USSD"
+  paymentReference String?
+  
+  // Purpose
+  purpose         String?   // "GENERAL", "CAMPAIGN", "RALLY", "MEDIA"
+  
+  // Status
+  status          String    @default("PENDING")  // "PENDING", "RECEIVED", "PLEDGED", "CANCELLED"
+  
+  // Compliance
+  receiptNumber   String?
+  
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  
+  // Relations
+  campaign        political_campaign? @relation(fields: [campaignId], references: [id])
+  member          political_member? @relation(fields: [memberId], references: [id])
+  
+  @@index([tenantId])
+  @@index([partnerId])
+  @@index([campaignId])
+  @@index([memberId])
+  @@index([status])
+  @@index([paymentDate])
+}
+
+model political_event {
+  id              String    @id @default(uuid())
+  tenantId        String
+  partnerId       String
+  campaignId      String?
+  
+  // Event Info
+  name            String
+  eventType       String    // "RALLY", "TOWN_HALL", "FUNDRAISER", "DEBATE", "MEETING", "PRESS_CONFERENCE"
+  description     String?   @db.Text
+  
+  // Location
+  venue           String?
+  address         String?
+  city            String?
+  state           String?
+  lga             String?
+  
+  // Timing
+  startDate       DateTime
+  endDate         DateTime?
+  
+  // Attendance
+  expectedAttendance Int?
+  actualAttendance   Int?
+  
+  // Budget
+  budgetAllocated Float?
+  actualCost      Float?
+  
+  // Status
+  status          String    @default("PLANNED")  // "PLANNED", "CONFIRMED", "IN_PROGRESS", "COMPLETED", "CANCELLED"
+  
+  // Media
+  images          String?   @db.Text  // JSON array
+  
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  
+  // Relations
+  campaign        political_campaign? @relation(fields: [campaignId], references: [id])
+  
+  @@index([tenantId])
+  @@index([partnerId])
+  @@index([campaignId])
+  @@index([eventType])
+  @@index([startDate])
+  @@index([status])
+}
