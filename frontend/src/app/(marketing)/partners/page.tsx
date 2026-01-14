@@ -245,7 +245,7 @@ export default function PartnersPage() {
                 <ArrowRight className="w-5 h-5" />
               </Link>
               <a 
-                href="https://wa.me/2348000000000"
+                href="https://wa.me/2349135003000"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-4 bg-[#25D366] hover:bg-[#20BD5A] text-white font-bold rounded-lg text-base transition-all"
@@ -613,7 +613,7 @@ export default function PartnersPage() {
               <ArrowRight className="w-5 h-5" />
             </Link>
             <a 
-              href="https://wa.me/2348000000000"
+              href="https://wa.me/2349135003000"
               target="_blank"
               rel="noopener noreferrer"
               className="w-full sm:w-auto px-8 py-4 bg-[#25D366] hover:bg-[#20BD5A] text-white font-bold rounded-lg text-base transition-all flex items-center justify-center gap-2"

@@ -163,7 +163,7 @@ export default function SitesAndFunnelsPage() {
                 <ArrowRight className="w-5 h-5" />
               </Link>
               <Link 
-                href="https://wa.me/2348000000000"
+                href="https://wa.me/2349135003000"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-full sm:w-auto px-8 py-4 bg-emerald-500/30 hover:bg-emerald-500/40 text-white font-semibold rounded-lg text-lg transition-all flex items-center justify-center gap-2"
@@ -716,7 +716,7 @@ export default function SitesAndFunnelsPage() {
           </div>
           <div className="mt-8">
             <Link 
-              href="https://wa.me/2348000000000"
+              href="https://wa.me/2349135003000"
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 text-emerald-200 hover:text-white transition-colors"

@@ -10,7 +10,7 @@ interface WhatsAppFABProps {
 }
 
 export function WhatsAppFAB({
-  phoneNumber = '2348000000000',
+  phoneNumber = '2349135003000',
   message = 'Hello, I am interested in becoming a WebWaka Partner.',
   className,
 }: WhatsAppFABProps) {

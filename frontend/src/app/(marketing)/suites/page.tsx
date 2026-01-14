@@ -297,7 +297,7 @@ export default function SuitesPage() {
               <ArrowRight className="w-5 h-5" />
             </Link>
             <Link 
-              href="https://wa.me/2348000000000"
+              href="https://wa.me/2349135003000"
               className="w-full sm:w-auto px-8 py-4 bg-emerald-500/30 hover:bg-emerald-500/40 text-white font-semibold rounded-lg text-lg transition-all"
             >
               Chat on WhatsApp

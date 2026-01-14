@@ -598,7 +598,7 @@ export default function HomePage() {
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-8">
             <a 
-              href="https://wa.me/2348000000000?text=Hello%2C%20I%20am%20interested%20in%20becoming%20a%20WebWaka%20Partner."
+              href="https://wa.me/2349135003000?text=Hello%2C%20I%20am%20interested%20in%20becoming%20a%20WebWaka%20Partner."
               target="_blank"
               rel="noopener noreferrer"
               className="w-full sm:w-auto px-8 py-4 bg-white hover:bg-emerald-50 text-emerald-700 font-bold rounded-lg text-lg transition-all flex items-center justify-center gap-2"
@@ -661,18 +661,23 @@ export default function HomePage() {
               <ul className="space-y-3 text-slate-400 text-base">
                 <li>
                   <a 
-                    href="https://wa.me/2348000000000" 
+                    href="https://wa.me/2349135003000" 
                     target="_blank" 
                     rel="noopener noreferrer"
                     className="hover:text-emerald-400 transition-colors"
                   >
-                    WhatsApp
+                    +234 913 500 3000
                   </a>
                 </li>
                 <li>
                   <a href="mailto:partners@webwaka.com" className="hover:text-emerald-400 transition-colors">
                     partners@webwaka.com
                   </a>
+                </li>
+                <li className="text-sm pt-2">
+                  Millennium Builders Plaza,<br />
+                  Herbert Macaulay Way,<br />
+                  Central Business District, Abuja
                 </li>
               </ul>
             </div>

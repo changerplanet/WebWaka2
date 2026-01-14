@@ -28,15 +28,22 @@ const contactMethods = [
     icon: Phone,
     title: 'Phone',
     description: 'Speak with our team',
-    value: '+234 800 000 0000',
-    href: 'tel:+2348000000000',
+    value: '+234 913 500 3000',
+    href: 'tel:+2349135003000',
   },
   {
     icon: MessageCircle,
     title: 'WhatsApp',
     description: 'Quick questions',
-    value: '+234 800 000 0000',
-    href: 'https://wa.me/2348000000000',
+    value: '+234 913 500 3000',
+    href: 'https://wa.me/2349135003000',
+  },
+  {
+    icon: MapPin,
+    title: 'Office',
+    description: 'Visit us',
+    value: 'Millennium Builders Plaza, Herbert Macaulay Way, Central Business District, Abuja',
+    href: 'https://maps.google.com/?q=Millennium+Builders+Plaza+Abuja',
   },
 ]
 

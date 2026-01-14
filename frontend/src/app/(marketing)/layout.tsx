@@ -187,15 +187,25 @@ export default function MarketingLayout({
               </ul>
             </div>
 
-            {/* Resources */}
+            {/* Contact */}
             <div>
-              <h4 className="font-semibold mb-4">Resources</h4>
+              <h4 className="font-semibold mb-4">Contact</h4>
               <ul className="space-y-3 text-gray-400 text-sm">
                 <li><Link href="/login-v2" className="hover:text-emerald-400 transition-colors">Partner Login</Link></li>
+                <li>
+                  <a href="https://wa.me/2349135003000" target="_blank" rel="noopener noreferrer" className="hover:text-emerald-400 transition-colors">
+                    +234 913 500 3000
+                  </a>
+                </li>
                 <li>
                   <a href="mailto:partners@webwaka.com" className="hover:text-emerald-400 transition-colors">
                     partners@webwaka.com
                   </a>
+                </li>
+                <li className="text-xs pt-2">
+                  Millennium Builders Plaza,<br />
+                  Herbert Macaulay Way,<br />
+                  Central Business District, Abuja
                 </li>
               </ul>
             </div>

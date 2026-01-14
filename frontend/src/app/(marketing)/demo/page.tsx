@@ -327,7 +327,7 @@ export default function DemoPortalPage() {
             </div>
 
             <Link
-              href="https://wa.me/2348000000000?text=I%20would%20like%20to%20request%20a%20guided%20walkthrough%20of%20WebWaka"
+              href="https://wa.me/2349135003000?text=I%20would%20like%20to%20request%20a%20guided%20walkthrough%20of%20WebWaka"
               className="inline-flex items-center gap-2 px-8 py-4 bg-[#25D366] hover:bg-[#20BD5A] text-white font-bold rounded-lg text-lg transition-all shadow-lg"
             >
               <MessageCircle className="w-5 h-5" />
@@ -410,7 +410,7 @@ export default function DemoPortalPage() {
               <ArrowRight className="w-5 h-5" />
             </a>
             <Link 
-              href="https://wa.me/2348000000000"
+              href="https://wa.me/2349135003000"
               className="w-full sm:w-auto px-8 py-4 bg-white/10 hover:bg-white/20 text-white font-semibold rounded-lg text-lg transition-all backdrop-blur-sm flex items-center justify-center gap-2"
             >
               <MessageCircle className="w-5 h-5" />
