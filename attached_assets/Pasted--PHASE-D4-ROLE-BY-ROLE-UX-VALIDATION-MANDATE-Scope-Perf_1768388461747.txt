@@ -1,0 +1,152 @@
+
+🧪 PHASE D4 — ROLE-BY-ROLE UX VALIDATION MANDATE
+
+Scope
+
+Perform a manual, authenticated, role-by-role UX validation of the WebWaka platform using the already-seeded Demo Partner environment.
+
+This phase is VALIDATION ONLY.
+⚠️ NO code changes, NO schema changes, NO data seeding, NO configuration edits.
+
+⸻
+
+🎯 Objectives
+	1.	Verify that each role sees exactly what it should see — nothing more, nothing less.
+	2.	Confirm UI navigation, dashboards, and workflows align with role permissions.
+	3.	Identify any UX or authorization gaps (UI or API).
+	4.	Produce a clear pass/fail matrix per role and per suite.
+
+⸻
+
+🔐 Authentication Rules
+	•	Use real login flows (magic link or password where applicable).
+	•	Do not bypass authentication.
+	•	Do not create new users.
+	•	Use only existing demo users created under the WebWaka Demo Partner.
+
+⸻
+
+🧑‍💼 ROLES TO TEST
+
+A. Partner-Level Roles (5)
+
+Test one role at a time, fully log out between roles.
+
+Role	Email
+Partner Owner	demo.owner@webwaka.com
+Partner Admin	demo.admin@webwaka.com
+Partner Sales	demo.sales@webwaka.com
+Partner Support	demo.support@webwaka.com
+Partner Staff	demo.staff@webwaka.com
+
+For EACH Partner Role, validate:
+	•	Successful login
+	•	Correct landing dashboard
+	•	Visibility of:
+	•	Client tenants
+	•	Revenue/earnings widgets
+	•	Staff & settings access
+	•	Proper restriction of:
+	•	Earnings
+	•	Admin actions
+	•	Cross-client access (for Staff)
+	•	Attempt access to restricted pages and confirm blocking
+
+⸻
+
+B. Tenant-Level Roles (Per Suite)
+
+Validate at least Admin + Staff + End User (where applicable) for each suite below.
+
+Suites to Validate (ALL SEEDED):
+	•	Commerce (POS / SVM / MVM / Inventory)
+	•	Education
+	•	Health
+	•	Hospitality
+	•	Civic
+	•	Logistics
+	•	Real Estate
+	•	Church
+	•	Political
+
+For each suite:
+	1.	Log in as Tenant Admin
+	2.	Log in as Tenant Staff
+	3.	Log in as End User / Customer / Member (if applicable)
+
+Validate per role:
+	•	Dashboard visibility
+	•	Navigation menu correctness
+	•	Allowed actions work
+	•	Restricted actions are blocked (UI + API)
+	•	No empty dashboards where data exists
+	•	No cross-tenant data leakage
+
+⸻
+
+🔍 WHAT TO EXPLICITLY CHECK
+
+UI-Level
+	•	Pages that load but should not
+	•	Missing redirects to login
+	•	Menu items visible but unusable
+	•	Blank widgets where data exists
+
+API-Level (Observed via UI)
+	•	Unauthorized API calls returning data
+	•	Silent failures instead of 401/403
+	•	Inconsistent behavior between UI and backend
+
+⸻
+
+📋 DELIVERABLES (MANDATORY)
+
+Produce one consolidated report with:
+
+1. Partner Role Validation Table
+
+Role	Login	Dashboard	Permissions Correct	Issues
+
+
+2. Tenant Role Validation Table (Per Suite)
+
+Suite	Role	Allowed Access	Blocked Access	Issues
+
+
+3. Critical Findings Section
+
+Explicitly list:
+	•	❌ Security issues
+	•	⚠️ UX inconsistencies
+	•	❌ Role leakage
+	•	❌ Missing guards
+
+4. Overall Phase D4 Verdict
+
+Choose one:
+	•	✅ PASS — Ready for Phase D5
+	•	⚠️ PARTIAL — Fixes required before D5
+	•	❌ FAIL — Blocking issues identified
+
+⸻
+
+🚫 STRICT CONSTRAINTS
+	•	❌ DO NOT modify code
+	•	❌ DO NOT change database data
+	•	❌ DO NOT reseed
+	•	❌ DO NOT deploy
+	•	❌ DO NOT optimize
+
+Report only. Observe only. Validate only.
+
+⸻
+
+🛑 STOP CONDITION
+
+Once the report is complete:
+	•	STOP
+	•	Await explicit approval before any fixes or next phase
+
+⸻
+
+Begin Phase D4 — Role-by-Role UX Validation now.
