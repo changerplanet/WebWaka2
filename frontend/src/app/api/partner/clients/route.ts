@@ -14,6 +14,7 @@ import {
   CreateClientPlatformInput 
 } from '@/lib/partner-first/client-service'
 import { requirePartnerUser } from '@/lib/partner-authorization'
+import { hasPermission } from '@/lib/phase-4b/partner-staff'
 
 export async function GET(request: NextRequest) {
   try {
@@ -27,6 +28,7 @@ export async function GET(request: NextRequest) {
     }
     
     const partnerId = authResult.partner.id
+    const partnerRole = authResult.partnerUser.role
     
     // Parse query params
     const { searchParams } = new URL(request.url)
@@ -43,10 +45,20 @@ export async function GET(request: NextRequest) {
       offset,
     })
     
+    // STAFF FILTERING: If user cannot view all clients, filter by assignedTenantIds
+    // This ensures PARTNER_STAFF only sees clients they are explicitly assigned to
+    let filteredPlatforms = result.platforms
+    if (!hasPermission(partnerRole, 'canViewAllClients')) {
+      const assignedTenantIds = authResult.partnerUser.assignedTenantIds || []
+      filteredPlatforms = result.platforms.filter(
+        (platform: any) => assignedTenantIds.includes(platform.id)
+      )
+    }
+    
     return NextResponse.json({
       success: true,
-      platforms: result.platforms,
-      total: result.total,
+      platforms: filteredPlatforms,
+      total: filteredPlatforms.length,
       limit,
       offset,
     })

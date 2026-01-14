@@ -54,6 +54,33 @@ export async function GET(request: NextRequest) {
     // Get aggregate financials
     const financials = await getPartnerFinancials(partnerUser.partner.id)
     
+    // STAFF FILTERING: PARTNER_STAFF gets summary-only data
+    // Roles without canViewAllEarnings see totals but not line-item breakdown
+    const isStaffRole = partnerUser.role === 'PARTNER_STAFF' || 
+                        partnerUser.role === 'PARTNER_SALES' || 
+                        partnerUser.role === 'PARTNER_SUPPORT'
+    
+    if (isStaffRole) {
+      // Return summary-only response for STAFF roles
+      // Omit: individual earnings records, instance-level breakdown
+      return NextResponse.json({
+        success: true,
+        partner: {
+          id: partnerUser.partner.id,
+          name: partnerUser.partner.name,
+        },
+        earnings: [], // Empty - no line items for STAFF
+        total: 0,
+        summary: earningsData.summary, // Totals only
+        financials: {
+          totalRevenue: financials.totals.totalRevenue,
+          currentMonthRevenue: financials.totals.currentMonthRevenue,
+          // Omit profit and commission details
+        },
+        instances: [], // No instance breakdown for STAFF
+      })
+    }
+    
     return NextResponse.json({
       success: true,
       partner: {

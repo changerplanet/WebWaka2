@@ -50,6 +50,27 @@ export async function GET(request: NextRequest) {
       permissions: ROLE_PERMISSIONS[s.role],
     }))
     
+    // STAFF FILTERING: PARTNER_STAFF can only see their own record
+    // This prevents lower-privileged roles from viewing full staff directory
+    if (partnerUser.role === 'PARTNER_STAFF') {
+      // Return only the current user's staff record with limited fields
+      const selfRecord = staffWithPermissions
+        .filter(s => s.userId === user.id)
+        .map(s => ({
+          id: s.id,
+          userId: s.userId,
+          role: s.role,
+          displayName: s.displayName,
+          department: s.department,
+          isActive: s.isActive,
+          // Omit: email, phone, permissions, assignedTenantIds for privacy
+        }))
+      return NextResponse.json({
+        success: true,
+        staff: selfRecord,
+      })
+    }
+    
     return NextResponse.json({
       success: true,
       staff: staffWithPermissions,
