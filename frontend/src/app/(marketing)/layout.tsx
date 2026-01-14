@@ -14,10 +14,10 @@ import { Globe, Menu, X } from 'lucide-react'
 
 const navLinks = [
   { href: '/platform', label: 'Platform' },
-  { href: '/capabilities', label: 'Capabilities' },
   { href: '/suites', label: 'Suites' },
+  { href: '/sites-and-funnels', label: 'Sites & Funnels' },
+  { href: '/demo', label: 'Demo' },
   { href: '/partners', label: 'Partners' },
-  { href: '/partners/playbook', label: 'Playbook' },
   { href: '/about', label: 'About' },
 ]
 

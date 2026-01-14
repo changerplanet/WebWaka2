@@ -1,0 +1,186 @@
+Excellent. ✅
+Phase M3 is formally APPROVED. We are clear to proceed.
+
+Below is the official Phase M4 — Build & Integrate Execution Mandate you can give directly to Replit1 Agent.
+
+⸻
+
+🔷 PHASE M4 — MARKETING WEBSITE BUILD & INTEGRATION
+
+Status: AUTHORIZED
+Scope Type: Controlled Implementation
+Audience: Partners (NOT end users)
+Design Source: frontend/docs/design-system/* (Phase M3 output)
+
+⸻
+
+🎯 PHASE M4 OBJECTIVE
+
+Implement the new partner-focused marketing website using the approved Phase M3 design system, ensuring:
+	•	Mobile-first execution
+	•	Maximum legibility on small screens
+	•	Nigeria-first UX and content framing
+	•	Full coverage of 20+ suites + Sites & Funnels
+	•	Clean integration with the Demo Portal
+	•	ZERO impact on core app logic, auth, APIs, or deployments
+
+⸻
+
+🚫 HARD CONSTRAINTS (NON-NEGOTIABLE)
+
+Replit Agent MUST NOT:
+	•	❌ Modify Prisma schema
+	•	❌ Touch auth/session logic
+	•	❌ Change API routes or backend services
+	•	❌ Alter demo data or seeding
+	•	❌ Change deployment configs (Vercel, Replit, envs)
+	•	❌ Modify Sites & Funnels runtime logic
+	•	❌ Introduce partner pricing or billing logic
+	•	❌ Refactor unrelated frontend app pages
+
+Violations = STOP IMMEDIATELY.
+
+⸻
+
+✅ ALLOWED SCOPE
+
+1. Marketing Pages Implementation (React / Next.js App Router)
+
+Implement the following pages using Phase M3 specs:
+	•	/ — Homepage (Partner-first)
+	•	/suites — All Suites Overview (20+)
+	•	/sites-and-funnels — Growth Engine page
+	•	/partners — Partner Program
+	•	/demo — Demo Portal
+	•	/suites/[suite] — Individual suite detail pages
+
+All content must match Phase M2 markdown drafts and Phase M3 design specs.
+
+⸻
+
+2. Design System → Code Mapping
+
+Create reusable components based on:
+	•	01-foundations.md
+	•	02-components.md
+	•	04-responsive-rules.md
+
+Examples:
+	•	Buttons (Primary, Secondary, WhatsApp)
+	•	Cards (Suite, Demo Tenant, Feature)
+	•	Badges (Demo Strength, Category)
+	•	Navigation (Mobile-first)
+	•	Footer + WhatsApp FAB
+
+📌 Typography Rules (STRICT):
+	•	Font: Inter
+	•	Base font size: 16px minimum
+	•	Line height: ≥ 1.5
+	•	No font-weight < 400 for body text
+	•	Touch targets ≥ 44px
+
+⸻
+
+3. Mobile-First Navigation (CRITICAL)
+
+Implement:
+	•	Bottom or hamburger navigation for mobile
+	•	Progressive disclosure (expand on desktop)
+	•	WhatsApp CTA persistent but non-intrusive
+	•	Clear paths:
+	•	“Become a Partner”
+	•	“View Demo”
+	•	“Explore Suites”
+
+Desktop enhancements are secondary.
+
+⸻
+
+4. Demo Portal Integration (READ-ONLY)
+	•	Pull from existing demo tenants
+	•	Display demo businesses by industry
+	•	Show demo strength indicators (Strong / Medium / Mention)
+	•	NO auth bypasses
+	•	NO demo data mutation
+
+This is presentation only.
+
+⸻
+
+5. SEO + Analytics (Lightweight)
+
+Allowed:
+	•	Meta titles/descriptions
+	•	OpenGraph tags
+	•	Semantic HTML
+	•	Placeholder analytics hooks (e.g. trackPageView())
+
+Not allowed:
+	•	Tracking pixels requiring consent logic
+	•	Heavy analytics SDKs
+
+⸻
+
+📁 FILE / FOLDER RULES
+
+Allowed paths:
+	•	frontend/src/app/(marketing)/**
+	•	frontend/src/components/marketing/**
+	•	frontend/src/styles/marketing/**
+	•	frontend/docs/ (reference only)
+
+Forbidden paths:
+	•	frontend/src/app/(dashboard)/**
+	•	frontend/src/app/api/**
+	•	frontend/src/lib/db/**
+	•	frontend/src/lib/auth/**
+	•	prisma/**
+
+⸻
+
+🧪 VERIFICATION REQUIREMENTS
+
+Before declaring Phase M4 complete, Replit Agent must verify:
+	•	✅ All marketing pages render on mobile (≤ 375px)
+	•	✅ Text is readable without zoom
+	•	✅ Navigation works without auth
+	•	✅ Demo Portal lists all demo tenants
+	•	✅ No console errors
+	•	✅ No Lighthouse critical issues (best-effort)
+	•	✅ No regressions in dashboard or app
+
+⸻
+
+📦 REQUIRED DELIVERABLES
+	1.	Implementation Summary
+	•	Pages built
+	•	Components created
+	•	Any deviations from plan (must be justified)
+	2.	Mobile Screenshots
+	•	Homepage
+	•	Suites overview
+	•	Demo portal
+	3.	Git Report
+	•	Branch name
+	•	Commit hash
+	•	Files changed
+	•	Confirmation safe to merge to main
+
+⸻
+
+🛑 STOP CONDITIONS
+
+Replit Agent must STOP and ask for approval if:
+	•	A new component requirement emerges
+	•	A content gap is discovered
+	•	A suite description needs strategic changes
+	•	Performance trade-offs appear
+
+⸻
+
+▶️ EXECUTION AUTHORIZATION
+
+You are authorized to proceed with Phase M4 exactly as defined above.
+Begin implementation and stop only when all deliverables are complete.
+
+⸻
