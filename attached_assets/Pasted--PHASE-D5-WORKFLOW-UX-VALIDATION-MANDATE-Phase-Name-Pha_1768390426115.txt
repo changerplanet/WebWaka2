@@ -1,0 +1,207 @@
+🔐 PHASE D5 — WORKFLOW & UX VALIDATION MANDATE
+
+Phase Name
+
+Phase D5 — End-to-End Workflow & UX Validation
+
+Objective
+
+Validate that real users can successfully complete core workflows across all demo-seeded suites, using proper role-based access, correct data visibility, and expected UI behavior — without modifying code or data.
+
+This phase verifies product correctness, not infrastructure.
+
+⸻
+
+Scope (STRICT)
+
+READ-ONLY / INTERACTION-ONLY
+
+✅ Allowed
+	•	Logging in as existing demo users
+	•	Navigating UI pages
+	•	Submitting forms that operate on already-seeded demo data
+	•	Observing dashboards, reports, and workflow outcomes
+	•	Calling APIs via the UI
+	•	Capturing screenshots or notes
+	•	Recording UX inconsistencies
+
+❌ Forbidden
+	•	❌ NO schema changes
+	•	❌ NO database seeding
+	•	❌ NO record creation outside normal UI flows
+	•	❌ NO code edits
+	•	❌ NO role or permission changes
+	•	❌ NO deployment actions
+
+If any blocker requires code or data change:
+➡️ STOP and REPORT ONLY
+
+⸻
+
+Demo Context (MANDATORY)
+	•	Partner: WebWaka Demo Partner
+	•	Tenants: Use ONLY demo tenants already seeded
+	•	Users: Use ONLY existing demo credentials
+	•	Auth: Magic-link login via UI only
+	•	Environment: Current demo environment
+
+⸻
+
+Validation Structure
+
+🔹 Phase D5-A — Partner-Level Workflows
+
+Validate these flows using Partner personas:
+
+Personas
+	•	Partner Owner — demo.owner@webwaka.com
+	•	Partner Admin — demo.admin@webwaka.com
+	•	Partner Sales — demo.sales@webwaka.com
+	•	Partner Support — demo.support@webwaka.com
+	•	Partner Staff — demo.staff@webwaka.com
+
+Workflows to Validate
+	1.	Partner Dashboard loads with real metrics
+	2.	Client/Tenant list shows assigned tenants only
+	3.	Earnings & commissions display correctly (Owner/Admin only)
+	4.	Staff sees restricted views
+	5.	Partner Sales sees sales-relevant data only
+	6.	Partner Support cannot access admin/config pages
+
+👉 Report:
+	•	✅ Expected behavior
+	•	❌ Incorrect access
+	•	⚠️ Missing data / empty widgets
+
+⸻
+
+🔹 Phase D5-B — Tenant-Level Workflows (Core Suites)
+
+Validate end-to-end workflows for each suite using correct tenant personas.
+
+1️⃣ Commerce (demo-retail-store)
+Roles: Tenant Admin, POS Staff, Customer
+
+Workflows:
+	•	Open POS shift → Make sale → Close shift
+	•	View sales report
+	•	Browse online store → Checkout → Order
+	•	Inventory reflects stock movement
+
+2️⃣ Education (demo-school)
+Roles: Principal, Teacher, Student, Parent
+
+Workflows:
+	•	Attendance marking
+	•	Grade entry
+	•	Fee payment record
+	•	Report card view
+	•	Analytics dashboard shows data
+
+3️⃣ Health (demo-clinic)
+Roles: Medical Director, Doctor, Nurse, Patient
+
+Workflows:
+	•	Appointment booking
+	•	Encounter recording
+	•	Prescription issuance
+	•	Patient history view
+
+4️⃣ Hospitality (demo-hotel)
+Roles: GM, Front Desk, Guest
+
+Workflows:
+	•	Reservation creation
+	•	Guest check-in
+	•	Room assignment
+	•	Revenue dashboard
+
+5️⃣ Civic (demo-civic)
+Roles: Director, Case Officer, Citizen
+
+Workflows:
+	•	Service request submission
+	•	Case processing
+	•	Inspection lifecycle
+	•	Certificate issuance
+
+⸻
+
+🔹 Phase D5-C — Secondary Suites (Functional Check)
+
+Perform lightweight validation (not full workflows):
+	•	Recruitment
+	•	Project Management
+	•	Legal Practice
+	•	Warehouse
+	•	Logistics
+	•	Real Estate
+	•	Church
+	•	Political
+
+Validate:
+	•	Pages load
+	•	Data appears
+	•	Role restrictions hold
+	•	No crashes / dead ends
+
+⸻
+
+Validation Output Format (REQUIRED)
+
+For each suite, provide:
+
+1. Workflow Results Table
+
+Workflow	Persona	Result	Notes
+POS Sale	Cashier	✅ Pass	—
+Close Shift	Admin	⚠️ Partial	Report missing
+
+2. UX Issues
+	•	Broken navigation
+	•	Confusing labels
+	•	Empty dashboards with seeded data
+	•	Inconsistent behavior
+
+3. Security Confirmation
+	•	❌ Any unauthorized access?
+	•	❌ Any cross-tenant data?
+	•	❌ Any role leakage?
+
+⸻
+
+Success Criteria
+
+Phase D5 is considered PASSED if:
+	•	Core workflows complete without blockers
+	•	Seeded data is visible and usable
+	•	Role restrictions remain enforced
+	•	No security regressions are found
+
+If any CRITICAL BLOCKER appears:
+➡️ STOP immediately and report.
+
+⸻
+
+Stop Conditions
+	•	❗ Do NOT proceed to Phase D6
+	•	❗ Do NOT apply fixes
+	•	❗ Do NOT reseed data
+
+STOP after submitting the D5 report.
+
+⸻
+
+Deliverable
+
+PHASE_D5_WORKFLOW_UX_VALIDATION_REPORT.md
+
+Include:
+	•	Suite-by-suite results
+	•	Screenshots (if possible)
+	•	Clear PASS / FAIL verdict
+	•	Explicit list of blockers (if any)
+
+⸻
+
+🚦BEGIN PHASE D5 NOW
