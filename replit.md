@@ -38,6 +38,19 @@ WebWaka is a multi-tenant SaaS platform infrastructure for digital transformatio
 - `SESSION_SECRET` - Session encryption key
 
 ## Recent Changes
+- January 14, 2026: Phase M4 - Marketing Website Build Complete
+  - **Marketing Components**: 11 reusable components in frontend/src/components/marketing/
+  - **Suites Data Module**: 19 suites with metadata in frontend/src/lib/marketing/suites-data.ts
+  - **Homepage**: Updated with Phase M2 content, partner-first positioning
+  - **Suites Page**: All 20+ suites displayed with category filtering
+  - **Sites & Funnels**: New page with "Partner Growth Engine" positioning
+  - **Partners Page**: Complete partner model explanation with FAQs
+  - **Demo Portal**: 10 demo tenants with filtering and guided tour CTA
+  - **Navigation**: Updated across all pages with Sites & Funnels and Demo links
+  - **Design System**: Mobile-first, Inter font, 16px minimum, Waka Green/Naira Gold
+  - **WhatsApp CTAs**: Integrated throughout all pages
+  - **Status: COMPLETE**
+
 - January 14, 2026: Phase M3 - Design & UI Execution Complete
   - **Design Foundations**: Color palette, typography, spacing system
   - **Component Library**: 12 component categories with full specs
@@ -45,7 +58,7 @@ WebWaka is a multi-tenant SaaS platform infrastructure for digital transformatio
   - **Responsive Rules**: Breakpoints, grid transformations, component behavior
   - **High-Fidelity Designs**: Section-by-section implementation specs
   - **Location**: frontend/docs/design-system/
-  - **Status: AWAITING APPROVAL before Phase M4 (Build)**
+  - **Status: COMPLETE**
 
 - January 14, 2026: Phase M2 - Marketing Content Drafting Complete
   - **Homepage**: Partner-focused landing page with full copy
