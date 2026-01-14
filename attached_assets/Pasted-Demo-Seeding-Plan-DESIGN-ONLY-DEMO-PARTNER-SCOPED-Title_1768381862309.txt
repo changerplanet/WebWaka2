@@ -1,0 +1,167 @@
+Demo Seeding Plan (DESIGN ONLY, DEMO PARTNER–SCOPED)
+
+Title: Design Demo Seeding Plan for WebWaka (Demo Partner Only — NO SEEDING)
+
+Objective:
+Design a comprehensive Demo Seeding Plan for the WebWaka platform that defines what demo data should exist, for which suites, for which roles, and for which use cases — strictly under the Demo Partner — without executing any seed scripts or modifying data.
+
+⸻
+
+🔒 STRICT RULES (MANDATORY)
+	•	❌ DO NOT run any seed scripts
+	•	❌ DO NOT create, update, or delete database records
+	•	❌ DO NOT modify code, schema, or configuration
+	•	❌ DO NOT add demo data
+	•	✅ READ-ONLY analysis only
+	•	✅ Produce documentation and recommendations only
+
+⸻
+
+🧭 DEMO PARTNER SCOPE (NON-NEGOTIABLE)
+
+All demo design MUST adhere to the following:
+	1.	All demo data belongs to ONE Demo Partner
+	•	No multi-partner demo scenarios
+	•	No cross-partner assumptions
+	•	No production partners involved
+	2.	Every demo use case MUST be explicitly assigned
+	•	Assigned to:
+	•	Demo Partner
+	•	Demo Tenant(s) under that partner
+	•	Specific user role(s)
+	•	No “floating” or unassigned demo flows
+	3.	No demo data may exist outside the Demo Partner context
+	•	No global/system-only demo data
+	•	No orphan records
+	•	No admin-only demo artifacts unless tied to Demo Partner
+
+⸻
+
+📊 REQUIRED ANALYSIS
+
+1️⃣ Platform Suite Inventory (Confirm Implementation)
+For each implemented suite, list:
+	•	Suite name
+	•	Key modules / subsystems
+	•	Primary user roles involved
+	•	Whether the suite is visible in the Demo Partner UI
+
+Suites to include (confirm completeness and add any missing):
+	•	Commerce (POS / SVM / MVM)
+	•	Sites & Funnels
+	•	Logistics
+	•	Hospitality
+	•	Civic
+	•	Health
+	•	Education
+	•	Real Estate
+	•	Recruitment
+	•	Project Management
+	•	Church
+	•	Political
+	•	Any other detected suites
+
+⸻
+
+2️⃣ Demo Necessity Classification (Per Suite)
+For each suite, classify demo requirement as:
+	•	REQUIRED FOR DEMO — must have seeded demo data
+	•	OPTIONAL (UI-ONLY OK) — static/empty-state demo acceptable
+	•	NOT REQUIRED FOR DEMO — hidden or admin-only
+
+Each classification must include:
+	•	Business justification
+	•	Demo risk if omitted
+	•	Impact on sales/demo narrative
+
+⸻
+
+3️⃣ Demo Persona & Role Mapping (Demo Partner Only)
+Define conceptual personas only (no credentials):
+	•	Partner-level roles:
+	•	Partner Owner
+	•	Partner Admin
+	•	Partner Staff
+	•	Partner Viewer (lowest privilege)
+	•	End-user personas per suite, all scoped to Demo Partner:
+	•	e.g. Student, Patient, Guest, Voter, Customer, Congregant
+
+For each persona:
+	•	Assigned suite(s)
+	•	Assigned module(s)
+	•	Assigned demo use cases
+
+⸻
+
+4️⃣ Demo Use Case Assignment (CRITICAL)
+For each suite, list:
+	•	Core demo use cases (CRUD, workflows, reports, dashboards)
+	•	Which role executes each use case
+	•	Which Demo Tenant owns the data
+	•	Whether cross-suite linkage exists (e.g. CRM → Commerce → Logistics)
+
+⚠️ No use case may remain unassigned.
+
+⸻
+
+5️⃣ Demo Data Depth Recommendation
+For each suite, recommend one level:
+	•	Level 0 – Hidden from demo
+	•	Level 1 – Minimal (lists + empty states)
+	•	Level 2 – Functional (end-to-end workflows)
+	•	Level 3 – Narrative (realistic history, reports, analytics)
+
+Include rationale tied to demo value.
+
+⸻
+
+6️⃣ Seed Script Mapping (Design Only)
+For each suite:
+	•	Existing seed scripts (if any)
+	•	Missing seed scripts that should be created
+	•	Which demo use cases each script would support
+	•	Execution priority order
+
+⚠️ Mapping only — do not execute.
+
+⸻
+
+7️⃣ Demo Tenant Strategy
+Recommend:
+	•	Number of Demo Tenants under Demo Partner
+	•	Purpose of each tenant (e.g. Education tenant, Commerce tenant)
+	•	Isolation rules
+	•	Safeguards preventing demo data from leaking into production
+
+⸻
+
+📄 REQUIRED DELIVERABLES
+
+Create documentation only under /frontend/docs/:
+	1.	DEMO_SEEDING_STRATEGY.md
+	2.	DEMO_SUITE_PRIORITY_MATRIX.md
+	3.	DEMO_PERSONA_AND_USECASE_MAP.md
+	4.	DEMO_SEED_SCRIPT_PLAN.md
+	5.	DEMO_READINESS_CHECKLIST.md
+
+Each document must:
+	•	Explicitly reference Demo Partner
+	•	Explicitly assign every use case
+	•	Be decision-ready (not exploratory)
+
+⸻
+
+🛑 STOP CONDITION
+
+After producing the documents:
+	•	STOP
+	•	Do not seed data
+	•	Do not propose code changes
+	•	Await explicit approval before any execution phase
+
+⸻
+
+Purpose Reminder:
+This plan exists to enable a controlled, sales-ready, and safe demo environment where every workflow is intentional, owned, and testable under the Demo Partner.
+
+⸻
