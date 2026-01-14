@@ -21,7 +21,9 @@ WebWaka is built as a multi-tenant SaaS platform with a modular capability syste
 - **API Structure**: Next.js API routes handle core functionalities. An optional Python FastAPI proxy server can be integrated.
 
 ### Core Features
-- **Payment Integration**: Implemented a provider-agnostic payment abstraction layer supporting multiple payment gateways (e.g., Paystack). Features a three-level control model (Super Admin → Partner → Tenant) for credential inheritance and AES-256-GCM encryption for secure storage. Designed with credential-deferred logic and graceful fallbacks.
+- **Payment Integration**: Complete payment system with two layers:
+  - **Provider Layer (E1.1)**: Provider-agnostic abstraction supporting Paystack (and future providers). Three-level control model (Super Admin → Partner → Tenant), AES-256-GCM encrypted credential storage, credential-deferred design.
+  - **Execution Layer (E1.2)**: Platform-wide transaction processing with PaymentExecutionService, TransactionService, demo-safe execution paths. APIs for initiate, verify, list transactions. Supports all suites without suite-specific logic.
 - **Authorization System**: Robust, role-scoped authorization (`SUPER_ADMIN`, `PARTNER_*`, `TENANT_USER`) across API routes and UI components to prevent cross-tenant data leaks and ensure secure access control.
 - **Marketing Website**: Comprehensive marketing site with reusable components, suite data modules, and SEO optimization (metadata, OpenGraph, performance hardening).
 - **Demo System**: Advanced demo data seeding and a "Strong Demo Matrix" across 11 vertical suites, enabling comprehensive demonstrations for potential partners and clients.
