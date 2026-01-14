@@ -1,0 +1,206 @@
+REPLIT1 AGENT PROMPT — MARKETING WEBSITE REVAMP (STRATEGY PHASE)
+
+Context
+
+You are working on WebWaka, a large multi-suite SaaS platform.
+The frontend marketing website is now outdated and no longer reflects:
+	•	The current number of suites
+	•	The breadth of verticals
+	•	The new Sites & Funnels capabilities
+	•	The evolved partner-first business model
+	•	The Nigerian/African market positioning
+
+This task is NOT to implement or redesign the site yet.
+
+Your job is to review, understand, and synthesize the current platform state and produce a clear, actionable plan to rebuild the marketing website from scratch.
+
+⸻
+
+🎯 PRIMARY GOAL
+
+Produce a Marketing Website Revamp Plan that:
+	•	Targets PARTNERS (resellers, agencies, operators) — NOT end-users
+	•	Accurately represents ALL suites, including:
+	•	Business verticals
+	•	Sites & Funnels
+	•	Commerce, Services, Community, and Government use cases
+	•	Is mobile-first and Nigeria-first in:
+	•	Content
+	•	Language
+	•	Navigation
+	•	Examples
+	•	Aligns with the current, real implementation (not assumptions)
+
+⸻
+
+🔍 REQUIRED REVIEW SCOPE (READ-ONLY)
+
+You MUST thoroughly review and internalize:
+
+1. Platform Documentation
+	•	All docs under:
+	•	frontend/docs/
+	•	docs/templates/
+	•	Demo seeding strategy documents
+	•	Suite/module inventories
+	•	Persona & role maps
+	•	Sales demo walkthroughs
+
+2. Implemented Suites & Capabilities
+
+You must confirm and understand:
+	•	All implemented suites (20+)
+	•	What each suite actually does today
+	•	How suites group into categories (Commerce, Services, Community, etc.)
+	•	Cross-suite positioning for sales
+
+3. Partner-First Model
+
+Understand clearly:
+	•	What a Partner is
+	•	How Partners make money
+	•	Why Partners care about:
+	•	Vertical coverage
+	•	Templates
+	•	Funnels
+	•	Multi-tenant management
+	•	How WebWaka differs from “single-business software”
+
+4. Sites & Funnels System
+
+You must understand:
+	•	Sites vs Funnels distinction
+	•	Template-driven approach
+	•	Industry-specific positioning
+	•	Why this matters to Partners
+
+⸻
+
+🧭 KEY CONSTRAINTS (STRICT)
+
+You must NOT:
+	•	Modify any code
+	•	Modify any content files
+	•	Create UI components
+	•	Touch schema, APIs, auth, or deployment
+	•	Assume Replit1 output replaces Replit2 work
+
+This is STRATEGY + PLANNING ONLY.
+
+⸻
+
+📦 REQUIRED DELIVERABLES
+
+You must produce ALL of the following:
+
+⸻
+
+1️⃣ MARKETING WEBSITE INFORMATION ARCHITECTURE
+
+A full sitemap for the new marketing site, including:
+	•	Top-level navigation
+	•	Sub-pages
+	•	Grouping rationale
+
+Example sections (you must validate and refine):
+	•	Home
+	•	Why WebWaka (Partner-focused)
+	•	Suites (grouped logically)
+	•	Industries
+	•	Sites & Funnels
+	•	Partner Program
+	•	Demo / How It Works
+	•	Pricing (partner-oriented)
+	•	Resources
+	•	About / Vision
+
+⸻
+
+2️⃣ SUITE-TO-MARKETING MAPPING
+
+For each suite, define:
+	•	Marketing name
+	•	Category (Commerce / Service / Community / Government)
+	•	Who it is for (business types)
+	•	Partner value proposition
+	•	Demo relevance (Strong / Medium / Mention-only)
+
+This must include ALL suites, not a subset.
+
+⸻
+
+3️⃣ PARTNER-FOCUSED MESSAGING FRAMEWORK
+
+Define:
+	•	Core messaging pillars
+	•	Key differentiators vs competitors
+	•	Nigeria/Africa-specific positioning
+	•	Language tone (professional, accessible, non-technical)
+
+This is NOT copywriting yet, but strategic messaging guidance.
+
+⸻
+
+4️⃣ MOBILE-FIRST NAVIGATION STRATEGY
+
+Design principles for:
+	•	Mobile nav hierarchy
+	•	Content prioritization for small screens
+	•	Progressive disclosure
+	•	WhatsApp-first CTAs where relevant
+
+Nigeria-first considerations:
+	•	Bandwidth sensitivity
+	•	Business owner usage patterns
+	•	Mobile-only partners
+
+⸻
+
+5️⃣ PAGE-LEVEL CONTENT PLAN (OUTLINE ONLY)
+
+For each major page:
+	•	Purpose
+	•	Target partner persona
+	•	Sections required
+	•	Key questions it must answer
+
+Do NOT write the final marketing copy yet.
+
+⸻
+
+6️⃣ REVAMP EXECUTION ROADMAP
+
+Propose a phased execution plan, for example:
+	•	Phase M1: Content & IA approval
+	•	Phase M2: Design system & wireframes
+	•	Phase M3: Mobile-first build
+	•	Phase M4: SEO + analytics
+	•	Phase M5: Funnel integration
+
+⸻
+
+🚦 STOP CONDITION
+
+After delivering the plan:
+	•	STOP
+	•	Do NOT proceed to design or implementation
+	•	Await explicit approval before any next phase
+
+⸻
+
+✅ SUCCESS CRITERIA
+
+This task is successful only if:
+	•	The plan reflects the actual current platform
+	•	All suites are represented accurately
+	•	The partner business model is crystal clear
+	•	The output can be handed to:
+	•	Designers
+	•	Copywriters
+	•	Developers
+…without confusion
+
+⸻
+
+Begin the review now.
+Deliver the full Marketing Website Revamp Plan when complete.
