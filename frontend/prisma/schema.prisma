@@ -1256,6 +1256,10 @@ model User {
   memberships     TenantMembership[]
   user_intents    user_intents[]
 
+  // Portal Access Relations (E2.2)
+  guardianProfiles edu_guardian[]    // Guardian accounts linked to this user
+  patientProfiles  health_patient[]  // Patient accounts linked to this user
+
   @@index([email])
   @@index([globalRole])
   @@index([phone])
@@ -10895,6 +10899,10 @@ model edu_guardian {
   tenantId           String
   platformInstanceId String?
 
+  // Portal User Link (for entity-level authorization)
+  userId String? // Links guardian to user account for portal access
+  user   User?   @relation(fields: [userId], references: [id])
+
   // Guardian Identity
   firstName  String
   lastName   String
@@ -11686,6 +11694,10 @@ model health_patient {
   id                 String  @id @default(cuid())
   tenantId           String
   platformInstanceId String?
+
+  // Portal User Link (for entity-level authorization)
+  userId String? // Links patient to user account for portal access
+  user   User?   @relation(fields: [userId], references: [id])
 
   // Patient Identity (Minimal PII)
   mrn        String // Medical Record Number (facility-specific)

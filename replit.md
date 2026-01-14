@@ -48,13 +48,17 @@ WebWaka is built as a multi-tenant SaaS platform with a modular capability syste
   - **Education Portal**: Student/guardian access to profiles, attendance, results, and fee summaries
     - Routes: /portal/education, /api/portal/education/*
     - Services: EducationPortalService with tenant-scoped data access
-    - Mobile-first UI with tab navigation (Overview, Attendance, Results, Fees)
+    - Mobile-first UI with 5 tabs (Overview, Classes, Attendance, Results, Fees)
   - **Health Portal**: Patient access to profiles, appointments, prescriptions, and visit history
     - Routes: /portal/health, /api/portal/health/*
     - Services: HealthPortalService with tenant-scoped data access
-    - Mobile-first UI with tab navigation (Overview, Appointments, Prescriptions, Visits)
+    - Mobile-first UI with 5 tabs (Overview, Appointments, Prescriptions, Visits, Billing)
+  - **Entity-Level Authorization**: Guardian-to-student and patient-to-user linking via userId fields
+    - edu_guardian.userId links guardian records to user accounts
+    - health_patient.userId links patient records to user accounts
+    - Authorization helpers verify user is linked to requested entity
   - Read-only access only (no messaging, payments, notifications, or admin features)
-  - Session-based authentication with tenant context
+  - Session-based authentication with entity-level access control
 - **Authorization System**: Robust, role-scoped authorization (`SUPER_ADMIN`, `PARTNER_*`, `TENANT_USER`) across API routes and UI components to prevent cross-tenant data leaks and ensure secure access control.
 - **Marketing Website**: Comprehensive marketing site with reusable components, suite data modules, and SEO optimization (metadata, OpenGraph, performance hardening).
 - **Demo System**: Advanced demo data seeding and a "Strong Demo Matrix" across 11 vertical suites, enabling comprehensive demonstrations for potential partners and clients.

@@ -10,4 +10,9 @@
 export * from './types';
 export { educationPortalService } from './education/education-portal-service';
 export { healthPortalService } from './health/health-portal-service';
-export { canAccessStudent, canAccessPatient } from './authorization';
+export { 
+  canAccessStudent, 
+  canAccessPatient,
+  getAccessibleStudents,
+  getAccessiblePatients,
+} from './authorization';
