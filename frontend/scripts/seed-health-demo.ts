@@ -1,19 +1,17 @@
 /**
- * Demo Seed Script — DESIGN ONLY
- * PHASE D2
- * DO NOT EXECUTE WITHOUT EXPLICIT APPROVAL
+ * Demo Seed Script — PHASE D3-B
+ * EXECUTION APPROVED
  * 
  * Health Suite - Nigerian Clinic Demo Data Seeder
  * 
  * Creates demo data for a Nigerian healthcare clinic:
  * - Healthcare facility configuration
+ * - Facility
  * - Providers (doctors, nurses)
  * - Patients with Nigerian names
  * - Appointments
- * - Encounters and consultations
- * - Prescriptions
  * 
- * Run: npx ts-node --project tsconfig.json scripts/seed-health-demo.ts
+ * Run: npx tsx scripts/seed-health-demo.ts
  */
 
 import { PrismaClient } from '@prisma/client'
@@ -27,17 +25,24 @@ const prisma = new PrismaClient()
 const DEMO_TENANT_SLUG = 'demo-clinic'
 
 // =============================================================================
-// FACILITY CONFIGURATION
+// FACILITY
 // =============================================================================
 
 const FACILITY = {
   id: 'facility-001',
-  name: 'HealthFirst Clinic',
-  type: 'PRIMARY_CARE',
-  address: '45 Broad Street, Lagos Island, Lagos',
+  name: 'HealthFirst Medical Centre',
+  code: 'HF-LAGOS',
+  type: 'CLINIC',
+  description: 'Premier primary healthcare facility in Lagos',
   phone: '01-2345678',
   email: 'info@healthfirst.ng',
-  licenseNumber: 'NMC/LAG/2020/1234',
+  address: {
+    street: '45 Broad Street',
+    city: 'Lagos Island',
+    state: 'Lagos',
+    lga: 'Lagos Island',
+    country: 'Nigeria'
+  }
 }
 
 // =============================================================================
@@ -45,72 +50,49 @@ const FACILITY = {
 // =============================================================================
 
 const PROVIDERS = [
-  { id: 'prov-001', name: 'Dr. Chukwuemeka Nnamdi', title: 'Medical Director', specialty: 'General Practice', license: 'MDCN/2010/45678', email: 'c.nnamdi@healthfirst.ng', phone: '08011112222' },
-  { id: 'prov-002', name: 'Dr. Fatima Ibrahim', title: 'Senior Physician', specialty: 'Internal Medicine', license: 'MDCN/2012/56789', email: 'f.ibrahim@healthfirst.ng', phone: '08022223333' },
-  { id: 'prov-003', name: 'Dr. Oluwaseun Adeyemi', title: 'Physician', specialty: 'Family Medicine', license: 'MDCN/2015/67890', email: 'o.adeyemi@healthfirst.ng', phone: '08033334444' },
-  { id: 'prov-004', name: 'Dr. Ngozi Okwu', title: 'Physician', specialty: 'Pediatrics', license: 'MDCN/2016/78901', email: 'n.okwu@healthfirst.ng', phone: '08044445555' },
-  { id: 'prov-005', name: 'Dr. Yusuf Garba', title: 'Physician', specialty: 'Obstetrics & Gynecology', license: 'MDCN/2014/89012', email: 'y.garba@healthfirst.ng', phone: '08055556666' },
-  { id: 'prov-006', name: 'Nurse Amaka Eze', title: 'Head Nurse', specialty: 'Nursing', license: 'NMC/2018/12345', email: 'a.eze@healthfirst.ng', phone: '08066667777' },
-  { id: 'prov-007', name: 'Nurse Blessing Okafor', title: 'Staff Nurse', specialty: 'Nursing', license: 'NMC/2019/23456', email: 'b.okafor@healthfirst.ng', phone: '08077778888' },
-  { id: 'prov-008', name: 'Nurse Halima Bello', title: 'Staff Nurse', specialty: 'Nursing', license: 'NMC/2020/34567', email: 'h.bello@healthfirst.ng', phone: '08088889999' },
-  { id: 'prov-009', name: 'Mr. Tunde Bakare', title: 'Lab Technician', specialty: 'Laboratory', license: 'MLT/2017/45678', email: 't.bakare@healthfirst.ng', phone: '08099990000' },
-  { id: 'prov-010', name: 'Mrs. Chidinma Obi', title: 'Pharmacist', specialty: 'Pharmacy', license: 'PCN/2016/56789', email: 'c.obi@healthfirst.ng', phone: '08010101010' },
+  { id: 'prov-001', firstName: 'Chukwuemeka', lastName: 'Nnamdi', title: 'Dr.', role: 'DOCTOR', specialty: 'General Practice', license: 'MDCN/2010/45678', email: 'c.nnamdi@healthfirst.ng', phone: '08011112222' },
+  { id: 'prov-002', firstName: 'Fatima', lastName: 'Ibrahim', title: 'Dr.', role: 'DOCTOR', specialty: 'Internal Medicine', license: 'MDCN/2012/56789', email: 'f.ibrahim@healthfirst.ng', phone: '08022223333' },
+  { id: 'prov-003', firstName: 'Oluwaseun', lastName: 'Adeyemi', title: 'Dr.', role: 'DOCTOR', specialty: 'Family Medicine', license: 'MDCN/2015/67890', email: 'o.adeyemi@healthfirst.ng', phone: '08033334444' },
+  { id: 'prov-004', firstName: 'Ngozi', lastName: 'Okwu', title: 'Dr.', role: 'DOCTOR', specialty: 'Pediatrics', license: 'MDCN/2016/78901', email: 'n.okwu@healthfirst.ng', phone: '08044445555' },
+  { id: 'prov-005', firstName: 'Yusuf', lastName: 'Garba', title: 'Dr.', role: 'DOCTOR', specialty: 'Obstetrics & Gynecology', license: 'MDCN/2014/89012', email: 'y.garba@healthfirst.ng', phone: '08055556666' },
+  { id: 'prov-006', firstName: 'Amaka', lastName: 'Eze', title: 'Nurse', role: 'NURSE', specialty: 'Nursing', license: 'NMC/2018/12345', email: 'a.eze@healthfirst.ng', phone: '08066667777' },
+  { id: 'prov-007', firstName: 'Blessing', lastName: 'Okafor', title: 'Nurse', role: 'NURSE', specialty: 'Nursing', license: 'NMC/2019/23456', email: 'b.okafor@healthfirst.ng', phone: '08077778888' },
+  { id: 'prov-008', firstName: 'Halima', lastName: 'Bello', title: 'Nurse', role: 'NURSE', specialty: 'Nursing', license: 'NMC/2020/34567', email: 'h.bello@healthfirst.ng', phone: '08088889999' },
+  { id: 'prov-009', firstName: 'Tunde', lastName: 'Bakare', title: 'Mr.', role: 'LAB_TECHNICIAN', specialty: 'Laboratory', license: 'MLT/2017/45678', email: 't.bakare@healthfirst.ng', phone: '08099990000' },
+  { id: 'prov-010', firstName: 'Chidinma', lastName: 'Obi', title: 'Mrs.', role: 'PHARMACIST', specialty: 'Pharmacy', license: 'PCN/2016/56789', email: 'c.obi@healthfirst.ng', phone: '08010101010' },
 ]
 
 // =============================================================================
 // PATIENTS (Nigerian Demographics)
 // =============================================================================
 
+const BLOOD_GROUPS: Record<string, string> = {
+  'O+': 'O_POSITIVE',
+  'O-': 'O_NEGATIVE',
+  'A+': 'A_POSITIVE',
+  'A-': 'A_NEGATIVE',
+  'B+': 'B_POSITIVE',
+  'B-': 'B_NEGATIVE',
+  'AB+': 'AB_POSITIVE',
+  'AB-': 'AB_NEGATIVE',
+}
+
 const PATIENTS = [
-  { id: 'pat-001', firstName: 'Adaeze', lastName: 'Okoro', gender: 'F', dob: '1985-03-15', phone: '08111222333', email: 'adaeze.okoro@email.com', bloodType: 'O+', address: '12 Akin Adesola Street, Victoria Island' },
-  { id: 'pat-002', firstName: 'Emeka', lastName: 'Nwosu', gender: 'M', dob: '1978-07-22', phone: '08222333444', email: 'emeka.nwosu@email.com', bloodType: 'A+', address: '45 Allen Avenue, Ikeja' },
-  { id: 'pat-003', firstName: 'Fatima', lastName: 'Abubakar', gender: 'F', dob: '1992-11-08', phone: '08333444555', email: 'fatima.abubakar@email.com', bloodType: 'B+', address: '78 Ahmadu Bello Way, Kaduna' },
-  { id: 'pat-004', firstName: 'Oluwaseun', lastName: 'Adeyemi', gender: 'M', dob: '1965-01-30', phone: '08444555666', email: 'seun.adeyemi@email.com', bloodType: 'AB+', address: '23 Ogunlana Drive, Surulere' },
-  { id: 'pat-005', firstName: 'Ngozi', lastName: 'Eze', gender: 'F', dob: '2018-05-12', phone: '08555666777', email: 'ngozi.parent@email.com', bloodType: 'O+', address: '56 Wuse Zone 5, Abuja' },
-  { id: 'pat-006', firstName: 'Abdullahi', lastName: 'Mohammed', gender: 'M', dob: '1955-09-18', phone: '08666777888', email: 'abdullahi.m@email.com', bloodType: 'A-', address: '34 Gimbiya Street, Garki' },
-  { id: 'pat-007', firstName: 'Chidinma', lastName: 'Okafor', gender: 'F', dob: '1988-12-25', phone: '08777888999', email: 'chidinma.ok@email.com', bloodType: 'B-', address: '89 Rumuola Road, Port Harcourt' },
-  { id: 'pat-008', firstName: 'Tunde', lastName: 'Bakare', gender: 'M', dob: '1990-04-03', phone: '08888999000', email: 'tunde.bakare@email.com', bloodType: 'O+', address: '67 Opebi Road, Ikeja' },
-  { id: 'pat-009', firstName: 'Blessing', lastName: 'Ndu', gender: 'F', dob: '1975-08-14', phone: '08999000111', email: 'blessing.ndu@email.com', bloodType: 'A+', address: '12 Awolowo Road, Ikoyi' },
-  { id: 'pat-010', firstName: 'Yusuf', lastName: 'Sani', gender: 'M', dob: '2015-02-28', phone: '08100111222', email: 'yusuf.parent@email.com', bloodType: 'B+', address: '45 Murtala Mohammed Way, Kano' },
-  { id: 'pat-011', firstName: 'Amaka', lastName: 'Uzoma', gender: 'F', dob: '1995-06-20', phone: '08200222333', email: 'amaka.uzoma@email.com', bloodType: 'O-', address: '23 New Haven, Enugu' },
-  { id: 'pat-012', firstName: 'Gbenga', lastName: 'Adeola', gender: 'M', dob: '1982-10-11', phone: '08300333444', email: 'gbenga.adeola@email.com', bloodType: 'AB-', address: '78 Ring Road, Ibadan' },
-  { id: 'pat-013', firstName: 'Hauwa', lastName: 'Ibrahim', gender: 'F', dob: '2010-03-05', phone: '08400444555', email: 'hauwa.parent@email.com', bloodType: 'A+', address: '56 Zaria Road, Kaduna' },
-  { id: 'pat-014', firstName: 'Chukwuemeka', lastName: 'Agu', gender: 'M', dob: '1970-07-28', phone: '08500555666', email: 'emeka.agu@email.com', bloodType: 'B+', address: '34 Ogui Road, Enugu' },
-  { id: 'pat-015', firstName: 'Folake', lastName: 'Ogunleye', gender: 'F', dob: '1998-11-15', phone: '08600666777', email: 'folake.og@email.com', bloodType: 'O+', address: '89 Lekki Phase 1, Lagos' },
-]
-
-// =============================================================================
-// COMMON DIAGNOSES (Nigerian Context)
-// =============================================================================
-
-const DIAGNOSES = [
-  { code: 'A01.0', name: 'Typhoid Fever', category: 'Infectious' },
-  { code: 'B50.9', name: 'Malaria, Unspecified', category: 'Parasitic' },
-  { code: 'I10', name: 'Essential Hypertension', category: 'Cardiovascular' },
-  { code: 'E11.9', name: 'Type 2 Diabetes Mellitus', category: 'Metabolic' },
-  { code: 'J06.9', name: 'Upper Respiratory Infection', category: 'Respiratory' },
-  { code: 'A09', name: 'Diarrhea and Gastroenteritis', category: 'Gastrointestinal' },
-  { code: 'K29.7', name: 'Gastritis, Unspecified', category: 'Gastrointestinal' },
-  { code: 'M54.5', name: 'Low Back Pain', category: 'Musculoskeletal' },
-  { code: 'N39.0', name: 'Urinary Tract Infection', category: 'Genitourinary' },
-  { code: 'L30.9', name: 'Dermatitis, Unspecified', category: 'Dermatological' },
-]
-
-// =============================================================================
-// COMMON MEDICATIONS (Nigerian Pharmacy)
-// =============================================================================
-
-const MEDICATIONS = [
-  { name: 'Coartem (Artemether-Lumefantrine)', dosage: '20/120mg', form: 'Tablet', usage: 'Malaria treatment' },
-  { name: 'Paracetamol', dosage: '500mg', form: 'Tablet', usage: 'Pain relief, fever' },
-  { name: 'Amoxicillin', dosage: '500mg', form: 'Capsule', usage: 'Bacterial infections' },
-  { name: 'Ciprofloxacin', dosage: '500mg', form: 'Tablet', usage: 'Typhoid, bacterial infections' },
-  { name: 'Metformin', dosage: '500mg', form: 'Tablet', usage: 'Diabetes management' },
-  { name: 'Lisinopril', dosage: '10mg', form: 'Tablet', usage: 'Hypertension' },
-  { name: 'Omeprazole', dosage: '20mg', form: 'Capsule', usage: 'Gastric ulcer, reflux' },
-  { name: 'Ibuprofen', dosage: '400mg', form: 'Tablet', usage: 'Pain, inflammation' },
-  { name: 'Oral Rehydration Salts', dosage: '1 sachet', form: 'Powder', usage: 'Diarrhea, dehydration' },
-  { name: 'Vitamin C', dosage: '1000mg', form: 'Tablet', usage: 'Immune support' },
+  { id: 'pat-001', mrn: 'MRN-001', firstName: 'Adaeze', lastName: 'Okoro', gender: 'FEMALE', dob: '1985-03-15', phone: '08111222333', email: 'adaeze.okoro@email.com', bloodGroup: 'O+', address: { street: '12 Akin Adesola Street', city: 'Victoria Island', state: 'Lagos', country: 'Nigeria' } },
+  { id: 'pat-002', mrn: 'MRN-002', firstName: 'Emeka', lastName: 'Nwosu', gender: 'MALE', dob: '1978-07-22', phone: '08222333444', email: 'emeka.nwosu@email.com', bloodGroup: 'A+', address: { street: '45 Allen Avenue', city: 'Ikeja', state: 'Lagos', country: 'Nigeria' } },
+  { id: 'pat-003', mrn: 'MRN-003', firstName: 'Fatima', lastName: 'Abubakar', gender: 'FEMALE', dob: '1992-11-08', phone: '08333444555', email: 'fatima.abubakar@email.com', bloodGroup: 'B+', address: { street: '78 Ahmadu Bello Way', city: 'Kaduna', state: 'Kaduna', country: 'Nigeria' } },
+  { id: 'pat-004', mrn: 'MRN-004', firstName: 'Oluwaseun', lastName: 'Adeyemi', gender: 'MALE', dob: '1965-01-30', phone: '08444555666', email: 'seun.adeyemi@email.com', bloodGroup: 'AB+', address: { street: '23 Ogunlana Drive', city: 'Surulere', state: 'Lagos', country: 'Nigeria' } },
+  { id: 'pat-005', mrn: 'MRN-005', firstName: 'Ngozi', lastName: 'Eze', gender: 'FEMALE', dob: '2018-05-12', phone: '08555666777', email: 'ngozi.parent@email.com', bloodGroup: 'O+', address: { street: '56 Wuse Zone 5', city: 'Abuja', state: 'FCT', country: 'Nigeria' } },
+  { id: 'pat-006', mrn: 'MRN-006', firstName: 'Abdullahi', lastName: 'Mohammed', gender: 'MALE', dob: '1955-09-18', phone: '08666777888', email: 'abdullahi.m@email.com', bloodGroup: 'A-', address: { street: '34 Gimbiya Street', city: 'Garki', state: 'FCT', country: 'Nigeria' } },
+  { id: 'pat-007', mrn: 'MRN-007', firstName: 'Chidinma', lastName: 'Okafor', gender: 'FEMALE', dob: '1988-12-25', phone: '08777888999', email: 'chidinma.ok@email.com', bloodGroup: 'B-', address: { street: '89 Rumuola Road', city: 'Port Harcourt', state: 'Rivers', country: 'Nigeria' } },
+  { id: 'pat-008', mrn: 'MRN-008', firstName: 'Tunde', lastName: 'Bakare', gender: 'MALE', dob: '1990-04-03', phone: '08888999000', email: 'tunde.bakare@email.com', bloodGroup: 'O+', address: { street: '67 Opebi Road', city: 'Ikeja', state: 'Lagos', country: 'Nigeria' } },
+  { id: 'pat-009', mrn: 'MRN-009', firstName: 'Blessing', lastName: 'Ndu', gender: 'FEMALE', dob: '1975-08-14', phone: '08999000111', email: 'blessing.ndu@email.com', bloodGroup: 'A+', address: { street: '12 Awolowo Road', city: 'Ikoyi', state: 'Lagos', country: 'Nigeria' } },
+  { id: 'pat-010', mrn: 'MRN-010', firstName: 'Yusuf', lastName: 'Sani', gender: 'MALE', dob: '2015-02-28', phone: '08100111222', email: 'yusuf.parent@email.com', bloodGroup: 'B+', address: { street: '45 Murtala Mohammed Way', city: 'Kano', state: 'Kano', country: 'Nigeria' } },
+  { id: 'pat-011', mrn: 'MRN-011', firstName: 'Amaka', lastName: 'Uzoma', gender: 'FEMALE', dob: '1995-06-20', phone: '08200222333', email: 'amaka.uzoma@email.com', bloodGroup: 'O-', address: { street: '23 New Haven', city: 'Enugu', state: 'Enugu', country: 'Nigeria' } },
+  { id: 'pat-012', mrn: 'MRN-012', firstName: 'Gbenga', lastName: 'Adeola', gender: 'MALE', dob: '1982-10-11', phone: '08300333444', email: 'gbenga.adeola@email.com', bloodGroup: 'AB-', address: { street: '78 Ring Road', city: 'Ibadan', state: 'Oyo', country: 'Nigeria' } },
+  { id: 'pat-013', mrn: 'MRN-013', firstName: 'Hauwa', lastName: 'Ibrahim', gender: 'FEMALE', dob: '2010-03-05', phone: '08400444555', email: 'hauwa.parent@email.com', bloodGroup: 'A+', address: { street: '56 Zaria Road', city: 'Kaduna', state: 'Kaduna', country: 'Nigeria' } },
+  { id: 'pat-014', mrn: 'MRN-014', firstName: 'Chukwuemeka', lastName: 'Agu', gender: 'MALE', dob: '1970-07-28', phone: '08500555666', email: 'emeka.agu@email.com', bloodGroup: 'B+', address: { street: '34 Ogui Road', city: 'Enugu', state: 'Enugu', country: 'Nigeria' } },
+  { id: 'pat-015', mrn: 'MRN-015', firstName: 'Folake', lastName: 'Ogunleye', gender: 'FEMALE', dob: '1998-11-15', phone: '08600666777', email: 'folake.og@email.com', bloodGroup: 'O+', address: { street: '89 Lekki Phase 1', city: 'Lekki', state: 'Lagos', country: 'Nigeria' } },
 ]
 
 // =============================================================================
@@ -132,122 +114,6 @@ async function verifyDemoTenant() {
   return tenant
 }
 
-async function seedFacility(tenantId: string) {
-  console.log('Creating facility configuration...')
-  
-  const existing = await prisma.health_facility.findFirst({
-    where: { tenantId }
-  })
-  
-  if (!existing) {
-    await prisma.health_facility.create({
-      data: {
-        id: `${tenantId}-${FACILITY.id}`,
-        tenantId,
-        name: FACILITY.name,
-        type: FACILITY.type,
-        address: FACILITY.address,
-        phone: FACILITY.phone,
-        email: FACILITY.email,
-        licenseNumber: FACILITY.licenseNumber,
-        isActive: true,
-      }
-    })
-    console.log(`  Created facility: ${FACILITY.name}`)
-  }
-}
-
-async function seedProviders(tenantId: string) {
-  console.log('Creating healthcare providers...')
-  
-  for (const prov of PROVIDERS) {
-    const existing = await prisma.health_provider.findFirst({
-      where: { tenantId, email: prov.email }
-    })
-    
-    if (!existing) {
-      await prisma.health_provider.create({
-        data: {
-          id: `${tenantId}-${prov.id}`,
-          tenantId,
-          name: prov.name,
-          title: prov.title,
-          specialty: prov.specialty,
-          licenseNumber: prov.license,
-          email: prov.email,
-          phone: prov.phone,
-          isActive: true,
-        }
-      })
-      console.log(`  Created provider: ${prov.name} (${prov.specialty})`)
-    }
-  }
-}
-
-async function seedPatients(tenantId: string) {
-  console.log('Creating patients...')
-  
-  for (const pat of PATIENTS) {
-    const existing = await prisma.health_patient.findFirst({
-      where: { tenantId, email: pat.email }
-    })
-    
-    if (!existing) {
-      await prisma.health_patient.create({
-        data: {
-          id: `${tenantId}-${pat.id}`,
-          tenantId,
-          firstName: pat.firstName,
-          lastName: pat.lastName,
-          gender: pat.gender,
-          dateOfBirth: new Date(pat.dob),
-          phone: pat.phone,
-          email: pat.email,
-          bloodType: pat.bloodType,
-          address: pat.address,
-          registrationDate: new Date(),
-          isActive: true,
-        }
-      })
-      console.log(`  Created patient: ${pat.firstName} ${pat.lastName}`)
-    }
-  }
-}
-
-async function seedAppointments(tenantId: string) {
-  console.log('Creating appointments...')
-  
-  const today = new Date()
-  const appointments = [
-    { patientId: 'pat-001', providerId: 'prov-002', date: new Date(today.getTime() + 86400000), time: '09:00', type: 'Follow-up', status: 'SCHEDULED' },
-    { patientId: 'pat-002', providerId: 'prov-003', date: new Date(today.getTime() + 86400000), time: '10:30', type: 'Consultation', status: 'SCHEDULED' },
-    { patientId: 'pat-003', providerId: 'prov-005', date: new Date(today.getTime() + 86400000), time: '11:00', type: 'Antenatal Visit', status: 'SCHEDULED' },
-    { patientId: 'pat-005', providerId: 'prov-004', date: new Date(today.getTime() + 86400000 * 2), time: '09:30', type: 'Pediatric Checkup', status: 'SCHEDULED' },
-    { patientId: 'pat-006', providerId: 'prov-002', date: new Date(today.getTime() + 86400000 * 2), time: '14:00', type: 'Chronic Care Review', status: 'SCHEDULED' },
-    { patientId: 'pat-001', providerId: 'prov-002', date: new Date(today.getTime() - 86400000 * 7), time: '09:00', type: 'Initial Consultation', status: 'COMPLETED' },
-    { patientId: 'pat-004', providerId: 'prov-003', date: new Date(today.getTime() - 86400000 * 14), time: '11:00', type: 'Blood Pressure Check', status: 'COMPLETED' },
-    { patientId: 'pat-007', providerId: 'prov-002', date: new Date(today.getTime() - 86400000 * 3), time: '10:00', type: 'Sick Visit', status: 'COMPLETED' },
-  ]
-  
-  for (let i = 0; i < appointments.length; i++) {
-    const appt = appointments[i]
-    await prisma.health_appointment.create({
-      data: {
-        id: `${tenantId}-appt-${i + 1}`,
-        tenantId,
-        patientId: `${tenantId}-${appt.patientId}`,
-        providerId: `${tenantId}-${appt.providerId}`,
-        scheduledDate: appt.date,
-        scheduledTime: appt.time,
-        appointmentType: appt.type,
-        status: appt.status,
-        notes: `${appt.type} appointment`,
-      }
-    })
-    console.log(`  Created appointment: ${appt.type} on ${appt.date.toDateString()}`)
-  }
-}
-
 async function seedConfig(tenantId: string) {
   console.log('Creating health configuration...')
   
@@ -259,16 +125,186 @@ async function seedConfig(tenantId: string) {
     await prisma.health_config.create({
       data: {
         tenantId,
-        appointmentDuration: 30,
-        workingHoursStart: '08:00',
-        workingHoursEnd: '18:00',
-        workingDays: ['MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY'],
-        currency: 'NGN',
-        consultationFee: 5000,
+        facilityName: 'HealthFirst Medical Centre',
+        facilityType: 'CLINIC',
+        facilityCode: 'HF-LAGOS',
+        facilityLicense: 'NMC/LAG/2020/1234',
+        patientMrnPrefix: 'MRN',
+        patientMrnNextSeq: 16,
+        visitNumberPrefix: 'VST',
+        visitNumberNextSeq: 1,
+        defaultAppointmentDuration: 30,
+        allowWalkIns: true,
+        allowOnlineBooking: true,
+        requireVitalsOnEncounter: true,
+        autoCreateBillingFacts: true,
+        defaultConsultationFee: 5000,
+        requireConsentOnRegistration: true,
+        isActive: true,
       }
     })
     console.log('  Created health configuration')
+  } else {
+    console.log('  Config exists')
   }
+}
+
+async function seedFacility(tenantId: string) {
+  console.log('Creating facility...')
+  
+  const facilityId = `${tenantId}-${FACILITY.id}`
+  
+  const existing = await prisma.health_facility.findFirst({
+    where: { id: facilityId }
+  })
+  
+  if (!existing) {
+    await prisma.health_facility.create({
+      data: {
+        id: facilityId,
+        tenantId,
+        name: FACILITY.name,
+        code: FACILITY.code,
+        type: FACILITY.type as any,
+        description: FACILITY.description,
+        phone: FACILITY.phone,
+        email: FACILITY.email,
+        address: FACILITY.address,
+        isActive: true,
+      }
+    })
+    console.log(`  Created facility: ${FACILITY.name}`)
+  } else {
+    console.log(`  Facility exists: ${FACILITY.name}`)
+  }
+  
+  return facilityId
+}
+
+async function seedProviders(tenantId: string, facilityId: string) {
+  console.log('Creating providers...')
+  
+  for (const prov of PROVIDERS) {
+    const providerId = `${tenantId}-${prov.id}`
+    
+    const existing = await prisma.health_provider.findFirst({
+      where: { id: providerId }
+    })
+    
+    if (!existing) {
+      await prisma.health_provider.create({
+        data: {
+          id: providerId,
+          tenantId,
+          firstName: prov.firstName,
+          lastName: prov.lastName,
+          title: prov.title,
+          role: prov.role as any,
+          specialty: prov.specialty,
+          licenseNumber: prov.license,
+          email: prov.email,
+          phone: prov.phone,
+          facilityId,
+          isActive: true,
+        }
+      })
+      console.log(`  Created provider: ${prov.title} ${prov.firstName} ${prov.lastName}`)
+    } else {
+      console.log(`  Provider exists: ${prov.firstName} ${prov.lastName}`)
+    }
+  }
+}
+
+async function seedPatients(tenantId: string) {
+  console.log('Creating patients...')
+  
+  for (const pat of PATIENTS) {
+    const patientId = `${tenantId}-${pat.id}`
+    
+    const existing = await prisma.health_patient.findFirst({
+      where: { id: patientId }
+    })
+    
+    if (!existing) {
+      await prisma.health_patient.create({
+        data: {
+          id: patientId,
+          tenantId,
+          mrn: pat.mrn,
+          firstName: pat.firstName,
+          lastName: pat.lastName,
+          gender: pat.gender as any,
+          dateOfBirth: new Date(pat.dob),
+          bloodGroup: BLOOD_GROUPS[pat.bloodGroup] as any,
+          phone: pat.phone,
+          email: pat.email,
+          address: pat.address,
+          status: 'ACTIVE',
+          isActive: true,
+        }
+      })
+      console.log(`  Created patient: ${pat.firstName} ${pat.lastName}`)
+    } else {
+      console.log(`  Patient exists: ${pat.firstName} ${pat.lastName}`)
+    }
+  }
+}
+
+async function seedAppointments(tenantId: string, facilityId: string) {
+  console.log('Creating appointments...')
+  
+  const patients = await prisma.health_patient.findMany({
+    where: { tenantId },
+    take: 10
+  })
+  
+  const providers = await prisma.health_provider.findMany({
+    where: { tenantId, role: 'DOCTOR' },
+    take: 5
+  })
+  
+  if (patients.length === 0 || providers.length === 0) {
+    console.log('  Skipping - no patients or providers')
+    return
+  }
+  
+  const appointmentTypes = ['CONSULTATION', 'FOLLOW_UP', 'LAB_TEST', 'VACCINATION']
+  const today = new Date()
+  let created = 0
+  
+  for (let i = 0; i < 10; i++) {
+    const patient = patients[i % patients.length]
+    const provider = providers[i % providers.length]
+    const appointmentId = `${tenantId}-apt-${i + 1}`
+    
+    const existing = await prisma.health_appointment.findFirst({
+      where: { id: appointmentId }
+    })
+    
+    if (!existing) {
+      const appointmentDate = new Date(today)
+      appointmentDate.setDate(today.getDate() + i)
+      
+      await prisma.health_appointment.create({
+        data: {
+          id: appointmentId,
+          tenantId,
+          patientId: patient.id,
+          providerId: provider.id,
+          facilityId,
+          appointmentDate,
+          appointmentTime: `${9 + (i % 8)}:00`,
+          duration: 30,
+          type: appointmentTypes[i % appointmentTypes.length] as any,
+          status: i < 3 ? 'COMPLETED' : 'SCHEDULED',
+          isWalkIn: false,
+          reason: 'Routine checkup',
+        }
+      })
+      created++
+    }
+  }
+  console.log(`  Created ${created} appointments`)
 }
 
 // =============================================================================
@@ -287,21 +323,19 @@ async function main() {
     
     // Step 2: Seed configuration
     await seedConfig(tenant.id)
-    await seedFacility(tenant.id)
+    const facilityId = await seedFacility(tenant.id)
     
-    // Step 3: Seed operational data (people)
-    await seedProviders(tenant.id)
+    // Step 3: Seed operational data
+    await seedProviders(tenant.id, facilityId)
     await seedPatients(tenant.id)
-    
-    // Step 4: Seed transaction data
-    await seedAppointments(tenant.id)
+    await seedAppointments(tenant.id, facilityId)
     
     console.log('='.repeat(60))
     console.log('HEALTH DEMO SEEDING COMPLETE')
+    console.log(`  Config: 1`)
     console.log(`  Facility: 1`)
     console.log(`  Providers: ${PROVIDERS.length}`)
     console.log(`  Patients: ${PATIENTS.length}`)
-    console.log(`  Appointments: 8`)
     console.log('='.repeat(60))
     
   } catch (error) {

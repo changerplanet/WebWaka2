@@ -1,18 +1,16 @@
 /**
- * Demo Seed Script — DESIGN ONLY
- * PHASE D2
- * DO NOT EXECUTE WITHOUT EXPLICIT APPROVAL
+ * Demo Seed Script — PHASE D3-B
+ * EXECUTION APPROVED
  * 
  * Civic Suite - Nigerian Government Bureau Demo Data Seeder
  * 
- * Creates demo data for a Nigerian civic organization:
- * - Agency/department structure
- * - Staff (civil servants)
+ * Creates demo data for a Nigerian government agency:
+ * - Configuration
+ * - Agency and departments
  * - Citizens
- * - Services offered
- * - Service requests and cases
+ * - Services
  * 
- * Run: npx ts-node --project tsconfig.json scripts/seed-civic-demo.ts
+ * Run: npx tsx scripts/seed-civic-demo.ts
  */
 
 import { PrismaClient } from '@prisma/client'
@@ -26,83 +24,58 @@ const prisma = new PrismaClient()
 const DEMO_TENANT_SLUG = 'demo-civic'
 
 // =============================================================================
-// AGENCY STRUCTURE
+// AGENCY
 // =============================================================================
 
 const AGENCY = {
   id: 'agency-001',
+  code: 'LASG-LANDS',
   name: 'Lagos State Lands Bureau',
-  code: 'LSLB',
-  address: '12 Alausa, Ikeja, Lagos State',
-  phone: '01-7654321',
+  description: 'Government agency responsible for land administration in Lagos State',
+  jurisdiction: 'Lagos State',
+  phone: '01-2345678',
   email: 'info@lagoslands.gov.ng',
+  address: {
+    street: 'Block 13, The Secretariat',
+    area: 'Alausa',
+    lga: 'Ikeja',
+    state: 'Lagos',
+    country: 'Nigeria'
+  },
+  headName: 'Surveyor General Adeleke Fashola',
+  headTitle: 'Surveyor General'
 }
 
-const DEPARTMENTS = [
-  { id: 'dept-001', name: 'Land Registration', code: 'LR', description: 'Handles land title registration and transfers' },
-  { id: 'dept-002', name: 'Survey & Mapping', code: 'SM', description: 'Land survey and mapping services' },
-  { id: 'dept-003', name: 'Building Approval', code: 'BA', description: 'Building plan approval and inspections' },
-  { id: 'dept-004', name: 'Land Use & Compliance', code: 'LU', description: 'Land use monitoring and enforcement' },
-  { id: 'dept-005', name: 'Revenue & Billing', code: 'RB', description: 'Ground rent and land charges' },
-]
-
-const UNITS = [
-  { id: 'unit-001', deptId: 'dept-001', name: 'New Registrations', code: 'LR-NR' },
-  { id: 'unit-002', deptId: 'dept-001', name: 'Title Transfers', code: 'LR-TT' },
-  { id: 'unit-003', deptId: 'dept-002', name: 'Cadastral Survey', code: 'SM-CS' },
-  { id: 'unit-004', deptId: 'dept-003', name: 'Residential Approvals', code: 'BA-RA' },
-  { id: 'unit-005', deptId: 'dept-003', name: 'Commercial Approvals', code: 'BA-CA' },
-]
-
 // =============================================================================
-// SERVICES
+// SERVICES (Nigerian Government Services)
 // =============================================================================
 
 const SERVICES = [
-  { id: 'svc-001', name: 'Certificate of Occupancy (C of O)', code: 'COO', deptId: 'dept-001', fee: 250000, processingDays: 90, category: 'REGISTRATION' },
-  { id: 'svc-002', name: 'Governor\'s Consent', code: 'GC', deptId: 'dept-001', fee: 150000, processingDays: 60, category: 'REGISTRATION' },
-  { id: 'svc-003', name: 'Land Survey Report', code: 'LSR', deptId: 'dept-002', fee: 75000, processingDays: 30, category: 'SURVEY' },
-  { id: 'svc-004', name: 'Building Plan Approval', code: 'BPA', deptId: 'dept-003', fee: 100000, processingDays: 45, category: 'APPROVAL' },
-  { id: 'svc-005', name: 'Land Use Charge', code: 'LUC', deptId: 'dept-005', fee: 50000, processingDays: 14, category: 'BILLING' },
-  { id: 'svc-006', name: 'Ground Rent Renewal', code: 'GRR', deptId: 'dept-005', fee: 25000, processingDays: 7, category: 'BILLING' },
-  { id: 'svc-007', name: 'Excision Processing', code: 'EXC', deptId: 'dept-001', fee: 500000, processingDays: 180, category: 'REGISTRATION' },
-  { id: 'svc-008', name: 'Change of Name/Transfer', code: 'CNT', deptId: 'dept-001', fee: 100000, processingDays: 45, category: 'REGISTRATION' },
-  { id: 'svc-009', name: 'Certified True Copy', code: 'CTC', deptId: 'dept-001', fee: 15000, processingDays: 7, category: 'DOCUMENTATION' },
-  { id: 'svc-010', name: 'Property Inspection', code: 'PI', deptId: 'dept-004', fee: 35000, processingDays: 14, category: 'INSPECTION' },
+  { id: 'svc-001', code: 'C-OF-O', name: 'Certificate of Occupancy', category: 'CERTIFICATES', baseFee: 250000, sla: 90 },
+  { id: 'svc-002', code: 'GOV-CONSENT', name: 'Governor\'s Consent', category: 'APPROVALS', baseFee: 350000, sla: 60 },
+  { id: 'svc-003', code: 'SURVEY-PLAN', name: 'Survey Plan Approval', category: 'APPROVALS', baseFee: 75000, sla: 30 },
+  { id: 'svc-004', code: 'BLDG-PERMIT', name: 'Building Plan Approval', category: 'PERMITS', baseFee: 150000, sla: 45 },
+  { id: 'svc-005', code: 'EXCISION', name: 'Excision Certificate', category: 'CERTIFICATES', baseFee: 500000, sla: 180 },
+  { id: 'svc-006', code: 'LAND-SEARCH', name: 'Land Title Verification', category: 'INQUIRIES', baseFee: 25000, sla: 7 },
+  { id: 'svc-007', code: 'RATIFICATION', name: 'Ratification of Title', category: 'APPROVALS', baseFee: 200000, sla: 60 },
+  { id: 'svc-008', code: 'RENEWAL', name: 'Certificate Renewal', category: 'RENEWALS', baseFee: 50000, sla: 30 },
 ]
 
 // =============================================================================
-// STAFF (Nigerian Civil Servants)
-// =============================================================================
-
-const STAFF = [
-  { id: 'staff-001', name: 'Alhaji Musa Danladi', role: 'Director General', email: 'dg@lagoslands.gov.ng', phone: '08011112222', deptId: null, gradeLevel: 'GL17' },
-  { id: 'staff-002', name: 'Mrs. Adaeze Okonkwo', role: 'Director, Land Registration', email: 'dir.lr@lagoslands.gov.ng', phone: '08022223333', deptId: 'dept-001', gradeLevel: 'GL16' },
-  { id: 'staff-003', name: 'Engr. Oluwaseun Adeyemi', role: 'Director, Survey', email: 'dir.survey@lagoslands.gov.ng', phone: '08033334444', deptId: 'dept-002', gradeLevel: 'GL16' },
-  { id: 'staff-004', name: 'Arc. Fatima Ibrahim', role: 'Director, Building Approval', email: 'dir.ba@lagoslands.gov.ng', phone: '08044445555', deptId: 'dept-003', gradeLevel: 'GL16' },
-  { id: 'staff-005', name: 'Mrs. Ngozi Eze', role: 'Case Officer', email: 'n.eze@lagoslands.gov.ng', phone: '08055556666', deptId: 'dept-001', gradeLevel: 'GL12' },
-  { id: 'staff-006', name: 'Mr. Chukwuemeka Nnamdi', role: 'Case Officer', email: 'c.nnamdi@lagoslands.gov.ng', phone: '08066667777', deptId: 'dept-001', gradeLevel: 'GL12' },
-  { id: 'staff-007', name: 'Mr. Abdullahi Yusuf', role: 'Survey Officer', email: 'a.yusuf@lagoslands.gov.ng', phone: '08077778888', deptId: 'dept-002', gradeLevel: 'GL10' },
-  { id: 'staff-008', name: 'Mrs. Blessing Nwosu', role: 'Building Inspector', email: 'b.nwosu@lagoslands.gov.ng', phone: '08088889999', deptId: 'dept-003', gradeLevel: 'GL10' },
-  { id: 'staff-009', name: 'Mr. Tunde Bakare', role: 'Compliance Officer', email: 't.bakare@lagoslands.gov.ng', phone: '08099990000', deptId: 'dept-004', gradeLevel: 'GL10' },
-  { id: 'staff-010', name: 'Mrs. Halima Bello', role: 'Revenue Officer', email: 'h.bello@lagoslands.gov.ng', phone: '08010101010', deptId: 'dept-005', gradeLevel: 'GL10' },
-]
-
-// =============================================================================
-// CITIZENS (Nigerian Applicants)
+// CITIZENS (Nigerian Demographics)
 // =============================================================================
 
 const CITIZENS = [
-  { id: 'cit-001', firstName: 'Emeka', lastName: 'Okonkwo', email: 'emeka.ok@email.com', phone: '08111222333', nin: '12345678901', address: '45 Victoria Island, Lagos', lga: 'Eti-Osa' },
-  { id: 'cit-002', firstName: 'Fatima', lastName: 'Abubakar', email: 'fatima.abu@email.com', phone: '08222333444', nin: '23456789012', address: '12 Ikoyi, Lagos', lga: 'Lagos Island' },
-  { id: 'cit-003', firstName: 'Oluwaseun', lastName: 'Adeyemi', email: 'seun.adeyemi@corp.ng', phone: '08333444555', nin: '34567890123', address: '78 Lekki Phase 1, Lagos', lga: 'Eti-Osa' },
-  { id: 'cit-004', firstName: 'Ngozi', lastName: 'Eze', email: 'ngozi.eze@business.ng', phone: '08444555666', nin: '45678901234', address: '23 Magodo, Lagos', lga: 'Kosofe' },
-  { id: 'cit-005', firstName: 'Abdullahi', lastName: 'Mohammed', email: 'abdullahi.m@company.ng', phone: '08555666777', nin: '56789012345', address: '56 Ikeja GRA, Lagos', lga: 'Ikeja' },
-  { id: 'cit-006', firstName: 'Blessing', lastName: 'Ndu', email: 'blessing.ndu@email.com', phone: '08666777888', nin: '67890123456', address: '34 Yaba, Lagos', lga: 'Yaba' },
-  { id: 'cit-007', firstName: 'Chukwuemeka', lastName: 'Agu', email: 'emeka.agu@corp.ng', phone: '08777888999', nin: '78901234567', address: '89 Surulere, Lagos', lga: 'Surulere' },
-  { id: 'cit-008', firstName: 'Halima', lastName: 'Ibrahim', email: 'halima.i@email.com', phone: '08888999000', nin: '89012345678', address: '67 Apapa, Lagos', lga: 'Apapa' },
-  { id: 'cit-009', firstName: 'Kehinde', lastName: 'Bakare', email: 'kehinde.b@business.ng', phone: '08999000111', nin: '90123456789', address: '12 Ajah, Lagos', lga: 'Eti-Osa' },
-  { id: 'cit-010', firstName: 'Adaeze', lastName: 'Okoro', email: 'adaeze.okoro@email.com', phone: '08100111222', nin: '01234567890', address: '45 Maryland, Lagos', lga: 'Kosofe' },
+  { id: 'cit-001', citizenNumber: 'CIT-2026-00001', firstName: 'Chukwuemeka', lastName: 'Okonkwo', title: 'Chief', phone: '08111222333', email: 'chief.okonkwo@email.com', occupation: 'Business Executive' },
+  { id: 'cit-002', citizenNumber: 'CIT-2026-00002', firstName: 'Fatima', lastName: 'Ibrahim', title: 'Mrs.', phone: '08222333444', email: 'fatima.ibrahim@email.com', occupation: 'Civil Servant' },
+  { id: 'cit-003', citizenNumber: 'CIT-2026-00003', firstName: 'Oluwaseun', lastName: 'Adeyemi', title: 'Mr.', phone: '08333444555', email: 'seun.adeyemi@email.com', occupation: 'Architect' },
+  { id: 'cit-004', citizenNumber: 'CIT-2026-00004', firstName: 'Ngozi', lastName: 'Eze', title: 'Dr.', phone: '08444555666', email: 'dr.ngozi@email.com', occupation: 'Medical Doctor' },
+  { id: 'cit-005', citizenNumber: 'CIT-2026-00005', firstName: 'Abdullahi', lastName: 'Yusuf', title: 'Alhaji', phone: '08555666777', email: 'alhaji.yusuf@email.com', occupation: 'Property Developer' },
+  { id: 'cit-006', citizenNumber: 'CIT-2026-00006', firstName: 'Blessing', lastName: 'Okafor', title: 'Mrs.', phone: '08666777888', email: 'blessing.okafor@email.com', occupation: 'Lawyer' },
+  { id: 'cit-007', citizenNumber: 'CIT-2026-00007', firstName: 'Tunde', lastName: 'Bakare', title: 'Engr.', phone: '08777888999', email: 'tunde.bakare@email.com', occupation: 'Civil Engineer' },
+  { id: 'cit-008', citizenNumber: 'CIT-2026-00008', firstName: 'Amaka', lastName: 'Nwosu', title: 'Miss', phone: '08888999000', email: 'amaka.nwosu@email.com', occupation: 'Real Estate Agent' },
+  { id: 'cit-009', citizenNumber: 'CIT-2026-00009', firstName: 'Gbenga', lastName: 'Adeola', title: 'Mr.', phone: '08999000111', email: 'gbenga.adeola@email.com', occupation: 'Contractor' },
+  { id: 'cit-010', citizenNumber: 'CIT-2026-00010', firstName: 'Halima', lastName: 'Mohammed', title: 'Hajia', phone: '08100111222', email: 'halima.m@email.com', occupation: 'Businesswoman' },
 ]
 
 // =============================================================================
@@ -135,117 +108,87 @@ async function seedConfig(tenantId: string) {
     await prisma.civic_config.create({
       data: {
         tenantId,
-        currency: 'NGN',
-        workingDays: ['MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY'],
+        agencyName: AGENCY.name,
+        agencyCode: AGENCY.code,
+        jurisdiction: AGENCY.jurisdiction,
+        defaultSlaBusinessDays: 14,
         workingHoursStart: '08:00',
         workingHoursEnd: '16:00',
-        maxCasesPerOfficer: 50,
+        workingDays: ['MON', 'TUE', 'WED', 'THU', 'FRI'],
+        requirePaymentBeforeProcessing: true,
+        autoAssignCases: false,
+        allowAnonymousComplaints: false,
+        enablePublicTracking: true,
       }
     })
     console.log('  Created civic configuration')
+  } else {
+    console.log('  Config exists')
   }
 }
 
 async function seedAgency(tenantId: string) {
   console.log('Creating agency...')
   
+  const agencyId = `${tenantId}-${AGENCY.id}`
+  
   const existing = await prisma.civic_agency.findFirst({
-    where: { tenantId }
+    where: { id: agencyId }
   })
   
   if (!existing) {
     await prisma.civic_agency.create({
       data: {
-        id: `${tenantId}-${AGENCY.id}`,
+        id: agencyId,
         tenantId,
-        name: AGENCY.name,
         code: AGENCY.code,
-        address: AGENCY.address,
+        name: AGENCY.name,
+        description: AGENCY.description,
+        jurisdiction: AGENCY.jurisdiction,
         phone: AGENCY.phone,
         email: AGENCY.email,
+        address: AGENCY.address,
+        headName: AGENCY.headName,
+        headTitle: AGENCY.headTitle,
         isActive: true,
       }
     })
     console.log(`  Created agency: ${AGENCY.name}`)
+  } else {
+    console.log(`  Agency exists: ${AGENCY.name}`)
   }
-}
-
-async function seedDepartments(tenantId: string) {
-  console.log('Creating departments...')
   
-  for (const dept of DEPARTMENTS) {
-    const existing = await prisma.civic_department.findFirst({
-      where: { tenantId, code: dept.code }
-    })
-    
-    if (!existing) {
-      await prisma.civic_department.create({
-        data: {
-          id: `${tenantId}-${dept.id}`,
-          tenantId,
-          agencyId: `${tenantId}-${AGENCY.id}`,
-          name: dept.name,
-          code: dept.code,
-          description: dept.description,
-          isActive: true,
-        }
-      })
-      console.log(`  Created department: ${dept.name}`)
-    }
-  }
+  return agencyId
 }
 
-async function seedServices(tenantId: string) {
+async function seedServices(tenantId: string, agencyId: string) {
   console.log('Creating services...')
   
   for (const svc of SERVICES) {
+    const serviceId = `${tenantId}-${svc.id}`
+    
     const existing = await prisma.civic_service.findFirst({
-      where: { tenantId, code: svc.code }
+      where: { id: serviceId }
     })
     
     if (!existing) {
       await prisma.civic_service.create({
         data: {
-          id: `${tenantId}-${svc.id}`,
+          id: serviceId,
           tenantId,
-          departmentId: `${tenantId}-${svc.deptId}`,
-          name: svc.name,
+          agencyId,
           code: svc.code,
-          fee: svc.fee,
-          currency: 'NGN',
-          processingDays: svc.processingDays,
-          category: svc.category,
+          name: svc.name,
+          description: `Government service: ${svc.name}`,
+          category: svc.category as any,
+          baseFee: svc.baseFee,
+          slaBusinessDays: svc.sla,
           isActive: true,
         }
       })
-      console.log(`  Created service: ${svc.name} - ₦${svc.fee.toLocaleString()}`)
-    }
-  }
-}
-
-async function seedStaff(tenantId: string) {
-  console.log('Creating staff...')
-  
-  for (const staff of STAFF) {
-    const existing = await prisma.civic_staff.findFirst({
-      where: { tenantId, email: staff.email }
-    })
-    
-    if (!existing) {
-      await prisma.civic_staff.create({
-        data: {
-          id: `${tenantId}-${staff.id}`,
-          tenantId,
-          name: staff.name,
-          role: staff.role,
-          email: staff.email,
-          phone: staff.phone,
-          departmentId: staff.deptId ? `${tenantId}-${staff.deptId}` : null,
-          gradeLevel: staff.gradeLevel,
-          isActive: true,
-        }
-      })
-      console.log(`  Created staff: ${staff.name} (${staff.role})`)
+      console.log(`  Created service: ${svc.name}`)
+    } else {
+      console.log(`  Service exists: ${svc.name}`)
     }
   }
 }
@@ -254,59 +197,31 @@ async function seedCitizens(tenantId: string) {
   console.log('Creating citizens...')
   
   for (const cit of CITIZENS) {
+    const citizenId = `${tenantId}-${cit.id}`
+    
     const existing = await prisma.civic_citizen.findFirst({
-      where: { tenantId, email: cit.email }
+      where: { citizenNumber: cit.citizenNumber }
     })
     
     if (!existing) {
       await prisma.civic_citizen.create({
         data: {
-          id: `${tenantId}-${cit.id}`,
+          id: citizenId,
           tenantId,
+          citizenNumber: cit.citizenNumber,
           firstName: cit.firstName,
           lastName: cit.lastName,
-          email: cit.email,
+          title: cit.title,
           phone: cit.phone,
-          nin: cit.nin,
-          address: cit.address,
-          lga: cit.lga,
-          isVerified: true,
+          email: cit.email,
+          occupation: cit.occupation,
+          isActive: true,
         }
       })
-      console.log(`  Created citizen: ${cit.firstName} ${cit.lastName}`)
+      console.log(`  Created citizen: ${cit.title} ${cit.firstName} ${cit.lastName}`)
+    } else {
+      console.log(`  Citizen exists: ${cit.firstName} ${cit.lastName}`)
     }
-  }
-}
-
-async function seedRequests(tenantId: string) {
-  console.log('Creating service requests...')
-  
-  const today = new Date()
-  const requests = [
-    { citizenId: 'cit-001', serviceId: 'svc-001', status: 'IN_PROGRESS', assignedTo: 'staff-005', submittedAt: new Date(today.getTime() - 86400000 * 30) },
-    { citizenId: 'cit-002', serviceId: 'svc-002', status: 'PENDING_REVIEW', assignedTo: 'staff-006', submittedAt: new Date(today.getTime() - 86400000 * 14) },
-    { citizenId: 'cit-003', serviceId: 'svc-004', status: 'PENDING_INSPECTION', assignedTo: 'staff-008', submittedAt: new Date(today.getTime() - 86400000 * 7) },
-    { citizenId: 'cit-004', serviceId: 'svc-003', status: 'COMPLETED', assignedTo: 'staff-007', submittedAt: new Date(today.getTime() - 86400000 * 45), completedAt: new Date(today.getTime() - 86400000 * 10) },
-    { citizenId: 'cit-005', serviceId: 'svc-005', status: 'SUBMITTED', assignedTo: null, submittedAt: new Date(today.getTime() - 86400000 * 2) },
-    { citizenId: 'cit-006', serviceId: 'svc-009', status: 'COMPLETED', assignedTo: 'staff-005', submittedAt: new Date(today.getTime() - 86400000 * 20), completedAt: new Date(today.getTime() - 86400000 * 12) },
-  ]
-  
-  for (let i = 0; i < requests.length; i++) {
-    const req = requests[i]
-    await prisma.civic_request.create({
-      data: {
-        id: `${tenantId}-req-${i + 1}`,
-        tenantId,
-        citizenId: `${tenantId}-${req.citizenId}`,
-        serviceId: `${tenantId}-${req.serviceId}`,
-        status: req.status,
-        assignedToId: req.assignedTo ? `${tenantId}-${req.assignedTo}` : null,
-        referenceNumber: `LSLB-${Date.now()}-${i + 1}`,
-        submittedAt: req.submittedAt,
-        completedAt: req.completedAt || null,
-      }
-    })
-    console.log(`  Created request: ${req.status}`)
   }
 }
 
@@ -326,25 +241,18 @@ async function main() {
     
     // Step 2: Seed configuration
     await seedConfig(tenant.id)
-    await seedAgency(tenant.id)
-    await seedDepartments(tenant.id)
+    const agencyId = await seedAgency(tenant.id)
     
     // Step 3: Seed operational data
-    await seedServices(tenant.id)
-    await seedStaff(tenant.id)
+    await seedServices(tenant.id, agencyId)
     await seedCitizens(tenant.id)
-    
-    // Step 4: Seed transaction data
-    await seedRequests(tenant.id)
     
     console.log('='.repeat(60))
     console.log('CIVIC DEMO SEEDING COMPLETE')
+    console.log(`  Config: 1`)
     console.log(`  Agency: 1`)
-    console.log(`  Departments: ${DEPARTMENTS.length}`)
     console.log(`  Services: ${SERVICES.length}`)
-    console.log(`  Staff: ${STAFF.length}`)
     console.log(`  Citizens: ${CITIZENS.length}`)
-    console.log(`  Requests: 6`)
     console.log('='.repeat(60))
     
   } catch (error) {

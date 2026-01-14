@@ -1,0 +1,145 @@
+CONTINUOUS PHASE EXECUTION (CONTROLLED MODE)
+
+Title: Continuous Demo Readiness Execution — Controlled Phased Mode
+
+⸻
+
+You are authorized to proceed with the remaining Demo Readiness Phases sequentially, nonstop, under strict phase boundaries and safety rules.
+
+GLOBAL RULES (MANDATORY)
+	1.	One phase at a time — fully complete, verify, and report before moving to the next.
+	2.	No skipping phases.
+	3.	No mixing execution with design.
+	4.	All demo data MUST belong exclusively to the WebWaka Demo Partner and its demo tenants.
+	5.	No production data, no schema changes, no business logic changes.
+	6.	If a blocking issue is discovered, STOP immediately and report.
+	7.	After each phase, produce a clear “Phase Completion Report” before continuing.
+
+⸻
+
+PHASE EXECUTION ORDER (AUTHORIZED)
+
+🔹 Phase D3-B-Prep — Vertical Script Schema Alignment (CODE ONLY)
+
+Scope:
+	•	Education
+	•	Health
+	•	Hospitality
+	•	Civic
+	•	Church
+	•	Political
+	•	Logistics
+	•	Real Estate
+
+Rules:
+	•	❌ Do NOT execute any seed scripts
+	•	✅ Fix TypeScript + Prisma schema mismatches only
+	•	✅ Ensure scripts compile cleanly against current schema.prisma
+	•	✅ No database mutations
+	•	✅ One script at a time
+	•	📄 Report per script:
+	•	Models touched
+	•	Fields aligned
+	•	Required relations satisfied
+	•	Compile status
+
+Proceed script-by-script, in this order:
+	1.	Education
+	2.	Health
+	3.	Hospitality
+	4.	Civic
+	5.	Logistics
+	6.	Real Estate
+	7.	Church
+	8.	Political
+
+⸻
+
+🔹 Phase D3-B — Controlled Vertical Seeding (EXECUTION)
+
+Prerequisite: Phase D3-B-Prep fully complete.
+
+Execution Rules:
+	•	Execute one script at a time
+	•	Verify:
+	•	Record counts
+	•	Tenant ownership
+	•	No orphan records
+	•	Stop immediately if:
+	•	Runtime error occurs
+	•	Constraint violation occurs
+	•	Provide rollback instructions if needed
+
+Order:
+	1.	Education
+	2.	Health
+	3.	Hospitality
+	4.	Civic
+	5.	Logistics
+	6.	Real Estate
+	7.	Church
+	8.	Political
+
+⸻
+
+🔹 Phase D4 — Demo Readiness Validation
+
+For each seeded suite:
+	•	Verify dashboard widgets display data
+	•	Verify at least 1 complete workflow
+	•	Verify role-based access differences
+	•	Verify no cross-tenant leakage
+
+Produce:
+	•	Per-suite readiness table
+	•	Platform readiness level (L1 / L2 / L3)
+
+⸻
+
+🔹 Phase D5 — Role-by-Role UX Validation
+
+Test as a user, not as code:
+	•	Partner roles (Owner, Admin, Sales, Support, Staff)
+	•	Tenant roles per suite
+
+Report:
+	•	Allowed access
+	•	Blocked access
+	•	UI/API inconsistencies
+	•	Missing guards
+
+⸻
+
+🔹 Phase D6 — Sales-Grade Demo Walkthrough Validation
+
+Validate the actual sales narrative:
+	•	Which tenant to open first
+	•	Which persona to log in as
+	•	What story is shown per suite
+	•	Where to pivot during live demos
+
+Deliver:
+	•	Final Sales Demo Walkthrough Script
+	•	Suggested demo order (15-minute and 30-minute versions)
+
+⸻
+
+STOP CONDITIONS
+
+You must STOP and report if:
+	•	A Prisma model mismatch cannot be safely resolved
+	•	A script risks corrupting demo data
+	•	A required dependency is missing
+	•	Any execution deviates from Demo Partner scope
+
+⸻
+
+FINAL INSTRUCTION
+
+Begin immediately with:
+
+Phase D3-B-Prep — Education Suite
+
+Proceed automatically to the next phase only after producing a Phase Completion Report for each phase.
+
+Do not ask for further approval unless a blocker is encountered.

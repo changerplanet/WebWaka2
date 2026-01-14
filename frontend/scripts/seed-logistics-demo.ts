@@ -1,17 +1,15 @@
 /**
- * Demo Seed Script — DESIGN ONLY
- * PHASE D2
- * DO NOT EXECUTE WITHOUT EXPLICIT APPROVAL
+ * Demo Seed Script — PHASE D3-B
+ * EXECUTION APPROVED
  * 
  * Logistics Suite - Nigerian Delivery Service Demo Data Seeder
  * 
- * Creates demo data for a Nigerian logistics company:
+ * Creates demo data for a Nigerian logistics/delivery company:
+ * - Configuration
  * - Delivery zones (Lagos areas)
- * - Delivery agents (riders)
- * - Pricing rules
- * - Delivery assignments
+ * - Delivery agents
  * 
- * Run: npx ts-node --project tsconfig.json scripts/seed-logistics-demo.ts
+ * Run: npx tsx scripts/seed-logistics-demo.ts
  */
 
 import { PrismaClient } from '@prisma/client'
@@ -29,41 +27,29 @@ const DEMO_TENANT_SLUG = 'demo-logistics'
 // =============================================================================
 
 const ZONES = [
-  { id: 'zone-001', name: 'Lagos Island', code: 'LI', coverage: ['Lagos Island', 'Ikoyi', 'Victoria Island'], basePrice: 1500, pricePerKm: 150 },
-  { id: 'zone-002', name: 'Lekki', code: 'LK', coverage: ['Lekki Phase 1', 'Lekki Phase 2', 'Ajah', 'Sangotedo'], basePrice: 2000, pricePerKm: 180 },
-  { id: 'zone-003', name: 'Ikeja', code: 'IK', coverage: ['Ikeja', 'Alausa', 'Maryland', 'Ogba'], basePrice: 1500, pricePerKm: 150 },
-  { id: 'zone-004', name: 'Surulere', code: 'SR', coverage: ['Surulere', 'Yaba', 'Ebute Metta'], basePrice: 1200, pricePerKm: 120 },
-  { id: 'zone-005', name: 'Apapa', code: 'AP', coverage: ['Apapa', 'Ajegunle', 'Ijora'], basePrice: 1500, pricePerKm: 150 },
-  { id: 'zone-006', name: 'Mainland North', code: 'MN', coverage: ['Agege', 'Ifako', 'Ojodu', 'Berger'], basePrice: 1800, pricePerKm: 160 },
-  { id: 'zone-007', name: 'Mainland East', code: 'ME', coverage: ['Ketu', 'Ojota', 'Ikorodu'], basePrice: 2000, pricePerKm: 180 },
-  { id: 'zone-008', name: 'Festac/Satellite', code: 'FS', coverage: ['Festac', 'Satellite Town', 'Ojo'], basePrice: 2500, pricePerKm: 200 },
+  { id: 'zone-vi', name: 'Victoria Island', code: 'VI', city: 'Lagos', state: 'Lagos', lga: 'Eti-Osa', zoneType: 'LGA' },
+  { id: 'zone-ikoyi', name: 'Ikoyi', code: 'IKY', city: 'Lagos', state: 'Lagos', lga: 'Eti-Osa', zoneType: 'LGA' },
+  { id: 'zone-lekki', name: 'Lekki Phase 1', code: 'LK1', city: 'Lagos', state: 'Lagos', lga: 'Eti-Osa', zoneType: 'LGA' },
+  { id: 'zone-ikeja', name: 'Ikeja', code: 'IKJ', city: 'Lagos', state: 'Lagos', lga: 'Ikeja', zoneType: 'CITY' },
+  { id: 'zone-surulere', name: 'Surulere', code: 'SRL', city: 'Lagos', state: 'Lagos', lga: 'Surulere', zoneType: 'CITY' },
+  { id: 'zone-yaba', name: 'Yaba', code: 'YBA', city: 'Lagos', state: 'Lagos', lga: 'Yaba', zoneType: 'LGA' },
+  { id: 'zone-mainland', name: 'Lagos Mainland', code: 'MLD', city: 'Lagos', state: 'Lagos', lga: 'Lagos Mainland', zoneType: 'CITY' },
+  { id: 'zone-island', name: 'Lagos Island', code: 'ISL', city: 'Lagos', state: 'Lagos', lga: 'Lagos Island', zoneType: 'CITY' },
 ]
 
 // =============================================================================
-// DELIVERY AGENTS (Nigerian Riders)
+// DELIVERY AGENTS (Nigerian Dispatch Riders)
 // =============================================================================
 
 const AGENTS = [
-  { id: 'agent-001', name: 'Adebayo Olumide', phone: '08011112222', email: 'adebayo.o@swiftlogistics.ng', vehicleType: 'MOTORCYCLE', plateNumber: 'LAG-123-AB', zoneIds: ['zone-001', 'zone-002'], status: 'AVAILABLE', rating: 4.8 },
-  { id: 'agent-002', name: 'Chukwuemeka Nnamdi', phone: '08022223333', email: 'chukwuemeka.n@swiftlogistics.ng', vehicleType: 'MOTORCYCLE', plateNumber: 'LAG-456-CD', zoneIds: ['zone-003', 'zone-004'], status: 'ON_DELIVERY', rating: 4.7 },
-  { id: 'agent-003', name: 'Musa Ibrahim', phone: '08033334444', email: 'musa.i@swiftlogistics.ng', vehicleType: 'MOTORCYCLE', plateNumber: 'LAG-789-EF', zoneIds: ['zone-001', 'zone-003'], status: 'AVAILABLE', rating: 4.9 },
-  { id: 'agent-004', name: 'Oluwaseun Adeyemi', phone: '08044445555', email: 'seun.a@swiftlogistics.ng', vehicleType: 'VAN', plateNumber: 'LAG-101-GH', zoneIds: ['zone-005', 'zone-006'], status: 'AVAILABLE', rating: 4.6 },
-  { id: 'agent-005', name: 'Tunde Bakare', phone: '08055556666', email: 'tunde.b@swiftlogistics.ng', vehicleType: 'MOTORCYCLE', plateNumber: 'LAG-202-IJ', zoneIds: ['zone-002', 'zone-007'], status: 'OFF_DUTY', rating: 4.5 },
-  { id: 'agent-006', name: 'Abdullahi Yusuf', phone: '08066667777', email: 'abdullahi.y@swiftlogistics.ng', vehicleType: 'MOTORCYCLE', plateNumber: 'LAG-303-KL', zoneIds: ['zone-004', 'zone-005'], status: 'AVAILABLE', rating: 4.8 },
-  { id: 'agent-007', name: 'Emeka Okafor', phone: '08077778888', email: 'emeka.o@swiftlogistics.ng', vehicleType: 'VAN', plateNumber: 'LAG-404-MN', zoneIds: ['zone-007', 'zone-008'], status: 'ON_DELIVERY', rating: 4.7 },
-  { id: 'agent-008', name: 'Blessing Ndu', phone: '08088889999', email: 'blessing.n@swiftlogistics.ng', vehicleType: 'MOTORCYCLE', plateNumber: 'LAG-505-OP', zoneIds: ['zone-001', 'zone-004'], status: 'AVAILABLE', rating: 4.9 },
-]
-
-// =============================================================================
-// PRICING RULES
-// =============================================================================
-
-const PRICING_RULES = [
-  { id: 'price-001', name: 'Standard Delivery', type: 'STANDARD', basePrice: 1500, pricePerKm: 150, estimatedTime: '2-4 hours' },
-  { id: 'price-002', name: 'Express Delivery', type: 'EXPRESS', basePrice: 3000, pricePerKm: 250, estimatedTime: '1-2 hours' },
-  { id: 'price-003', name: 'Same Day Delivery', type: 'SAME_DAY', basePrice: 2000, pricePerKm: 180, estimatedTime: '4-8 hours' },
-  { id: 'price-004', name: 'Next Day Delivery', type: 'NEXT_DAY', basePrice: 1200, pricePerKm: 120, estimatedTime: '24 hours' },
-  { id: 'price-005', name: 'Bulk Delivery (Van)', type: 'BULK', basePrice: 5000, pricePerKm: 350, estimatedTime: '4-6 hours' },
+  { id: 'agent-001', firstName: 'Chukwudi', lastName: 'Eze', phone: '08111222333', email: 'chukwudi.eze@swiftdelivery.ng', vehicleType: 'MOTORCYCLE', vehiclePlate: 'LAG-123-XY', status: 'ACTIVE', availability: 'AVAILABLE' },
+  { id: 'agent-002', firstName: 'Tunde', lastName: 'Bakare', phone: '08222333444', email: 'tunde.bakare@swiftdelivery.ng', vehicleType: 'MOTORCYCLE', vehiclePlate: 'LAG-234-AB', status: 'ACTIVE', availability: 'AVAILABLE' },
+  { id: 'agent-003', firstName: 'Musa', lastName: 'Ibrahim', phone: '08333444555', email: 'musa.ibrahim@swiftdelivery.ng', vehicleType: 'MOTORCYCLE', vehiclePlate: 'LAG-345-CD', status: 'ACTIVE', availability: 'ON_DELIVERY' },
+  { id: 'agent-004', firstName: 'Emeka', lastName: 'Okafor', phone: '08444555666', email: 'emeka.okafor@swiftdelivery.ng', vehicleType: 'VAN', vehiclePlate: 'LAG-456-EF', status: 'ACTIVE', availability: 'AVAILABLE' },
+  { id: 'agent-005', firstName: 'Yusuf', lastName: 'Garba', phone: '08555666777', email: 'yusuf.garba@swiftdelivery.ng', vehicleType: 'MOTORCYCLE', vehiclePlate: 'LAG-567-GH', status: 'ACTIVE', availability: 'OFFLINE' },
+  { id: 'agent-006', firstName: 'Adebayo', lastName: 'Ojo', phone: '08666777888', email: 'adebayo.ojo@swiftdelivery.ng', vehicleType: 'MOTORCYCLE', vehiclePlate: 'LAG-678-IJ', status: 'ACTIVE', availability: 'AVAILABLE' },
+  { id: 'agent-007', firstName: 'Chidera', lastName: 'Nwosu', phone: '08777888999', email: 'chidera.nwosu@swiftdelivery.ng', vehicleType: 'BICYCLE', vehiclePlate: 'N/A', status: 'ACTIVE', availability: 'AVAILABLE' },
+  { id: 'agent-008', firstName: 'Abdullahi', lastName: 'Sani', phone: '08888999000', email: 'abdullahi.sani@swiftdelivery.ng', vehicleType: 'MOTORCYCLE', vehiclePlate: 'LAG-789-KL', status: 'SUSPENDED', availability: 'OFFLINE' },
 ]
 
 // =============================================================================
@@ -95,16 +81,39 @@ async function seedConfig(tenantId: string) {
   if (!existing) {
     await prisma.logistics_configurations.create({
       data: {
+        id: `${tenantId}-config`,
         tenantId,
-        currency: 'NGN',
-        defaultVehicleType: 'MOTORCYCLE',
-        operatingHoursStart: '07:00',
-        operatingHoursEnd: '21:00',
-        maxDeliveriesPerAgent: 10,
-        autoAssignEnabled: true,
+        deliveryEnabled: true,
+        autoAssignmentEnabled: false,
+        realTimeTrackingEnabled: true,
+        proofOfDeliveryRequired: true,
+        defaultPriority: 'STANDARD',
+        defaultCurrency: 'NGN',
+        photoProofRequired: true,
+        signatureProofRequired: false,
+        pinVerificationEnabled: false,
+        otpVerificationEnabled: true,
+        assignmentAlgorithm: 'NEAREST',
+        maxConcurrentDeliveries: 5,
+        defaultDeliveryWindowHours: 4,
+        expressDeliveryWindowHours: 2,
+        sameDayDeliveryWindowHours: 6,
+        maxDeliveryAttempts: 3,
+        retryDelayHours: 24,
+        notifyCustomerOnAssignment: true,
+        notifyCustomerOnPickup: true,
+        notifyCustomerOnTransit: true,
+        notifyCustomerOnArrival: true,
+        notifyCustomerOnDelivery: true,
+        notifyCustomerOnFailure: true,
+        supportInformalAddresses: true,
+        landmarkRequired: true,
+        updatedAt: new Date(),
       }
     })
     console.log('  Created logistics configuration')
+  } else {
+    console.log('  Config exists')
   }
 }
 
@@ -112,25 +121,31 @@ async function seedZones(tenantId: string) {
   console.log('Creating delivery zones...')
   
   for (const zone of ZONES) {
+    const zoneId = `${tenantId}-${zone.id}`
+    
     const existing = await prisma.logistics_delivery_zones.findFirst({
-      where: { tenantId, code: zone.code }
+      where: { id: zoneId }
     })
     
     if (!existing) {
       await prisma.logistics_delivery_zones.create({
         data: {
-          id: `${tenantId}-${zone.id}`,
+          id: zoneId,
           tenantId,
           name: zone.name,
           code: zone.code,
-          coverage: zone.coverage,
-          basePrice: zone.basePrice,
-          pricePerKm: zone.pricePerKm,
-          currency: 'NGN',
-          isActive: true,
+          description: `${zone.name} delivery zone`,
+          zoneType: zone.zoneType as any,
+          city: zone.city,
+          state: zone.state,
+          lga: zone.lga,
+          status: 'ACTIVE',
+          updatedAt: new Date(),
         }
       })
-      console.log(`  Created zone: ${zone.name} (${zone.code})`)
+      console.log(`  Created zone: ${zone.name}`)
+    } else {
+      console.log(`  Zone exists: ${zone.name}`)
     }
   }
 }
@@ -139,55 +154,37 @@ async function seedAgents(tenantId: string) {
   console.log('Creating delivery agents...')
   
   for (const agent of AGENTS) {
+    const agentId = `${tenantId}-${agent.id}`
+    
     const existing = await prisma.logistics_delivery_agents.findFirst({
-      where: { tenantId, email: agent.email }
+      where: { id: agentId }
     })
     
     if (!existing) {
       await prisma.logistics_delivery_agents.create({
         data: {
-          id: `${tenantId}-${agent.id}`,
+          id: agentId,
           tenantId,
-          name: agent.name,
+          firstName: agent.firstName,
+          lastName: agent.lastName,
           phone: agent.phone,
           email: agent.email,
           vehicleType: agent.vehicleType,
-          plateNumber: agent.plateNumber,
-          zoneIds: agent.zoneIds.map(z => `${tenantId}-${z}`),
-          status: agent.status,
-          rating: agent.rating,
-          totalDeliveries: Math.floor(Math.random() * 500) + 100,
-          isActive: true,
+          vehiclePlate: agent.vehiclePlate,
+          status: agent.status as any,
+          availability: agent.availability as any,
+          agentType: 'IN_HOUSE',
+          totalDeliveries: Math.floor(Math.random() * 200) + 50,
+          completedDeliveries: Math.floor(Math.random() * 180) + 45,
+          failedDeliveries: Math.floor(Math.random() * 10),
+          averageRating: 4.2 + Math.random() * 0.6,
+          totalRatings: Math.floor(Math.random() * 100) + 20,
+          updatedAt: new Date(),
         }
       })
-      console.log(`  Created agent: ${agent.name} (${agent.vehicleType})`)
-    }
-  }
-}
-
-async function seedPricingRules(tenantId: string) {
-  console.log('Creating pricing rules...')
-  
-  for (const rule of PRICING_RULES) {
-    const existing = await prisma.logistics_delivery_pricing_rules.findFirst({
-      where: { tenantId, name: rule.name }
-    })
-    
-    if (!existing) {
-      await prisma.logistics_delivery_pricing_rules.create({
-        data: {
-          id: `${tenantId}-${rule.id}`,
-          tenantId,
-          name: rule.name,
-          type: rule.type,
-          basePrice: rule.basePrice,
-          pricePerKm: rule.pricePerKm,
-          currency: 'NGN',
-          estimatedTime: rule.estimatedTime,
-          isActive: true,
-        }
-      })
-      console.log(`  Created pricing rule: ${rule.name} - ₦${rule.basePrice}`)
+      console.log(`  Created agent: ${agent.firstName} ${agent.lastName}`)
+    } else {
+      console.log(`  Agent exists: ${agent.firstName} ${agent.lastName}`)
     }
   }
 }
@@ -212,13 +209,12 @@ async function main() {
     // Step 3: Seed operational data
     await seedZones(tenant.id)
     await seedAgents(tenant.id)
-    await seedPricingRules(tenant.id)
     
     console.log('='.repeat(60))
     console.log('LOGISTICS DEMO SEEDING COMPLETE')
+    console.log(`  Config: 1`)
     console.log(`  Zones: ${ZONES.length}`)
     console.log(`  Agents: ${AGENTS.length}`)
-    console.log(`  Pricing Rules: ${PRICING_RULES.length}`)
     console.log('='.repeat(60))
     
   } catch (error) {
