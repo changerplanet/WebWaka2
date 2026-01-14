@@ -38,6 +38,16 @@ WebWaka is a multi-tenant SaaS platform infrastructure for digital transformatio
 - `SESSION_SECRET` - Session encryption key
 
 ## Recent Changes
+- January 14, 2026: Phase M5 - SEO, Analytics & Performance Hardening Complete
+  - **M5.1 SEO Foundations**: Metadata, titles, descriptions, canonical URLs for all 5 marketing pages
+  - **M5.2 OpenGraph**: OG tags, Twitter cards, WhatsApp-friendly previews (en_NG locale)
+  - **M5.3 Performance**: Font loading verified (Inter via next/font), SVG icons (no images), CLS prevention
+  - **M5.4 Analytics**: Placeholder hooks in frontend/src/lib/marketing/analytics.ts (disabled by default)
+  - **M5.5 Content Integrity**: All claims verified, partner-first language, Nigeria-first tone
+  - **Deliverables**: 4 reports in frontend/docs/phase-m5/
+  - **Homepage Route Group**: Moved to (home) for SEO layout support
+  - **Status: COMPLETE - Safe to merge, no forbidden areas touched**
+
 - January 14, 2026: Phase M4 - Marketing Website Build Complete
   - **Marketing Components**: 11 reusable components in frontend/src/components/marketing/
   - **Suites Data Module**: 19 suites with metadata in frontend/src/lib/marketing/suites-data.ts
