@@ -1,0 +1,178 @@
+
+🔐 PHASE M5 — SEO, ANALYTICS & PERFORMANCE HARDENING
+
+(Marketing Website Only)
+
+🎯 Objective
+
+Harden the marketing website for:
+	•	Search visibility (SEO)
+	•	Shareability (OpenGraph / WhatsApp / social previews)
+	•	Mobile performance (Nigeria-first networks)
+	•	Analytics readiness
+
+WITHOUT altering:
+	•	Core platform logic
+	•	APIs
+	•	Authentication
+	•	Demo data
+	•	Templates system
+	•	Partner or tenant flows
+
+This phase is strictly marketing-layer only.
+
+⸻
+
+🧭 Scope (STRICT — DO NOT VIOLATE)
+
+✅ ALLOWED
+	•	Marketing routes only (/, /suites, /sites-and-funnels, /partners, /demo)
+	•	Metadata, SEO, performance, analytics hooks
+	•	Static optimizations
+	•	Image and font optimization
+	•	Non-invasive analytics setup (disabled by default if needed)
+
+❌ FORBIDDEN
+	•	❌ Prisma / database
+	•	❌ Auth / middleware
+	•	❌ API routes
+	•	❌ Demo portal logic
+	•	❌ Template system
+	•	❌ Business logic
+	•	❌ Feature changes
+	•	❌ UI redesign (no visual changes beyond SEO tags)
+
+⸻
+
+📌 PHASE M5 TASKS
+
+M5.1 — SEO Foundations
+
+For each marketing page:
+	•	Add <title> and <meta description>
+	•	Nigeria-first keyword strategy (Partners, SaaS, Africa, Nigeria, Resellers)
+	•	Canonical URLs
+	•	Proper heading hierarchy (H1 → H2 → H3)
+
+Pages:
+	•	/
+	•	/suites
+	•	/sites-and-funnels
+	•	/partners
+	•	/demo
+
+Deliverable:
+	•	SEO metadata map per page
+
+⸻
+
+M5.2 — OpenGraph & Social Sharing
+
+Implement:
+	•	OpenGraph tags (title, description, image)
+	•	WhatsApp-friendly previews (critical for Nigeria)
+	•	Twitter/X cards (optional but recommended)
+
+Rules:
+	•	Use marketing copy, not platform copy
+	•	Use one OG image per page
+	•	No tracking pixels embedded here
+
+Deliverable:
+	•	OG preview spec per page
+
+⸻
+
+M5.3 — Performance Optimization (Mobile-First)
+
+Focus on perceived speed:
+	•	Image optimization (next/image)
+	•	Font loading strategy (Inter, variable, no blocking)
+	•	Avoid layout shifts (CLS)
+	•	Reduce JS on marketing pages where possible
+
+Target:
+	•	Lighthouse Mobile ≥ 85
+	•	LCP < 2.5s on 3G simulation
+
+Deliverable:
+	•	Performance checklist + changes applied
+
+⸻
+
+M5.4 — Analytics Readiness (NON-INTRUSIVE)
+
+Prepare for:
+	•	Google Analytics / GA4
+	•	Meta Pixel (future)
+	•	WhatsApp CTA tracking
+	•	Demo Portal click-through tracking
+
+Rules:
+	•	Analytics must be opt-in / disabled by default
+	•	No cookies without consent
+	•	No breaking SSR
+
+Deliverable:
+	•	Analytics integration plan
+	•	Placeholder hooks only (safe to merge)
+
+⸻
+
+M5.5 — SEO Content Integrity Check
+
+Verify:
+	•	No misleading claims
+	•	No outdated suite counts
+	•	Demo strength labels consistent
+	•	Partner-first language everywhere
+	•	Nigeria-first tone maintained
+
+Deliverable:
+	•	SEO & content integrity checklist
+
+⸻
+
+🧾 FINAL DELIVERABLES (REQUIRED)
+
+Replit1 Agent must produce:
+	1.	PHASE_M5_SEO_REPORT.md
+	•	Page-by-page SEO metadata
+	•	Keywords
+	•	OG previews
+	2.	PHASE_M5_PERFORMANCE_REPORT.md
+	•	What was optimized
+	•	What was avoided (and why)
+	3.	PHASE_M5_ANALYTICS_PLAN.md
+	•	Events
+	•	Pages
+	•	CTA tracking
+	•	Status (disabled/enabled)
+	4.	Git Commit Summary
+	•	Files changed
+	•	Confirmation no forbidden areas touched
+
+⸻
+
+🛑 STOP RULE
+
+After completing the above:
+	•	❌ Do NOT proceed to Phase M6
+	•	❌ Do NOT deploy
+	•	❌ Do NOT modify templates
+	•	❌ Do NOT enable analytics in production
+
+Stop and wait for approval.
+
+⸻
+
+✅ SUCCESS CRITERIA
+
+Phase M5 is successful if:
+	•	Marketing pages are SEO-ready
+	•	Social previews work perfectly on WhatsApp
+	•	Mobile performance is improved or unchanged
+	•	Zero impact on platform functionality
+	•	Changes are safe to merge into GitHub
+
+⸻

@@ -13,11 +13,6 @@ import {
   Smartphone, MessageCircle, Palette, Building
 } from 'lucide-react'
 
-export const metadata = {
-  title: 'Sites & Funnels — Build Client Websites in Hours | WebWaka',
-  description: 'Launch professional websites and conversion funnels for your clients same-day. Industry templates, AI content generation, and suite integration. Nigeria-first, Naira-native.',
-}
-
 const oldWayItems = [
   'Client asks for a website',
   'You spend 2-4 weeks building it',
