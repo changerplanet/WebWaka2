@@ -29,6 +29,13 @@ WebWaka is built as a multi-tenant SaaS platform with a modular capability syste
   - Server-side validation with configurable rules (required, email, phone, min/max length, pattern)
   - Optional payment collection via PaymentExecutionService integration
   - Public submission API, tenant-scoped management, demo-safe execution
+- **Partner Analytics (E1.4)**: Read-only analytics layer for partner dashboards:
+  - Partner overview metrics (tenants, forms, submissions, payments)
+  - Tenant performance breakdown with conversion rates
+  - Form performance analytics with revenue tracking
+  - Payment visibility (read-only, no payouts)
+  - Time filters (today, 7d, 30d, all-time) and demo/live split
+  - Mobile-first dashboard UI at /partner/analytics
 - **Authorization System**: Robust, role-scoped authorization (`SUPER_ADMIN`, `PARTNER_*`, `TENANT_USER`) across API routes and UI components to prevent cross-tenant data leaks and ensure secure access control.
 - **Marketing Website**: Comprehensive marketing site with reusable components, suite data modules, and SEO optimization (metadata, OpenGraph, performance hardening).
 - **Demo System**: Advanced demo data seeding and a "Strong Demo Matrix" across 11 vertical suites, enabling comprehensive demonstrations for potential partners and clients.

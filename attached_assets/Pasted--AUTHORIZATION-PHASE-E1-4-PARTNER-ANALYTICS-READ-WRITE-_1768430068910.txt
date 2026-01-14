@@ -1,0 +1,146 @@
+
+🔓 AUTHORIZATION — PHASE E1.4: PARTNER ANALYTICS (READ–WRITE, CONTROLLED)
+
+STATUS
+	•	E1.1 — Payment Provider Abstraction: ✅ Complete
+	•	E1.2 — Payment Execution: ✅ Complete
+	•	E1.3 — Sites & Funnels Form Builder: ✅ Complete & Approved
+	•	E1.4 — Partner Analytics: 🟢 APPROVED TO START
+
+⸻
+
+🎯 PHASE E1.4 OBJECTIVE
+
+Design and implement a Partner Analytics layer that provides clear, actionable visibility into partner performance without triggering automation, notifications, or payouts.
+
+This phase is analytics-only (read, aggregate, visualize).
+
+⸻
+
+🧭 ANALYTICS SCOPE (STRICT)
+
+USERS COVERED
+	•	Partner Owner
+	•	Partner Admin
+	•	Partner Sales
+
+ANALYTICS LEVELS
+	1.	Partner-Level Analytics
+	2.	Tenant-Level Rollups
+	3.	Sites & Funnels Performance
+	4.	Payments Visibility (Read-only)
+
+⸻
+
+📊 REQUIRED METRICS (MUST IMPLEMENT)
+
+1. Partner Overview Dashboard
+	•	Total Tenants
+	•	Active vs Inactive Tenants
+	•	Total Forms Created
+	•	Total Form Submissions
+	•	Total Payments Initiated
+	•	Total Successful Payments
+	•	Demo vs Live split
+	•	Time filters: Today / 7d / 30d / All-time
+
+2. Tenant Performance
+
+Per tenant (scoped to partner):
+	•	Submissions count
+	•	Payment attempts
+	•	Successful payments
+	•	Conversion rate (submission → payment)
+	•	Top-performing tenant (by revenue / submissions)
+
+3. Sites & Funnels Analytics
+
+Per site/funnel:
+	•	Form views
+	•	Form submissions
+	•	Payment-enabled vs non-payment forms
+	•	Revenue generated (if payments enabled)
+	•	Drop-off count (submission started vs completed)
+
+4. Payments Analytics (READ-ONLY)
+	•	Total transaction count
+	•	Status breakdown (Pending / Success / Failed / Demo)
+	•	Revenue totals (NGN only for now)
+	•	No payouts
+	•	No settlement logic
+	•	No partner balances
+
+⸻
+
+🛑 HARD CONSTRAINTS (STILL IN FORCE)
+
+❌ No automations
+❌ No notifications (email/SMS/in-app)
+❌ No payouts or revenue sharing
+❌ No cron jobs or background workers
+❌ No partner configuration changes
+❌ No schema changes outside analytics domain
+❌ No charts library bloat
+
+✅ Read-only analytics
+✅ Uses existing data:
+	•	sf_forms
+	•	sf_form_submissions
+	•	PaymentTransaction
+	•	Tenants, Partners
+
+⸻
+
+🏗️ TECHNICAL REQUIREMENTS
+
+Backend
+	•	New analytics services (pure aggregation)
+	•	Partner-scoped queries only
+	•	Demo-safe (demo data included but labeled)
+	•	APIs must return JSON only
+
+Suggested API pattern:
+
+GET /api/partner/analytics/overview
+GET /api/partner/analytics/tenants
+GET /api/partner/analytics/forms
+GET /api/partner/analytics/payments
+
+Frontend
+	•	Partner Dashboard only
+	•	Mobile-first
+	•	Simple stat cards + tables
+	•	No advanced charting yet (bar/line optional but minimal)
+	•	Clear demo labels
+
+⸻
+
+📄 REQUIRED DELIVERABLES (MANDATORY)
+
+At completion, Replit MUST STOP and deliver:
+	1.	Phase E1.4 Completion Report
+	2.	List of:
+	•	APIs created
+	•	Services created
+	•	Metrics exposed
+	3.	Screens or route list for:
+	•	Partner Analytics pages
+	4.	Explicit confirmations:
+	•	❌ No automations
+	•	❌ No notifications
+	•	❌ No payouts
+	5.	Known limitations (what analytics does NOT yet do)
+
+⸻
+
+🛑 STOP CONDITION (ENFORCED)
+
+After completing Phase E1.4:
+	•	❌ Do NOT proceed to E2
+	•	❌ Do NOT add alerts, payouts, or exports
+	•	❌ Do NOT optimize beyond analytics
+	•	✅ STOP and wait for approval
+
+⸻
+
+🚦 YOU MAY BEGIN PHASE E1.4 NOW
