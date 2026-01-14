@@ -1,15 +1,83 @@
 export const dynamic = 'force-dynamic'
 
+/**
+ * Tenants API Route with Authorization Enforcement
+ * 
+ * This route implements role-based data scoping:
+ * - SUPER_ADMIN: Can see ALL tenants
+ * - Partner users: Can only see tenants referred by their partner
+ * - Regular users: Can only see tenants they have membership in
+ * 
+ * This prevents cross-tenant data leaks by ensuring users only see
+ * data they are authorized to access.
+ */
+
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { v4 as uuidv4 } from 'uuid'
 import { CapabilityActivationService } from '@/lib/capabilities/activation-service'
 import { withPrismaDefaults } from '@/lib/db/prismaDefaults'
+import { getSessionFromRequest } from '@/lib/auth'
+import { 
+  isSuperAdmin, 
+  getPartnerUserInfo, 
+  getUserTenantMemberships 
+} from '@/lib/auth/authorization'
 
-// GET /api/tenants - List all tenants (Super Admin only in production)
+// GET /api/tenants - List tenants with role-based scoping
 export async function GET(request: NextRequest) {
   try {
+    // AUTHENTICATION CHECK: Require valid session
+    const session = await getSessionFromRequest(request)
+    
+    if (!session) {
+      return NextResponse.json(
+        { success: false, error: 'Authentication required' },
+        { status: 401 }
+      )
+    }
+
+    const { user } = session
+    let tenantIds: string[] | null = null
+
+    // AUTHORIZATION: Determine which tenants user can access
+    // Priority: SUPER_ADMIN > Partner > Regular User
+    
+    if (isSuperAdmin(user.globalRole)) {
+      // SUPER_ADMIN: Return all tenants (no filter)
+      tenantIds = null // null means no filter
+    } else {
+      // Check if user is a Partner member
+      const partnerInfo = await getPartnerUserInfo(user.id)
+      
+      if (partnerInfo) {
+        // Partner user: Get tenants referred by their partner
+        const partnerReferrals = await prisma.partnerReferral.findMany({
+          where: { partnerId: partnerInfo.partnerId },
+          select: { tenantId: true }
+        })
+        
+        // Also include tenants user has direct membership in
+        const memberships = await getUserTenantMemberships(user.id)
+        const membershipTenantIds = memberships.map(m => m.tenantId)
+        const partnerTenantIds = partnerReferrals.map(r => r.tenantId)
+        
+        // Combine and deduplicate
+        tenantIds = [...new Set([...partnerTenantIds, ...membershipTenantIds])]
+      } else {
+        // Regular user: Only tenants they have membership in
+        const memberships = await getUserTenantMemberships(user.id)
+        tenantIds = memberships.map(m => m.tenantId)
+      }
+    }
+
+    // Build query with optional tenant ID filter
+    const whereClause = tenantIds !== null 
+      ? { id: { in: tenantIds } } 
+      : {}
+
     const tenants = await prisma.tenant.findMany({
+      where: whereClause,
       include: {
         domains: true,
         _count: {
@@ -23,7 +91,6 @@ export async function GET(request: NextRequest) {
       success: true,
       tenants: tenants.map(t => ({
         ...t,
-        // Map _count to users for backwards compatibility
         _count: { users: t._count.memberships }
       }))
     })
@@ -39,6 +106,16 @@ export async function GET(request: NextRequest) {
 // POST /api/tenants - Create a new tenant
 export async function POST(request: NextRequest) {
   try {
+    // AUTHENTICATION CHECK: Require valid session for tenant creation
+    const session = await getSessionFromRequest(request)
+    
+    if (!session) {
+      return NextResponse.json(
+        { success: false, error: 'Authentication required' },
+        { status: 401 }
+      )
+    }
+
     const body = await request.json()
     const {
       name,
@@ -51,7 +128,6 @@ export async function POST(request: NextRequest) {
       secondaryColor
     } = body
 
-    // Validate required fields
     if (!name || !slug) {
       return NextResponse.json(
         { success: false, error: 'Name and slug are required' },
@@ -61,7 +137,6 @@ export async function POST(request: NextRequest) {
 
     const normalizedSlug = slug.toLowerCase()
 
-    // Validate slug format (alphanumeric and hyphens only)
     if (!/^[a-z0-9-]+$/.test(normalizedSlug)) {
       return NextResponse.json(
         { success: false, error: 'Slug must contain only lowercase letters, numbers, and hyphens' },
@@ -69,7 +144,6 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Check for existing slug
     const existingTenant = await prisma.tenant.findUnique({
       where: { slug: normalizedSlug }
     })
@@ -80,7 +154,6 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Check for existing domain
     const existingDomain = await prisma.tenantDomain.findUnique({
       where: { domain: normalizedSlug }
     })
@@ -91,7 +164,6 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Check for existing custom domain if provided
     if (customDomain) {
       const existingCustomDomain = await prisma.tenantDomain.findUnique({
         where: { domain: customDomain.toLowerCase() }
@@ -104,7 +176,6 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Create tenant with domains in a transaction
     const tenant = await prisma.tenant.create({
       data: withPrismaDefaults({
         name,
@@ -116,19 +187,17 @@ export async function POST(request: NextRequest) {
         secondaryColor: secondaryColor || '#8b5cf6',
         domains: {
           create: [
-            // Always create subdomain
             withPrismaDefaults({
               domain: normalizedSlug,
               type: 'SUBDOMAIN',
-              status: 'VERIFIED', // Subdomains are auto-verified
-              isPrimary: !customDomain, // Primary if no custom domain
+              status: 'VERIFIED',
+              isPrimary: !customDomain,
               verifiedAt: new Date()
             }),
-            // Optionally create custom domain
             ...(customDomain ? [withPrismaDefaults({
               domain: customDomain.toLowerCase(),
               type: 'CUSTOM' as const,
-              status: 'PENDING' as const, // Custom domains need verification
+              status: 'PENDING' as const,
               isPrimary: true,
               verificationToken: uuidv4()
             })] : [])
@@ -140,10 +209,8 @@ export async function POST(request: NextRequest) {
       }
     })
 
-    // Initialize tenant with zero active capabilities (log for audit)
     await CapabilityActivationService.initializeTenant(tenant.id)
 
-    // Transform for backwards compatibility
     const response = {
       ...tenant,
       branding: {
@@ -165,7 +232,6 @@ export async function POST(request: NextRequest) {
   } catch (error: any) {
     console.error('Failed to create tenant:', error)
     
-    // Handle Prisma unique constraint errors
     if (error.code === 'P2002') {
       return NextResponse.json(
         { success: false, error: 'A tenant with this slug or domain already exists' },

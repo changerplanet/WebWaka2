@@ -1,15 +1,27 @@
+/**
+ * Next.js Middleware for Route Protection and Tenant Resolution
+ * 
+ * This middleware handles:
+ * 1. Session validation for protected routes
+ * 2. Role-based route blocking (redirects to /login if no session)
+ * 3. Tenant resolution via headers, query params, cookies, or hostname
+ * 
+ * IMPORTANT: Edge runtime cannot access Prisma directly.
+ * Deep role checks (e.g., is user a Partner?) are handled by layout guards.
+ * Middleware only checks for session existence on protected routes.
+ */
+
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
-// Header names for tenant context
 export const TENANT_ID_HEADER = 'x-tenant-id'
 export const TENANT_SLUG_HEADER = 'x-tenant-slug'
 export const TENANT_RESOLVED_VIA_HEADER = 'x-tenant-resolved-via'
 
-// Routes that don't require tenant resolution
 const PUBLIC_PATHS = [
   '/login',
   '/register',
+  '/signup',
   '/api/auth',
   '/api/health',
   '/_next',
@@ -18,16 +30,31 @@ const PUBLIC_PATHS = [
   '/sw.js',
   '/icons',
   '/robots.txt',
-  '/sitemap.xml'
+  '/sitemap.xml',
+  '/about',
+  '/contact',
+  '/privacy',
+  '/terms',
+  '/capabilities',
+  '/for-enterprises',
+  '/for-regulators',
+  '/governance',
+  '/impact',
+  '/partners',
+  '/platform',
+  '/suites',
 ]
 
-// Super Admin routes (no tenant needed, require SUPER_ADMIN role)
 const SUPER_ADMIN_PATHS = [
   '/admin',
   '/api/admin'
 ]
 
-// Static file extensions to skip
+const PARTNER_PATHS = [
+  '/partner-portal',
+  '/dashboard/partner'
+]
+
 const STATIC_EXTENSIONS = ['.js', '.css', '.png', '.jpg', '.jpeg', '.gif', '.svg', '.ico', '.woff', '.woff2']
 
 function isStaticFile(pathname: string): boolean {
@@ -35,38 +62,64 @@ function isStaticFile(pathname: string): boolean {
 }
 
 function isPublicPath(pathname: string): boolean {
-  return PUBLIC_PATHS.some(path => pathname.startsWith(path))
+  return PUBLIC_PATHS.some(path => 
+    pathname === path || pathname.startsWith(path + '/')
+  )
 }
 
 function isSuperAdminPath(pathname: string): boolean {
-  return SUPER_ADMIN_PATHS.some(path => pathname.startsWith(path))
+  return SUPER_ADMIN_PATHS.some(path => 
+    pathname === path || pathname.startsWith(path + '/')
+  )
+}
+
+function isPartnerPath(pathname: string): boolean {
+  return PARTNER_PATHS.some(path => 
+    pathname === path || pathname.startsWith(path + '/')
+  )
+}
+
+function isProtectedPath(pathname: string): boolean {
+  return isSuperAdminPath(pathname) || isPartnerPath(pathname) || pathname.startsWith('/dashboard')
+}
+
+function hasSessionCookie(request: NextRequest): boolean {
+  const sessionToken = request.cookies.get('session_token')?.value
+  return !!sessionToken && sessionToken.length > 0
 }
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
   const hostname = request.headers.get('host') || ''
   
-  // Skip static files
   if (isStaticFile(pathname)) {
     return NextResponse.next()
   }
   
-  // Skip public paths (login, register, auth APIs, health check)
   if (isPublicPath(pathname)) {
     return NextResponse.next()
   }
   
-  // Super Admin paths - don't require tenant, but auth is checked in route handlers
-  if (isSuperAdminPath(pathname)) {
+  // SESSION CHECK: Protected routes require a valid session cookie
+  // Deep role verification is done by layout guards (they have DB access)
+  if (isProtectedPath(pathname)) {
+    if (!hasSessionCookie(request)) {
+      // No session - redirect to login with return URL
+      const loginUrl = new URL('/login', request.url)
+      loginUrl.searchParams.set('redirect', pathname)
+      return NextResponse.redirect(loginUrl)
+    }
+  }
+  
+  // Super Admin and Partner paths pass through here
+  // Layout guards will verify the actual role via API/DB calls
+  if (isSuperAdminPath(pathname) || isPartnerPath(pathname)) {
     return NextResponse.next()
   }
   
-  // Create response to modify headers
+  // TENANT RESOLUTION for remaining routes
   const response = NextResponse.next()
   
-  // === TENANT RESOLUTION ORDER ===
-  
-  // 1. Check for X-Tenant-ID header (internal tools)
   const headerTenantId = request.headers.get('x-tenant-id')
   if (headerTenantId) {
     response.headers.set(TENANT_ID_HEADER, headerTenantId)
@@ -74,7 +127,6 @@ export async function middleware(request: NextRequest) {
     return response
   }
   
-  // 2. Check for ?tenant= query parameter (testing/preview)
   const tenantQuery = request.nextUrl.searchParams.get('tenant')
   if (tenantQuery) {
     response.headers.set(TENANT_SLUG_HEADER, tenantQuery)
@@ -82,7 +134,6 @@ export async function middleware(request: NextRequest) {
     return response
   }
   
-  // 3. Check for tenant cookie (session persistence)
   const tenantCookie = request.cookies.get('tenant_slug')?.value
   if (tenantCookie) {
     response.headers.set(TENANT_SLUG_HEADER, tenantCookie)
@@ -90,26 +141,21 @@ export async function middleware(request: NextRequest) {
     return response
   }
   
-  // 4. Extract from hostname
   const host = hostname.split(':')[0].toLowerCase()
   const parts = host.split('.')
   
-  // Check if this could be a custom domain (doesn't match our platform domain pattern)
   const platformDomains = ['localhost', 'emergentagent.com', 'webwaka.com', 'vercel.app']
   const isPlatformDomain = platformDomains.some(d => host.endsWith(d))
   
   if (!isPlatformDomain) {
-    // This is a custom domain - pass the full hostname for resolution
     response.headers.set(TENANT_SLUG_HEADER, host)
     response.headers.set(TENANT_RESOLVED_VIA_HEADER, 'custom_domain')
     return response
   }
   
-  // 5. Extract subdomain from platform domain
   if (parts.length >= 3) {
     const subdomain = parts[0]
     
-    // Skip common non-tenant subdomains
     if (!['www', 'api', 'app', 'admin', 'preview'].includes(subdomain)) {
       response.headers.set(TENANT_SLUG_HEADER, subdomain)
       response.headers.set(TENANT_RESOLVED_VIA_HEADER, 'subdomain')
@@ -117,14 +163,11 @@ export async function middleware(request: NextRequest) {
     }
   }
   
-  // No tenant resolved - this is fine for homepage, super admin, etc.
-  // Individual API routes will handle tenant requirement
   return response
 }
 
 export const config = {
   matcher: [
-    // Match all paths except static files
     '/((?!_next/static|_next/image|favicon.ico).*)',
   ],
 }
