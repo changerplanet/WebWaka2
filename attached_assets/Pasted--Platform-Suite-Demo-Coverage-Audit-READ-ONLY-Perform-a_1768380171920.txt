@@ -1,0 +1,166 @@
+
+Platform Suite & Demo Coverage Audit (READ-ONLY)
+
+Perform a comprehensive, read-only platform audit to establish a single source of truth for:
+	1.	All suites in the platform
+	2.	All modules under each suite
+	3.	Demo Partner coverage for each module
+	4.	Demo data completeness per role and activity
+
+This audit must NOT modify code, database, schema, or configuration.
+
+⸻
+
+🔒 Scope Rules (STRICT)
+	•	❌ Do NOT create, modify, or delete any data
+	•	❌ Do NOT run seed scripts
+	•	❌ Do NOT deploy or rebuild
+	•	❌ Do NOT change permissions or roles
+	•	❌ Do NOT fix issues
+	•	✅ Read-only inspection only
+	•	✅ Database queries allowed (SELECT only)
+	•	✅ Static code analysis allowed
+
+⸻
+
+🎯 Objectives
+
+1️⃣ Identify All Suites in the Platform
+
+Confirm every suite that exists, including but not limited to:
+	•	Commerce
+	•	Sites & Funnels
+	•	Logistics
+	•	Hospitality
+	•	Civic
+	•	Health
+	•	Education
+	•	Real Estate
+	•	Recruitment
+	•	Project Management
+	•	Church
+	•	Political
+
+📌 If additional suites exist, they must be included.
+
+⸻
+
+2️⃣ Identify All Modules Under Each Suite
+
+For each suite, produce:
+	•	Module name
+	•	Path(s) in codebase
+	•	Primary database entities (tables/models)
+	•	Primary API routes
+	•	UI entry points (dashboard paths)
+
+📄 Output format (example):
+
+Suite: Education
+- Student Management
+- Curriculum
+- Assessments
+- Attendance
+- Billing
+
+
+⸻
+
+3️⃣ Demo Partner Assignment Audit
+
+For each suite and module, determine:
+	•	Is the module assigned to the Demo Partner?
+	•	Is it visible in the partner dashboard navigation?
+	•	Is access role-gated correctly?
+
+For each module, report:
+
+Suite	Module	Assigned to Demo Partner	Visible in UI	Notes
+
+
+
+⸻
+
+4️⃣ Demo Data Coverage Audit (CRITICAL)
+
+For each module, verify whether demo data exists for:
+	•	Partner Owner
+	•	Partner Admin
+	•	Partner Staff / Lowest-privilege role
+
+Check for:
+	•	Core entities (records exist)
+	•	Sample transactions / activities
+	•	Historical data (where applicable)
+
+⚠️ If no data exists, explicitly mark as NOT SEEDED.
+
+Example:
+
+Suite	Module	Demo Data Exists	Roles Covered	Data Types Missing
+
+
+
+⸻
+
+5️⃣ Demo Seed Script Coverage Mapping
+
+Cross-reference findings with existing seed scripts:
+	•	Identify which suites/modules are covered by:
+	•	seed-demo-partner-master.ts
+	•	Any other seed scripts
+	•	Identify gaps where:
+	•	Module exists
+	•	UI exists
+	•	API exists
+	•	❌ No seed logic exists
+
+⸻
+
+📦 Deliverables (MANDATORY)
+
+Produce the following files under /frontend/docs/:
+	1.	PLATFORM_SUITE_MODULE_INVENTORY.md
+	•	Full suite → module hierarchy
+	2.	DEMO_PARTNER_ASSIGNMENT_MATRIX.md
+	•	Which modules are assigned/visible to Demo Partner
+	3.	DEMO_DATA_COVERAGE_MATRIX.md
+	•	Which modules have demo data per role
+	4.	DEMO_GAP_SUMMARY.md
+	•	Clear list of:
+	•	Missing demo data
+	•	Missing module assignments
+	•	Missing seed coverage
+
+⸻
+
+🚦 Final Output Requirements
+
+At the end of the report, include:
+
+✅ Confirmed
+	•	List of suites fully demo-ready
+
+⚠️ Partial
+	•	Suites with some modules missing demo data
+
+❌ Blocked
+	•	Suites/modules that cannot be demo-tested
+
+🔑 Recommendation
+	•	Whether the platform is ready for:
+	•	Partial demo testing
+	•	Full partner demo
+	•	Public demo
+	•	What must be seeded or assigned before holistic testing
+
+⸻
+
+🛑 Stop Condition
+
+After producing the reports:
+	•	❌ Do NOT implement fixes
+	•	❌ Do NOT seed data
+	•	❌ Do NOT deploy
+
+Stop after reporting.
