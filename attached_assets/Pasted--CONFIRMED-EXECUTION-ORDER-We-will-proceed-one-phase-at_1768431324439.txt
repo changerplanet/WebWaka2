@@ -1,0 +1,154 @@
+
+✅ CONFIRMED EXECUTION ORDER
+
+We will proceed one phase at a time, with hard STOPs and approval gates after each phase.
+
+Option Order (Locked)
+	1.	E2.1 — Sites & Funnels Visual Page Builder
+	2.	E2.2 — Education & Health Portals
+	3.	E2.3 — Notification Service
+	4.	(Later) Any additional E2/E3 work
+
+Right now, only E2.1 is authorized to start.
+
+⸻
+
+🎯 PHASE E2.1 — SITES & FUNNELS VISUAL PAGE BUILDER
+
+This phase builds on what already exists:
+	•	Template system ✅
+	•	Schema-driven forms ✅
+	•	Sites & Funnels runtime ✅
+	•	Partner analytics ✅
+
+This is not a redesign — it is a controlled visual authoring layer.
+
+⸻
+
+🔒 NON-NEGOTIABLE CONSTRAINTS (CARRYING FORWARD)
+
+These rules remain in force:
+	•	❌ No schema changes outside Sites & Funnels domain
+	•	❌ No automations
+	•	❌ No notifications
+	•	❌ No background jobs
+	•	❌ No partner payouts
+	•	❌ No AI content generation
+	•	❌ No breaking existing templates
+	•	✅ Mobile-first
+	•	✅ Tenant-scoped
+	•	✅ Demo-safe
+	•	✅ GitHub-mergeable
+	•	✅ STOP after completion
+
+⸻
+
+🧠 WHAT “VISUAL PAGE BUILDER” MEANS (IMPORTANT)
+
+To avoid ambiguity:
+
+INCLUDED
+	•	Block-based page editor (sections, not pixels)
+	•	Reordering sections
+	•	Editing text, images, CTAs
+	•	Selecting templates and variants
+	•	Binding existing forms (from E1.3)
+	•	Preview (mobile + desktop)
+	•	Save / publish flow
+
+EXCLUDED
+	•	❌ Drag-free-canvas design tools
+	•	❌ Arbitrary CSS editing
+	•	❌ Third-party embeds beyond existing components
+	•	❌ Automation triggers
+	•	❌ Email/SMS sending
+
+Think Webflow-lite, Not Figma, Not Framer.
+
+⸻
+
+🧩 EXPECTED OUTPUTS FOR E2.1
+
+At the end of Phase E2.1, Replit must produce:
+	1.	Builder Architecture Overview
+	•	How pages are composed
+	•	How blocks map to runtime rendering
+	•	How templates remain immutable
+	2.	Supported Block Types
+	•	Hero
+	•	Features
+	•	Pricing
+	•	Testimonials
+	•	CTA
+	•	Form block (reusing E1.3)
+	•	Footer
+	3.	Editor UX
+	•	Mobile-first editing
+	•	Section reorder
+	•	Inline content editing
+	•	Preview mode
+	4.	APIs (if any)
+	•	Clearly listed
+	•	Builder-only scope
+	5.	Explicit Confirmations
+	•	❌ No automations
+	•	❌ No notifications
+	•	❌ No schema drift
+	•	❌ No impact on payments logic
+	6.	STOP
+
+⸻
+
+🧾 EXACT PROMPT FOR REPLIT (E2.1)
+
+You can paste the following verbatim to Replit:
+
+⸻
+
+🔓 AUTHORIZATION — PHASE E2.1: SITES & FUNNELS VISUAL PAGE BUILDER
+
+You are authorized to begin Phase E2.1 — Visual Page Builder for Sites & Funnels.
+
+OBJECTIVE
+Enable partners to visually customize Sites & Funnels pages using a block-based editor, built on top of the existing template system and runtime renderer.
+
+This builder must:
+	•	Be section/block-based, not free-canvas
+	•	Preserve templates as read-only blueprints
+	•	Allow safe visual customization per tenant
+	•	Integrate existing Forms (E1.3) and Payments (E1.1–E1.2) without modification
+	•	Be mobile-first and demo-safe
+
+STRICT CONSTRAINTS (DO NOT VIOLATE)
+	•	❌ No automations
+	•	❌ No email/SMS
+	•	❌ No background jobs
+	•	❌ No AI content generation
+	•	❌ No payouts or settlements
+	•	❌ No schema changes outside Sites & Funnels domain
+	•	❌ No breaking changes to existing templates or forms
+	•	❌ No visual free-canvas builder (no drag-anywhere tools)
+
+INCLUDED SCOPE
+	•	Block-based page editor
+	•	Section reordering
+	•	Inline text/image/CTA editing
+	•	Form block binding (reuse E1.3 forms)
+	•	Mobile + desktop preview
+	•	Save / publish workflow
+
+REQUIRED COMPLETION OUTPUT
+At the end of Phase E2.1, you MUST:
+	1.	Produce a Phase E2.1 Completion Report
+	2.	List:
+	•	Builder architecture
+	•	Supported block types
+	•	APIs created (if any)
+	•	Demo vs live behavior
+	3.	Explicitly confirm:
+	•	❌ No automations
+	•	❌ No notifications
+	•	❌ No schema drift
+	4.	STOP and wait for approval
+
+Do not start Phase E2.2 or any other phase.

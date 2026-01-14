@@ -36,6 +36,14 @@ WebWaka is built as a multi-tenant SaaS platform with a modular capability syste
   - Payment visibility (read-only, no payouts)
   - Time filters (today, 7d, 30d, all-time) and demo/live split
   - Mobile-first dashboard UI at /partner/analytics
+- **Visual Page Builder (E2.1)**: Block-based page editor for Sites & Funnels:
+  - 7 block types: Hero, Features, Pricing, Testimonials, CTA, Form, Footer
+  - Section reordering with move up/down controls
+  - Inline content editing (text, images, CTAs)
+  - Form block integrates with E1.3 forms library via dropdown selector
+  - Mobile/desktop preview toggle (375px vs full-width)
+  - Save/publish workflow with sortOrder normalization
+  - Templates remain read-only, pages are cloned for editing
 - **Authorization System**: Robust, role-scoped authorization (`SUPER_ADMIN`, `PARTNER_*`, `TENANT_USER`) across API routes and UI components to prevent cross-tenant data leaks and ensure secure access control.
 - **Marketing Website**: Comprehensive marketing site with reusable components, suite data modules, and SEO optimization (metadata, OpenGraph, performance hardening).
 - **Demo System**: Advanced demo data seeding and a "Strong Demo Matrix" across 11 vertical suites, enabling comprehensive demonstrations for potential partners and clients.
