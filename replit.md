@@ -38,6 +38,16 @@ WebWaka is a multi-tenant SaaS platform infrastructure for digital transformatio
 - `SESSION_SECRET` - Session encryption key
 
 ## Recent Changes
+- January 14, 2026: Marketing Website Revamp Plan Produced
+  - Complete strategy document with 6 deliverables
+  - Information Architecture: 30+ pages mapped
+  - Suite-to-Marketing mapping: 20+ suites categorized
+  - Partner-focused messaging framework
+  - Mobile-first navigation strategy
+  - Page-level content plan
+  - 6-phase execution roadmap
+  - **Status: AWAITING APPROVAL before design/build**
+
 - January 14, 2026: Strong Demo Hardening Complete (Phase D7)
   - **D7.1**: Defined Strong Demo Matrix for all 11 suites
   - **D7.2**: Seeded 1,249+ demo records with Nigerian business context
