@@ -24,6 +24,11 @@ WebWaka is built as a multi-tenant SaaS platform with a modular capability syste
 - **Payment Integration**: Complete payment system with two layers:
   - **Provider Layer (E1.1)**: Provider-agnostic abstraction supporting Paystack (and future providers). Three-level control model (Super Admin → Partner → Tenant), AES-256-GCM encrypted credential storage, credential-deferred design.
   - **Execution Layer (E1.2)**: Platform-wide transaction processing with PaymentExecutionService, TransactionService, demo-safe execution paths. APIs for initiate, verify, list transactions. Supports all suites without suite-specific logic.
+- **Sites & Funnels Form Builder (E1.3)**: Schema-driven forms with optional payment integration:
+  - JSON-based form schema with 12 field types (text, email, phone, select, checkbox, etc.)
+  - Server-side validation with configurable rules (required, email, phone, min/max length, pattern)
+  - Optional payment collection via PaymentExecutionService integration
+  - Public submission API, tenant-scoped management, demo-safe execution
 - **Authorization System**: Robust, role-scoped authorization (`SUPER_ADMIN`, `PARTNER_*`, `TENANT_USER`) across API routes and UI components to prevent cross-tenant data leaks and ensure secure access control.
 - **Marketing Website**: Comprehensive marketing site with reusable components, suite data modules, and SEO optimization (metadata, OpenGraph, performance hardening).
 - **Demo System**: Advanced demo data seeding and a "Strong Demo Matrix" across 11 vertical suites, enabling comprehensive demonstrations for potential partners and clients.
