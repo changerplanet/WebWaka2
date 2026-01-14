@@ -1,0 +1,206 @@
+
+PHASE M3 — DESIGN & UI EXECUTION MANDATE
+
+Scope: Marketing Website (Partner-Facing)
+Status: APPROVED — EXECUTION AUTHORIZED
+Priority: HIGH
+Design Principles: Mobile-First • Nigeria-First • Partner-First • Legibility-Enforced
+
+⸻
+
+🎯 PHASE M3 OBJECTIVE
+
+Translate the approved Information Architecture + Messaging (Phases M1–M2) into a production-ready, mobile-first design system and page UI for the WebWaka marketing website.
+
+This phase is design-only:
+	•	✅ Wireframes
+	•	✅ Visual design system
+	•	✅ Responsive layouts
+	•	❌ No backend work
+	•	❌ No API changes
+	•	❌ No feature implementation
+
+⸻
+
+🧭 PRIMARY AUDIENCE
+
+WebWaka Partners (NOT end users):
+	•	SaaS resellers
+	•	Digital agencies
+	•	Business consultants
+	•	Solution integrators
+	•	Entrepreneurs building vertical SaaS
+
+Every design decision must answer:
+
+“Does this help a potential partner quickly understand how they make money with WebWaka?”
+
+⸻
+
+📱 MOBILE-FIRST (NON-NEGOTIABLE)
+
+Baseline Device Assumption
+	•	Low-end Android phone
+	•	360px width
+	•	Intermittent connectivity
+	•	One-hand (thumb) navigation
+
+Core Mobile UX Rules
+	•	Design mobile first, then scale up
+	•	Bottom-friendly CTAs
+	•	Progressive disclosure (no information overload)
+	•	WhatsApp CTAs visible but non-intrusive
+	•	Sticky primary actions on long pages
+
+⸻
+
+🔤 TYPOGRAPHY & LEGIBILITY (MANDATORY)
+
+Global Font Rules
+	•	Base font size (mobile): ≥ 16px
+	•	Line height: ≥ 1.5
+	•	Avoid thin weights (no 100–300 for body)
+	•	High contrast (WCAG AA minimum)
+	•	Clear letter distinction (I/l/1, O/0)
+
+Recommended Font Families (pick ONE primary)
+	•	Inter
+	•	DM Sans
+	•	Manrope
+	•	Source Sans 3
+	•	Noto Sans
+
+❌ No script fonts
+❌ No condensed fonts
+❌ No desktop-first scaling
+
+Validation Rule:
+
+If text is not comfortably readable on a small phone in sunlight, it fails.
+
+⸻
+
+🧩 DELIVERABLES (REQUIRED)
+
+1. Wireframes (Mobile → Desktop)
+
+Create low-fidelity wireframes for:
+
+Core Pages
+	•	Homepage
+	•	Suites Overview
+	•	Individual Suite Page (template)
+	•	Sites & Funnels
+	•	Partner Program
+	•	Demo Portal
+
+Wireframes must show:
+	•	Content hierarchy
+	•	CTA placement
+	•	Navigation behavior
+	•	Section stacking on mobile
+
+⸻
+
+2. Design System
+
+Create a reusable design system including:
+
+Foundations
+	•	Color palette (Nigeria-appropriate, professional)
+	•	Typography scale (mobile → desktop)
+	•	Spacing system (4/8px based)
+	•	Iconography style
+
+Components
+	•	Buttons (primary / secondary / ghost)
+	•	Cards (suite card, tenant card, feature card)
+	•	Navigation (mobile + desktop)
+	•	Badges (Demo strength, Suite category)
+	•	CTAs (WhatsApp, Book Demo, Start as Partner)
+
+⸻
+
+3. Responsive Layout Rules
+
+Define breakpoints and behavior:
+	•	Mobile: ≤ 480px (primary)
+	•	Tablet: 481–768px
+	•	Desktop: ≥ 1024px
+
+Each page must specify:
+	•	What collapses on mobile
+	•	What stacks vertically
+	•	What becomes tabs or accordions
+
+⸻
+
+4. Page-Level UI Designs (High Fidelity)
+
+Produce high-fidelity designs for:
+	1.	Homepage
+	•	Clear partner value proposition
+	•	Suites preview
+	•	Sites & Funnels highlight
+	•	Demo Portal CTA
+	2.	Suites Overview
+	•	20+ suites grouped by category
+	•	Demo strength indicators
+	•	Fast scanning on mobile
+	3.	Sites & Funnels
+	•	Positioned as Partner Growth Engine
+	•	Visual workflow: Clone → Customize → Launch
+	•	Comparison callouts (vs GoHighLevel)
+	4.	Partner Program
+	•	“What You Do / What We Do”
+	•	Revenue model visualization
+	•	Onboarding steps
+	5.	Demo Portal
+	•	Industry-based demo browsing
+	•	Tenant cards with storylines
+	•	Role guidance (who to log in as)
+
+⸻
+
+🇳🇬 NIGERIA-FIRST DESIGN REQUIREMENTS
+
+Design must visibly reflect African/Nigerian context:
+	•	₦ Naira symbols where pricing examples appear
+	•	Nigerian business imagery (not generic Silicon Valley stock)
+	•	WhatsApp-first communication patterns
+	•	Lagos / Nigeria examples in illustrations
+	•	Mobile data-friendly layouts
+
+⸻
+
+🚫 OUT OF SCOPE (DO NOT DO)
+	•	❌ No copywriting changes (use approved Phase M2 content)
+	•	❌ No feature ideation
+	•	❌ No authentication flows
+	•	❌ No dashboard UI (marketing site only)
+	•	❌ No Replit-specific or Vercel-specific configs
+
+⸻
+
+✅ SUCCESS CRITERIA (M3 SIGN-OFF)
+
+Phase M3 is complete only if:
+	•	All pages are readable on small mobile screens
+	•	Typography passes legibility rules
+	•	Navigation is intuitive for first-time partners
+	•	All 20+ suites are visually represented
+	•	Sites & Funnels is clearly positioned as a key differentiator
+	•	Designs are ready for direct handoff to frontend implementation
+
+⸻
+
+⛔ STOP RULE
+
+After completing the above:
+	•	❌ Do NOT implement code
+	•	❌ Do NOT change content
+	•	❌ Do NOT proceed to Phase M4
+
+Deliver designs + system, then STOP and wait for approval.
+
+⸻
