@@ -1,0 +1,261 @@
+PHASE Z (FINAL PLATFORM VALIDATION)
+
+⸻
+
+PHASE Z — COMPREHENSIVE PLATFORM VALIDATION (FINAL PRE-DEPLOYMENT)
+
+Mode: READ-ONLY QA / AUDIT
+ABSOLUTE RULE:
+❌ DO NOT modify code
+❌ DO NOT seed data
+❌ DO NOT change configuration
+❌ DO NOT deploy
+❌ DO NOT refactor
+❌ DO NOT “fix” anything
+
+Your task is ONLY to test, verify, and report.
+
+This is the final validation phase before deployment to Vercel.
+
+⸻
+
+🎯 OBJECTIVE
+
+Perform a full-spectrum, end-to-end validation of the WebWaka platform covering:
+	1.	Marketing Website (Public)
+	2.	Authentication & Access Control
+	3.	Partner Experience
+	4.	Tenant Experience
+	5.	All 11 Business Suites
+	6.	Sites & Funnels
+	7.	Demo Portal
+	8.	Super Admin Capabilities
+	9.	Security, Isolation & Data Integrity
+	10.	UX, UI, Navigation, and Flows
+	11.	Technical Stability & Errors
+
+The goal is to answer one question with certainty:
+
+Is WebWaka 100% ready to deploy to Vercel without regressions, broken flows, or hidden blockers?
+
+⸻
+
+🧭 SCOPE OF TESTING (MANDATORY)
+
+1️⃣ Marketing Website Validation
+
+Test ALL pages on mobile-first viewport:
+	•	/
+	•	/suites
+	•	/sites-and-funnels
+	•	/partners
+	•	/demo
+	•	Footer links, CTAs, WhatsApp buttons
+
+Validate:
+	•	No broken links
+	•	Correct address & WhatsApp number
+	•	Correct suite counts (20+)
+	•	Partner-first messaging consistency
+	•	Mobile legibility (font size, spacing, tap targets)
+	•	No console errors
+	•	SEO metadata present (titles, descriptions)
+
+⸻
+
+2️⃣ Authentication & Session Flow
+
+Test:
+	•	Login
+	•	Logout
+	•	Magic link flow
+	•	Session persistence
+	•	Unauthorized access redirects
+
+Test states:
+	•	Unauthenticated
+	•	Authenticated
+	•	Session expired
+
+⸻
+
+3️⃣ Partner Role Validation (ALL 5 ROLES)
+
+Test each persona separately:
+	•	Partner Owner
+	•	Partner Admin
+	•	Partner Sales
+	•	Partner Support
+	•	Partner Staff
+
+For EACH role:
+	•	Dashboard loads correctly
+	•	Navigation items are correct
+	•	Restricted pages are blocked
+	•	Allowed pages work
+	•	Data shown is role-appropriate
+	•	No access to /admin
+	•	No cross-partner leakage
+
+⸻
+
+4️⃣ Tenant Role Validation
+
+For at least 3 different tenants, test:
+	•	Tenant Admin
+	•	Tenant Staff
+	•	Tenant End User (e.g. patient, student, customer)
+
+Validate:
+	•	Correct dashboard
+	•	Correct module visibility
+	•	Correct data scope (tenant-only)
+	•	Blocked access to partner pages
+	•	Blocked access to admin pages
+
+⸻
+
+5️⃣ SUITE-BY-SUITE DEEP TESTING (ALL 11)
+
+For EACH suite, validate real workflows, not just page load:
+
+Suites:
+	•	Commerce (POS, SVM, MVM, Inventory)
+	•	Education
+	•	Health
+	•	Hospitality
+	•	Civic
+	•	Logistics
+	•	Real Estate
+	•	Church
+	•	Political
+	•	Recruitment
+	•	Project Management / Legal / Warehouse (where applicable)
+
+For EACH suite:
+	•	List all major modules
+	•	Validate list views
+	•	Validate detail views
+	•	Validate at least 1 end-to-end workflow
+	•	Validate demo data presence
+	•	Validate reports/widgets load
+	•	Validate no crashes or empty critical screens
+
+⸻
+
+6️⃣ Sites & Funnels
+
+Validate:
+	•	Template listing
+	•	Template preview
+	•	Cloning flow (where applicable)
+	•	Industry categorization
+	•	No broken navigation
+	•	Proper positioning as partner growth tool
+
+⸻
+
+7️⃣ Demo Portal
+
+Validate:
+	•	Demo tenant list
+	•	Filtering by industry
+	•	Role instructions
+	•	Demo expectations
+	•	No dead links
+	•	No misleading claims
+
+⸻
+
+8️⃣ Super Admin Validation
+
+Using SUPER_ADMIN role only:
+	•	/admin access
+	•	Admin dashboards
+	•	Tenant visibility
+	•	Partner visibility
+	•	Restricted from partner UX paths
+
+Confirm:
+	•	NO other role can access admin
+
+⸻
+
+9️⃣ SECURITY & DATA ISOLATION
+
+Explicitly test:
+	•	Cross-tenant data access attempts
+	•	Cross-partner data access attempts
+	•	API responses scoped correctly
+	•	Unauthorized routes return 401/403
+	•	UI does not expose restricted data even if API blocks
+
+⸻
+
+🔟 UX & UI QUALITY
+
+Audit:
+	•	Mobile-first experience
+	•	Navigation clarity
+	•	Breadcrumbs / back paths
+	•	Empty states vs demo states
+	•	Button clarity
+	•	Error handling UX
+	•	No broken layouts
+
+⸻
+
+1️⃣1️⃣ TECHNICAL HEALTH
+
+Check:
+	•	Console errors
+	•	Network errors
+	•	Unhandled promise rejections
+	•	API error responses
+	•	Performance red flags (slow loads, blocking calls)
+
+⸻
+
+📄 REQUIRED OUTPUT (STRICT FORMAT)
+
+Produce ONE FINAL REPORT titled:
+
+PHASE_Z_FINAL_PLATFORM_VALIDATION_REPORT.md
+
+Report MUST include:
+	1.	Executive Summary
+	•	Overall verdict: ✅ GO / ❌ NO-GO
+	2.	Test Coverage Matrix
+	•	What was tested vs passed/failed
+	3.	Critical Blockers (if any)
+	•	Severity, location, impact
+	4.	High / Medium / Low Issues
+	5.	Role Coverage Summary
+	6.	Suite Coverage Summary
+	7.	Security Validation Results
+	8.	UX & Marketing Findings
+	9.	Final Deployment Recommendation
+	•	Clear statement:
+“Safe to deploy to Vercel” OR
+“Deployment must be blocked until X is fixed”
+
+⸻
+
+🛑 STOP RULE
+
+After delivering the report:
+	•	❌ STOP immediately
+	•	❌ Do NOT apply fixes
+	•	❌ Do NOT suggest code changes unless explicitly asked
+
+⸻
+
+🔒 CONTEXT
+	•	Demo data is fully seeded
+	•	Authorization has been hardened
+	•	Platform is at L4 Demo Readiness
+	•	This is the last gate before production deployment
+
+⸻
+
+Begin Phase Z now.
