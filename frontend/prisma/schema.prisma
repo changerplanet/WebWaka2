@@ -406,11 +406,38 @@ model Partner {
   users                      PartnerUser[]
   payoutBatches              PayoutBatch[]
   createdInstances           PlatformInstance[]
+  paymentConfigs             PartnerPaymentConfig[]
 
   @@index([email])
   @@index([slug])
   @@index([status])
   @@index([tier])
+}
+
+model PartnerPaymentConfig {
+  id                   String    @id @default(uuid())
+  partnerId            String
+  provider             String    // 'paystack' | 'flutterwave' | 'manual' | 'none'
+  enabledBySuperAdmin  Boolean   @default(false)
+  enabledAt            DateTime?
+  enabledByUserId      String?
+  publicKey            String?
+  secretKeyEncrypted   String?   // Encrypted secret key
+  webhookSecret        String?
+  testMode             Boolean   @default(true)
+  configuredAt         DateTime?
+  lastValidatedAt      DateTime?
+  validationStatus     String?   // 'valid' | 'invalid' | 'pending'
+  validationError      String?
+  metadata             Json?
+  createdAt            DateTime  @default(now())
+  updatedAt            DateTime  @updatedAt
+  Partner              Partner   @relation(fields: [partnerId], references: [id], onDelete: Cascade)
+
+  @@unique([partnerId, provider])
+  @@index([partnerId])
+  @@index([provider])
+  @@index([enabledBySuperAdmin])
 }
 
 model PartnerAgreement {

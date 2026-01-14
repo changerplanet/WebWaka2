@@ -1,0 +1,250 @@
+Phase E1.1 — Paystack Integration (Platform-Wide, Gated, Credential-Deferred)
+
+🎯 Objective (Non-Negotiable)
+
+Implement Paystack as a platform-wide payment capability that:
+	1.	Does NOT require Paystack keys at implementation time
+	2.	Is disabled by default
+	3.	Can be enabled by Super Admin per Partner (one by one)
+	4.	Allows Partners to later supply their own Paystack credentials
+	5.	Works across all relevant suites (Commerce, POS, SVM, MVM, Education fees, Health billing, Hospitality bookings, Sites & Funnels forms, etc.)
+	6.	Does NOT break existing flows
+	7.	Introduces zero hard dependencies on Paystack being active
+
+This is a capability-layer integration, not a hardwired payment switch.
+
+⸻
+
+🧱 Architectural Principles (Must Be Enforced)
+
+1. Capability-Based, Not Vendor-Hardcoded
+	•	Introduce a generic payment capability layer
+	•	Paystack is just one provider (first implementation)
+
+Example:
+
+payment_provider = 'paystack' | 'flutterwave' | 'manual' | 'none'
+
+
+⸻
+
+2. Three-Level Control Model (CRITICAL)
+
+Level	Control	Description
+Super Admin	Enable Paystack for Partner	Platform trust gate
+Partner	Configure Paystack credentials	Partner-owned keys
+Tenant	Use payments if available	Inherits partner setting
+
+
+⸻
+
+3. Credential-Deferred by Design
+	•	No Paystack keys required
+	•	No API calls to Paystack until:
+	•	Super Admin enables Paystack for Partner
+	•	Partner saves valid credentials
+	•	A transaction is attempted
+
+⸻
+
+4. Platform-Wide, Not Suite-Specific
+
+Do NOT integrate Paystack inside:
+	•	POS code
+	•	Education fees
+	•	Health billing
+	•	Sites & Funnels forms
+
+Instead:
+	•	Create a central payment service
+	•	Suites call createPaymentIntent() (generic)
+
+⸻
+
+5. Safe Defaults
+	•	If Paystack is not enabled:
+	•	UI shows “Payments not enabled”
+	•	APIs return a clear, non-error response
+	•	No crashes
+	•	No silent failures
+
+⸻
+
+🧩 What Must Be Built (Scope)
+
+A. Database / Schema (Minimal, Additive)
+	•	Partner-level payment configuration
+	•	Provider-agnostic
+
+No removal, no breaking changes.
+
+⸻
+
+B. Super Admin Controls
+	•	Enable / disable Paystack per Partner
+	•	View status (Enabled / Disabled / Configured / Missing Keys)
+
+⸻
+
+C. Partner Configuration UI (Stub)
+	•	Save credentials (encrypted / masked)
+	•	Validation deferred (no API call yet)
+	•	“Test connection” can be stubbed
+
+⸻
+
+D. Payment Capability Service
+	•	Abstract interface
+	•	Paystack adapter behind it
+	•	No real charge execution yet (can return mocked intent)
+
+⸻
+
+E. Cross-Suite Compatibility Check
+
+Ensure no suite assumes payments always exist:
+	•	POS
+	•	Online Store
+	•	Marketplace
+	•	Education fees
+	•	Health billing
+	•	Hospitality booking
+	•	Sites & Funnels forms
+
+⸻
+
+F. Documentation
+	•	How Super Admin enables Paystack
+	•	How Partners configure it
+	•	What tenants will see
+	•	What happens if not enabled
+
+⸻
+
+🚫 Explicitly Out of Scope (Do NOT Do Now)
+	•	❌ Live Paystack charges
+	•	❌ Webhooks
+	•	❌ Settlements
+	•	❌ Payout automation
+	•	❌ Partner revenue splits
+	•	❌ Hardcoded Paystack UI in suites
+
+Those come after this foundation.
+
+⸻
+
+✅ PHASE E1.1 — REPLIT1 PROMPT (COPY & PASTE)
+
+Use this exact prompt:
+
+⸻
+
+TASK: Phase E1.1 — Platform-Wide Paystack Integration (Capability-Based, Credential-Deferred)
+
+MODE: IMPLEMENTATION
+SCOPE: STRICT — Follow exactly
+STOP RULE: Stop after completion report. Do NOT proceed further.
+
+⸻
+
+OBJECTIVE
+
+Implement Paystack as a platform-wide payment capability with the following strict requirements:
+	1.	Paystack is disabled by default
+	2.	No Paystack API keys are required at implementation time
+	3.	Super Admin can enable Paystack per Partner (one by one)
+	4.	Partners can later add their own Paystack credentials
+	5.	All suites must be able to use payments only if available
+	6.	No suite may hard-depend on Paystack
+	7.	No live charges or webhooks are required yet
+
+This is a foundation layer, not a full payment rollout.
+
+⸻
+
+HARD RULES (NON-NEGOTIABLE)
+	•	❌ Do NOT hardcode Paystack inside any suite
+	•	❌ Do NOT require real Paystack credentials
+	•	❌ Do NOT call Paystack APIs
+	•	❌ Do NOT break existing demo flows
+	•	❌ Do NOT change auth, pricing logic, or partner earnings
+
+⸻
+
+IMPLEMENTATION REQUIREMENTS
+
+1. Payment Capability Layer
+
+Create a provider-agnostic payment abstraction:
+	•	Generic payment interface
+	•	Paystack implemented as a provider adapter
+	•	Must safely return “not enabled” if unavailable
+
+2. Partner-Level Control
+	•	Add ability for Super Admin to:
+	•	Enable / disable Paystack per Partner
+	•	Partner cannot use Paystack unless enabled by Super Admin
+
+3. Partner Credential Storage (Stub)
+	•	Allow Partner to save Paystack credentials
+	•	Keys must be masked/encrypted
+	•	No validation against Paystack required
+
+4. Safe Fallback Behavior
+	•	If Paystack is not enabled or not configured:
+	•	UI shows clear “Payments not enabled” state
+	•	APIs return structured, non-fatal responses
+
+5. Cross-Suite Compatibility Audit
+
+Verify all payment-touching suites:
+	•	POS
+	•	Online Store (SVM)
+	•	Marketplace (MVM)
+	•	Education fees
+	•	Health billing
+	•	Hospitality booking
+	•	Sites & Funnels forms
+
+Ensure none assume payments are always active.
+
+6. Documentation
+
+Create a single markdown doc explaining:
+	•	Super Admin flow
+	•	Partner setup flow
+	•	Tenant behavior
+	•	Future extension points
+
+⸻
+
+DELIVERABLES
+	•	Code changes (minimal, additive)
+	•	Schema changes (if needed, additive only)
+	•	Admin + Partner UI stubs
+	•	Payment capability service
+	•	Documentation
+	•	Completion report
+
+⸻
+
+STOP CONDITION
+
+After implementation:
+	•	Produce Phase E1.1 Completion Report
+	•	List files changed
+	•	List what is enabled vs stubbed
+	•	Confirm no live payments executed
+
+🛑 STOP after report. Do not proceed to next phase.
+
+⸻
+
+🧭 What Comes Next (For You, Not Replit)
+
+After this phase:
+	•	Phase E1.2 → Paystack transaction execution
+	•	Phase E1.3 → Webhooks
+	•	Phase E1.4 → Partner earnings & splits
+
+But do not start those yet.
