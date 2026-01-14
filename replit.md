@@ -38,6 +38,15 @@ WebWaka is a multi-tenant SaaS platform infrastructure for digital transformatio
 - `SESSION_SECRET` - Session encryption key
 
 ## Recent Changes
+- January 14, 2026: Wave 2 Bug Fixes COMPLETE (All P1 High-Priority)
+  - BUG-006: Hardcoded localhost:3000 → localhost:5000 (4 files)
+  - BUG-007: Login pages verified (/login-v2 exists in (auth) route group)
+  - BUG-008: /pos-suite redirect page created
+  - BUG-009: /sites-funnels redirect page created
+  - BUG-010: /api/edu/students now returns JSON (was HTML 404)
+  - **Report:** frontend/docs/PHASE_BUGFIX_WAVE_2_REPORT.md
+  - **Status: ARCHITECT APPROVED - Ready for Wave 3**
+
 - January 14, 2026: Wave 1 Bug Fixes COMPLETE (All P0 Critical Blockers)
   - BUG-001: /sites-funnels-suite 404 → Now 307 redirect
   - BUG-002: Created /api/pos/shifts endpoint with full CRUD
