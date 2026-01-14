@@ -84,106 +84,52 @@ export default function StudentsPage() {
     ]);
   }, []);
 
-  // Phase 12B: Wrapped in useCallback for hook hygiene
   const fetchStudents = useCallback(async () => {
     setLoading(true);
-    // Simulated data - in production, fetches from Education API
-    const mockStudents: Student[] = [
-      {
-        id: 'std_1',
-        firstName: 'Adaeze',
-        lastName: 'Okonkwo',
-        admissionNumber: 'STU/2025/0001',
-        className: 'JSS 1',
-        classId: 'class_1',
-        section: 'A',
-        rollNumber: '01',
-        phone: '+234 803 456 7890',
-        email: 'adaeze@example.com',
-        guardianName: 'Chief Okonkwo',
-        guardianPhone: '+234 801 234 5678',
-        status: 'ACTIVE',
-        enrollmentDate: '2025-09-01',
-      },
-      {
-        id: 'std_2',
-        firstName: 'Chibuzo',
-        lastName: 'Eze',
-        admissionNumber: 'STU/2025/0002',
-        className: 'JSS 1',
-        classId: 'class_1',
-        section: 'A',
-        rollNumber: '02',
-        guardianName: 'Mrs. Eze',
-        guardianPhone: '+234 802 345 6789',
-        status: 'ACTIVE',
-        enrollmentDate: '2025-09-01',
-      },
-      {
-        id: 'std_3',
-        firstName: 'Emeka',
-        lastName: 'Nwosu',
-        admissionNumber: 'STU/2025/0003',
-        className: 'SS 2',
-        classId: 'class_5',
-        section: 'Science',
-        rollNumber: '15',
-        email: 'emeka.n@example.com',
-        guardianName: 'Dr. Nwosu',
-        guardianPhone: '+234 805 678 9012',
-        status: 'ACTIVE',
-        enrollmentDate: '2023-09-01',
-      },
-      {
-        id: 'std_4',
-        firstName: 'Fatima',
-        lastName: 'Ibrahim',
-        admissionNumber: 'STU/2024/0045',
-        className: 'SS 3',
-        classId: 'class_6',
-        section: 'Arts',
-        rollNumber: '08',
-        guardianName: 'Alhaji Ibrahim',
-        guardianPhone: '+234 806 789 0123',
-        status: 'ACTIVE',
-        enrollmentDate: '2022-09-01',
-      },
-      {
-        id: 'std_5',
-        firstName: 'Godwin',
-        lastName: 'Adeleke',
-        admissionNumber: 'STU/2023/0089',
-        className: 'JSS 3',
-        classId: 'class_3',
-        section: 'B',
-        rollNumber: '22',
-        guardianName: 'Pastor Adeleke',
-        guardianPhone: '+234 807 890 1234',
-        status: 'SUSPENDED',
-        enrollmentDate: '2023-09-01',
-      },
-    ];
+    try {
+      const params = new URLSearchParams();
+      if (selectedClass !== 'all') params.set('classId', selectedClass);
+      if (selectedStatus !== 'all') params.set('status', selectedStatus);
+      if (search) params.set('search', search);
+      params.set('page', String(pagination.page));
+      params.set('limit', String(pagination.limit));
 
-    // Apply filters
-    let filtered = mockStudents;
-    if (selectedClass !== 'all') {
-      filtered = filtered.filter((s: any) => s.classId === selectedClass);
-    }
-    if (selectedStatus !== 'all') {
-      filtered = filtered.filter((s: any) => s.status === selectedStatus);
-    }
-    if (search) {
-      const searchLower = search.toLowerCase();
-      filtered = filtered.filter((s: any) => 
-        `${s.firstName} ${s.lastName}`.toLowerCase().includes(searchLower) ||
-        s.admissionNumber.toLowerCase().includes(searchLower)
-      );
-    }
+      const response = await fetch(`/api/education/students?${params.toString()}`);
+      const data = await response.json();
 
-    setPagination(prev => ({ ...prev, total: filtered.length }));
-    setStudents(filtered);
-    setLoading(false);
-  }, [selectedClass, selectedStatus, search]);
+      if (data.success) {
+        const mappedStudents: Student[] = (data.students || []).map((s: any) => ({
+          id: s.id,
+          firstName: s.firstName,
+          lastName: s.lastName,
+          admissionNumber: s.admissionNumber || s.admissionNo || '',
+          className: s.className || '',
+          classId: s.classId || '',
+          section: s.section || '',
+          rollNumber: s.rollNumber || '',
+          phone: s.phone || '',
+          email: s.email || '',
+          guardianName: s.guardianName || s.guardian?.name || '',
+          guardianPhone: s.guardianPhone || s.guardian?.phone || '',
+          status: s.status || 'ACTIVE',
+          enrollmentDate: s.enrollmentDate || s.createdAt || '',
+        }));
+        setStudents(mappedStudents);
+        setPagination(prev => ({ 
+          ...prev, 
+          total: data.total || data.pagination?.total || mappedStudents.length 
+        }));
+      } else {
+        console.error('Failed to fetch students:', data.error);
+        setStudents([]);
+      }
+    } catch (error) {
+      console.error('Error fetching students:', error);
+      setStudents([]);
+    } finally {
+      setLoading(false);
+    }
+  }, [selectedClass, selectedStatus, search, pagination.page, pagination.limit]);
 
   useEffect(() => {
     fetchStudents();

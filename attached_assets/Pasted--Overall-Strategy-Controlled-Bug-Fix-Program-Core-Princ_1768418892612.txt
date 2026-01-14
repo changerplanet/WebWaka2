@@ -1,0 +1,176 @@
+
+✅ Overall Strategy: Controlled Bug Fix Program
+
+Core Principles
+	1.	Everything communicated upfront (full scope, priorities, rules)
+	2.	Bugs grouped into logical fix waves
+	3.	After each wave: STOP → report → await approval
+	4.	No new prompt needed per wave — only explicit approval to continue
+	5.	No scope creep (no enhancements, refactors, or redesigns unless explicitly allowed later)
+
+⸻
+
+🧩 Bug Fix Phases (Execution Waves)
+
+🔴 Wave 1 — P0 Critical Blockers (Production Stoppers)
+
+Must be 100% clean before anything else
+
+Includes:
+	•	BUG-001: /sites-funnels-suite 404
+	•	BUG-002: Missing /api/pos/shifts endpoint
+	•	BUG-003: npm security vulnerabilities (Next.js + deps)
+	•	BUG-004: Mock education students data
+	•	BUG-005: Education students API mismatch
+
+➡️ Output: Platform no longer has broken routes, mock data, or critical security issues.
+
+⸻
+
+🟠 Wave 2 — P1 High Priority (Pre-Launch Stability)
+
+Includes:
+	•	BUG-006: Hardcoded localhost:3000
+	•	BUG-007: Duplicate login pages
+	•	BUG-008 / BUG-009: Missing POS / Sites & Funnels routes
+	•	BUG-010: APIs returning HTML instead of JSON
+	•	BUG-012: NEXT_PUBLIC_APP_URL handling
+	•	BUG-013: TODO / FIXME cleanup (safe removal only)
+
+➡️ Output: Clean auth UX, consistent routing, environment-safe URLs.
+
+⸻
+
+🟡 Wave 3 — P2 Medium Priority (UX & Developer Experience)
+
+Includes:
+	•	BUG-014: Sample/demo data references in prod pages
+	•	BUG-015: Missing suite landing pages
+	•	BUG-016: Inconsistent route naming
+	•	BUG-017: return null rendering issues
+	•	BUG-018: Canonical login redirect
+	•	BUG-019: Infinite spinners
+	•	BUG-020: Generic page titles
+	•	BUG-021: tenantId error clarity
+	•	BUG-022: Missing error boundaries
+	•	BUG-023: Duplicate service worker logs
+	•	BUG-024: Session cleanup investigation
+	•	BUG-025: DemoIndicator visibility
+
+➡️ Output: Professional UX polish, predictable behavior.
+
+⸻
+
+🟢 Wave 4 — P3 Low Priority (Nice-to-Have / Hygiene)
+
+Includes:
+	•	BUG-026 → BUG-032 (React DevTools message, robots.txt, breadcrumbs, placeholders, skeleton loaders, OTP button visibility, etc.)
+
+➡️ Output: Marketing polish and developer cleanliness.
+
+⸻
+
+🛑 Global Safety Rules (Apply to ALL Waves)
+	•	❌ No schema changes (unless explicitly approved later)
+	•	❌ No feature additions
+	•	❌ No redesigns
+	•	❌ No refactors unless required to fix a bug
+	•	❌ No demo data reseeding
+	•	❌ No deployment
+	•	✅ Bug fixes only
+	•	✅ Keep changes minimal and scoped
+
+⸻
+
+🧠 What Replit1 Must Do After EACH Wave
+
+After completing a wave, Replit1 must:
+	1.	Produce a Wave Completion Report
+	2.	List:
+	•	Bugs fixed (by BUG-ID)
+	•	Files changed
+	•	Any deviations or assumptions
+	•	Verification steps performed
+	3.	STOP
+	4.	Wait for your explicit approval:
+“Approved. Proceed to next wave.”
+
+⸻
+
+📌 MASTER PROMPT FOR REPLIT1 (SEND THIS)
+
+You can copy-paste the prompt below as-is.
+
+⸻
+
+🛠️ REPLIT1 PROMPT — CONTROLLED PLATFORM BUG FIX EXECUTION
+
+Objective
+
+Fix all bugs identified in the Post-Phase Z Comprehensive Bug Hunt Report using a phased, approval-gated execution plan, starting with P0 Critical Blockers.
+
+⸻
+
+🔒 EXECUTION RULES (STRICT)
+	•	Work only on bugs explicitly listed in the report
+	•	Do NOT add features, enhancements, or redesigns
+	•	Do NOT change schemas or seed data
+	•	Do NOT deploy
+	•	Do NOT refactor unless unavoidable for a fix
+	•	Keep fixes minimal, surgical, and traceable
+	•	Every change must map to a BUG-ID
+
+⸻
+
+📦 FIX WAVES (EXECUTE IN ORDER)
+
+Wave 1 — P0 Critical Blockers
+Fix ONLY:
+	•	BUG-001: Missing /sites-funnels-suite page (404)
+	•	BUG-002: Missing /api/pos/shifts API endpoint
+	•	BUG-003: npm security vulnerabilities (use npm audit fix)
+	•	BUG-004: Replace mock data in education students page with DB query
+	•	BUG-005: Fix education students API mismatch
+
+🚨 Do NOT touch P1, P2, or P3 bugs in this wave.
+
+⸻
+
+📄 REQUIRED OUTPUT (AFTER WAVE 1)
+
+Produce:
+PHASE_BUGFIX_WAVE_1_REPORT.md
+
+Include:
+	•	Bugs fixed (BUG-IDs)
+	•	Files modified
+	•	Summary of changes
+	•	Verification performed
+	•	Confirmation that no out-of-scope changes were made
+
+Then:
+🛑 STOP AND WAIT FOR APPROVAL
+
+⸻
+
+🔁 CONTINUATION RULE
+
+After approval, proceed to the next wave without needing a new prompt, following the same rules and reporting structure for:
+	•	Wave 2 (P1)
+	•	Wave 3 (P2)
+	•	Wave 4 (P3)
+
+⸻
+
+❗ ABSOLUTE STOP CONDITIONS
+
+If you encounter:
+	•	A fix that requires schema change
+	•	A bug that cannot be fixed without redesign
+	•	Ambiguous behavior requiring product decision
+
+➡️ STOP and report — do NOT proceed
+
+⸻
+
+End of Prompt
