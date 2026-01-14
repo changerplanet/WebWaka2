@@ -38,6 +38,13 @@ WebWaka is a multi-tenant SaaS platform infrastructure for digital transformatio
 - `SESSION_SECRET` - Session encryption key
 
 ## Recent Changes
+- January 14, 2026: Authorization Hardening Complete (Phase D4.1)
+  - Fixed cross-tenant data leak in /api/tenants (now role-scoped)
+  - Added Forbidden component for unauthorized access
+  - Partner portal layout guards implemented
+  - Admin API routes already protected via requireSuperAdmin
+  - All authorization tests passing
+
 - January 14, 2026: Demo Data Seeding Complete (Phases D2.5, D3-B, D3-C)
   - **Phase D2.5**: Added 13 new Prisma models (6 Real Estate, 7 Political)
   - **Phase D3-B**: Seeded 8 vertical suites (312 records)
@@ -101,3 +108,37 @@ Run with: `cd frontend && npx tsx scripts/seed-{suite}-demo.ts`
 - Modular capability system for different business verticals
 - Partner management and white-labeling support
 - PWA capabilities with offline support
+
+## Authorization System (Phase D4.1)
+**Status: Hardened and Verified**
+
+### Authorization Files
+- `frontend/src/lib/authorization.ts` - API-level authorization helpers (requireAuth, requireSuperAdmin, requireTenantAdmin, etc.)
+- `frontend/src/lib/auth/authorization.ts` - Client-side authorization utilities (role checks, layout guards)
+- `frontend/src/middleware.ts` - Session validation middleware
+- `frontend/src/components/Forbidden.tsx` - Access denied component
+
+### Authorization Matrix
+| Resource | SUPER_ADMIN | PARTNER_* | TENANT_USER |
+|----------|-------------|-----------|-------------|
+| /admin/** | ✅ 200 | ❌ 403 | ❌ 403 |
+| /partner-portal/** | ✅ 200 | ✅ 200 | ❌ Forbidden |
+| /api/admin/** | ✅ 200 | ❌ 403 | ❌ 403 |
+| /api/partner/me | ✅ 200 | ✅ 200 | ❌ 403 |
+| /api/tenants | All | Partner's referred | User's tenants |
+| Unauthenticated | ❌ 401/307 | ❌ 401/307 | ❌ 401/307 |
+
+### Partner Roles
+- PARTNER_OWNER - Full partner portal access
+- PARTNER_ADMIN - Partner admin features
+- PARTNER_STAFF - Limited partner access
+- PARTNER_SALES - Sales features
+- PARTNER_SUPPORT - Support features
+
+### Demo Credentials (Phase D4 Testing)
+- demo.owner@webwaka.com - Partner Owner (16 tenants via referrals)
+- demo.admin@webwaka.com - Partner Admin
+- demo.staff@webwaka.com - Partner Staff
+- demo.sales@webwaka.com - Partner Sales
+- demo.support@webwaka.com - Partner Support
+- patient@demo-clinic.demo - Tenant User (1 tenant: demo-clinic)
