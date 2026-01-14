@@ -1,0 +1,179 @@
+
+🚀 PHASE D7 — STRONG DEMO HARDENING (ALL SUITES)
+
+Phase Objective
+
+Upgrade WebWaka from L3 (Sales Demo Ready) to L4 (Strong, Self-Sufficient Demo Across ALL Suites) by ensuring every suite can independently support a confident sales demo without disclaimers, empty states, or workaround explanations.
+
+This phase is data- and UX-hardening only.
+
+⸻
+
+🔒 HARD CONSTRAINTS (NON-NEGOTIABLE)
+
+DO NOT:
+	•	Add new product features
+	•	Change business logic
+	•	Introduce new schemas unless explicitly approved
+	•	Alter production deployment configuration
+	•	Modify authentication or authorization logic
+	•	Refactor unrelated code
+	•	Add performance optimizations
+
+ALLOWED:
+	•	Add or extend demo seed data
+	•	Strengthen demo workflows with realistic records
+	•	Improve empty-state UX copy
+	•	Add demo-only visual indicators (badges, labels)
+	•	Fix demo-only inconsistencies
+
+⸻
+
+📌 PHASE D7 STRUCTURE (EXECUTE IN ORDER)
+
+⸻
+
+🔹 Phase D7.1 — Strong Demo Definition Lock (READ-ONLY)
+
+Goal
+
+Define what “strong demoable” means for every suite, so execution is objective and verifiable.
+
+Deliverable
+
+STRONG_DEMO_DEFINITION_MATRIX.md
+
+For each suite, document:
+	•	Primary demo persona
+	•	Secondary persona (if any)
+	•	1–2 core workflows
+	•	Screens that MUST show data
+	•	Minimum data depth required
+
+🚫 No code changes in this step.
+
+⸻
+
+🔹 Phase D7.2 — Targeted Demo Data Reinforcement
+
+Goal
+
+Upgrade weak or partial suites by adding realistic, narrative demo data so workflows are complete and dashboards are populated.
+
+Scope by Suite
+
+Suite	Required Reinforcement
+Commerce (Online Store)	Orders, carts, checkout trail
+Marketplace (MVM)	Vendor activity, payouts
+Education	Multi-term history, grades
+Health	Encounters, prescriptions, patient history
+Hospitality	Reservation → stay lifecycle
+Civic	Case lifecycle progression
+Logistics	Delivery jobs + assignments
+Church	Events, attendance, giving
+Political	Campaign activity, donations
+Real Estate	Lease lifecycle, rent payments
+
+Rules
+	•	Use existing models only
+	•	All data MUST belong to Demo Partner tenants
+	•	Record counts must stay reasonable (demo realism > volume)
+
+⸻
+
+🔹 Phase D7.3 — UX Confidence Pass (Read-Only / Light UI)
+
+Goal
+
+Remove demo friction and embarrassment during sales walkthroughs.
+
+Allowed adjustments:
+	•	Improve empty-state messages
+	•	Replace misleading “None” / “0” with clearer copy
+	•	Add “Sample Data” / “Demo Mode” badges where appropriate
+	•	Ensure dashboards never appear broken or unfinished
+
+🚫 No navigation or feature changes.
+
+⸻
+
+🔹 Phase D7.4 — Full Sales Re-Validation (READ-ONLY)
+
+Goal
+
+Re-run Phase D6 with ALL suites expected to score 🟢 Strong Demo.
+
+Deliverable
+
+PHASE_D7_FINAL_SALES_DEMO_REPORT.md
+
+Must include:
+	•	Per-suite demo readiness verdict
+	•	Demo risks (if any)
+	•	Confirmation that no disclaimers are required
+
+⸻
+
+✅ SUCCESS CRITERIA (L4 SIGN-OFF)
+
+Phase D7 is successful when:
+	•	✅ Every suite supports at least one full, believable workflow
+	•	✅ No empty dashboards for demo personas
+	•	✅ All suites can be demoed as a primary vertical
+	•	✅ Sales walkthrough requires no apologies or explanations
+	•	✅ Data is realistic, localized, and role-aware
+
+⸻
+
+🧠 EXECUTION AUTHORITY
+	•	Execution Agent: Replit Agent
+	•	Execution Mode: Continuous, sequential (do not pause between D7.1 → D7.4)
+	•	Stop Conditions:
+	•	Unexpected schema gap
+	•	Data integrity violation
+	•	Authorization regression
+
+⸻
+
+🧾 EXACT REPLIT AGENT PROMPT (COPY–PASTE)
+
+You are entering PHASE D7 — STRONG DEMO HARDENING for the WebWaka platform.
+
+OBJECTIVE:
+Upgrade the platform from L3 to L4 by making ALL suites independently strong-demoable for sales.
+
+STRICT RULES:
+- NO new features
+- NO business logic changes
+- NO auth/authorization changes
+- NO production config changes
+- NO schema changes unless explicitly required and reported
+- Demo data and light UX-only adjustments are allowed
+
+EXECUTE THE FOLLOWING PHASES NONSTOP, IN ORDER:
+
+PHASE D7.1 — Strong Demo Definition (READ-ONLY)
+- Produce STRONG_DEMO_DEFINITION_MATRIX.md
+- Define primary persona, workflows, required screens per suite
+- NO code changes
+
+PHASE D7.2 — Targeted Demo Data Reinforcement
+- Strengthen demo data for ALL suites so each supports at least one full workflow
+- Use existing models only
+- All data must belong to Demo Partner tenants
+- Keep record counts realistic
+
+PHASE D7.3 — UX Confidence Pass
+- Improve empty states, labels, demo clarity
+- Add demo/sample indicators if needed
+- NO navigation or feature changes
+
+PHASE D7.4 — Full Sales Re-Validation (READ-ONLY)
+- Re-run sales walkthrough across ALL suites
+- Produce PHASE_D7_FINAL_SALES_DEMO_REPORT.md
+- Each suite must be rated 🟢 / 🟡 / 🔴 with justification
+
+STOP after PHASE D7.4.
+Report everything clearly.
+Do NOT deploy.
+Do NOT skip steps.
