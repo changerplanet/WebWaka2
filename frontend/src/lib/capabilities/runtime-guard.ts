@@ -55,6 +55,14 @@ export async function isCapabilityActive(
     return true;
   }
 
+  // Check if capability system is initialized (has any activations)
+  const totalActivations = await prisma.core_tenant_capability_activations.count();
+  if (totalActivations === 0) {
+    // Capability system not initialized - allow registered capabilities for demo/dev
+    // This allows seeded demo data to work before capability activations are configured
+    return def !== undefined;
+  }
+
   const activation = await prisma.core_tenant_capability_activations.findUnique({
     where: {
       tenantId_capabilityKey: {
@@ -88,6 +96,16 @@ export async function checkCapability(
 
   // Core capabilities are always active
   if (def.isCore) {
+    return {
+      allowed: true,
+      capabilityKey,
+    };
+  }
+
+  // Check if capability system is initialized
+  const totalActivations = await prisma.core_tenant_capability_activations.count();
+  if (totalActivations === 0) {
+    // Capability system not initialized - allow registered capabilities
     return {
       allowed: true,
       capabilityKey,

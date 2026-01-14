@@ -1,26 +1,26 @@
 export const dynamic = 'force-dynamic'
 
 /**
- * SVM Products API - Core Proxy
+ * SVM Products API - Database-backed
  * 
- * GET /api/svm/products - List products (read from Core)
+ * GET /api/svm/products - List products from database
  */
 
 import { NextRequest, NextResponse } from 'next/server'
-import { checkCapabilityGuard } from '@/lib/capabilities'
+import { checkCapabilityGuard, extractTenantId } from '@/lib/capabilities'
+import { prisma } from '@/lib/prisma'
 
 /**
  * GET /api/svm/products
- * List or search products
+ * List or search products from database
  */
 export async function GET(request: NextRequest) {
-  // Capability guard
   const guardResult = await checkCapabilityGuard(request, 'svm')
   if (guardResult) return guardResult
 
   try {
     const { searchParams } = new URL(request.url)
-    const tenantId = searchParams.get('tenantId')
+    const tenantId = await extractTenantId(request)
     
     if (!tenantId) {
       return NextResponse.json(
@@ -34,19 +34,48 @@ export async function GET(request: NextRequest) {
     const limit = parseInt(searchParams.get('limit') || '24')
     const offset = parseInt(searchParams.get('offset') || '0')
     const sortBy = searchParams.get('sortBy') || 'name'
-    const sortOrder = searchParams.get('sortOrder') || 'asc'
+    const sortOrder = (searchParams.get('sortOrder') || 'asc') as 'asc' | 'desc'
 
-    // In production, query Core catalog service
-    // For now, return mock structure
+    const where: any = { tenantId }
+    
+    if (query) {
+      where.OR = [
+        { name: { contains: query, mode: 'insensitive' } },
+        { sku: { contains: query, mode: 'insensitive' } },
+        { description: { contains: query, mode: 'insensitive' } },
+      ]
+    }
+    
+    if (categoryId) {
+      where.categoryId = categoryId
+    }
+
+    const orderBy: any = {}
+    orderBy[sortBy] = sortOrder
+
+    const [products, total] = await Promise.all([
+      prisma.product.findMany({
+        where,
+        include: {
+          ProductCategory: true,
+          ProductVariant: true,
+        },
+        orderBy,
+        take: limit,
+        skip: offset,
+      }),
+      prisma.product.count({ where })
+    ])
+
     return NextResponse.json({
       success: true,
-      products: [],
-      total: 0,
-      hasMore: false,
+      products,
+      total,
+      hasMore: offset + products.length < total,
       pagination: {
         limit,
         offset,
-        total: 0
+        total
       },
       filters: {
         tenantId,

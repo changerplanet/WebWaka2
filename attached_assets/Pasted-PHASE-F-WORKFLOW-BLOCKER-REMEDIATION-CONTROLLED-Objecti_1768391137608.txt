@@ -1,0 +1,104 @@
+PHASE F — WORKFLOW BLOCKER REMEDIATION (CONTROLLED)
+
+Objective
+Fix the blockers identified in Phase D5 so that seeded demo data is correctly surfaced and core workflows function as designed.
+
+⸻
+
+Scope (STRICT)
+
+✅ Allowed
+	•	Modify API route handlers
+	•	Modify service-layer logic
+	•	Fix capability guard logic
+	•	Remove mock/stub responses
+	•	Align APIs with existing Prisma models
+	•	Add logging for verification (temporary, non-invasive)
+
+❌ Forbidden
+	•	❌ NO Prisma schema changes
+	•	❌ NO database reseeding
+	•	❌ NO data deletion
+	•	❌ NO role/permission weakening
+	•	❌ NO UI redesign
+	•	❌ NO feature additions
+
+If a fix requires reseeding or schema change:
+➡️ STOP and REPORT.
+
+⸻
+
+Fix Tasks (Execute in Order)
+
+F1 — Diagnostic Confirmation (Log-Only First)
+	1.	Identify all Commerce/SVM APIs returning hardcoded or mock data
+	2.	Confirm whether they bypass Prisma queries
+	3.	Identify which POS tables (if any) were written to during D3
+	4.	Log tenantId + partnerId resolution in failing APIs
+
+📌 Produce a short diagnostic summary before applying fixes.
+
+⸻
+
+F2 — Commerce & SVM API Normalization
+	1.	Replace mock responses with Prisma-backed queries
+	2.	Ensure all queries are filtered by:
+	•	tenantId
+	•	partnerId
+	3.	Confirm products seeded in DB are returned via API
+
+⸻
+
+F3 — POS Data Visibility Fix
+	1.	Verify correct POS schema usage
+	2.	Align POS API queries with existing tables
+	3.	Ensure shifts and sales (if present) are retrievable
+	4.	If no records exist:
+	•	REPORT (do NOT reseed)
+
+⸻
+
+F4 — Capability Guard Alignment
+	1.	Fix tenant context derivation:
+	•	session → tenantId
+	•	route → tenantId
+	2.	Ensure valid demo tenants pass capability checks
+	3.	Preserve strict role enforcement
+
+⸻
+
+Verification (MANDATORY)
+
+After fixes:
+	•	Re-test D5-B workflows:
+	•	Commerce (Products visible)
+	•	POS (Shifts/Sales visible OR correctly reported missing)
+	•	Education / Health APIs respond 200
+	•	Confirm:
+	•	No cross-tenant access
+	•	No unauthorized access
+
+⸻
+
+Deliverables
+	1.	PHASE_F_FIX_REPORT.md
+	•	Root cause per blocker
+	•	Files modified
+	•	Before/After behavior
+	2.	Explicit PASS / FAIL for:
+	•	Commerce workflows
+	•	POS workflows
+	•	Capability guards
+
+⸻
+
+Stop Conditions
+	•	❗ Do NOT proceed to Phase D6
+	•	❗ Do NOT seed data
+	•	❗ Do NOT deploy
+
+STOP after report submission.
+
+⸻
+
+🚦BEGIN PHASE F NOW
