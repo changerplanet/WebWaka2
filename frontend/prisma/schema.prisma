@@ -6893,6 +6893,7 @@ model sf_sites {
   pages           sf_pages[]
   domainMappings  sf_domain_mappings[]
   analyticsEvents sf_analytics_events[]
+  forms           sf_forms[]
 
   @@unique([tenantId, slug])
   @@index([tenantId])
@@ -6936,6 +6937,7 @@ model sf_funnels {
 
   pages           sf_pages[]
   analyticsEvents sf_analytics_events[]
+  forms           sf_forms[]
 
   @@unique([tenantId, slug])
   @@index([tenantId])
@@ -7135,6 +7137,146 @@ model sf_analytics_events {
   @@index([funnelId])
   @@index([createdAt])
   @@index([visitorId])
+}
+
+// ============================================================================
+// SITES & FUNNELS: FORMS — PHASE E1.3
+// Added: January 14, 2026
+// Status: Schema-driven form builder with optional payment integration
+// ============================================================================
+
+// Form status enum
+enum sf_FormStatus {
+  DRAFT
+  ACTIVE
+  PAUSED
+  ARCHIVED
+}
+
+// Form submission status enum
+enum sf_SubmissionStatus {
+  PENDING
+  COMPLETED
+  PAYMENT_PENDING
+  PAYMENT_COMPLETED
+  PAYMENT_FAILED
+  FAILED
+}
+
+// Form definition model
+model sf_forms {
+  id                 String        @id @default(uuid())
+  tenantId           String
+  partnerId          String
+  platformInstanceId String?
+
+  // Basic info
+  name        String
+  slug        String
+  description String?
+
+  // Form schema (JSON structure defining fields)
+  schema Json // Array of field definitions
+
+  // Settings
+  status             sf_FormStatus @default(DRAFT)
+  submitButtonText   String        @default("Submit")
+  successMessage     String?
+  successRedirectUrl String?
+
+  // Payment settings (optional)
+  paymentEnabled Boolean @default(false)
+  paymentAmount  Decimal? @db.Decimal(12, 2)
+  paymentCurrency String @default("NGN")
+  paymentDescription String?
+
+  // Styling (optional customization)
+  styling Json?
+
+  // Tracking
+  totalSubmissions   Int      @default(0)
+  successfulPayments Int      @default(0)
+  totalRevenue       Decimal  @default(0) @db.Decimal(14, 2)
+
+  // Associations (can be embedded in site/funnel or standalone)
+  siteId   String?
+  funnelId String?
+  pageId   String?
+
+  // Audit
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  createdBy String
+  updatedBy String?
+
+  // Demo flag
+  isDemo Boolean @default(false)
+
+  // Relations
+  submissions sf_form_submissions[]
+  site        sf_sites?             @relation(fields: [siteId], references: [id], onDelete: SetNull)
+  funnel      sf_funnels?           @relation(fields: [funnelId], references: [id], onDelete: SetNull)
+
+  @@unique([tenantId, slug])
+  @@index([tenantId])
+  @@index([partnerId])
+  @@index([platformInstanceId])
+  @@index([status])
+  @@index([siteId])
+  @@index([funnelId])
+  @@index([createdAt])
+}
+
+// Form submission model
+model sf_form_submissions {
+  id       String @id @default(uuid())
+  formId   String
+  tenantId String
+
+  // Submission data (matches form schema)
+  data Json
+
+  // Status
+  status sf_SubmissionStatus @default(PENDING)
+
+  // Submitter info
+  submitterEmail String?
+  submitterName  String?
+  submitterPhone String?
+  ipAddress      String?
+  userAgent      String?
+
+  // Source tracking
+  referrer    String?
+  utmSource   String?
+  utmMedium   String?
+  utmCampaign String?
+
+  // Payment info (if form has payment)
+  paymentRequired     Boolean  @default(false)
+  paymentAmount       Decimal? @db.Decimal(12, 2)
+  paymentCurrency     String?
+  paymentTransactionId String? // Links to PaymentTransaction
+  paymentReference    String?
+  paymentStatus       String?
+  paidAt              DateTime?
+
+  // Timestamps
+  createdAt   DateTime  @default(now())
+  completedAt DateTime?
+
+  // Demo flag
+  isDemo Boolean @default(false)
+
+  // Relations
+  form sf_forms @relation(fields: [formId], references: [id], onDelete: Cascade)
+
+  @@index([formId])
+  @@index([tenantId])
+  @@index([status])
+  @@index([submitterEmail])
+  @@index([paymentTransactionId])
+  @@index([createdAt])
 }
 
 // ============================================================================
