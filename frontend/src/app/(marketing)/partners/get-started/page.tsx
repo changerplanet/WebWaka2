@@ -287,7 +287,7 @@ export default function GetStartedPage() {
                   name="phone"
                   required
                   className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 outline-none transition-all"
-                  placeholder="+234 800 000 0000"
+                  placeholder="+234 913 500 3000"
                 />
               </div>
 

@@ -282,7 +282,7 @@ export function ClientCreationWizard({ onComplete, onCancel }: ClientCreationWiz
                 type="email"
                 value={data.adminEmail}
                 onChange={e => setData({ ...data, adminEmail: e.target.value })}
-                placeholder="admin@acme.com"
+                placeholder="you@example.com"
                 className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
                 data-testid="input-admin-email"
               />
@@ -315,7 +315,7 @@ export function ClientCreationWizard({ onComplete, onCancel }: ClientCreationWiz
                 type="tel"
                 value={data.adminPhone}
                 onChange={e => setData({ ...data, adminPhone: e.target.value })}
-                placeholder="+234 803 123 4567"
+                placeholder="+234 913 500 3000"
                 className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
               />
             </div>

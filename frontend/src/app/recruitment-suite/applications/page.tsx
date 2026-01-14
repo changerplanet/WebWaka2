@@ -309,13 +309,13 @@ export default function ApplicationsPage() {
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="email">Email</Label>
-                    <Input id="email" type="email" placeholder="email@example.com" />
+                    <Input id="email" type="email" placeholder="you@example.com" />
                   </div>
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="phone">Phone</Label>
-                    <Input id="phone" placeholder="+234 8XX XXX XXXX" />
+                    <Input id="phone" placeholder="+234 913 500 3000" />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="location">Location</Label>

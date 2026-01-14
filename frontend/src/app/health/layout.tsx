@@ -4,6 +4,7 @@ import { ReactNode, useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { AuthProvider, useAuth } from '@/components/AuthProvider'
 import { Loader2, Stethoscope } from 'lucide-react'
+import { Breadcrumb } from '@/components/ui/Breadcrumb'
 
 function HealthContent({ children }: { children: ReactNode }) {
   const { user, isLoading, isAuthenticated } = useAuth()
@@ -51,7 +52,14 @@ function HealthContent({ children }: { children: ReactNode }) {
     )
   }
 
-  return children
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-cyan-50 to-blue-100">
+      <div className="px-4 pt-4 sm:px-6 lg:px-8">
+        <Breadcrumb />
+      </div>
+      {children}
+    </div>
+  )
 }
 
 export default function HealthLayout({

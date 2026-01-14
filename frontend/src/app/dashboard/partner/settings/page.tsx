@@ -262,7 +262,7 @@ export default function PartnerSettingsPage() {
                             value={settings.contactPhone}
                             onChange={(e) => updateSetting('contactPhone', e.target.value)}
                             className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none"
-                            placeholder="+234 800 000 0000"
+                            placeholder="+234 913 500 3000"
                           />
                         </div>
                       </div>
@@ -396,7 +396,7 @@ export default function PartnerSettingsPage() {
                           value={settings.supportPhone}
                           onChange={(e) => updateSetting('supportPhone', e.target.value)}
                           className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none"
-                          placeholder="+234 800 000 0000"
+                          placeholder="+234 913 500 3000"
                         />
                       </div>
                     </div>
@@ -412,7 +412,7 @@ export default function PartnerSettingsPage() {
                           value={settings.supportWhatsApp}
                           onChange={(e) => updateSetting('supportWhatsApp', e.target.value)}
                           className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none"
-                          placeholder="+234 800 000 0000"
+                          placeholder="+234 913 500 3000"
                         />
                       </div>
                       <p className="text-xs text-gray-500 mt-1">

@@ -201,7 +201,7 @@ export function VendorProfile() {
                     value={formData.phone}
                     onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value }))}
                     className="w-full px-4 py-2.5 border border-slate-200 rounded-xl focus:border-green-500 focus:ring-2 focus:ring-green-200 outline-none"
-                    placeholder="Enter phone number"
+                    placeholder="+234 913 500 3000"
                     data-testid="input-phone"
                   />
                 ) : (

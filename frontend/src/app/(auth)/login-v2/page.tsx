@@ -378,7 +378,7 @@ function LoginV2Content() {
             type="text"
             value={formState.identifier}
             onChange={(e) => updateState({ identifier: e.target.value })}
-            placeholder="08012345678 or you@example.com"
+            placeholder="you@example.com or +234 913 500 3000"
             className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent text-lg"
             data-testid="login-identifier-input"
             autoFocus

@@ -16,6 +16,7 @@ import { useRouter } from 'next/navigation'
 import { AuthProvider, useAuth } from '@/components/AuthProvider'
 import { Loader2 } from 'lucide-react'
 import { Forbidden } from '@/components/Forbidden'
+import { Breadcrumb } from '@/components/ui/Breadcrumb'
 
 function AdminContent({ children }: { children: ReactNode }) {
   const { user, isLoading, isAuthenticated } = useAuth()
@@ -77,6 +78,9 @@ function AdminContent({ children }: { children: ReactNode }) {
   // AUTHORIZED: User is SUPER_ADMIN
   return (
     <div className="min-h-screen bg-gray-100">
+      <div className="px-4 pt-4 sm:px-6 lg:px-8">
+        <Breadcrumb />
+      </div>
       {children}
     </div>
   )

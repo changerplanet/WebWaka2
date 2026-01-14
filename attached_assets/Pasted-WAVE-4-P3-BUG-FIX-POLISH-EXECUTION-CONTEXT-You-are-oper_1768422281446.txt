@@ -1,0 +1,141 @@
+WAVE 4 (P3) BUG FIX & POLISH EXECUTION
+
+CONTEXT
+
+You are operating on the WebWaka platform codebase.
+Waves 1–3 of the comprehensive bug hunt have been fully completed, fixed, and verified.
+
+This prompt authorizes Wave 4 ONLY — covering Low Priority (P3) polish items identified in the Post-Phase Z Bug Hunt Report.
+
+This is the final polish wave before Vercel deployment.
+
+⸻
+
+🎯 OBJECTIVE
+
+Improve perceived quality, UX polish, SEO hygiene, and demo cleanliness without introducing new features, changing business logic, or touching core systems.
+
+Wave 4 items are non-blocking, but must be implemented cleanly and conservatively.
+
+⸻
+
+🔒 HARD CONSTRAINTS (MANDATORY)
+
+You MUST:
+	•	❌ NOT modify Prisma schema
+	•	❌ NOT modify database data or seed scripts
+	•	❌ NOT modify auth logic or permissions
+	•	❌ NOT introduce new APIs
+	•	❌ NOT refactor business logic
+	•	❌ NOT change routing structures established in Waves 1–3
+	•	❌ NOT alter marketing content copy or messaging
+	•	❌ NOT proceed beyond Wave 4
+
+You MAY:
+	•	✅ Improve UI/UX polish
+	•	✅ Improve SEO hygiene
+	•	✅ Improve loading and navigation experience
+	•	✅ Hide demo-only UI in production mode
+	•	✅ Improve consistency and clarity
+
+All changes must be safe, additive, and reversible.
+
+⸻
+
+🧩 WAVE 4 SCOPE (P3 ONLY)
+
+1️⃣ Navigation & UX Polish
+	•	Add breadcrumb navigation to:
+	•	Suite admin pages
+	•	Deep dashboard pages
+	•	Breadcrumbs must:
+	•	Be mobile-friendly
+	•	Collapse gracefully on small screens
+	•	Never break existing navigation
+
+⸻
+
+2️⃣ Loading Experience Improvements
+	•	Replace generic spinners with skeleton loaders where feasible:
+	•	Dashboards
+	•	Lists (students, patients, products, tenants)
+	•	Skeletons must:
+	•	Match layout shape
+	•	Respect mobile-first design
+	•	Fail back to spinner if data errors
+
+⸻
+
+3️⃣ robots.txt & SEO Hygiene
+	•	Implement an optimized robots.txt:
+	•	Allow indexing of marketing pages
+	•	Disallow admin, dashboard, API routes
+	•	Do NOT affect sitemap logic unless already present
+
+⸻
+
+4️⃣ UI Consistency Cleanup
+	•	Normalize form placeholders:
+	•	Emails → you@example.com
+	•	Phone → +234 913 500 3000
+	•	Apply consistently across marketing + app forms
+
+⸻
+
+5️⃣ Demo / Production Boundary Cleanup
+	•	Hide demo-only UI elements in production builds:
+	•	“View Test OTPs”
+	•	Any explicit demo helper buttons
+	•	Use environment-based guards (process.env.NODE_ENV)
+	•	Demo behavior must still work in development
+
+⸻
+
+6️⃣ Console & Developer Noise Reduction
+	•	Reduce remaining console warnings / logs that:
+	•	Add no diagnostic value
+	•	Are not errors
+	•	DO NOT remove meaningful error logs
+
+⸻
+
+🛑 EXECUTION RULES
+	•	Treat Wave 4 as a single execution group
+	•	Implement all P3 items together
+	•	When finished:
+	•	STOP immediately
+	•	Produce a Wave 4 Completion Report
+	•	List:
+	•	Files modified
+	•	Before/after behavior
+	•	Verification steps
+	•	Confirmation no restricted areas were touched
+
+DO NOT:
+	•	Proceed to deployment
+	•	Start Vercel setup
+	•	Touch enhancements backlog
+	•	Fix anything outside P3 scope
+
+⸻
+
+📄 REQUIRED OUTPUT
+
+At completion, produce:
+
+Wave 4 Final Report
+	•	Status: COMPLETE / PARTIAL
+	•	Bugs addressed (BUG-026 → BUG-032)
+	•	UX before vs after summary
+	•	SEO & polish checklist
+	•	Confirmation of safety constraints
+	•	Explicit STOP notice
+
+⸻
+
+🚨 IMPORTANT
+
+This wave is about polish, not power.
+If any change risks destabilizing the system, SKIP it and document why.
+
+Begin Wave 4 execution now.

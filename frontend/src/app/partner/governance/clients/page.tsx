@@ -372,7 +372,7 @@ function CreateClientModal({
               value={form.email}
               onChange={(e) => setForm(prev => ({ ...prev, email: e.target.value }))}
               className="w-full px-4 py-3 bg-slate-900 border border-slate-700 rounded-xl text-white focus:ring-2 focus:ring-green-500 outline-none"
-              placeholder="e.g., admin@company.com"
+              placeholder="you@example.com"
             />
           </div>
 

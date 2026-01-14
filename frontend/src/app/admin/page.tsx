@@ -590,7 +590,7 @@ function CreateTenantModal({ onClose, onCreated }: { onClose: () => void; onCrea
               value={form.adminEmail}
               onChange={(e) => setForm(prev => ({ ...prev, adminEmail: e.target.value }))}
               className="w-full px-4 py-3 bg-slate-900 border border-slate-700 rounded-xl text-white focus:ring-2 focus:ring-green-500 outline-none"
-              placeholder="admin@acme.com"
+              placeholder="you@example.com"
             />
             <p className="text-xs text-slate-500 mt-1">This user will be created as Tenant Admin</p>
           </div>

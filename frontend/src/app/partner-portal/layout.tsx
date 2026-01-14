@@ -16,6 +16,7 @@ import { useRouter } from 'next/navigation'
 import { AuthProvider, useAuth } from '@/components/AuthProvider'
 import { Loader2 } from 'lucide-react'
 import { Forbidden } from '@/components/Forbidden'
+import { Breadcrumb } from '@/components/ui/Breadcrumb'
 
 function PartnerPortalContent({ children }: { children: ReactNode }) {
   const { user, isLoading, isAuthenticated } = useAuth()
@@ -97,7 +98,14 @@ function PartnerPortalContent({ children }: { children: ReactNode }) {
   }
 
   // AUTHORIZED: User is a Partner member
-  return children
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-green-50 to-green-100">
+      <div className="px-4 pt-4 sm:px-6 lg:px-8">
+        <Breadcrumb />
+      </div>
+      {children}
+    </div>
+  )
 }
 
 export default function PartnerPortalLayout({

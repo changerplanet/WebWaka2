@@ -35,6 +35,10 @@ export function DebugOtpViewer({ identifier }: DebugOtpViewerProps) {
   const [isProduction, setIsProduction] = useState<boolean | null>(null)
   const hasCheckedProduction = useRef(false)
   
+  if (process.env.NODE_ENV === 'production') {
+    return null
+  }
+  
   // Check if we're in production on mount (only once)
   useEffect(() => {
     if (hasCheckedProduction.current) return

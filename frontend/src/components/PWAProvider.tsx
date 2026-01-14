@@ -45,19 +45,23 @@ export function PWAProvider({ children }: PWAProviderProps) {
   const registrationLoggedRef = useRef(false)
   const onlineStatusLoggedRef = useRef(false)
   
-  // Log service worker status on first registration only
+  // Track service worker registration (no logging in production)
   useEffect(() => {
     if (registration && !registrationLoggedRef.current) {
-      console.log('[PWA] Service Worker registered:', registration.scope)
       registrationLoggedRef.current = true
+      if (process.env.NODE_ENV === 'development') {
+        console.log('[PWA] Service Worker registered:', registration.scope)
+      }
     }
   }, [registration])
   
-  // Log online status once per session
+  // Track online status once per session (no logging in production)
   useEffect(() => {
     if (!onlineStatusLoggedRef.current) {
-      console.log('[PWA] Online status:', isOnline ? 'online' : 'offline')
       onlineStatusLoggedRef.current = true
+      if (process.env.NODE_ENV === 'development') {
+        console.log('[PWA] Online status:', isOnline ? 'online' : 'offline')
+      }
     }
   }, [isOnline])
   
