@@ -1,0 +1,195 @@
+
+📌 REPLIT1 MASTER EXECUTION PROMPT
+
+Phase E1 — Revenue & Growth Enablement
+
+Execution Order: A → B → C (STRICT)
+STOP REQUIRED after EACH phase
+
+⸻
+
+CONTEXT (READ CAREFULLY)
+
+You have successfully completed Phase E1.1 – Paystack Integration (Foundation Layer) with:
+	•	Provider-agnostic payment abstraction
+	•	Super Admin → Partner → Tenant enablement hierarchy
+	•	Encrypted credential storage
+	•	NO live payment execution yet
+
+This prompt authorizes continuation ONLY in the sequence below.
+
+⸻
+
+🔴 GLOBAL RULES (NON-NEGOTIABLE)
+	1.	STRICT PHASE ORDER
+	•	Do NOT start the next phase until the current phase is completed, verified, and stopped.
+	2.	STOP AFTER EACH PHASE
+	•	After each phase:
+	•	Produce a detailed completion report
+	•	STOP and wait for approval (no follow-up work)
+	3.	NO SCOPE CREEP
+	•	No refactors
+	•	No UI redesigns unless explicitly required
+	•	No schema changes outside what is explicitly approved per phase
+	4.	NO LIVE PAYMENTS
+	•	Use sandbox / mock flows only
+	•	No real money movement
+	5.	PLATFORM-WIDE
+	•	All implementations must work across all suites
+	6.	PARTNER-FIRST
+	•	Super Admin controls availability
+	•	Partners configure
+	•	Tenants inherit
+
+⸻
+
+🔵 PHASE E1.2 — PAYSTACK TRANSACTION EXECUTION
+
+(OPTION A — START HERE)
+
+OBJECTIVE
+
+Turn the existing Paystack integration into fully functional payment execution, without breaking demo mode or requiring real keys.
+
+SCOPE (ALLOWED)
+	•	Implement:
+	•	Payment intent creation
+	•	Charge initialization
+	•	Transaction persistence
+	•	Create:
+	•	Unified transaction model usable by all suites
+	•	Support:
+	•	“Payments disabled” graceful states
+	•	Sandbox/mock execution paths
+
+EXPLICITLY REQUIRED
+	•	Platform-wide transaction abstraction
+	•	Clear separation:
+	•	Payment Provider
+	•	Payment Execution
+	•	Transaction Recording
+	•	No suite-specific payment logic
+
+EXPLICITLY FORBIDDEN
+	•	No webhooks
+	•	No settlements
+	•	No revenue splitting
+	•	No partner payouts
+
+DELIVERABLES
+	1.	Transaction data model (clearly documented)
+	2.	Execution APIs (initiate, verify, list)
+	3.	Demo-safe execution flow
+	4.	Documentation:
+	•	docs/PAYMENTS_EXECUTION.md
+
+STOP CONDITION
+
+After completion:
+	•	Produce Phase E1.2 Completion Report
+	•	STOP immediately
+
+⸻
+
+🟢 PHASE E1.3 — SITES & FUNNELS FORM BUILDER
+
+(OPTION B — ONLY AFTER APPROVAL OF E1.2)
+
+OBJECTIVE
+
+Enable lead capture and payment-capable forms across Sites & Funnels using the new payment execution layer.
+
+SCOPE (ALLOWED)
+	•	Form builder (schema-driven, not visual editor yet)
+	•	Form types:
+	•	Lead capture
+	•	Contact
+	•	Payment-enabled forms
+	•	Storage:
+	•	Submissions per tenant
+	•	Integration:
+	•	Optional payment via Paystack (if enabled)
+
+REQUIRED FEATURES
+	•	Tenant-scoped forms
+	•	Mobile-first
+	•	Works inside:
+	•	Websites
+	•	Funnels
+	•	Graceful handling when:
+	•	Payments disabled
+	•	Forms unpublished
+
+FORBIDDEN
+	•	No drag-and-drop builder
+	•	No automation rules
+	•	No email/SMS sending (that comes later)
+
+DELIVERABLES
+	1.	Form schema + submission model
+	2.	Tenant form APIs
+	3.	Payment-enabled form flow
+	4.	Documentation:
+	•	docs/FORMS_AND_FUNNELS.md
+
+STOP CONDITION
+
+After completion:
+	•	Produce Phase E1.3 Completion Report
+	•	STOP immediately
+
+⸻
+
+🟣 PHASE E1.4 — PARTNER ANALYTICS DASHBOARD
+
+(OPTION C — ONLY AFTER APPROVAL OF E1.3)
+
+OBJECTIVE
+
+Give Partners clear visibility into their business performance on the platform.
+
+METRICS TO INCLUDE
+	•	Tenants count
+	•	Active tenants
+	•	Form submissions
+	•	Payment volume (if enabled)
+	•	Demo vs live usage distinction
+
+SCOPE
+	•	Read-only dashboard
+	•	Partner-scoped only
+	•	No exports yet
+
+FORBIDDEN
+	•	No billing
+	•	No payouts
+	•	No forecasting
+	•	No admin metrics
+
+DELIVERABLES
+	1.	Partner analytics API
+	2.	Dashboard UI (mobile-first)
+	3.	Clear “Demo vs Live” indicators
+	4.	Documentation:
+	•	docs/PARTNER_ANALYTICS.md
+
+STOP CONDITION
+
+After completion:
+	•	Produce Phase E1.4 Completion Report
+	•	STOP immediately
+
+⸻
+
+🛑 FINAL INSTRUCTION
+
+Proceed NOW with Phase E1.2 only.
+
+Do NOT:
+	•	Start Phase E1.3
+	•	Mention Phase E1.4 implementation
+	•	Make assumptions beyond Phase E1.2
+
+You must STOP and wait for approval after Phase E1.2.
+
+⸻
