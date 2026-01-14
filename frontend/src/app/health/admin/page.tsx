@@ -35,6 +35,7 @@ export default function ClinicAdminDashboard() {
   const router = useRouter();
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     // Simulated stats
@@ -49,6 +50,17 @@ export default function ClinicAdminDashboard() {
     setLoading(false);
   }, []);
 
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      if (loading) {
+        setLoading(false);
+        setError('Request timed out. Please refresh the page.');
+      }
+    }, 30000);
+    
+    return () => clearTimeout(timeout);
+  }, [loading]);
+
   const quickActions = [
     { title: 'New Patient', description: 'Register patient', icon: <Users className="w-5 h-5" />, href: '/health/patients/new', color: 'bg-blue-500' },
     { title: 'Book Appointment', description: 'Schedule visit', icon: <Calendar className="w-5 h-5" />, href: '/health/appointments/new', color: 'bg-green-500' },
@@ -58,6 +70,20 @@ export default function ClinicAdminDashboard() {
 
   const formatCurrency = (amount: number) => 
     new Intl.NumberFormat('en-NG', { style: 'currency', currency: 'NGN', maximumFractionDigits: 0 }).format(amount);
+
+  if (error) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-gray-50">
+        <div className="text-center">
+          <AlertCircle className="h-12 w-12 text-red-500 mx-auto mb-4" />
+          <p className="text-red-600 mb-4">{error}</p>
+          <Button onClick={() => window.location.reload()}>
+            Retry
+          </Button>
+        </div>
+      </div>
+    );
+  }
 
   if (loading || !stats) {
     return (

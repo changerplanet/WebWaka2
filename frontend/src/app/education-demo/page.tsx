@@ -58,7 +58,7 @@ import {
 
 // Demo Mode Integration (S5)
 import { DemoModeProvider, useDemoMode, resolveQuickStart, QuickStartConfig } from '@/lib/demo'
-import { DemoOverlay, QuickStartBanner } from '@/components/demo'
+import { DemoOverlay, QuickStartBanner, DemoIndicator } from '@/components/demo'
 
 // ============================================================================
 // TYPES
@@ -461,6 +461,9 @@ function EducationDemoContent() {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      {/* Demo Indicator Banner */}
+      <DemoIndicator variant="banner" />
+
       {/* Hero Header */}
       <div className="bg-gradient-to-br from-emerald-900 via-emerald-800 to-teal-900 text-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">

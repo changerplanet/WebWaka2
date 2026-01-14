@@ -81,6 +81,17 @@ export default function HospitalityAdminPage() {
     fetchDashboardData();
   }, []);
 
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      if (loading) {
+        setLoading(false);
+        setError('Request timed out. Please refresh the page.');
+      }
+    }, 30000);
+    
+    return () => clearTimeout(timeout);
+  }, [loading]);
+
   const fetchDashboardData = async () => {
     try {
       setLoading(true);

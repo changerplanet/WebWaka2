@@ -93,6 +93,17 @@ export default function CivicAdminDashboard() {
     fetchStats();
   }, []);
 
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      if (loading) {
+        setLoading(false);
+        setError('Request timed out. Please refresh the page.');
+      }
+    }, 30000);
+    
+    return () => clearTimeout(timeout);
+  }, [loading]);
+
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">

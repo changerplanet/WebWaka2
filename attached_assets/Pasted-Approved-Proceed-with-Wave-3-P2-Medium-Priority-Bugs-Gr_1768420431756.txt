@@ -1,0 +1,80 @@
+Approved ✅ — Proceed with Wave 3 (P2 Medium-Priority Bugs)
+
+Great work on Wave 2. The fixes and scope discipline look solid.
+
+You are now authorized to proceed with Wave 3, covering P2 (Medium Priority) bugs, with the same controlled execution model.
+
+⸻
+
+✅ Authorized Scope — Wave 3 (P2)
+
+Fix only the following P2 issues (as previously identified). Group them logically, but do not expand scope.
+
+UX / Routing / Consistency
+	1.	BUG-014 — Sample/Demo data references in production pages
+	•	Remove or clearly label as demo-only
+	•	Ensure real seeded data is used where available
+	2.	BUG-015 — Missing suite landing pages
+	•	Add minimal index page.tsx where suites exist but have only subroutes
+	•	Or add safe redirects to the correct admin/dashboard pages
+	3.	BUG-016 — Inconsistent route naming
+	•	Standardize where feasible (e.g. /education vs /edu)
+	•	Add backward-compatible redirects where renaming is not safe
+	4.	BUG-018 — Missing canonical login redirect
+	•	Ensure deprecated login URLs redirect cleanly to the canonical login
+
+⸻
+
+UX Robustness
+	5.	BUG-017 — return null without fallback UI
+	•	Replace with explicit loading, empty, or error states where appropriate
+	6.	BUG-019 — Infinite spinners on suite admin pages
+	•	Add timeout + error state (non-blocking UX fix)
+	7.	BUG-020 — Generic page titles
+	•	Update to descriptive, SEO-friendly titles for suite pages
+
+⸻
+
+Developer / Platform Clarity
+	8.	BUG-021 — tenantId requirement not clear in APIs
+	•	Improve error messages or inline documentation (no breaking changes)
+	9.	BUG-022 — Missing error boundaries
+	•	Add lightweight error boundaries at layout or page-group level
+	10.	BUG-023 — Duplicate PWA service worker logs
+
+	•	Ensure single registration
+
+	11.	BUG-025 — DemoIndicator not visible
+
+	•	Verify rendering and visibility conditions
+
+⸻
+
+🚫 Explicitly Out of Scope (Still)
+	•	New features
+	•	Schema changes
+	•	Data reseeding
+	•	Performance refactors
+	•	P3 polish items (breadcrumbs, skeleton loaders, robots.txt, etc.)
+	•	Deployment
+
+⸻
+
+📄 Required Output (After Wave 3)
+
+Produce:
+frontend/docs/PHASE_BUGFIX_WAVE_3_REPORT.md
+
+Include:
+	•	BUG-ID → fix mapping
+	•	Files modified
+	•	UX before/after notes (brief)
+	•	Verification checklist
+	•	Confirmation of no scope creep
+
+Then:
+🛑 STOP and wait for approval before Wave 4 (P3 / polish)
+
+⸻
+
+You’re cleared to proceed.

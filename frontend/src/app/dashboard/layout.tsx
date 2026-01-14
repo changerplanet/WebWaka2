@@ -109,7 +109,11 @@ function DashboardContent({ children }: { children: ReactNode }) {
 
   // Not authenticated
   if (!isAuthenticated) {
-    return null
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="animate-pulse text-slate-400">Loading...</div>
+      </div>
+    )
   }
 
   // No tenant selected but user has memberships

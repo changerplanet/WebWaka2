@@ -51,7 +51,11 @@ function AdminContent({ children }: { children: ReactNode }) {
 
   // Not authenticated - redirect is in progress
   if (!isAuthenticated) {
-    return null
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="animate-pulse text-slate-400">Loading...</div>
+      </div>
+    )
   }
 
   // AUTHORIZATION CHECK: Only SUPER_ADMIN can access admin routes

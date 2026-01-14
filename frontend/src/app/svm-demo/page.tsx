@@ -29,7 +29,7 @@ import {
   MapPin
 } from 'lucide-react'
 import { DemoModeProvider } from '@/lib/demo'
-import { DemoOverlay } from '@/components/demo'
+import { DemoOverlay, DemoIndicator } from '@/components/demo'
 
 // ============================================================================
 // MOCK DATA
@@ -285,6 +285,9 @@ function DeliveryInfo() {
 function SVMDemoContent() {
   return (
     <div className="min-h-screen bg-gray-50">
+      {/* Demo Indicator Banner */}
+      <DemoIndicator variant="banner" />
+
       {/* Demo Overlay */}
       <DemoOverlay />
 

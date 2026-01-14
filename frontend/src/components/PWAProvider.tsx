@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, createContext, useContext, ReactNode } from 'react'
+import { useEffect, createContext, useContext, ReactNode, useRef } from 'react'
 import { useServiceWorker, useOnlineStatus } from '@/lib/offline/hooks'
 
 interface PWAContextType {
@@ -42,16 +42,23 @@ export function PWAProvider({ children }: PWAProviderProps) {
     clearTenantCache 
   } = useServiceWorker()
   
-  // Log service worker status
+  const registrationLoggedRef = useRef(false)
+  const onlineStatusLoggedRef = useRef(false)
+  
+  // Log service worker status on first registration only
   useEffect(() => {
-    if (registration) {
+    if (registration && !registrationLoggedRef.current) {
       console.log('[PWA] Service Worker registered:', registration.scope)
+      registrationLoggedRef.current = true
     }
   }, [registration])
   
-  // Log online status changes
+  // Log online status once per session
   useEffect(() => {
-    console.log('[PWA] Online status:', isOnline ? 'online' : 'offline')
+    if (!onlineStatusLoggedRef.current) {
+      console.log('[PWA] Online status:', isOnline ? 'online' : 'offline')
+      onlineStatusLoggedRef.current = true
+    }
   }, [isOnline])
   
   return (

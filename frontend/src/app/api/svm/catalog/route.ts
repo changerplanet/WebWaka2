@@ -113,7 +113,7 @@ export async function GET(request: NextRequest) {
     
     if (!tenantId) {
       return NextResponse.json(
-        { success: false, error: 'tenantId is required' },
+        { success: false, error: 'tenantId is required', hint: 'Pass tenantId as a query parameter: ?tenantId=your-tenant-id' },
         { status: 400 }
       )
     }
@@ -246,7 +246,7 @@ export async function POST(request: NextRequest) {
     
     if (!tenantId) {
       return NextResponse.json(
-        { success: false, error: 'tenantId is required' },
+        { success: false, error: 'tenantId is required', hint: 'Pass tenantId in the request body: { "tenantId": "your-tenant-id", "productIds": [...] }' },
         { status: 400 }
       )
     }

@@ -20,6 +20,7 @@ import {
   UserX,
   Clock,
   FileText,
+  AlertCircle,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -57,12 +58,24 @@ export default function SchoolAdminDashboard() {
   const { user } = useAuth();
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [activeSession, setActiveSession] = useState<string>('2025/2026');
   const [activeTerm, setActiveTerm] = useState<string>('First Term');
 
   useEffect(() => {
     fetchDashboardData();
   }, []);
+
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      if (loading) {
+        setLoading(false);
+        setError('Request timed out. Please refresh the page.');
+      }
+    }, 30000);
+    
+    return () => clearTimeout(timeout);
+  }, [loading]);
 
   const fetchDashboardData = async () => {
     setLoading(true);
@@ -122,6 +135,20 @@ export default function SchoolAdminDashboard() {
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-NG', { style: 'currency', currency: 'NGN', maximumFractionDigits: 0 }).format(amount);
   };
+
+  if (error) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-gray-50">
+        <div className="text-center">
+          <AlertCircle className="h-12 w-12 text-red-500 mx-auto mb-4" />
+          <p className="text-red-600 mb-4">{error}</p>
+          <Button onClick={() => window.location.reload()}>
+            Retry
+          </Button>
+        </div>
+      </div>
+    );
+  }
 
   if (loading || !stats) {
     return (

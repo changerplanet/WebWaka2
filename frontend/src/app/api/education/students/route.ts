@@ -33,7 +33,7 @@ export async function GET(request: NextRequest) {
 
   const tenantId = session.activeTenantId;
   if (!tenantId) {
-    return NextResponse.json({ success: false, error: 'No active tenant', code: 'NO_TENANT' }, { status: 400 });
+    return NextResponse.json({ success: false, error: 'No active tenant', code: 'NO_TENANT', hint: 'Set an active tenant in your session or make sure you have selected a tenant before making this request' }, { status: 400 });
   }
 
   const { searchParams } = new URL(request.url);
@@ -97,7 +97,7 @@ export async function POST(request: NextRequest) {
 
   const tenantId = session.activeTenantId;
   if (!tenantId) {
-    return NextResponse.json({ success: false, error: 'No active tenant', code: 'NO_TENANT' }, { status: 400 });
+    return NextResponse.json({ success: false, error: 'No active tenant', code: 'NO_TENANT', hint: 'Set an active tenant in your session or make sure you have selected a tenant before making this request' }, { status: 400 });
   }
 
   try {
@@ -176,7 +176,7 @@ export async function PATCH(request: NextRequest) {
 
   const tenantId = session.activeTenantId;
   if (!tenantId) {
-    return NextResponse.json({ success: false, error: 'No active tenant', code: 'NO_TENANT' }, { status: 400 });
+    return NextResponse.json({ success: false, error: 'No active tenant', code: 'NO_TENANT', hint: 'Set an active tenant in your session or make sure you have selected a tenant before making this request' }, { status: 400 });
   }
 
   try {
