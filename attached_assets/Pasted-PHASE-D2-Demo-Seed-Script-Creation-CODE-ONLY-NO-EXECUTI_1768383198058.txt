@@ -1,0 +1,173 @@
+PHASE D2
+
+Demo Seed Script Creation (CODE ONLY — NO EXECUTION)
+
+READ CAREFULLY. THIS PHASE IS DESIGN & CODE CREATION ONLY.
+
+⸻
+
+CONTEXT
+
+You are working on WebWaka, a large multi-suite SaaS platform.
+The platform is fully implemented, but demo readiness is blocked only due to missing demo data.
+
+A Demo Seeding Strategy and Priority Matrix has already been approved.
+Your task is to CREATE seed scripts ONLY — DO NOT run them.
+
+⸻
+
+🧭 PHASE ID
+
+Phase D2 — Demo Seed Script Creation
+
+⸻
+
+🎯 OBJECTIVE
+
+Create TypeScript demo seed scripts for missing suites so that demo data can be seeded later in a controlled phase.
+
+This phase prepares the tools — NOT the data.
+
+⸻
+
+🚫 ABSOLUTE CONSTRAINTS (NON-NEGOTIABLE)
+
+You MUST comply with all of the following:
+	1.	❌ DO NOT execute any seed script
+	2.	❌ DO NOT insert, update, or delete database records
+	3.	❌ DO NOT modify Prisma schema
+	4.	❌ DO NOT modify business logic
+	5.	❌ DO NOT modify existing seed scripts
+	6.	❌ DO NOT change environment variables
+	7.	❌ DO NOT seed demo data
+	8.	❌ DO NOT test demo flows
+	9.	❌ DO NOT deploy
+
+Any violation = stop immediately and report.
+
+⸻
+
+📥 AUTHORITATIVE INPUTS (FOLLOW VERBATIM)
+
+Use the already-approved documents as the single source of truth:
+	•	Demo Seeding Strategy
+	•	Demo Suite Priority Matrix
+	•	Demo Persona & Use Case Map
+	•	Demo Seed Script Plan
+	•	Demo Readiness Checklist
+
+All demo data is scoped to:
+	•	ONE Demo Partner
+	•	16 Demo Tenants
+	•	Explicit role-based use cases
+
+⸻
+
+📦 REQUIRED OUTPUTS
+
+✅ CREATE THE FOLLOWING NEW SEED SCRIPTS
+
+Location: frontend/scripts/
+
+P0 — CRITICAL
+	1.	seed-products-demo.ts
+	2.	seed-education-demo.ts
+	3.	seed-health-demo.ts
+
+P1 — HIGH PRIORITY
+	4.	seed-hospitality-demo.ts
+	5.	seed-civic-demo.ts
+
+P2 — OPTIONAL / MINIMAL
+	6.	seed-church-demo.ts
+	7.	seed-political-demo.ts
+	8.	seed-logistics-demo.ts
+	9.	seed-real-estate-demo.ts
+
+⚠️ Existing scripts (POS, SVM, MVM, Recruitment, Project, Legal, Warehouse)
+MUST NOT be edited.
+
+⸻
+
+🧱 SCRIPT DESIGN REQUIREMENTS (MANDATORY)
+
+Every script MUST:
+	1.	Be written in TypeScript
+	2.	Use PrismaClient
+	3.	Hard-fail if:
+	•	Demo Partner does not exist
+	•	Target tenant does not exist
+	•	Tenant does not belong to Demo Partner
+	4.	Follow layered seeding structure:
+	•	Configuration
+	•	Operational entities
+	•	Transactions / history
+	5.	Be idempotent-safe (guard against duplicates)
+	6.	Use realistic African-context sample data
+	7.	Include this header:
+
+/**
+ * Demo Seed Script — DESIGN ONLY
+ * PHASE D2
+ * DO NOT EXECUTE WITHOUT EXPLICIT APPROVAL
+ */
+
+
+⸻
+
+📄 DOCUMENTATION REQUIREMENT
+
+Create or update:
+
+📄 frontend/docs/DEMO_SEED_SCRIPT_INDEX.md
+
+For EACH script include:
+	•	Script name
+	•	Target suite
+	•	Target tenant slug
+	•	Personas supported
+	•	Use cases enabled
+	•	Dependencies (if any)
+	•	Execution order position
+
+⸻
+
+🛑 STOP CONDITIONS
+
+After completing script creation and documentation:
+	•	❌ DO NOT run any script
+	•	❌ DO NOT seed data
+	•	❌ DO NOT test UI
+	•	❌ DO NOT deploy
+
+Instead, produce a Phase D2 Completion Report containing:
+	•	List of scripts created
+	•	Files changed
+	•	Confirmation that no DB writes occurred
+	•	Confirmation that no execution happened
+
+Then STOP.
+
+⸻
+
+✅ SUCCESS CRITERIA
+
+Phase D2 is successful ONLY if:
+	•	All required scripts exist
+	•	Scripts compile (TypeScript-valid)
+	•	No database mutation occurred
+	•	No existing scripts were modified
+	•	Documentation is complete
+	•	Git working tree is clean and committed
+
+⸻
+
+🚨 FINAL INSTRUCTION
+
+DO NOT proceed to Phase D3.
+DO NOT seed demo data.
+WAIT for explicit approval after reporting completion.
+
+⸻
+
+Begin Phase D2 now.
