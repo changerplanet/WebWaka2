@@ -1,0 +1,243 @@
+PHASE D6 — Sales-Grade Demo Walkthrough & UX Validation
+
+Objective
+
+Validate that WebWaka is sales-demo ready by walking through the platform exactly as a prospective customer or partner would experience it, using real demo data, real workflows, and real roles.
+
+This phase is UX + narrative validation, not development.
+
+⸻
+
+STRICT SCOPE & RULES
+	•	❌ DO NOT modify code
+	•	❌ DO NOT modify schema
+	•	❌ DO NOT seed new data
+	•	❌ DO NOT fix issues
+	•	❌ DO NOT change configuration
+	•	❌ DO NOT deploy
+
+✅ READ-ONLY VALIDATION ONLY
+✅ Login and navigate as real demo users
+✅ Report findings only
+
+If issues are found, document them clearly and STOP.
+
+⸻
+
+PART 1 — Partner-Level Sales Story Validation
+
+Persona 1: Partner Owner
+
+Login: demo.owner@webwaka.com
+
+Validate the following demo flow:
+	1.	Login experience
+	•	Clear landing
+	•	No errors
+	2.	Partner Dashboard
+	•	Widgets populated with real data
+	•	Numbers make sense (clients, tenants, activity)
+	3.	Clients / Tenants view
+	•	Sees all 16 demo tenants
+	•	Each tenant clearly mapped to a suite
+	4.	Drill into 2–3 tenants
+	•	Dashboard loads
+	•	No empty-state confusion
+	5.	Earnings / commissions (if visible)
+	•	Data present OR clearly explained empty state
+
+📌 Report
+	•	What works well for a sales demo
+	•	Any confusing UI, wording, or missing narrative cues
+
+⸻
+
+Persona 2: Partner Sales
+
+Login: demo.sales@webwaka.com
+
+Validate:
+	•	Limited but relevant access
+	•	Can see tenants
+	•	Cannot access admin-only areas
+	•	Flow supports selling the platform
+
+📌 Report
+	•	Is this role useful for sales storytelling?
+	•	Anything missing for a sales rep?
+
+⸻
+
+PART 2 — Tenant-Level Vertical Walkthroughs (Core Sales Path)
+
+For EACH suite below, validate one complete, coherent story, not every feature.
+
+⸻
+
+A. Commerce / POS
+
+Tenant: demo-retail-store
+Persona: Cashier → Store Manager
+
+Sales story to validate:
+	1.	Products visible (Nigerian context)
+	2.	POS sale flow
+	3.	Shift open → sale → close
+	4.	Manager view: reports / summary
+
+📌 Report:
+	•	Does this feel like a real African retail demo?
+	•	Any “this would confuse a prospect” moments?
+
+⸻
+
+B. Online Store (SVM)
+
+Tenant: demo-retail-store
+Persona: End customer
+
+Validate:
+	•	Browse products
+	•	Add to cart
+	•	Place order
+	•	Confirmation / order state
+
+📌 Report:
+	•	Is this demo-friendly without explanation?
+	•	Any UX gaps?
+
+⸻
+
+C. Marketplace (MVM)
+
+Tenant: demo-marketplace
+Persona: Vendor / Admin
+
+Validate:
+	•	Vendor presence
+	•	Product mapping
+	•	Order → commission story
+
+📌 Report:
+	•	Is marketplace value obvious?
+	•	Any missing narrative elements?
+
+⸻
+
+D. Education
+
+Tenant: demo-school
+Persona: Teacher / Admin
+
+Validate:
+	•	Students list populated
+	•	Attendance
+	•	Grades
+	•	Reports visibility
+
+📌 Report:
+	•	Can this sell to a school owner?
+	•	Anything too “technical” for demo?
+
+⸻
+
+E. Health
+
+Tenant: demo-clinic
+Persona: Doctor / Front desk
+
+Validate:
+	•	Patients exist
+	•	Appointments
+	•	Encounter flow
+	•	Patient history
+
+📌 Report:
+	•	Does this feel clinic-realistic?
+	•	Any scary UX for healthcare buyers?
+
+⸻
+
+F. Hospitality
+
+Tenant: demo-hotel
+Persona: Front desk / Manager
+
+Validate:
+	•	Rooms
+	•	Guests
+	•	Reservation flow
+
+📌 Report:
+	•	Can this demo sell a hotel?
+
+⸻
+
+G. Civic
+
+Tenant: demo-civic
+Persona: Case officer
+
+Validate:
+	•	Citizens
+	•	Services
+	•	Requests / cases
+
+📌 Report:
+	•	Is the civic narrative clear?
+
+⸻
+
+PART 3 — Cross-Suite Sales Narrative
+
+Validate at least ONE cross-suite story:
+	•	Commerce → Logistics
+	•	Partner → Tenant visibility
+	•	Dashboard numbers reflect activity
+
+📌 Report:
+	•	Does WebWaka feel like one platform, not many apps?
+
+⸻
+
+PART 4 — Sales Readiness Assessment
+
+Provide a final verdict:
+
+Answer explicitly:
+	1.	Is WebWaka sales-demo ready today?
+	2.	Which suites are:
+	•	🟢 Strong demo
+	•	🟡 Demoable with explanation
+	•	🔴 Weak / confusing
+	3.	What would a salesperson need to explain verbally?
+	4.	Any UX risks during live demos?
+
+⸻
+
+DELIVERABLE
+
+Produce a single report:
+
+PHASE_D6_SALES_DEMO_WALKTHROUGH_REPORT.md
+
+With sections:
+	•	Partner Story Findings
+	•	Per-Suite Findings
+	•	Cross-Suite Findings
+	•	Demo Strengths
+	•	Demo Risks
+	•	Final Sales Readiness Verdict
+
+⸻
+
+STOP CONDITIONS
+
+After report generation:
+	•	🛑 STOP
+	•	🛑 DO NOT FIX ANYTHING
+	•	🛑 DO NOT PROCEED TO NEXT PHASE
+
+Await explicit approval.
+
+⸻
