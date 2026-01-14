@@ -1,0 +1,192 @@
+Excellent — this is a clean, compliant, and well-executed Phase E2.1.
+I’m formally acknowledging completion and moving us forward in the agreed sequence.
+
+⸻
+
+✅ PHASE E2.1 — ACCEPTED & CLOSED
+
+Status: ✔️ Approved
+Architecture: ✔️ Sound
+Scope compliance: ✔️ 100%
+Constraint adherence: ✔️ No violations
+
+What you delivered aligns perfectly with intent:
+	•	Block-based (not free-canvas) ✔️
+	•	Templates remain immutable ✔️
+	•	Schema-driven, tenant-scoped ✔️
+	•	Reuses E1.3 Forms cleanly ✔️
+	•	Mobile-first editing & preview ✔️
+	•	No automations / AI / payouts ✔️
+
+This is a strong foundation that will scale into future phases without rework.
+
+⸻
+
+🔓 AUTHORIZATION — PHASE E2.2
+
+Education & Health Portals
+
+We now proceed to the next option in the approved order.
+
+⸻
+
+🎯 PHASE E2.2 OBJECTIVE
+
+Build self-service portals for Education and Health that allow end-users (students, parents, patients) to securely access relevant data without exposing admin dashboards.
+
+These portals are:
+	•	Read-only + limited actions
+	•	Role-scoped
+	•	Mobile-first
+	•	Tenant-isolated
+	•	Demo-safe
+
+⸻
+
+👥 TARGET PERSONAS
+
+Education
+	•	Student
+	•	Parent / Guardian
+
+Health
+	•	Patient
+
+These users must not access:
+
+	•	Partner portal
+	•	Admin dashboards
+	•	Internal configuration screens
+
+⸻
+
+🧩 INCLUDED SCOPE
+
+Education Portal
+	•	Student profile
+	•	Class & subject list
+	•	Attendance view
+	•	Results / grades
+	•	Fee summary (read-only)
+	•	Notices / announcements (static for now)
+
+Health Portal
+	•	Patient profile
+	•	Appointment history
+	•	Prescriptions (read-only)
+	•	Visit summaries
+	•	Billing summary (read-only)
+
+⸻
+
+🚫 EXPLICITLY OUT OF SCOPE (DO NOT IMPLEMENT)
+	•	❌ Messaging or chat
+	•	❌ File uploads
+	•	❌ Payments (view-only summaries are OK)
+	•	❌ Notifications (email/SMS/push)
+	•	❌ Automations
+	•	❌ New schema outside Education/Health domain
+	•	❌ Admin features leaking into portals
+
+⸻
+
+🔐 SECURITY & UX REQUIREMENTS
+	•	Route-level access control (middleware enforced)
+	•	Clean separation from admin UIs
+	•	Friendly empty states
+	•	Mobile-first layouts (cards > tables)
+	•	Demo labeling where applicable
+
+⸻
+
+🧾 REQUIRED COMPLETION OUTPUT (MANDATORY)
+
+At the end of Phase E2.2, Replit must:
+	1.	Produce a Phase E2.2 Completion Report
+	2.	Clearly list:
+	•	Portals created
+	•	Routes added
+	•	Roles & access rules
+	•	Demo vs live behavior
+	3.	Explicitly confirm:
+	•	❌ No payments executed
+	•	❌ No notifications
+	•	❌ No automations
+	4.	STOP and wait for approval
+
+⸻
+
+📌 EXACT PROMPT FOR REPLIT (E2.2)
+
+You can paste this verbatim:
+
+⸻
+
+🔓 AUTHORIZATION — PHASE E2.2: EDUCATION & HEALTH PORTALS
+
+You are authorized to begin Phase E2.2 — Education & Health End-User Portals.
+
+OBJECTIVE
+Create secure, mobile-first portals for:
+	•	Education: Students and Parents
+	•	Health: Patients
+
+These portals must provide read-only + limited interaction access to relevant data while fully isolating users from admin and partner dashboards.
+
+INCLUDED
+Education Portal
+	•	Student profile
+	•	Classes & subjects
+	•	Attendance
+	•	Results / grades
+	•	Fee summary (read-only)
+	•	Notices (static)
+
+Health Portal
+	•	Patient profile
+	•	Appointments history
+	•	Prescriptions (read-only)
+	•	Visit summaries
+	•	Billing summary (read-only)
+
+STRICT CONSTRAINTS
+	•	❌ No messaging or chat
+	•	❌ No payments execution
+	•	❌ No notifications
+	•	❌ No automations
+	•	❌ No admin features exposed
+	•	❌ No schema changes outside Education/Health domain
+	•	❌ No background jobs
+
+REQUIREMENTS
+	•	Mobile-first UI
+	•	Route-level access control
+	•	Tenant isolation
+	•	Demo-safe behavior
+	•	Friendly empty states
+
+REQUIRED COMPLETION
+At completion, you MUST:
+	1.	Produce a Phase E2.2 Completion Report
+	2.	List:
+	•	Portals and routes created
+	•	Role access rules
+	•	Demo vs live behavior
+	3.	Explicitly confirm:
+	•	❌ No payments
+	•	❌ No notifications
+	•	❌ No automations
+	4.	STOP and wait for approval
+
+Do not proceed to any other phase.
+
+⸻
+
+🟢 NEXT STEP
+
+Once Phase E2.2 is delivered:
+	•	We review portal UX + security
+	•	Approve or adjust
+	•	Then unlock E2.3 — Notification Service
+
+You’re executing this program with exceptional discipline. Keep going exactly like this.

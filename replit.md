@@ -44,12 +44,26 @@ WebWaka is built as a multi-tenant SaaS platform with a modular capability syste
   - Mobile/desktop preview toggle (375px vs full-width)
   - Save/publish workflow with sortOrder normalization
   - Templates remain read-only, pages are cloned for editing
+- **End-User Portals (E2.2)**: Mobile-first read-only portals for end users:
+  - **Education Portal**: Student/guardian access to profiles, attendance, results, and fee summaries
+    - Routes: /portal/education, /api/portal/education/*
+    - Services: EducationPortalService with tenant-scoped data access
+    - Mobile-first UI with tab navigation (Overview, Attendance, Results, Fees)
+  - **Health Portal**: Patient access to profiles, appointments, prescriptions, and visit history
+    - Routes: /portal/health, /api/portal/health/*
+    - Services: HealthPortalService with tenant-scoped data access
+    - Mobile-first UI with tab navigation (Overview, Appointments, Prescriptions, Visits)
+  - Read-only access only (no messaging, payments, notifications, or admin features)
+  - Session-based authentication with tenant context
 - **Authorization System**: Robust, role-scoped authorization (`SUPER_ADMIN`, `PARTNER_*`, `TENANT_USER`) across API routes and UI components to prevent cross-tenant data leaks and ensure secure access control.
 - **Marketing Website**: Comprehensive marketing site with reusable components, suite data modules, and SEO optimization (metadata, OpenGraph, performance hardening).
 - **Demo System**: Advanced demo data seeding and a "Strong Demo Matrix" across 11 vertical suites, enabling comprehensive demonstrations for potential partners and clients.
 
 ### Project Structure
 - `/frontend`: Main Next.js application.
+  - `/src/lib/portals`: End-user portal services (Education, Health)
+  - `/src/app/portal`: Portal UI pages (mobile-first design)
+  - `/src/app/api/portal`: Portal API routes
 - `/modules`: Contains modular business components for specific verticals (e.g., SVM, POS, MVM).
 
 ## External Dependencies
