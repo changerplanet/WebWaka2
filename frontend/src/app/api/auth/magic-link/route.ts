@@ -45,7 +45,7 @@ export async function POST(request: NextRequest) {
     const { token, user } = await createMagicLink(email, tenantId)
     
     // Build verification URL
-    const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:5000'
     const verifyUrl = `${appUrl}/api/auth/verify?token=${token}`
     
     // Try to send email via Resend

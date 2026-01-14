@@ -269,7 +269,7 @@ export async function createTenantByPartner(
  */
 function generateInvitationUrl(slug: string, email: string): string {
   // In production, this would include a secure token
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:5000'
   const encodedEmail = encodeURIComponent(email)
   return `${baseUrl}/signup/complete?tenant=${slug}&email=${encodedEmail}`
 }

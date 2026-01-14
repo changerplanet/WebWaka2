@@ -269,7 +269,7 @@ export async function createClientPlatform(
   }
   
   // Generate invitation URL
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:5000'
   const invitationUrl = `${baseUrl}/signup/complete?tenant=${input.slug}&email=${encodeURIComponent(input.adminEmail)}`
   
   return {
@@ -539,7 +539,7 @@ export async function resendClientInvitation(
   }
   
   // Generate new invitation URL
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:5000'
   const invitationUrl = `${baseUrl}/signup/complete?tenant=${referral.Tenant.slug}&email=${encodeURIComponent(adminEmail)}`
   
   // TODO: Actually send email via Resend

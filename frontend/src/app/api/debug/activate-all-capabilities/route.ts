@@ -85,7 +85,7 @@ export async function GET(request: NextRequest) {
   if (!tenantSlug) {
     return NextResponse.json({
       usage: 'POST with { tenantId: "..." } or { tenantSlug: "..." }',
-      curlExample: `curl -X POST http://localhost:3000/api/debug/activate-all-capabilities -H "Content-Type: application/json" -d '{"tenantSlug":"acme"}'`,
+      curlExample: `curl -X POST http://localhost:5000/api/debug/activate-all-capabilities -H "Content-Type: application/json" -d '{"tenantSlug":"acme"}'`,
       description: 'Activates ALL registered capabilities for a tenant so Manus/reviewers can see all modules in the sidebar',
     });
   }
