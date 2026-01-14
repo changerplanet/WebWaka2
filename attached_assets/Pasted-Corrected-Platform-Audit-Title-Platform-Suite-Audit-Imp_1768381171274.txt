@@ -1,0 +1,113 @@
+Corrected Platform Audit
+
+Title: Platform Suite Audit — Implementation vs Demo Seeding (Corrected Scope)
+
+Objective
+Re-run a full platform audit with a clear separation between:
+	1.	Suite / Module implementation status (code, API, UI, permissions exist)
+	2.	Demo data seeding status (sample records exist for demo/testing)
+
+⚠️ Previous audit incorrectly treated “no demo data” as “not implemented.”
+This audit must explicitly distinguish the two.
+
+⸻
+
+Scope & Rules (STRICT)
+	•	READ-ONLY analysis
+	•	❌ Do NOT modify code, database, schema, or configuration
+	•	❌ Do NOT run seed scripts
+	•	❌ Do NOT create or delete data
+	•	❌ Do NOT deploy anything
+	•	Analysis and documentation only
+
+⸻
+
+Suites to Audit (Include ALL that exist)
+
+Confirm presence and status for each of the following suites and any others discovered:
+	•	Commerce (POS / SVM / MVM)
+	•	Sites & Funnels
+	•	Logistics
+	•	Hospitality
+	•	Civic
+	•	Health
+	•	Education
+	•	Real Estate
+	•	Recruitment
+	•	Project Management
+	•	Church
+	•	Political
+	•	Any additional suites found in codebase
+
+⸻
+
+For EACH Suite, Determine and Report:
+
+1️⃣ Implementation Status (YES / NO)
+A suite is IMPLEMENTED if:
+	•	API routes exist
+	•	UI routes/pages exist
+	•	Prisma models exist
+	•	Permissions/RBAC are defined
+	•	Partner access can be assigned
+
+Demo data is NOT required for this.
+
+2️⃣ Demo Seeding Status (SEEDED / NOT SEEDED / PARTIAL)
+A suite is DEMO-SEEDED if:
+	•	At least one seed script exists OR
+	•	Records exist in database for demo partner
+
+⸻
+
+Deliverables (REQUIRED)
+
+Produce three clear artifacts:
+
+📄 1. SUITE_IMPLEMENTATION_MATRIX.md
+Table with:
+	•	Suite Name
+	•	Implemented (YES / NO)
+	•	Evidence (folders, APIs, models)
+
+📄 2. DEMO_SEEDING_MATRIX.md
+Table with:
+	•	Suite Name
+	•	Demo Seeded (YES / NO / PARTIAL)
+	•	Seed Script Exists (YES / NO)
+	•	Tables with Records (YES / NO)
+
+📄 3. AUDIT_SUMMARY.md
+Include:
+	•	Total suites implemented
+	•	Total suites demo-seeded
+	•	Clear statement:
+“Lack of demo data does NOT imply lack of implementation.”
+
+⸻
+
+Important Clarifications (MANDATORY)
+	•	Do NOT label a suite as “blocked” or “not ready” solely due to missing demo data
+	•	Demo seeding is a separate readiness dimension
+	•	Use precise language:
+	•	“Implemented but not demo-seeded”
+	•	“Implemented and demo-seeded”
+	•	“Not implemented” (only if code truly does not exist)
+
+⸻
+
+Final Output Requirement
+
+End the report with this exact section:
+
+Corrected Verdict
+	•	Platform implementation status:
+	•	Demo data readiness status:
+	•	What is missing is demo seeding, not system capability.
+
+⸻
+
+Stop after producing the documentation.
+Do NOT apply fixes or recommendations beyond factual reporting.
+
+⸻
