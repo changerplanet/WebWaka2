@@ -38,6 +38,23 @@ WebWaka is a multi-tenant SaaS platform infrastructure for digital transformatio
 - `SESSION_SECRET` - Session encryption key
 
 ## Recent Changes
+- January 14, 2026: Post-Phase Z Bug Hunt Complete
+  - **Investigation Type:** READ-ONLY comprehensive bug hunt across entire platform
+  - **Total Issues Found:** 32 (5 critical, 8 high, 12 medium, 7 low)
+  - **Critical Bugs (P0):**
+    - `/sites-funnels-suite` returns 404 (linked from homepage)
+    - Missing `/api/pos/shifts` endpoint
+    - npm vulnerabilities: 1 critical (Next.js), 3 high (glob)
+    - Mock data in education students page
+    - Missing education students API (`/api/edu/students` vs `/api/education/students`)
+  - **High Priority (P1):**
+    - 9 files with hardcoded `localhost:3000` (port is 5000)
+    - Duplicate login pages (`/login` and `/login-v2`)
+    - APIs returning HTML 404 instead of JSON
+  - **Database Integrity:** PASSED (0 orphan records)
+  - **Report Location:** `frontend/docs/POST_PHASE_Z_BUG_HUNT_REPORT.md`
+  - **Status: INVESTIGATION COMPLETE - Ready for Bug Fixes**
+
 - January 14, 2026: Phase M5 - SEO, Analytics & Performance Hardening Complete
   - **M5.1 SEO Foundations**: Metadata, titles, descriptions, canonical URLs for all 5 marketing pages
   - **M5.2 OpenGraph**: OG tags, Twitter cards, WhatsApp-friendly previews (en_NG locale)
