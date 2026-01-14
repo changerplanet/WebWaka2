@@ -1,0 +1,295 @@
+This is a strong, complete strategy deliverable. Based on what you’ve shared, the plan is sound, accurate, and aligned with the current reality of WebWaka.
+
+Here’s a clear way to proceed without losing momentum or introducing rework.
+
+⸻
+
+✅ STRATEGY REVIEW VERDICT
+
+Status: APPROVED IN PRINCIPLE
+Readiness: Ready to move from Strategy → Execution, with one recommended checkpoint before implementation.
+
+Why this matters: once you start writing copy and building pages, changes become expensive. A short validation step now will save weeks later.
+
+⸻
+
+🔍 RECOMMENDED REVIEW CHECKPOINT (FAST, HIGH-VALUE)
+
+Before implementation, I recommend reviewing only these 4 sections explicitly:
+
+1️⃣ Information Architecture (IA)
+
+Why: This locks navigation, SEO structure, and mobile UX.
+
+Confirm:
+	•	Top-level nav reflects Partner-first (not product-first)
+	•	“Suites” are grouped logically (not a long flat list)
+	•	Sites & Funnels are not buried
+	•	Demo Portal is easy to reach from mobile
+
+👉 If IA is right, everything else flows smoothly.
+
+⸻
+
+2️⃣ Suite-to-Marketing Mapping
+
+Why: This prevents overpromising and demo confusion.
+
+Confirm:
+	•	Each suite has:
+	•	Clear marketing name
+	•	Correct category
+	•	Honest demo strength (Strong / Explain / Mention)
+	•	No “ghost” or deprecated modules are listed
+	•	High-sales-impact suites are emphasized visually later
+
+⸻
+
+3️⃣ Partner-Focused Messaging Pillars
+
+Why: This is the heart of differentiation.
+
+Confirm the site clearly communicates:
+	•	WebWaka does not sell directly
+	•	Partners own clients, pricing, and relationships
+	•	WebWaka = platform + infrastructure + speed
+	•	Nigeria-first is not cosmetic, it’s foundational
+
+If this is right, sales conversations become easier.
+
+⸻
+
+4️⃣ Sites & Funnels Positioning
+
+Why: This is a major competitive edge.
+
+Confirm it is positioned as:
+	•	A partner growth engine, not just a feature
+	•	Industry-ready (templates + funnels + payments)
+	•	Comparable to GoHighLevel, but vertical + African-native
+
+⸻
+
+🚦 IF THESE 4 ARE CONFIRMED → PROCEED
+
+Once you’re comfortable with those sections, you should proceed to Implementation Phase M2.
+
+⸻
+
+▶️ RECOMMENDED NEXT PHASES (CLEAR & SAFE)
+
+Phase M2 — Marketing Content Drafting
+
+Scope:
+	•	Write actual marketing copy (not design yet)
+	•	Mobile-first copy blocks
+	•	Nigeria-first examples and language
+	•	Partner CTAs (WhatsApp, demo access, onboarding)
+
+Output:
+	•	Final text content for all pages
+	•	Ready for design + build
+
+⸻
+
+Phase M3 — Mobile-First Design & UI
+
+Scope:
+	•	Wireframes → UI
+	•	Bottom navigation
+	•	Progressive disclosure
+	•	Demo portal entry points
+
+⸻
+
+Phase M4 — Build & Integrate
+
+Scope:
+	•	Implement pages
+	•	Connect demo portal
+	•	SEO + analytics
+	•	Funnel CTAs live
+
+⸻
+
+✅ PHASE M2 — MARKETING CONTENT DRAFTING PROMPT (FOR REPLIT1 AGENT)
+
+Context
+
+WebWaka is a partner-first, multi-suite SaaS platform with 20+ fully implemented business suites, a Sites & Funnels system, and a demo portal spanning 16 tenants and 11+ verticals.
+
+A Marketing Website Revamp Strategy has been approved, including:
+	•	Information Architecture (IA)
+	•	Partner-focused messaging pillars
+	•	Nigeria-first, mobile-first positioning
+	•	Explicit emphasis on Partners, not end users
+
+You are now executing Phase M2: Content drafting only.
+
+⸻
+
+🎯 PHASE M2 OBJECTIVE
+
+Produce final, sales-grade marketing copy for the new WebWaka marketing website that:
+	•	Targets Partners (resellers, agencies, integrators, entrepreneurs)
+	•	Accurately reflects the current platform reality
+	•	Covers all suites + Sites & Funnels
+	•	Is mobile-first and Nigeria-first
+	•	Is ready for design and build without rewrites
+
+⸻
+
+🚫 STRICT CONSTRAINTS (DO NOT VIOLATE)
+
+❌ Do NOT:
+	•	Modify application code
+	•	Modify templates, APIs, schemas, or database
+	•	Create UI designs or wireframes
+	•	Write CSS, JSX, or components
+	•	Touch deployment, auth, or pricing logic
+	•	Invent features that do not exist
+
+✅ DO:
+	•	Write content only
+	•	Reference already implemented suites and capabilities
+	•	Be explicit where demos are “walkthrough-assisted”
+	•	Use Nigerian context (₦, Lagos examples, WhatsApp, mobile usage)
+
+⸻
+
+📦 DELIVERABLES REQUIRED (ALL CONTENT, NO CODE)
+
+1️⃣ Homepage — Partner Landing Page
+
+Produce full copy for:
+	•	Hero section (headline + subheadline)
+	•	Core value proposition (Partner-first)
+	•	“Why WebWaka” (vs building from scratch)
+	•	Suite breadth snapshot (20+ suites)
+	•	Sites & Funnels highlight
+	•	Demo CTA (Demo Portal)
+	•	Partner onboarding CTA (WhatsApp + Apply)
+
+Tone:
+	•	Confident, infrastructure-level
+	•	Not “small business SaaS”
+	•	Nigeria-native, not imported copy
+
+⸻
+
+2️⃣ Suites Overview Page
+
+Produce:
+	•	Intro explaining why WebWaka has many suites
+	•	Grouped suite categories (e.g. Commerce, Services, Community, Operations)
+	•	Short descriptions per suite (1–2 paragraphs each)
+	•	Clear “demo strength” language (Strong / Guided / Configurable)
+
+Suites must include ALL implemented suites, including but not limited to:
+	•	Commerce (POS, Online Store, Marketplace, Inventory)
+	•	Education
+	•	Health
+	•	Hospitality
+	•	Logistics
+	•	Civic
+	•	Real Estate
+	•	Recruitment
+	•	Project Management
+	•	Legal Practice
+	•	Church
+	•	Political
+	•	Warehouse
+	•	HR
+	•	Sites & Funnels
+
+⸻
+
+3️⃣ Sites & Funnels Page (HIGH PRIORITY)
+
+Produce partner-focused copy explaining:
+	•	What Sites & Funnels mean for partners
+	•	How templates accelerate partner sales
+	•	Industry-specific use cases
+	•	Comparison positioning (GoHighLevel-class, but verticalized + African)
+	•	Template cloning model (read-only blueprints)
+	•	Payments, WhatsApp, mobile flow emphasis
+
+This page should clearly communicate:
+
+“Partners can launch client websites and funnels in hours, not weeks.”
+
+⸻
+
+4️⃣ Partner Program Page
+
+Produce:
+	•	Who WebWaka is for (and who it is not for)
+	•	Partner responsibilities vs WebWaka responsibilities
+	•	Revenue opportunities (without numbers)
+	•	Ownership model (partners own clients)
+	•	Ideal partner profiles (agencies, consultants, integrators)
+	•	Onboarding flow explanation
+
+⸻
+
+5️⃣ Demo Portal Page
+
+Produce content that:
+	•	Explains what the demo portal is
+	•	Lists available demo tenants (by industry)
+	•	Sets expectations (guided walkthroughs available)
+	•	Encourages structured demo journeys (not random clicking)
+
+⸻
+
+6️⃣ Mobile-First Content Rules
+
+For every page:
+	•	Use short sections
+	•	Clear headings
+	•	CTA every 1–2 scrolls
+	•	WhatsApp as primary contact channel
+	•	Assume 80% mobile usage
+
+⸻
+
+📁 OUTPUT FORMAT
+	•	One markdown file per page, OR
+	•	One consolidated markdown with clear section headers
+
+Store all outputs in:
+
+frontend/docs/marketing-content/
+
+Use filenames like:
+	•	homepage.md
+	•	suites-overview.md
+	•	sites-and-funnels.md
+	•	partners.md
+	•	demo-portal.md
+
+⸻
+
+🛑 STOP RULE
+
+After completing ALL content drafts:
+	•	✅ Summarize what was produced
+	•	✅ Highlight any assumptions made
+	•	❌ Do NOT proceed to design or build
+	•	❌ Do NOT modify anything else
+
+Wait for explicit approval to proceed to Phase M3 — Design & UI.
+
+⸻
+
+✅ SUCCESS CRITERIA
+
+Phase M2 is successful if:
+	•	A sales partner can understand WebWaka in <5 minutes
+	•	The breadth of the platform is finally visible
+	•	Sites & Funnels are clearly differentiated
+	•	The content can be handed directly to designers
+
+⸻
+
+Begin Phase M2 now.
