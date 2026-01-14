@@ -1,0 +1,264 @@
+FULL PLATFORM BUG HUNT (READ-ONLY)
+
+Objective
+
+Conduct a comprehensive, systematic bug hunt across the entire WebWaka platform, identifying all bugs, defects, inconsistencies, and unintended behaviors — technical, UI, UX, logic, data, and flow-related — without proposing new features or enhancements.
+
+This phase is strictly about what is broken, incorrect, confusing, or unreliable today.
+
+⸻
+
+🚨 STRICT RULES (NON-NEGOTIABLE)
+	•	READ-ONLY MODE
+	•	❌ Do NOT modify code
+	•	❌ Do NOT seed or delete data
+	•	❌ Do NOT refactor
+	•	❌ Do NOT optimize
+	•	❌ Do NOT suggest new features
+	•	❌ Do NOT redesign flows
+	•	❌ Do NOT deploy
+	•	❌ Do NOT create PRs
+	•	❌ Do NOT change configuration
+
+✅ Observe, test, identify, and report bugs ONLY
+
+⸻
+
+🔍 BUG HUNT SCOPE (MANDATORY)
+
+You must test and review EVERY PART of the platform, including but not limited to:
+
+⸻
+
+1️⃣ Frontend Marketing Website
+	•	Broken links
+	•	Incorrect navigation
+	•	Wrong CTAs
+	•	Mobile UX issues
+	•	Text overflow, spacing, legibility issues
+	•	Inconsistent messaging vs actual platform behavior
+	•	SEO/meta inconsistencies
+	•	WhatsApp/phone/address links
+
+⸻
+
+2️⃣ Authentication & Session Handling
+	•	Magic link flow
+	•	Session expiry behavior
+	•	Redirect correctness
+	•	Unauthorized access edge cases
+	•	Multiple tab/session behavior
+	•	Logout correctness
+
+⸻
+
+3️⃣ Role-Based Access Control
+
+Test ALL roles:
+	•	Super Admin
+	•	Partner Owner
+	•	Partner Admin
+	•	Partner Sales
+	•	Partner Support
+	•	Partner Staff
+	•	Tenant Admin
+	•	Tenant User (staff)
+	•	Tenant End User (customer/patient/student/etc.)
+
+Identify:
+	•	Unauthorized access
+	•	Missing restrictions
+	•	Incorrect redirects
+	•	Pages that load but should block
+	•	APIs that respond inconsistently with UI
+
+⸻
+
+4️⃣ Multi-Tenant Data Isolation
+
+Verify:
+	•	No cross-tenant data leakage
+	•	No cross-partner visibility
+	•	Tenant switching edge cases
+	•	Incorrect scoping in APIs
+	•	UI showing data from wrong tenant
+
+⸻
+
+5️⃣ Suite-by-Suite Functional Bug Hunt
+
+For EVERY implemented suite:
+	•	Commerce (POS, SVM, MVM)
+	•	Education
+	•	Health
+	•	Hospitality
+	•	Logistics
+	•	Civic
+	•	Church
+	•	Political
+	•	Real Estate
+	•	Recruitment
+	•	Project Management
+	•	Legal Practice
+	•	Warehouse
+	•	HR
+	•	CRM
+	•	Sites & Funnels
+	•	Partner Portal
+	•	Super Admin
+
+Check for:
+	•	Broken flows
+	•	Missing buttons or actions
+	•	Non-functional buttons
+	•	404 routes
+	•	Incorrect empty states
+	•	Crashes or console errors
+	•	APIs returning wrong data
+	•	Data visible but actions fail
+	•	UI says “success” but DB not updated (or vice versa)
+
+⸻
+
+6️⃣ Workflow Integrity
+
+Test end-to-end workflows:
+	•	POS sale → reports
+	•	Online order → fulfillment
+	•	Education attendance → analytics
+	•	Health appointment → encounter → prescription
+	•	Real estate lease → payment
+	•	Church giving → reports
+	•	Political donations → campaigns
+	•	Partner onboarding → tenant access
+
+Report:
+	•	Where flows break
+	•	Where steps are unclear
+	•	Where users can get stuck
+
+⸻
+
+7️⃣ UI / UX Bugs
+
+Identify:
+	•	Layout breaks (especially mobile)
+	•	Inconsistent components
+	•	Misaligned buttons
+	•	Unclickable elements
+	•	Poor error messaging
+	•	Inconsistent loading states
+	•	Forms that submit but don’t respond
+
+⸻
+
+8️⃣ Technical Errors
+
+Capture:
+	•	Console errors
+	•	Network failures
+	•	4xx / 5xx API errors
+	•	Silent failures
+	•	Race conditions (where observable)
+	•	Incorrect API assumptions
+
+⸻
+
+📄 REQUIRED OUTPUT
+
+Produce ONE SINGLE DOCUMENT titled:
+
+🐞 WEBWAKA_PLATFORM_BUG_HUNT_REPORT.md
+
+📍 Location:
+
+frontend/docs/
+
+
+⸻
+
+🧱 DOCUMENT STRUCTURE (MANDATORY)
+
+1. Executive Summary
+	•	Total bugs found
+	•	Severity breakdown (Critical / High / Medium / Low)
+	•	Overall stability assessment
+
+⸻
+
+2. Critical Bugs (Deployment Blockers)
+
+For each bug:
+	•	Title
+	•	Severity: CRITICAL
+	•	Affected area
+	•	Steps to reproduce
+	•	Expected behavior
+	•	Actual behavior
+	•	Impact
+	•	Screenshot reference (if applicable)
+
+⸻
+
+3. High-Priority Bugs
+
+Same structure as above.
+
+⸻
+
+4. Medium & Low-Priority Bugs
+
+Grouped logically by area.
+
+⸻
+
+5. Role-Specific Issues
+
+Bugs that affect:
+	•	Partners
+	•	Tenants
+	•	End users
+	•	Admins
+
+⸻
+
+6. Cross-Suite / Systemic Issues
+	•	Repeated patterns
+	•	Shared bugs across multiple suites
+	•	Architectural symptoms (without proposing fixes)
+
+⸻
+
+7. “Looks Like a Bug” vs “By Design” Notes
+
+Clearly distinguish:
+	•	Confirmed bugs
+	•	Ambiguous behavior needing product decision
+
+⸻
+
+✅ QUALITY BAR
+	•	No assumptions
+	•	No guesses
+	•	No enhancements
+	•	No feature suggestions
+	•	Only observable, reproducible issues
+
+⸻
+
+🛑 STOP CONDITION
+
+After generating the report:
+	•	STOP
+	•	Do NOT fix anything
+	•	Do NOT refactor
+	•	Do NOT optimize
+	•	Do NOT proceed to enhancements
+
+⸻
+
+📌 NEXT STEP (OUTSIDE THIS TASK)
+
+Once this bug hunt is complete and reviewed, you will receive a separate prompt to perform:
+
+Platform Enhancement & Future Improvements Review
