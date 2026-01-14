@@ -21,10 +21,9 @@ import { PrismaClient } from '@prisma/client'
 const prisma = new PrismaClient()
 
 // =============================================================================
-// DEMO PARTNER CONFIGURATION (MUST MATCH EXISTING)
+// DEMO CONFIGURATION
 // =============================================================================
 
-const DEMO_PARTNER_ID = '63a86a6a-b40d-4825-8d44-cce8aa893c42'
 const DEMO_TENANT_SLUG = 'demo-clinic'
 
 // =============================================================================
@@ -118,37 +117,15 @@ const MEDICATIONS = [
 // SEED FUNCTIONS
 // =============================================================================
 
-async function verifyDemoPartner() {
-  console.log('Verifying Demo Partner exists...')
-  
-  const partner = await prisma.partner.findUnique({
-    where: { id: DEMO_PARTNER_ID }
-  })
-  
-  if (!partner) {
-    throw new Error(`FATAL: Demo Partner not found with ID: ${DEMO_PARTNER_ID}`)
-  }
-  
-  console.log(`  Found Demo Partner: ${partner.name}`)
-  return partner
-}
-
 async function verifyDemoTenant() {
   console.log('Verifying Demo Tenant exists...')
   
   const tenant = await prisma.tenant.findFirst({
-    where: { 
-      slug: DEMO_TENANT_SLUG,
-      partnerId: DEMO_PARTNER_ID 
-    }
+    where: { slug: DEMO_TENANT_SLUG }
   })
   
   if (!tenant) {
     throw new Error(`FATAL: Demo Tenant not found with slug: ${DEMO_TENANT_SLUG}`)
-  }
-  
-  if (tenant.partnerId !== DEMO_PARTNER_ID) {
-    throw new Error(`FATAL: Demo Tenant does not belong to Demo Partner`)
   }
   
   console.log(`  Found Demo Tenant: ${tenant.name} (${tenant.id})`)
@@ -306,7 +283,6 @@ async function main() {
   
   try {
     // Step 1: Verify infrastructure
-    await verifyDemoPartner()
     const tenant = await verifyDemoTenant()
     
     // Step 2: Seed configuration

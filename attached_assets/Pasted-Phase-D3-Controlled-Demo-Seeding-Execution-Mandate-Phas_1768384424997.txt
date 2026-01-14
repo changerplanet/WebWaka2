@@ -1,0 +1,236 @@
+Phase D3 — Controlled Demo Seeding Execution Mandate
+
+Phase Name: Phase D3 — Controlled Demo Seeding Execution
+Status: DRAFT — AWAITING APPROVAL
+Scope: Demo Partner Only (WebWaka Demo Partner)
+Execution Type: Controlled, Audited, Reversible
+Precondition: Phase D2 (Demo Seed Script Creation) — COMPLETE ✅
+
+⸻
+
+1. Purpose
+
+Phase D3 defines how demo seeding is executed safely, predictably, and reversibly across the WebWaka platform.
+
+This phase:
+	•	Authorizes execution rules
+	•	Defines who runs what
+	•	Defines where execution occurs
+	•	Defines rollback & failure handling
+	•	Defines verification & sign-off criteria
+
+Phase D3 does not automatically run any script.
+Execution only occurs after explicit per-batch approval.
+
+⸻
+
+2. Execution Scope
+
+2.1 Partner Scope (Hard Boundary)
+
+All demo seeding MUST satisfy:
+	•	partnerId = WebWaka Demo Partner
+	•	Target tenants ∈ approved Demo Tenant list (16 tenants)
+	•	❌ No production tenants
+	•	❌ No non-demo partners
+	•	❌ No shared or cross-partner records
+
+Any script violating this boundary is invalid.
+
+⸻
+
+3. Execution Environment
+
+Environment	Allowed	Notes
+Replit (Dev/Staging DB)	✅ YES	Primary execution environment
+Vercel (Staging/Prod)	❌ NO	Never seed from Vercel
+Local developer machine	❌ NO	Prevents drift
+CI/CD pipelines	❌ NO	Manual control only
+
+
+⸻
+
+4. Execution Roles & Responsibilities
+
+4.1 Authorized Executor
+
+Primary Executor:
+	•	Replit Agent OR Human Operator under instruction
+
+Approval Authority:
+	•	Product / Platform Owner (you)
+
+4.2 Separation of Duties
+
+Role	Responsibility
+Mandate Author	Defines what may run
+Executor	Runs scripts exactly as specified
+Verifier	Confirms results
+Approver	Allows next phase
+
+One actor may hold multiple roles, but steps must remain explicit.
+
+⸻
+
+5. Execution Order (Non-Negotiable)
+
+Scripts must be executed strictly in order, per dependency rules.
+
+Phase D3-A — Commerce Foundation (P0)
+	1.	seed-products-demo.ts
+	2.	seed-pos-demo.ts
+	3.	seed-svm-demo.ts
+	4.	seed-mvm-demo.ts
+
+Gate:
+	•	POS sale possible
+	•	Online order possible
+	•	Inventory visible
+
+⸻
+
+Phase D3-B — Core Verticals (P0)
+	5.	seed-education-demo.ts
+	6.	seed-health-demo.ts
+
+Gate:
+	•	Education workflows functional
+	•	Health workflows functional
+
+⸻
+
+Phase D3-C — High Priority Verticals (P1)
+	7.	seed-hospitality-demo.ts
+	8.	seed-civic-demo.ts
+	9.	seed-recruitment-demo.ts
+	10.	seed-project-management-demo.ts
+	11.	seed-legal-practice-demo.ts
+	12.	seed-advanced-warehouse-demo.ts
+
+⸻
+
+Phase D3-D — Optional Suites (P2)
+	13.	seed-church-demo.ts
+	14.	seed-political-demo.ts
+	15.	seed-logistics-demo.ts
+	16.	seed-real-estate-demo.ts
+
+⸻
+
+6. Execution Rules (Strict)
+
+6.1 Script Rules
+
+Each script MUST:
+	•	Validate target tenant belongs to Demo Partner
+	•	Abort if tenant not found
+	•	Abort if partner mismatch
+	•	Log record counts created
+	•	Exit non-zero on error
+
+⸻
+
+6.2 Data Volume Rules
+	•	Must follow Data Volume Guidelines from Demo Seeding Strategy
+	•	❌ No “mass seeding”
+	•	❌ No random/faker explosions
+	•	❌ No production-scale data
+
+⸻
+
+7. Rollback & Recovery Rules
+
+7.1 Rollback Triggers
+
+Immediate rollback required if:
+	•	Script errors mid-execution
+	•	Cross-tenant records detected
+	•	Partner boundary violated
+	•	Referential integrity fails
+
+⸻
+
+7.2 Rollback Mechanism
+
+Rollback is performed via:
+
+scripts/cleanup-demo-data.ts
+
+Criteria:
+	•	Delete records where partnerId = DEMO_PARTNER_ID
+	•	Or tenantId IN demoTenants
+
+Rollback must be tested after first batch (D3-A).
+
+⸻
+
+8. Verification Requirements (Mandatory)
+
+8.1 Database Verification
+
+After each batch:
+	•	Record counts match expectations
+	•	No orphaned foreign keys
+	•	No records outside demo tenants
+
+8.2 UI Verification
+	•	Partner dashboard widgets show data
+	•	Tenant dashboards show suite-specific data
+	•	No empty critical views
+
+8.3 Role Verification
+
+For each batch:
+	•	Partner Owner
+	•	Partner Staff
+	•	Tenant Admin
+	•	Tenant Staff
+	•	End User (where applicable)
+
+⸻
+
+9. Stop Conditions
+
+Execution MUST STOP if:
+	•	Any P0 suite fails verification
+	•	Any rollback is triggered
+	•	Any unexpected schema or runtime error occurs
+
+Resumption requires explicit approval.
+
+⸻
+
+10. Phase Completion Criteria
+
+Phase D3 is considered complete only when:
+	•	All approved scripts executed
+	•	All verification checks passed
+	•	No rollback pending
+	•	Demo Readiness Level ≥ L2 (Sales Demo)
+
+⸻
+
+11. Explicit Non-Goals (Guardrails)
+
+Phase D3 does NOT include:
+	•	New features
+	•	Schema changes
+	•	Permission model changes
+	•	UI enhancements
+	•	Performance tuning
+	•	Production deployment
+
+⸻
+
+12. Approval Gate
+
+Execution cannot begin until all are confirmed:
+	•	Phase D3 mandate approved
+	•	Execution batch approved (D3-A / D3-B / etc.)
+	•	Rollback script verified
+	•	Demo password set
+	•	Backup decision acknowledged
+
+⸻
+
+END OF PHASE D3 MANDATE
