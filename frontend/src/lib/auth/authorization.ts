@@ -329,3 +329,57 @@ export async function getAccessibleTenantIds(
     reason: `User has membership in ${tenantIds.length} tenant(s)` 
   }
 }
+
+// ============================================================================
+// API ROUTE PROTECTION HELPERS
+// ============================================================================
+
+import { NextResponse } from 'next/server'
+import { getSessionFromRequest, type ApiSession } from '@/lib/auth'
+
+/**
+ * Protected Admin API result type
+ */
+export type AdminApiAuthResult = 
+  | { authorized: true; session: ApiSession }
+  | { authorized: false; response: NextResponse }
+
+/**
+ * Protect an admin API route - requires SUPER_ADMIN role
+ * Use this at the start of any /api/admin/** route handler
+ * 
+ * @param request - The incoming request
+ * @returns AdminApiAuthResult with session if authorized, or error response if not
+ * 
+ * @example
+ * export async function GET(request: NextRequest) {
+ *   const auth = await requireSuperAdmin(request)
+ *   if (!auth.authorized) return auth.response
+ *   // auth.session contains the authenticated SUPER_ADMIN session
+ * }
+ */
+export async function requireSuperAdmin(request: Request): Promise<AdminApiAuthResult> {
+  const session = await getSessionFromRequest(request)
+  
+  if (!session) {
+    return {
+      authorized: false,
+      response: NextResponse.json(
+        { success: false, error: 'Not authenticated' },
+        { status: 401 }
+      )
+    }
+  }
+  
+  if (!isSuperAdmin(session.user.globalRole)) {
+    return {
+      authorized: false,
+      response: NextResponse.json(
+        { success: false, error: 'Admin access requires SUPER_ADMIN role' },
+        { status: 403 }
+      )
+    }
+  }
+  
+  return { authorized: true, session }
+}

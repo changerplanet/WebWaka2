@@ -41,7 +41,8 @@ function PartnerPortalContent({ children }: { children: ReactNode }) {
         if (res.ok) {
           const data = await res.json()
           // User is a Partner member if the API returns success and partner data
-          setIsPartnerUser(data.success && data.partnerUser)
+          // The API returns { success: true, partner: {...}, role: "PARTNER_*" }
+          setIsPartnerUser(data.success && data.partner)
         } else if (res.status === 401) {
           // Session expired - redirect to login
           router.push('/login?redirect=/partner-portal')
