@@ -17,6 +17,7 @@ import {
   ChannelAdapter,
   ChannelSource,
   ChannelStockSnapshot,
+  ConflictDetails,
   EventProcessingResult,
   StockEvent,
 } from './types';
@@ -152,6 +153,7 @@ export class POSChannelAdapter extends BaseChannelAdapter {
       const conflict = ConflictClassifier.classify(event, context);
 
       if (ConflictClassifier.shouldBlock(conflict)) {
+        const auditLogId = await this.createBlockedEventAudit(event, context.currentStock, conflict);
         return {
           success: false,
           eventId: event.id,
@@ -160,6 +162,7 @@ export class POSChannelAdapter extends BaseChannelAdapter {
           stockBefore: context.currentStock,
           stockAfter: context.currentStock,
           message: conflict.message,
+          auditLogId,
         };
       }
 
@@ -184,6 +187,34 @@ export class POSChannelAdapter extends BaseChannelAdapter {
         message: error instanceof Error ? error.message : 'Unknown error',
       };
     }
+  }
+
+  private async createBlockedEventAudit(event: StockEvent, currentStock: number, conflict: ConflictDetails): Promise<string> {
+    const inventoryLevel = await prisma.inventoryLevel.findFirst({
+      where: { tenantId: this.tenantId, productId: event.productId },
+    });
+
+    const movementId = `mov_blk_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
+    await prisma.inv_stock_movements.create({
+      data: {
+        id: movementId,
+        tenantId: this.tenantId,
+        productId: event.productId,
+        variantId: event.variantId,
+        locationId: inventoryLevel?.locationId || 'unknown',
+        reason: 'ADJUSTMENT_NEGATIVE',
+        quantity: 0,
+        quantityBefore: currentStock,
+        referenceType: event.referenceType,
+        referenceId: event.referenceId,
+        performedBy: event.performedById,
+        performedByName: event.performedByName,
+        isOfflineCreated: event.isOffline,
+        notes: `BLOCKED: ${conflict.type} - ${conflict.message}`,
+        createdAt: new Date(),
+      },
+    });
+    return movementId;
   }
 
   private async getStockContext(productId: string) {
@@ -283,6 +314,7 @@ export class SVMChannelAdapter extends BaseChannelAdapter {
       const conflict = ConflictClassifier.classify(event, context);
 
       if (ConflictClassifier.shouldBlock(conflict)) {
+        const auditLogId = await this.createBlockedEventAudit(event, context.currentStock, conflict);
         return {
           success: false,
           eventId: event.id,
@@ -291,6 +323,7 @@ export class SVMChannelAdapter extends BaseChannelAdapter {
           stockBefore: context.currentStock,
           stockAfter: context.currentStock,
           message: conflict.message,
+          auditLogId,
         };
       }
 
@@ -315,6 +348,34 @@ export class SVMChannelAdapter extends BaseChannelAdapter {
         message: error instanceof Error ? error.message : 'Unknown error',
       };
     }
+  }
+
+  private async createBlockedEventAudit(event: StockEvent, currentStock: number, conflict: ConflictDetails): Promise<string> {
+    const inventoryLevel = await prisma.inventoryLevel.findFirst({
+      where: { tenantId: this.tenantId, productId: event.productId },
+    });
+
+    const movementId = `mov_blk_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
+    await prisma.inv_stock_movements.create({
+      data: {
+        id: movementId,
+        tenantId: this.tenantId,
+        productId: event.productId,
+        variantId: event.variantId,
+        locationId: inventoryLevel?.locationId || 'unknown',
+        reason: 'ADJUSTMENT_NEGATIVE',
+        quantity: 0,
+        quantityBefore: currentStock,
+        referenceType: event.referenceType,
+        referenceId: event.referenceId,
+        performedBy: event.performedById,
+        performedByName: event.performedByName,
+        isOfflineCreated: event.isOffline,
+        notes: `BLOCKED: ${conflict.type} - ${conflict.message}`,
+        createdAt: new Date(),
+      },
+    });
+    return movementId;
   }
 
   private async getStockContext(productId: string) {
@@ -413,6 +474,7 @@ export class MVMChannelAdapter extends BaseChannelAdapter {
       const conflict = ConflictClassifier.classify(event, context);
 
       if (ConflictClassifier.shouldBlock(conflict)) {
+        const auditLogId = await this.createBlockedEventAudit(event, context.currentStock, conflict);
         return {
           success: false,
           eventId: event.id,
@@ -421,6 +483,7 @@ export class MVMChannelAdapter extends BaseChannelAdapter {
           stockBefore: context.currentStock,
           stockAfter: context.currentStock,
           message: conflict.message,
+          auditLogId,
         };
       }
 
@@ -445,6 +508,34 @@ export class MVMChannelAdapter extends BaseChannelAdapter {
         message: error instanceof Error ? error.message : 'Unknown error',
       };
     }
+  }
+
+  private async createBlockedEventAudit(event: StockEvent, currentStock: number, conflict: ConflictDetails): Promise<string> {
+    const inventoryLevel = await prisma.inventoryLevel.findFirst({
+      where: { tenantId: this.tenantId, productId: event.productId },
+    });
+
+    const movementId = `mov_blk_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
+    await prisma.inv_stock_movements.create({
+      data: {
+        id: movementId,
+        tenantId: this.tenantId,
+        productId: event.productId,
+        variantId: event.variantId,
+        locationId: inventoryLevel?.locationId || 'unknown',
+        reason: 'ADJUSTMENT_NEGATIVE',
+        quantity: 0,
+        quantityBefore: currentStock,
+        referenceType: event.referenceType,
+        referenceId: event.referenceId,
+        performedBy: event.performedById,
+        performedByName: event.performedByName,
+        isOfflineCreated: event.isOffline,
+        notes: `BLOCKED: ${conflict.type} - ${conflict.message}`,
+        createdAt: new Date(),
+      },
+    });
+    return movementId;
   }
 
   private async getStockContext(productId: string) {
@@ -557,24 +648,27 @@ export class ParkHubChannelAdapter extends BaseChannelAdapter {
 
       if (event.eventType === 'PARKHUB_BOOKING') {
         if (trip.availableSeats < seatsRequested) {
+          const conflict: ConflictDetails = {
+            type: 'CAPACITY_EXCEEDED',
+            severity: 'CRITICAL',
+            productId: tripId,
+            productName: `Trip ${tripId}`,
+            channel: 'PARKHUB',
+            requestedQuantity: seatsRequested,
+            availableQuantity: trip.availableSeats,
+            shortage: seatsRequested - trip.availableSeats,
+            message: `Cannot book ${seatsRequested} seat(s) - only ${trip.availableSeats} available`,
+          };
+          const auditLogId = await this.createParkHubAudit(event, trip.availableSeats, 0, true, conflict);
           return {
             success: false,
             eventId: event.id,
             processed: false,
-            conflict: {
-              type: 'CAPACITY_EXCEEDED',
-              severity: 'CRITICAL',
-              productId: tripId,
-              productName: `Trip ${tripId}`,
-              channel: 'PARKHUB',
-              requestedQuantity: seatsRequested,
-              availableQuantity: trip.availableSeats,
-              shortage: seatsRequested - trip.availableSeats,
-              message: `Cannot book ${seatsRequested} seat(s) - only ${trip.availableSeats} available`,
-            },
+            conflict,
             stockBefore: trip.availableSeats,
             stockAfter: trip.availableSeats,
             message: 'Insufficient seat capacity',
+            auditLogId,
           };
         }
 
@@ -586,6 +680,8 @@ export class ParkHubChannelAdapter extends BaseChannelAdapter {
           },
         });
 
+        const auditLogId = await this.createParkHubAudit(event, trip.availableSeats, -seatsRequested, false);
+
         return {
           success: true,
           eventId: event.id,
@@ -593,6 +689,7 @@ export class ParkHubChannelAdapter extends BaseChannelAdapter {
           stockBefore: trip.availableSeats,
           stockAfter: trip.availableSeats - seatsRequested,
           message: `Booked ${seatsRequested} seat(s) successfully`,
+          auditLogId,
         };
       }
 
@@ -607,6 +704,8 @@ export class ParkHubChannelAdapter extends BaseChannelAdapter {
           },
         });
 
+        const auditLogId = await this.createParkHubAudit(event, trip.availableSeats, seatsToRelease, false);
+
         return {
           success: true,
           eventId: event.id,
@@ -614,6 +713,7 @@ export class ParkHubChannelAdapter extends BaseChannelAdapter {
           stockBefore: trip.availableSeats,
           stockAfter: trip.availableSeats + seatsToRelease,
           message: `Released ${seatsToRelease} seat(s) successfully`,
+          auditLogId,
         };
       }
 
@@ -631,6 +731,42 @@ export class ParkHubChannelAdapter extends BaseChannelAdapter {
         message: error instanceof Error ? error.message : 'Unknown error',
       };
     }
+  }
+
+  private async createParkHubAudit(
+    event: StockEvent,
+    stockBefore: number,
+    quantityChange: number,
+    isBlocked: boolean,
+    conflict?: ConflictDetails
+  ): Promise<string> {
+    const movementId = isBlocked
+      ? `mov_blk_phb_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`
+      : `mov_phb_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
+
+    await prisma.inv_stock_movements.create({
+      data: {
+        id: movementId,
+        tenantId: this.tenantId,
+        productId: event.referenceId || event.productId,
+        variantId: null,
+        locationId: 'parkhub',
+        reason: event.eventType === 'PARKHUB_BOOKING' ? 'SALE' : 'ADJUSTMENT_POSITIVE',
+        quantity: isBlocked ? 0 : quantityChange,
+        quantityBefore: stockBefore,
+        referenceType: 'PARKHUB_TRIP',
+        referenceId: event.referenceId,
+        performedBy: event.performedById,
+        performedByName: event.performedByName,
+        isOfflineCreated: event.isOffline,
+        notes: isBlocked
+          ? `BLOCKED: ${conflict?.type} - ${conflict?.message}`
+          : `ParkHub ${event.eventType}: ${Math.abs(quantityChange)} seat(s)`,
+        createdAt: new Date(),
+      },
+    });
+
+    return movementId;
   }
 
   async getCurrentStock(tripId: string): Promise<number> {
