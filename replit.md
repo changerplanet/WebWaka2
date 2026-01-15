@@ -121,6 +121,26 @@ WebWaka is built as a multi-tenant SaaS platform with a modular capability syste
     - Top vendors by earnings
   - **APIs**: /api/commerce/payout-visibility/vendor, /api/commerce/payout-visibility/partner
   - **Constraints**: Read-only only, no payouts, no automation, no bank transfers
+- **Nigeria-First Modular Commerce (Wave 2.4)**: Inventory Sync & Low Stock:
+  - **Cross-Channel Stock Awareness**: Unified inventory visibility across POS, SVM, MVM
+    - ProductStockView with channel-level breakdown (allocated, available, reserved)
+    - ChannelStockSummary for aggregated channel metrics
+    - Movement history tracking across all channels
+    - Reconciliation workflow for stock corrections
+  - **Low-Stock Visibility**: Severity-based alerts without automation
+    - CRITICAL: Zero stock or ≤3 days supply
+    - WARNING: ≤50% reorder point or ≤14 days supply
+    - ATTENTION: ≤100% reorder point
+    - No auto-reordering, no background jobs
+  - **Stock Traceability**: "What sold where" tracking
+    - Channel breakdown: POS (COMPLETED), SVM (DELIVERED), MVM (DELIVERED)
+    - Location breakdown: Physical POS locations + virtual SVM/MVM channels
+    - Daily sales with per-channel breakdown
+    - Cross-channel comparison metrics
+  - **Services**: InventorySyncService, LowStockService, StockTraceabilityService
+  - **APIs**: /api/commerce/inventory-sync for stock views, low-stock, traceability, reconciliation
+  - **Authorization**: TENANT_ADMIN and SUPER_ADMIN only
+  - **Constraints**: Read-only visibility, no automation, no background jobs, demo-safe
 
 ### Project Structure
 - `/frontend`: Main Next.js application.
@@ -143,6 +163,8 @@ WebWaka is built as a multi-tenant SaaS platform with a modular capability syste
   - `/src/app/api/commerce/verification-queue`: Verification Queue API (Wave 2.2)
   - `/src/lib/commerce/payout-visibility`: Payout visibility services (Wave 2.3)
   - `/src/app/api/commerce/payout-visibility`: Payout visibility APIs (Wave 2.3)
+  - `/src/lib/commerce/inventory-sync`: Inventory sync services (Wave 2.4)
+  - `/src/app/api/commerce/inventory-sync`: Inventory sync APIs (Wave 2.4)
 - `/modules`: Contains modular business components for specific verticals (e.g., SVM, POS, MVM).
 
 ## External Dependencies
