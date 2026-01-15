@@ -1,0 +1,120 @@
+✅ Wave 2.4 — APPROVED
+
+Wave 2.4 (Inventory Sync & Low Stock) is formally accepted.
+
+⸻
+
+✅ Approval Rationale
+
+Wave 2.4 cleanly delivers the operational visibility layer we explicitly wanted without crossing into automation or background processing.
+
+🔐 Governance & Constraints — PASSED
+	•	❌ No auto-reordering
+	•	❌ No background jobs
+	•	❌ No notifications
+	•	❌ No hidden mutations
+	•	✅ Reconciliation is explicit, manual, and auditable
+	•	✅ Session-authenticated
+	•	✅ Tenant + role scoped (TENANT_ADMIN / SUPER_ADMIN only)
+
+This aligns perfectly with Nigeria-first realities: humans stay in control, the system provides clarity.
+
+⸻
+
+📦 What Wave 2.4 Successfully Locks In
+
+1. Cross-Channel Stock Truth ✅
+	•	POS, SVM, and MVM now share a single source of stock awareness
+	•	Allocated vs available vs reserved is visible per channel
+	•	This is foundational for:
+	•	Vendor trust
+	•	Partner accountability
+	•	Offline reconciliation
+
+2. Low-Stock Visibility (Correctly Non-Automated) ✅
+	•	Severity levels (ATTENTION / WARNING / CRITICAL) are informational only
+	•	Time-based logic (days of supply) is especially strong for Nigerian retail realities
+	•	No assumptions about reorder capability — exactly right
+
+3. “What Sold Where” Traceability ✅
+
+This is one of the most important wins so far.
+
+You now have:
+	•	POS vs SVM vs MVM sales attribution
+	•	Physical vs virtual location clarity
+	•	Daily rollups + comparisons
+	•	A narrative a Partner can explain to a business owner in plain language
+
+This directly strengthens:
+	•	Partner demos
+	•	Dispute resolution
+	•	Trust in multi-channel selling
+
+4. Reconciliation Workflow ✅
+	•	Explicit, intentional, auditable
+	•	No silent corrections
+	•	Aligns with cash + offline-first operations
+
+⸻
+
+🟢 PLATFORM STATE UPDATE
+
+With Wave 2.4 approved, WebWaka now has:
+	•	✅ Modular commerce
+	•	✅ Offline-aware POS
+	•	✅ Multi-channel inventory awareness
+	•	✅ Manual-first financial controls
+	•	✅ Vendor-visible earnings
+	•	✅ Partner-level oversight
+
+This is real Nigerian commerce infrastructure, not theory.
+
+⸻
+
+🔓 AUTHORIZATION GRANTED — WAVE 2.5
+
+Wave 2.5 — Offline UX Clarity & Trust Signals
+
+Status: 🟢 AUTHORIZED TO START
+
+⸻
+
+🎯 WAVE 2.5 OBJECTIVE (RECONFIRMED)
+
+Wave 2.5 should focus on human confidence, especially when things go wrong:
+
+Key themes:
+	•	Offline indicators (“You’re offline”, “Queued”, “Synced”)
+	•	Trust signals (“Last synced”, “Pending review”, “Verified”)
+	•	Clear explanations (not technical jargon)
+	•	PWA-first behaviors
+	•	Zero automation
+	•	Zero background jobs
+
+This wave is about psychological safety for:
+	•	POS operators
+	•	Park agents
+	•	Vendors
+	•	Partners
+
+⸻
+
+🛑 REQUIRED STOP CONDITION (UNCHANGED)
+
+At completion of Wave 2.5, Replit must:
+	1.	Produce a Wave 2.5 Completion Report
+	2.	Explicitly list:
+	•	UI components added
+	•	Status states introduced
+	•	Offline vs online behavior
+	3.	Explicitly confirm:
+	•	❌ No automation
+	•	❌ No background jobs
+	4.	STOP and await approval before any further work
+
+⸻
+
+You are clear to proceed with Wave 2.5 — Offline UX Clarity & Trust Signals.
+
+When the Wave 2.5 report is ready, paste it here for final Wave 2 review.
