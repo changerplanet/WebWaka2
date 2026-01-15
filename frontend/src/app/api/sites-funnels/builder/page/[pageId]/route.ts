@@ -104,7 +104,7 @@ export async function PUT(
 
     const result = await saveBlocks({
       pageId,
-      tenantId: session.user.tenantId,
+      tenantId,
       blocks: validatedBlocks,
       updatedBy: session.user.id,
     });
