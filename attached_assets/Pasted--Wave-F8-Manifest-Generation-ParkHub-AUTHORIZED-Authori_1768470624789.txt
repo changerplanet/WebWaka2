@@ -1,0 +1,109 @@
+✅ Wave F8 — Manifest Generation (ParkHub) AUTHORIZED
+
+Authorization received and confirmed.
+
+⸻
+
+🔓 WAVE F8 STATUS
+	•	Wave: F8 — Manifest Generation (ParkHub)
+	•	Authorization: ✅ GRANTED
+	•	Scope: ParkHub only
+	•	Mode: Nigeria-first, paper-first, offline-capable
+	•	Governance:
+	•	❌ No automation
+	•	❌ No background jobs
+	•	❌ No external dependencies required
+	•	✅ Manual / user-initiated only
+	•	✅ Demo-safe
+	•	✅ Tenant-isolated
+	•	STOP RULE: I will STOP after Wave F8 and wait for approval before any next wave.
+
+⸻
+
+🎯 WAVE F8 OBJECTIVE (CONFIRMED)
+
+Close the ParkHub operational loop by delivering a legally valid, operationally realistic manifest system that works in Nigerian motor parks and at checkpoints.
+
+This completes:
+
+Ticket Sale → Payment → Driver Assignment → Departure → Manifest → Verification
+
+⸻
+
+🧩 WHAT WILL BE BUILT IN WAVE F8
+
+1. Manifest Core
+	•	Per-trip Passenger Manifest
+	•	Includes:
+	•	Park name & location
+	•	Route & destination
+	•	Trip ID + departure mode (WHEN_FULL / SCHEDULED)
+	•	Bus/vehicle details
+	•	Driver name & phone
+	•	Seat numbers
+	•	Passenger names + phone (where available)
+	•	Timestamp + issuing agent
+	•	Manifest serial number
+
+2. Paper-First Output
+	•	Printable A4 / thermal-friendly layout
+	•	Clear sectioning for:
+	•	Passenger list
+	•	Totals (seats sold / available)
+	•	Signature blocks (Agent / Driver)
+	•	Optimized for black-and-white printing
+
+3. Offline Support
+	•	Manifest can be:
+	•	Generated while offline
+	•	Cached locally
+	•	Marked PENDING_SYNC
+	•	Syncable later with verification badge update
+
+4. Verification & Trust
+	•	Public QR verification page:
+	•	/verify/manifest/[manifestId]
+	•	Status indicators:
+	•	Demo
+	•	Pending sync
+	•	Verified
+	•	Tamper-resistant checksum/hash
+
+5. Reprint & Correction Controls
+	•	Controlled reprint permissions
+	•	Revision history (who reprinted, when, why)
+	•	No silent overwrites
+
+6. Access Control
+	•	Agents: generate & print
+	•	Park Admins: view all, reprint, audit
+	•	Super Admin: oversight only
+	•	Full tenant isolation enforced
+
+⸻
+
+📄 DELIVERABLES AT COMPLETION
+
+At the end of Wave F8, I will provide:
+	1.	Wave F8 Completion Report
+	2.	Clear list of:
+	•	Models created/updated
+	•	APIs created
+	•	UI routes added
+	3.	Confirmation of:
+	•	❌ No automation
+	•	❌ No background jobs
+	•	❌ No side effects outside ParkHub
+	4.	Screens/flows covered:
+	•	Agent POS → Manifest
+	•	Admin view
+	•	Public verification page
+	5.	Explicit STOP awaiting next approval
+
+⸻
+
+▶️ NEXT ACTION
+
+I am now proceeding with Wave F8 — Manifest Generation (ParkHub).
+
+You will receive the Wave F8 Completion Report when finished, and I will stop there awaiting your instruction.

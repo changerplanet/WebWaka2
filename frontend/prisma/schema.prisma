@@ -18539,6 +18539,7 @@ model park_trip {
   tickets  park_ticket[]
   driver   park_driver?  @relation(fields: [driverId], references: [id])
   vehicle  park_vehicle? @relation(fields: [vehicleId], references: [id])
+  manifest park_manifest?
 
   @@index([tenantId])
   @@index([routeId])
@@ -18632,6 +18633,134 @@ model park_route {
   @@index([tenantId])
   @@index([parkId])
   @@index([isActive])
+}
+
+// ParkHub Manifest - Legal passenger list for trips
+enum ParkManifestStatus {
+  DRAFT             // Being prepared
+  GENERATED         // Ready for print
+  PRINTED           // Has been printed at least once
+  DEPARTED          // Trip has left
+  COMPLETED         // Trip completed
+  VOIDED            // Cancelled/voided
+}
+
+enum ParkManifestSyncStatus {
+  SYNCED            // Fully synced
+  PENDING_SYNC      // Generated offline, awaiting sync
+  SYNC_FAILED       // Sync attempted but failed
+}
+
+model park_manifest {
+  id              String   @id @default(cuid())
+  tenantId        String
+  tripId          String   @unique
+  parkId          String
+
+  // Manifest Identity
+  manifestNumber  String   // Human-readable: MNF-YYYYMMDD-XXXXX
+  serialNumber    String   // Sequential within tenant
+  
+  // Trip Summary (denormalized for offline/print)
+  routeName       String
+  origin          String
+  destination     String
+  departureMode   String   // SCHEDULED, WHEN_FULL, HYBRID
+  scheduledDeparture DateTime?
+  
+  // Vehicle & Driver (denormalized)
+  vehiclePlateNumber String?
+  vehicleMake        String?
+  vehicleModel       String?
+  driverName         String?
+  driverPhone        String?
+  
+  // Capacity Summary
+  totalSeats      Int
+  bookedSeats     Int
+  availableSeats  Int
+  
+  // Passenger Data (JSON array for offline capability)
+  // Each entry: { seatNumber, passengerName, passengerPhone, ticketNumber, ticketId }
+  passengerList   Json     @default("[]")
+  
+  // Revenue Summary (NGN)
+  totalRevenue    Decimal  @db.Decimal(12, 2)
+  cashAmount      Decimal  @default(0) @db.Decimal(12, 2)
+  cardAmount      Decimal  @default(0) @db.Decimal(12, 2)
+  transferAmount  Decimal  @default(0) @db.Decimal(12, 2)
+  
+  // Status & Sync
+  status          ParkManifestStatus @default(DRAFT)
+  syncStatus      ParkManifestSyncStatus @default(SYNCED)
+  
+  // Verification
+  verificationHash String?  // Tamper-resistant hash
+  qrCodeData       String?  // QR code payload for verification
+  isDemo           Boolean  @default(false)
+  
+  // Generation Details
+  generatedById   String?
+  generatedByName String?
+  generatedAt     DateTime?
+  
+  // Print Tracking
+  printCount      Int      @default(0)
+  lastPrintedAt   DateTime?
+  lastPrintedById String?
+  lastPrintedByName String?
+  
+  // Park Details (denormalized for print)
+  parkName        String?
+  parkLocation    String?
+  parkPhone       String?
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  // Relations
+  trip            park_trip @relation(fields: [tripId], references: [id])
+  revisions       park_manifest_revision[]
+  
+  @@unique([manifestNumber])
+  @@unique([tenantId, serialNumber])
+  @@index([tenantId])
+  @@index([parkId])
+  @@index([tripId])
+  @@index([status])
+  @@index([syncStatus])
+  @@index([generatedAt])
+}
+
+// Manifest Revision Log - Track all reprints and corrections
+model park_manifest_revision {
+  id              String   @id @default(cuid())
+  tenantId        String
+  manifestId      String
+  
+  // Revision Details
+  revisionNumber  Int      // Sequential: 1, 2, 3...
+  revisionType    String   // INITIAL, REPRINT, CORRECTION, VOID
+  reason          String?  // Why reprinted/corrected
+  
+  // What Changed (for corrections)
+  changesSummary  String?  // Human-readable description
+  previousData    Json?    // Snapshot before change
+  
+  // Who & When
+  createdById     String
+  createdByName   String
+  createdAt       DateTime @default(now())
+  
+  // Print Info
+  wasPrinted      Boolean  @default(false)
+  printedAt       DateTime?
+  
+  manifest        park_manifest @relation(fields: [manifestId], references: [id])
+  
+  @@index([tenantId])
+  @@index([manifestId])
+  @@index([createdAt])
 }
 
 // ParkHub POS Offline Queue

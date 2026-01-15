@@ -117,6 +117,43 @@ WebWaka is built as a multi-tenant SaaS platform with a modular capability syste
         - NO automation, NO background jobs, user-triggered only
         - Feature-phone compatible: No apps required, works on basic phones
         - Components location: frontend/src/lib/parkhub/sms/
+    - **Manifest Generation (Wave F8)**: Legal passenger manifest system for ParkHub:
+        - Per-trip Passenger Manifest: Complete passenger list for Nigerian motor park trips
+        - Manifest Identity: Unique manifest numbers (MNF-YYYYMMDD-XXXXX) and serial numbers
+        - Denormalized Data: Trip, route, vehicle, driver, and park details stored for offline/print
+        - Passenger List: JSON array with seat numbers, names, phones, ticket numbers, payment methods
+        - Revenue Summary: Cash, card, and transfer amounts with totals
+        - Paper-First Output:
+            - A4 printable layout with clear sections
+            - Thermal printer (80mm) friendly compact format
+            - Black-and-white optimized for Nigerian print conditions
+            - Signature blocks for agent and driver
+        - Offline Support:
+            - Client-side manifest generation when offline
+            - LocalStorage-based manifest cache
+            - Sync status tracking: SYNCED, PENDING_SYNC, SYNC_FAILED
+            - Background sync when connectivity restored
+        - Verification & Trust:
+            - Public QR verification page: /verify/manifest/[manifestNumber]
+            - SHA-256 verification hash for tamper detection
+            - Status indicators: Demo, Pending Sync, Voided, Verified
+            - No authentication required for public verification
+        - Reprint & Revision Controls:
+            - Print count tracking with timestamps
+            - Revision log: INITIAL, REPRINT, CORRECTION, VOID types
+            - Audit trail: Who reprinted, when, why
+            - No silent overwrites
+        - Access Control:
+            - Agents: Generate and print manifests
+            - Park Admins: View all, reprint, audit
+            - Full tenant isolation enforced via session auth
+        - Database Models:
+            - park_manifest: Main manifest storage with all denormalized data
+            - park_manifest_revision: Audit trail for all changes
+        - API Endpoint: /api/parkhub/manifest (POST generate, GET retrieve, PATCH update/print)
+        - Components: PrintableManifest (A4), ThermalManifest (80mm)
+        - NO automation, NO background jobs, user-triggered only
+        - Demo-safe behavior with isDemo flag
 
 ## External Dependencies
 - **PostgreSQL**: Primary database.
