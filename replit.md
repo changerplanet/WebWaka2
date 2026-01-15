@@ -61,6 +61,16 @@ WebWaka is built as a multi-tenant SaaS platform with a modular capability syste
         - QR code verification for receipt authenticity
         - NO automatic printing, agent/user initiated only
         - Demo-safe behavior
+    - **Vendor Mobile Dashboard (Wave F4)**: Mobile-first vendor dashboard for MVM marketplace:
+        - Order visibility: List, filter, and view order details with status tracking
+        - Fulfillment queue: Priority-based queue with URGENT/NORMAL indicators
+        - Earnings overview: Period-based earnings with payment method breakdown
+        - Payout status: Pending, eligible, and paid amounts with minimum threshold display
+        - Mobile-optimized: Touch-friendly UI, minimal animations for low-end Android
+        - Network-aware: Connection status banner with refresh capability
+        - Session-scoped access via vendorId parameter
+        - Read-only financials: NO payout execution, NO write operations
+        - NO automation, NO background jobs
 
 ## External Dependencies
 - **PostgreSQL**: Primary database.

@@ -10,6 +10,7 @@
  */
 
 import { useState, useEffect, useCallback } from 'react';
+import { useSearchParams } from 'next/navigation';
 import {
   VendorDashboardStatsCards,
   VendorOrderList,
@@ -28,6 +29,9 @@ import {
 } from '@/lib/commerce/vendor-dashboard';
 
 export default function VendorDashboardPage() {
+  const searchParams = useSearchParams();
+  const vendorIdParam = searchParams.get('vendorId');
+  
   const [activeTab, setActiveTab] = useState<VendorDashboardTab>('orders');
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -43,7 +47,7 @@ export default function VendorDashboardPage() {
   const [earningsPeriod, setEarningsPeriod] = useState('30d');
   const [ordersPage, setOrdersPage] = useState(0);
 
-  const vendorId = 'demo-vendor-id';
+  const vendorId = vendorIdParam || '';
 
   const fetchDashboard = useCallback(async () => {
     try {
@@ -134,6 +138,12 @@ export default function VendorDashboardPage() {
   }, [vendorId]);
 
   useEffect(() => {
+    if (!vendorId) {
+      setError('Vendor ID is required. Please access this page with a valid vendor ID.');
+      setIsLoading(false);
+      return;
+    }
+    
     const loadInitialData = async () => {
       setIsLoading(true);
       await fetchDashboard();
@@ -141,7 +151,7 @@ export default function VendorDashboardPage() {
       setIsLoading(false);
     };
     loadInitialData();
-  }, []);
+  }, [vendorId]);
 
   useEffect(() => {
     if (activeTab === 'fulfillment' && !fulfillmentData) {
