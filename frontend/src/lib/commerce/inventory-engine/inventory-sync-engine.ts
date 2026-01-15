@@ -39,11 +39,11 @@ export class InventorySyncEngine {
   private adapters: Map<ChannelSource, ChannelAdapter>;
 
   constructor(private tenantId: string) {
-    this.adapters = new Map([
-      ['POS', new POSChannelAdapter(tenantId)],
-      ['SVM', new SVMChannelAdapter(tenantId)],
-      ['MVM', new MVMChannelAdapter(tenantId)],
-      ['PARKHUB', new ParkHubChannelAdapter(tenantId)],
+    this.adapters = new Map<ChannelSource, ChannelAdapter>([
+      ['POS', new POSChannelAdapter(tenantId) as ChannelAdapter],
+      ['SVM', new SVMChannelAdapter(tenantId) as ChannelAdapter],
+      ['MVM', new MVMChannelAdapter(tenantId) as ChannelAdapter],
+      ['PARKHUB', new ParkHubChannelAdapter(tenantId) as ChannelAdapter],
     ]);
   }
 
