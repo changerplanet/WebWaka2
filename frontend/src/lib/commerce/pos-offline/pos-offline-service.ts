@@ -272,10 +272,8 @@ export class PosOfflineService {
         grandTotal: saleData.total,
         currency: 'NGN',
         paymentMethod: saleData.paymentMethod,
-        paymentStatus: 'PAID',
         status: 'COMPLETED',
-        saleSource: 'OFFLINE_SYNC',
-        pos_sale_item: {
+        items: {
           create: saleData.items.map(item => ({
             productId: item.productId,
             variantId: item.variantId || null,
