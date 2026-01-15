@@ -8,12 +8,11 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { VendorRatingService } from '@/lib/mvm/vendor-rating-service'
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
+import { getSessionFromRequest } from '@/lib/auth'
 
 export async function POST(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions)
+    const session = await getSessionFromRequest(request)
     
     const body = await request.json()
     const {

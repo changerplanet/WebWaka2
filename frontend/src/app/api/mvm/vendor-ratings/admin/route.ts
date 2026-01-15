@@ -6,14 +6,13 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { VendorRatingService, ScoreBand } from '@/lib/mvm/vendor-rating-service'
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
+import { getSessionFromRequest } from '@/lib/auth'
 
 export async function GET(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions)
+    const session = await getSessionFromRequest(request)
     
-    if (!session?.user?.role || !['ADMIN', 'PARTNER_ADMIN', 'SUPER_ADMIN'].includes(session.user.role)) {
+    if (!session?.user?.globalRole || !['ADMIN', 'PARTNER_ADMIN', 'SUPER_ADMIN'].includes(session.user.globalRole)) {
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 403 }
