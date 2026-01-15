@@ -1,0 +1,250 @@
+
+🔵 WAVE I.4 — SITES & FUNNELS PUBLIC RENDERING
+
+CONTEXT
+
+WebWaka already has a fully implemented Sites & Funnels backend:
+	•	Site builder
+	•	Page builder
+	•	Funnel builder
+	•	Form builder
+	•	Publishing flags
+	•	Templates (backend)
+	•	Domain and slug logic (partial)
+
+However, public rendering is missing.
+Partners and tenants can build sites and funnels, but the public cannot view them.
+
+This wave is about exposing what already exists — NOT inventing anything new.
+
+⸻
+
+🎯 WAVE I.4 OBJECTIVE
+
+Expose public, read-only rendering of:
+	1.	Published Sites
+	2.	Published Pages
+	3.	Published Funnels
+	4.	Form landing pages (confirmation already exists)
+
+This must work per tenant, using slug-based routing, with hard gating.
+
+⸻
+
+🚫 HARD CONSTRAINTS (NON-NEGOTIABLE)
+
+You MUST NOT:
+	•	❌ Add new business logic
+	•	❌ Add new schema fields or models
+	•	❌ Modify page builder logic
+	•	❌ Modify funnel logic
+	•	❌ Add CMS features
+	•	❌ Add editing, preview, or draft features
+	•	❌ Add analytics, tracking, or SEO tooling beyond metadata exposure
+	•	❌ Add automation or background jobs
+
+If something required does not exist:
+👉 DOCUMENT IT AS A GAP. DO NOT FIX IT.
+
+⸻
+
+✅ WHAT YOU ARE ALLOWED TO DO
+
+You MAY:
+	•	Create public Next.js routes
+	•	Read from existing Prisma models
+	•	Use existing rendering components
+	•	Reuse page builder block renderers
+	•	Reuse form rendering logic
+	•	Add read-only server resolvers
+	•	Add strict gating (published + active + tenant-enabled)
+	•	Return 404s aggressively
+
+⸻
+
+🧩 REQUIRED PUBLIC ROUTES
+
+Implement the following public routes:
+
+1️⃣ Tenant Site Homepage
+
+/[tenantSlug]
+
+Render:
+	•	The tenant’s default published site
+	•	Homepage page (isHomepage === true)
+
+Hard rules:
+	•	Tenant must exist
+	•	Tenant must be ACTIVE
+	•	Sites & Funnels module must be enabled
+	•	Site must be PUBLISHED
+
+⸻
+
+2️⃣ Published Site Page
+
+/[tenantSlug]/site/[pageSlug]
+
+Render:
+	•	A published page belonging to a published site
+
+Rules:
+	•	Page must be PUBLISHED
+	•	Page must belong to tenant
+	•	Page must not be draft
+	•	Otherwise → 404
+
+⸻
+
+3️⃣ Funnel Entry Page
+
+/[tenantSlug]/funnel/[funnelSlug]
+
+Render:
+	•	First step of a published funnel
+
+Rules:
+	•	Funnel must be PUBLISHED
+	•	Funnel must be ACTIVE
+	•	Only sequential rendering (no skipping)
+	•	No preview modes
+
+⸻
+
+4️⃣ Funnel Step Page
+
+/[tenantSlug]/funnel/[funnelSlug]/[stepSlug]
+
+Render:
+	•	Specific funnel step
+
+Rules:
+	•	Step must belong to funnel
+	•	Step must be published
+	•	Step order respected
+
+⸻
+
+5️⃣ Form Landing Page (Confirm exposure)
+
+/[tenantSlug]/form/[formSlug]
+
+Render:
+	•	Public form rendering using existing form renderer
+
+NOTE:
+If already implemented, verify and document — do not rewrite.
+
+⸻
+
+🧠 RESOLUTION STRATEGY (MANDATORY)
+
+Implement server-side resolvers ONLY:
+	•	resolveTenantBySlug()
+	•	resolvePublishedSite()
+	•	resolvePublishedPage()
+	•	resolvePublishedFunnel()
+	•	resolvePublishedForm()
+
+Resolvers must:
+	•	Use Prisma read queries only
+	•	Match existing access patterns
+	•	Enforce tenant isolation
+	•	Enforce published status
+	•	Return notFound() on failure
+
+⸻
+
+🖼 RENDERING RULES
+	•	Use existing block renderer
+	•	Use existing form renderer
+	•	Use existing theme / layout wrappers
+	•	No new UI system
+	•	No new design abstractions
+
+If a renderer is missing:
+👉 Document as a gap
+
+⸻
+
+🧪 DEMO VS LIVE BEHAVIOR
+	•	Demo tenants:
+	•	Render even if incomplete
+	•	Show “DEMO” badge
+	•	Live tenants:
+	•	Strict gating
+	•	No bypasses
+
+⸻
+
+📋 REQUIRED OUTPUT — WAVE I.4 COMPLETION REPORT
+
+At completion, you MUST produce:
+
+1️⃣ Routes Implemented Table
+	•	Route
+	•	Purpose
+	•	Status (200 / 404)
+
+2️⃣ Models & Services Used
+	•	Prisma models touched
+	•	Existing services reused
+
+3️⃣ UI Components Used
+	•	Reused components
+	•	Newly created read-only only components
+
+4️⃣ Explicit Confirmations
+
+You must explicitly confirm:
+	•	❌ No new business logic
+	•	❌ No schema changes
+	•	❌ No automation
+	•	❌ No preview/edit modes
+	•	❌ No analytics or tracking
+
+5️⃣ GAP LIST (MANDATORY)
+
+Examples (do not pre-assume):
+	•	No public site renderer
+	•	Missing homepage flag
+	•	Missing SEO metadata
+	•	Missing theme application
+	•	Missing domain-based routing
+
+Each gap must include:
+	•	What is missing
+	•	Why it cannot be solved in Wave I
+	•	Deferred to: Post-Wave I
+
+⸻
+
+🛑 STOP CONDITION
+
+After submitting the Wave I.4 Completion Report, you MUST STOP.
+
+Do NOT proceed to Wave I.5 until explicitly approved.
+
+⸻
+
+SUCCESS DEFINITION
+
+Wave I.4 is successful if:
+	•	Public users can view tenant sites and funnels
+	•	All rendering is read-only
+	•	Everything is strictly gated
+	•	All missing pieces are explicitly documented
+
+⸻
+
+✅ CONFIRMATION
+
+This wave completes public exposure of Sites & Funnels, aligning WebWaka with:
+	•	SVM storefront exposure
+	•	MVM marketplace exposure
+	•	ParkHub marketplace exposure
+
+Proceed now with Wave I.4 execution.
+
+⸻
