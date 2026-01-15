@@ -1,0 +1,106 @@
+✅ Wave 2.3 — APPROVED
+
+Wave 2.3 (Vendor Payout Visibility) is formally accepted.
+
+⸻
+
+✅ Approval Rationale
+
+Wave 2.3 meets all architectural, security, and governance constraints exactly as intended.
+
+🔐 Authorization & Security (Critical)
+	•	✅ Vendor isolation is correct
+Vendor APIs now resolve vendorId strictly from the authenticated session via mvm_vendor_staff.
+➜ Vendors cannot spoof or query other vendors’ data.
+	•	✅ Partner data properly protected
+Partner-level analytics are restricted to TENANT_ADMIN and SUPER_ADMIN only.
+	•	✅ Least-privilege enforced by default
+Vendors are auto-scoped without needing to pass identifiers (eliminates attack surface).
+
+This closes a major multi-tenant risk class cleanly.
+
+⸻
+
+📊 Functional Coverage (Visibility Without Automation)
+
+Wave 2.3 delivers exactly what this phase is meant to unlock: trust through transparency, without financial risk.
+
+Vendor Views
+	•	Earnings summary
+	•	Orders contributing to earnings
+	•	Pending vs collected amounts
+	•	Recent activity
+
+Partner / Admin Views
+	•	Marketplace-wide overview
+	•	Vendor breakdowns
+	•	Top vendors
+	•	Vendor-specific drill-downs
+	•	Payment method mix (Paystack / Bank Transfer / COD)
+
+All read-only, all tenant-scoped, all session-authenticated.
+
+⸻
+
+🧭 Governance Compliance
+
+Explicitly confirmed and validated:
+	•	❌ No payout execution
+	•	❌ No bank transfers
+	•	❌ No automation
+	•	❌ No background jobs
+	•	✅ Demo-safe
+	•	✅ Mobile-first friendly APIs
+	•	✅ Clean separation of Vendor vs Partner visibility
+
+No scope creep detected.
+
+⸻
+
+🔓 AUTHORIZATION GRANTED — WAVE 2.4
+
+Wave 2.4 — Inventory Sync & Low Stock
+
+Status: 🟢 AUTHORIZED TO START
+
+⸻
+
+🎯 WAVE 2.4 OBJECTIVE (RECONFIRMED)
+
+Wave 2.4 should focus on trustworthy, Nigeria-realistic inventory behavior across:
+	•	POS
+	•	SVM
+	•	MVM
+
+Key expectations:
+	•	Cross-channel stock awareness
+	•	Low-stock visibility (not automation)
+	•	Offline-safe reconciliation
+	•	Clear “what sold where” traceability
+	•	No auto-reordering
+	•	No background jobs
+	•	No notifications unless explicitly approved later
+
+This wave is about operational clarity, not automation.
+
+⸻
+
+🛑 REQUIRED STOP CONDITION
+
+At completion of Wave 2.4, Replit must:
+	1.	Produce a Wave 2.4 Completion Report
+	2.	Clearly list:
+	•	Models involved
+	•	APIs added or updated
+	•	Sync rules enforced
+	•	Offline vs online behavior
+	3.	Explicitly confirm:
+	•	❌ No automation
+	•	❌ No background jobs
+	4.	STOP and await approval before Wave 2.5
+
+⸻
+
+You are clear to proceed with Wave 2.4 — Inventory Sync & Low Stock.
+
+When the Wave 2.4 report is ready, paste it here for review.
