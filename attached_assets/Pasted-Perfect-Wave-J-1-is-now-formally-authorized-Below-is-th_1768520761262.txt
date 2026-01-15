@@ -1,0 +1,253 @@
+Perfect. Wave J.1 is now formally authorized.
+
+Below is the tight, production-grade Replit execution prompt for Wave J.1 — Unified Order Abstraction, written to be unambiguous, non-creative, and governance-safe.
+
+⸻
+
+🔧 REPLIT EXECUTION PROMPT
+
+WAVE J.1 — UNIFIED ORDER ABSTRACTION (READ-ONLY)
+
+CONTEXT
+
+WebWaka currently has three separate order domains:
+	•	SVM (svm_orders, svm_order_items)
+	•	MVM (mvm_parent_order, mvm_sub_order, mvm_parent_order_item)
+	•	ParkHub (park_ticket)
+
+These schemas are correct and must NOT be modified.
+However, the lack of a canonical abstraction blocks:
+	•	Unified customer order views
+	•	Receipt linking
+	•	Notifications
+	•	Analytics
+	•	Mobile app readiness
+
+This wave introduces a READ-ONLY canonical order abstraction layer that wraps existing data without changing it.
+
+⸻
+
+🎯 WAVE J.1 OBJECTIVE
+
+Create a Canonical Order Layer that:
+	•	Normalizes SVM, MVM, and ParkHub orders into a single interface
+	•	Is read-only
+	•	Introduces NO new business logic
+	•	Introduces NO schema changes
+	•	Introduces NO mutations
+	•	Is safe for demo and live tenants
+
+⸻
+
+🚫 HARD CONSTRAINTS (NON-NEGOTIABLE)
+
+Replit MUST NOT:
+	•	❌ Add or modify Prisma models
+	•	❌ Add migrations
+	•	❌ Change existing order creation logic
+	•	❌ Change order status logic
+	•	❌ Add payments, refunds, or notifications
+	•	❌ Add background jobs or automation
+	•	❌ “Fix” inconsistencies in existing schemas
+
+Replit MAY ONLY:
+	•	✅ Read from existing tables
+	•	✅ Map data into a new canonical interface
+	•	✅ Add new TypeScript files/services
+	•	✅ Add new read-only API endpoints
+	•	✅ Add documentation of gaps
+
+⸻
+
+📦 DELIVERABLES
+
+1️⃣ Canonical Interfaces (Code Only)
+
+Create a new folder:
+
+frontend/src/lib/commerce/canonical-order/
+
+CanonicalOrder interface
+
+export interface CanonicalOrder {
+  id: string
+  tenantId: string
+  type: 'SVM' | 'MVM' | 'PARKHUB'
+  reference: string
+  status: CanonicalOrderStatus
+  amount: {
+    subtotal: number
+    total: number
+    currency: 'NGN'
+  }
+  items: CanonicalOrderItem[]
+  customer: CanonicalCustomer
+  createdAt: Date
+  sourceId: string
+  metadata: Record<string, any>
+}
+
+CanonicalOrderItem
+
+export interface CanonicalOrderItem {
+  name: string
+  quantity: number
+  unitPrice: number
+  totalPrice: number
+  vendorId?: string
+}
+
+CanonicalCustomer (temporary abstraction)
+
+export interface CanonicalCustomer {
+  email?: string
+  phone?: string
+  name?: string
+  source: 'SVM' | 'MVM' | 'PARKHUB'
+}
+
+
+⸻
+
+2️⃣ Status Normalization (Mapping Only)
+
+Create a status enum:
+
+export enum CanonicalOrderStatus {
+  CREATED,
+  PENDING_PAYMENT,
+  PAID,
+  FULFILLED,
+  CANCELLED,
+  FAILED,
+}
+
+Implement pure mapping functions:
+	•	SVM → Canonical
+	•	MVM → Canonical
+	•	ParkHub → Canonical
+
+⚠️ Do NOT attempt to “correct” inconsistencies — map exactly and document gaps.
+
+⸻
+
+3️⃣ Resolver Functions (READ-ONLY)
+
+Implement the following resolvers:
+
+resolveSvmOrderToCanonical(orderId)
+resolveMvmParentOrderToCanonical(orderId)
+resolveParkTicketToCanonical(ticketId)
+
+Rules:
+	•	Prisma read-only queries only
+	•	Must include tenantId verification
+	•	Must throw 404 if order does not belong to tenant
+	•	Must work for demo tenants
+
+⸻
+
+4️⃣ CanonicalOrderService
+
+Create:
+
+frontend/src/lib/commerce/canonical-order/canonical-order-service.ts
+
+Expose read-only APIs:
+
+listByCustomerIdentifier({
+  tenantId,
+  email?,
+  phone?
+})
+
+getByReference({
+  tenantId,
+  reference
+})
+
+Rules:
+	•	Aggregate across SVM + MVM + ParkHub
+	•	No pagination logic invention — reuse simple limits
+	•	No caching
+	•	No background jobs
+
+⸻
+
+5️⃣ Public Read-Only API Endpoints
+
+Create:
+
+GET /api/orders/canonical
+GET /api/orders/canonical/[reference]
+
+Security rules:
+	•	Demo tenants: open access
+	•	Live tenants: require tenantSlug resolution
+	•	NO authentication system introduced
+	•	NO mutation endpoints
+
+⸻
+
+🧾 GAP DOCUMENTATION (MANDATORY)
+
+Create a file:
+
+frontend/WAVE_J1_GAPS.md
+
+Document every gap encountered, including but not limited to:
+	•	Inconsistent status enums
+	•	Missing customer identifiers
+	•	Missing receipt linkage
+	•	ParkHub vs commerce structural differences
+	•	Any ambiguity that required assumptions
+
+🚨 If a gap exists:
+	•	DOCUMENT IT
+	•	DO NOT SOLVE IT
+	•	DO NOT WORK AROUND IT
+
+⸻
+
+🧪 VERIFICATION REQUIREMENTS
+
+Replit must verify:
+	•	✅ One SVM order resolves correctly
+	•	✅ One MVM parent order resolves correctly
+	•	✅ One ParkHub ticket resolves correctly
+	•	✅ Invalid tenant/order returns 404
+	•	✅ Demo tenant works without auth
+
+⸻
+
+🛑 STOP CONDITION
+
+When finished:
+	1.	Produce Wave J.1 Completion Report
+	2.	Include:
+	•	Files created
+	•	APIs exposed
+	•	Example canonical payloads
+	•	Full gap list
+	3.	STOP — do not proceed to Wave J.2 without explicit approval
+
+⸻
+
+🧠 SUCCESS DEFINITION
+
+Wave J.1 is successful if:
+	•	A single API can return a mixed list of SVM, MVM, and ParkHub orders
+	•	No existing logic was changed
+	•	No schemas were touched
+	•	All gaps are clearly documented
+	•	The platform is now structurally ready for Wave J.2
+
+⸻
+
+END OF EXECUTION PROMPT
+
+Once Replit completes this, we will:
+	1.	Review Wave J.1 gaps
+	2.	Decide whether to proceed to Wave J.2 (Customer Identity) or adjust the abstraction first
+
+You’re steering this exactly right.
