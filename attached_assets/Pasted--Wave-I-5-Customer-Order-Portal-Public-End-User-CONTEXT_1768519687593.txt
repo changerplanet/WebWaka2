@@ -1,0 +1,202 @@
+
+Wave I.5 — Customer Order Portal (Public / End-User)
+
+CONTEXT
+
+WebWaka has a large amount of existing order logic across:
+	•	SVM (Single Vendor Marketplace)
+	•	MVM (Multi-Vendor Marketplace)
+	•	ParkHub (Transport commerce)
+
+However, end customers currently have no unified, dedicated portal to:
+	•	View their orders
+	•	Track order status
+	•	Access receipts / verification links
+
+The backend logic already exists.
+This wave is about exposing that logic safely — not extending it.
+
+⸻
+
+🎯 WAVE I.5 OBJECTIVE
+
+Expose a read-only Customer Order Portal that allows end users to:
+	•	View their order history
+	•	View individual order details
+	•	Track order status
+	•	Access receipts / verification pages
+	•	Access ParkHub ticket references
+
+⚠️ NO actions are allowed
+(no cancellation, refunds, re-ordering, messaging, or payments)
+
+⸻
+
+🛑 HARD CONSTRAINTS (NON-NEGOTIABLE)
+
+❌ DO NOT:
+	•	Invent new business logic
+	•	Add new schema fields or models
+	•	Modify existing order lifecycle rules
+	•	Add background jobs or automation
+	•	Add refunds, cancellations, or edits
+	•	Add messaging, WhatsApp, or email flows
+	•	Add cross-tenant access
+	•	“Patch” missing features with hacks
+
+✅ YOU MAY:
+	•	Read from existing models
+	•	Reuse existing services
+	•	Create read-only UI components
+	•	Add server-side resolvers for routing
+	•	Return 404 where data does not exist
+	•	Document gaps explicitly
+
+⸻
+
+📍 REQUIRED ROUTES
+
+1️⃣ Customer Orders Index
+
+/[tenantSlug]/orders
+
+Purpose
+	•	List all orders belonging to the customer
+
+Data Sources (existing only)
+	•	svm_order
+	•	mvm_parent_order
+	•	park_ticket
+
+Rules
+	•	Orders must belong to the authenticated user OR
+	•	Be accessed via a valid order reference token
+	•	Tenant resolved server-side by tenantSlug
+	•	Demo tenants allowed without auth (read-only)
+
+⸻
+
+2️⃣ Order Detail Page
+
+/[tenantSlug]/orders/[orderRef]
+
+Purpose
+	•	Display a single order (SVM, MVM, or ParkHub)
+
+Display (read-only)
+	•	Order number / reference
+	•	Order type (Store / Marketplace / Transport)
+	•	Items / tickets
+	•	Status
+	•	Total amount (NGN)
+	•	Payment method (Card / Bank Transfer / COD / Cash)
+	•	Date & time
+	•	Receipt / verification links (if available)
+
+⸻
+
+3️⃣ ParkHub Ticket Shortcut (Optional)
+
+/[tenantSlug]/orders/ticket/[ticketRef]
+
+Behavior
+	•	Resolves to existing ParkHub ticket data
+	•	Links to receipt / manifest verification pages
+	•	No new booking logic
+
+⸻
+
+🔍 DATA ACCESS RULES
+	•	Use existing Prisma models only
+	•	Use existing services where possible
+	•	If a unified service does NOT exist:
+	•	Query Prisma directly
+	•	Follow existing patterns
+	•	NEVER aggregate across tenants
+	•	Enforce session.activeTenantId when authenticated
+
+⸻
+
+🧩 UI COMPONENT RULES
+	•	Mobile-first
+	•	Read-only
+	•	Clear status badges
+	•	NGN currency formatting
+	•	Reuse existing design system components
+	•	No write actions or buttons beyond navigation
+
+⸻
+
+⚠️ MANDATORY GAP DISCIPLINE
+
+If you encounter any missing capability, you MUST:
+	1.	Stop
+	2.	Document the gap
+	3.	Do NOT invent a workaround
+
+Examples of gaps to document (if encountered):
+	•	No unified “order” abstraction across SVM/MVM/ParkHub
+	•	Inconsistent status enums across order types
+	•	Missing customer identity linkage
+	•	Missing receipt association
+	•	Missing tracking UI components
+
+Each gap must be listed with:
+	•	What is missing
+	•	Why it cannot be solved in Wave I
+	•	Where it should be deferred
+
+⸻
+
+📄 REQUIRED COMPLETION REPORT
+
+At the end of Wave I.5, you MUST provide a report with:
+
+1️⃣ Routes Implemented
+
+| Route | Purpose | Status |
+
+2️⃣ Order Types Supported
+	•	SVM
+	•	MVM
+	•	ParkHub
+
+3️⃣ Services / Models Used
+
+(List exact files and models)
+
+4️⃣ Demo vs Live Behavior
+
+5️⃣ Explicit Confirmations
+	•	❌ No new business logic
+	•	❌ No schema changes
+	•	❌ No automation
+	•	❌ No payments
+	•	❌ No refunds
+	•	❌ No messaging
+
+6️⃣ GAP LIST (MANDATORY)
+
+Every unresolved limitation must be listed.
+
+⸻
+
+🛑 STOP CONDITION
+
+After submitting the Wave I.5 Completion Report:
+	•	STOP immediately
+	•	Do NOT continue to any further work
+	•	Await explicit approval
+
+⸻
+
+📌 FINAL NOTE
+
+Wave I is about truthful exposure, not feature completion.
+
+A correct Wave I.5 may feel “limited” — that is expected and desired.
+
+Accuracy > completeness
+Truth > polish
+
+⸻
