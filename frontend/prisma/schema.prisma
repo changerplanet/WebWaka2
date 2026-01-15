@@ -6850,6 +6850,20 @@ enum PageType {
   CUSTOM
 }
 
+// Template Type (Phase H1)
+enum TemplateType {
+  SITE_TEMPLATE
+  FUNNEL_TEMPLATE
+  PAGE_TEMPLATE
+}
+
+// Template Status (Phase H1)
+enum TemplateStatus {
+  DRAFT
+  PUBLISHED
+  DEPRECATED
+}
+
 // Template Category
 model sf_template_categories {
   id          String   @id @default(uuid())
@@ -6869,7 +6883,7 @@ model sf_template_categories {
   @@index([isActive])
 }
 
-// Template (Read-only, cloneable)
+// Template (Read-only, cloneable) - Enhanced for Phase H1
 model sf_templates {
   id              String  @id @default(uuid())
   categoryId      String
@@ -6879,13 +6893,16 @@ model sf_templates {
   previewImageUrl String?
   thumbnailUrl    String?
 
+  // Phase H1: Template type (SITE_TEMPLATE, FUNNEL_TEMPLATE, PAGE_TEMPLATE)
+  templateType TemplateType @default(PAGE_TEMPLATE)
+
   // Template metadata
   industry String? // Target industry
   useCase  String? // e.g., "lead_generation", "product_showcase"
-  pageType PageType @default(LANDING)
+  pageType PageType @default(LANDING) // For PAGE_TEMPLATE only
 
   // Template content (JSON)
-  blocks   Json  @default("[]") // Page blocks/sections
+  blocks   Json  @default("[]") // Page blocks/sections (for PAGE_TEMPLATE)
   styles   Json? // Custom styles
   settings Json? // Template settings
 
@@ -6893,20 +6910,73 @@ model sf_templates {
   version  String  @default("1.0.0")
   isLatest Boolean @default(true)
 
-  // Status
+  // Phase H1: Status lifecycle (DRAFT -> PUBLISHED -> DEPRECATED)
+  status TemplateStatus @default(DRAFT)
+
+  // Legacy status (kept for backward compatibility)
   isActive  Boolean @default(true)
   isPremium Boolean @default(false)
+
+  // Phase H1: Visibility & Demo
+  partnerVisible Boolean @default(true)  // Visible to partners
+  isDemo         Boolean @default(false) // Demo-only template
+
+  // Phase H1: Super Admin authorship
+  createdBy   String  // SUPER_ADMIN user ID
+  publishedBy String? // User who published
+  publishedAt DateTime?
+  deprecatedBy String?
+  deprecatedAt DateTime?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   category sf_template_categories @relation(fields: [categoryId], references: [id])
+  pages    sf_template_pages[] // Multi-page templates
 
   @@index([categoryId])
+  @@index([templateType])
   @@index([industry])
   @@index([useCase])
   @@index([pageType])
+  @@index([status])
   @@index([isActive])
+  @@index([partnerVisible])
+  @@index([isDemo])
+}
+
+// Template Page (Phase H1) - For multi-page SITE_TEMPLATE and FUNNEL_TEMPLATE
+model sf_template_pages {
+  id         String @id @default(uuid())
+  templateId String
+
+  // Page details
+  name     String
+  slug     String
+  pageType PageType @default(CONTENT)
+
+  // Funnel positioning (for FUNNEL_TEMPLATE)
+  sortOrder Int @default(0)
+
+  // Content (JSON blocks)
+  blocks Json @default("[]")
+
+  // Styles & Settings
+  styles   Json?
+  settings Json?
+
+  // SEO defaults
+  metaTitle       String?
+  metaDescription String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  template sf_templates @relation(fields: [templateId], references: [id], onDelete: Cascade)
+
+  @@unique([templateId, slug])
+  @@index([templateId])
+  @@index([pageType])
 }
 
 // Site (Partner-owned)

@@ -1,0 +1,235 @@
+
+🚀 PHASE H1 — SUPER ADMIN TEMPLATE SYSTEM (EXECUTION PROMPT)
+
+CONTEXT
+
+You are working on WebWaka, a multi-tenant, Nigeria-first SaaS platform with:
+	•	Sites & Funnels module
+	•	Block-based visual page builder (already implemented)
+	•	Strong governance rules (no automation, no background jobs unless approved)
+	•	Partner-first model (WebWaka does NOT sell directly to end users)
+
+We are now implementing Phase H1:
+👉 Super Admin–only Template System for Sites & Funnels.
+
+This phase is FOUNDATIONAL and must be done with extreme care.
+
+⸻
+
+🎯 PHASE H1 OBJECTIVE (NON-NEGOTIABLE)
+
+Prepare WebWaka to accept, manage, and deploy templates that are:
+	•	✅ Created ONLY by Super Admin
+	•	✅ Used (cloned) by Partners
+	•	❌ NOT created, edited, or uploaded by Partners
+	•	❌ NOT sold or monetized
+	•	❌ NOT marketplace-enabled
+
+Templates will be used to quickly create:
+	•	Websites
+	•	Funnels
+for Partners and their client tenants.
+
+⸻
+
+🔐 GOVERNANCE RULES (STRICT)
+
+TEMPLATE CREATION
+	•	ONLY SUPER_ADMIN can:
+	•	Create templates
+	•	Upload templates
+	•	Publish templates
+	•	Deprecate templates
+	•	Templates are read-only blueprints
+
+TEMPLATE USAGE
+	•	Partners can:
+	•	View templates
+	•	Preview templates
+	•	Clone templates
+	•	Apply templates to tenants
+	•	Partners CANNOT:
+	•	Modify original templates
+	•	Upload templates
+	•	Publish templates
+	•	Sell templates
+
+LOVABLE
+	•	Lovable is NOT integrated
+	•	Lovable output is assumed to be manually exported
+	•	WebWaka only needs to accept controlled template input
+	•	NO Lovable API calls
+	•	NO automation
+
+⸻
+
+🚫 EXPLICITLY OUT OF SCOPE (DO NOT IMPLEMENT)
+	•	❌ Partner template uploads
+	•	❌ Template marketplace
+	•	❌ Template payments
+	•	❌ Revenue sharing
+	•	❌ White-label resale
+	•	❌ Drag-and-drop builder changes
+	•	❌ AI generation
+	•	❌ Automations
+	•	❌ Notifications
+	•	❌ Background jobs
+	•	❌ Public template APIs
+
+⸻
+
+🧱 REQUIRED SYSTEMS TO BUILD
+
+1️⃣ TEMPLATE CORE (MANDATORY)
+
+Implement a Template Engine that supports:
+
+Template Types
+	•	SITE_TEMPLATE
+	•	FUNNEL_TEMPLATE
+
+Template Manifest (Versioned)
+Each template MUST have:
+	•	id
+	•	name
+	•	description
+	•	templateType (site | funnel)
+	•	industry/category
+	•	supportedPages or steps
+	•	blockStructure (schema-driven)
+	•	version
+	•	status: DRAFT | PUBLISHED | DEPRECATED
+	•	isDemo
+	•	createdBy (SUPER_ADMIN only)
+	•	createdAt / updatedAt
+
+Templates must be immutable once published.
+
+⸻
+
+2️⃣ TEMPLATE STORAGE & ACCESS
+
+You may choose:
+	•	Database-backed templates
+	•	OR file-backed templates with DB registry
+
+But:
+	•	Template source is protected
+	•	Clones reference templateId + version
+	•	Template updates MUST NOT break existing clones
+
+⸻
+
+3️⃣ TEMPLATE CLONING MECHANISM
+
+When a Partner clones a template:
+	•	A new Site or Funnel instance is created
+	•	Content is copied
+	•	Tokens are resolved:
+	•	{{tenant.name}}
+	•	{{brand.primaryColor}}
+	•	{{contact.phone}}
+	•	Original template remains untouched
+
+⸻
+
+4️⃣ SUPER ADMIN CONTROLS (REQUIRED)
+
+Implement Super Admin capabilities:
+	•	Create template (internal only)
+	•	Upload template definition
+	•	Validate template schema
+	•	Publish / unpublish templates
+	•	Mark template as:
+	•	Partner-visible
+	•	Demo-only
+	•	Deprecate templates safely
+
+Access must be enforced via:
+	•	SUPER_ADMIN role only
+	•	Server-side authorization
+
+⸻
+
+5️⃣ PARTNER EXPERIENCE (READ-ONLY)
+
+Partners should be able to:
+	•	Browse template catalog
+	•	Filter by:
+	•	Industry
+	•	Template type
+	•	Preview template
+	•	Clone template
+	•	Apply template to:
+	•	New tenant
+	•	Existing tenant site/funnel
+
+No edit access to originals.
+
+⸻
+
+🧪 DEMO SAFETY
+	•	Templates can be flagged isDemo
+	•	Demo templates:
+	•	Clearly labeled
+	•	Allowed in demo tenants
+	•	Optional visibility in production
+
+⸻
+
+🧩 INTEGRATION CONSTRAINTS
+
+You MUST integrate with:
+	•	Existing Sites & Funnels module
+	•	Existing Page Builder blocks
+	•	Existing Partner / Tenant scoping
+
+You MUST NOT:
+	•	Modify payment systems
+	•	Modify auth flows
+	•	Modify inventory, commerce, or POS logic
+
+⸻
+
+🛑 STOP CONDITIONS (MANDATORY)
+
+When Phase H1 is complete, you MUST:
+	1.	Produce a PHASE_H1_COMPLETION_REPORT.md
+	2.	Explicitly list:
+	•	Models created
+	•	APIs created
+	•	Admin-only actions
+	•	Partner-allowed actions
+	•	Example template manifest
+	3.	Explicitly confirm:
+	•	❌ No partner uploads
+	•	❌ No marketplace
+	•	❌ No payments
+	•	❌ No automations
+	4.	STOP and WAIT for approval
+
+DO NOT proceed to:
+	•	Partner template creation
+	•	Template marketplace
+	•	White-label monetization
+
+⸻
+
+🧠 DESIGN PHILOSOPHY (IMPORTANT)
+
+This phase exists to:
+	•	Maintain quality
+	•	Prevent ecosystem chaos
+	•	Support Nigerian partners
+	•	Enable fast demos
+	•	Lay groundwork for future marketplace (NOT NOW)
+
+Think governance-first, not growth-at-all-costs.
+
+⸻
+
+✅ YOU ARE AUTHORIZED TO START
+
+Begin Phase H1 — Super Admin Template System now.
+
+STOP immediately after completion.
