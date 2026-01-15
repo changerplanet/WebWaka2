@@ -237,10 +237,7 @@ export default function ParkHubPosPage() {
       if (data.success) {
         setSuccess(true);
         syncStatus.incrementPending();
-        
-        if (isOnline) {
-          setTimeout(() => handleSync(), 1000);
-        }
+        fetchSyncStatus();
       } else {
         setError(data.error || 'Failed to queue ticket');
       }
@@ -359,7 +356,7 @@ export default function ParkHubPosPage() {
             </div>
             <h2 className="text-xl font-bold text-gray-900 mb-2">Ticket Saved!</h2>
             <p className="text-gray-600 mb-6">
-              {isOnline ? 'Syncing to server...' : 'Will sync when online'}
+              Tap "Sync" when ready to send to server
             </p>
             
             <div className="bg-white rounded-lg border p-4 mb-6 text-left">
