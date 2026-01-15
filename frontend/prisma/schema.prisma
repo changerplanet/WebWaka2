@@ -10469,19 +10469,24 @@ model mvm_payout {
   approvedAt DateTime?
   approvedBy String?
 
+  // Batch Linkage (Wave F2)
+  batchId String?
+
   // Timestamps
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   // Relations
-  vendor      mvm_vendor       @relation(fields: [vendorId], references: [id])
+  vendor      mvm_vendor        @relation(fields: [vendorId], references: [id])
   commissions mvm_commission[]
+  batch       mvm_payout_batch? @relation(fields: [batchId], references: [id])
 
   @@index([tenantId])
   @@index([vendorId])
   @@index([status])
   @@index([periodStart, periodEnd])
   @@index([createdAt])
+  @@index([batchId])
 }
 
 // --------------------------------------------------------------------------
@@ -10533,7 +10538,8 @@ model mvm_payout_batch {
   updatedAt DateTime @updatedAt
 
   // Relations
-  logs mvm_payout_log[]
+  payouts mvm_payout[]
+  logs    mvm_payout_log[]
 
   @@index([tenantId])
   @@index([status])

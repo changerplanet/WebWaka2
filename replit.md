@@ -41,6 +41,14 @@ WebWaka is built as a multi-tenant SaaS platform with a modular capability syste
     - **Inventory Sync & Low Stock**: Unified inventory visibility across channels, low-stock alerts without automation, and stock traceability.
     - **Offline UX Clarity & Trust Signals**: Visual indicators for connection status, sync status components, and trust signals with plain-language messaging for POS operators and vendors.
     - **ParkHub Walk-Up POS Interface**: Mobile-first, 5-step flow for ticket sales with offline queuing and agent-initiated sync.
+    - **Payout Execution Engine**: Partner-triggered payout execution for MVM vendors with batch processing:
+        - Status lifecycle: PENDING → APPROVED → PROCESSING → COMPLETED/FAILED
+        - Batch grouping: Daily, weekly, or on-demand periods
+        - Minimum payout threshold: ₦5,000
+        - Bank transfer focus with COD settlement support
+        - Immutable audit trail (mvm_payout_log)
+        - Demo-safe with isDemo flag
+        - NO automation, NO background jobs, partner-triggered only
 
 ## External Dependencies
 - **PostgreSQL**: Primary database.

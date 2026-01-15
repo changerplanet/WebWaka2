@@ -184,90 +184,108 @@ export function createPayoutExecutionService(tenantId: string) {
     const totalDeductions = eligibleVendors.reduce((sum, [_, v]) => sum + v.commissionAmount, 0);
     const totalNet = eligibleVendors.reduce((sum, [_, v]) => sum + v.netAmount, 0);
     
-    const batch = await prisma.mvm_payout_batch.create({
-      data: {
-        tenantId,
-        batchNumber,
-        description: input.description,
-        periodType: input.periodType,
-        periodStart: input.periodStart,
-        periodEnd: input.periodEnd,
-        status: 'PENDING',
-        currency: CURRENCY,
-        totalGross: new Decimal(totalGross),
-        totalDeductions: new Decimal(totalDeductions),
-        totalNet: new Decimal(totalNet),
-        vendorCount: eligibleVendors.length,
-        payoutCount: eligibleVendors.length,
-        minPayoutThreshold: new Decimal(threshold),
-        isDemo: input.isDemo ?? false,
-        createdBy: input.createdBy,
-      },
-    });
-    
-    for (const [vendorId, vendorData] of eligibleVendors) {
-      const payoutNumber = generatePayoutNumber(vendorData.vendor.slug);
-      
-      const payout = await prisma.mvm_payout.create({
+    const result = await prisma.$transaction(async (tx) => {
+      const batch = await tx.mvm_payout_batch.create({
         data: {
           tenantId,
-          vendorId,
-          payoutNumber,
+          batchNumber,
+          description: input.description,
+          periodType: input.periodType,
           periodStart: input.periodStart,
           periodEnd: input.periodEnd,
-          currency: CURRENCY,
-          grossAmount: new Decimal(vendorData.grossAmount),
-          deductions: new Decimal(vendorData.commissionAmount),
-          netAmount: new Decimal(vendorData.netAmount),
           status: 'PENDING',
-          payoutMethod: 'BANK_TRANSFER',
-          bankName: vendorData.vendor.bankName,
-          bankCode: vendorData.vendor.bankCode,
-          accountNumber: vendorData.vendor.accountNumber,
-          accountName: vendorData.vendor.accountName,
+          currency: CURRENCY,
+          totalGross: new Decimal(totalGross),
+          totalDeductions: new Decimal(totalDeductions),
+          totalNet: new Decimal(totalNet),
+          vendorCount: eligibleVendors.length,
+          payoutCount: eligibleVendors.length,
+          minPayoutThreshold: new Decimal(threshold),
+          isDemo: input.isDemo ?? false,
+          createdBy: input.createdBy,
         },
       });
       
-      await prisma.mvm_commission.updateMany({
-        where: {
-          id: { in: vendorData.commissionIds },
-        },
+      for (const [vendorId, vendorData] of eligibleVendors) {
+        const payoutNumber = generatePayoutNumber(vendorData.vendor.slug);
+        
+        const payout = await tx.mvm_payout.create({
+          data: {
+            tenantId,
+            vendorId,
+            payoutNumber,
+            periodStart: input.periodStart,
+            periodEnd: input.periodEnd,
+            currency: CURRENCY,
+            grossAmount: new Decimal(vendorData.grossAmount),
+            deductions: new Decimal(vendorData.commissionAmount),
+            netAmount: new Decimal(vendorData.netAmount),
+            status: 'PENDING',
+            payoutMethod: 'BANK_TRANSFER',
+            bankName: vendorData.vendor.bankName,
+            bankCode: vendorData.vendor.bankCode,
+            accountNumber: vendorData.vendor.accountNumber,
+            accountName: vendorData.vendor.accountName,
+            batchId: batch.id,
+          },
+        });
+        
+        await tx.mvm_commission.updateMany({
+          where: {
+            id: { in: vendorData.commissionIds },
+          },
+          data: {
+            payoutId: payout.id,
+            status: 'PROCESSING',
+          },
+        });
+        
+        await tx.mvm_payout_log.create({
+          data: {
+            tenantId,
+            payoutId: payout.id,
+            batchId: batch.id,
+            action: 'PAYOUT_CREATED',
+            toStatus: 'PENDING',
+            details: `Payout created for ${vendorData.vendor.name}: ₦${vendorData.netAmount.toLocaleString()}`,
+            performedBy: input.createdBy,
+            performedByName: input.createdByName,
+          },
+        });
+      }
+      
+      await tx.mvm_payout_log.create({
         data: {
-          payoutId: payout.id,
-          status: 'PROCESSING',
+          tenantId,
+          batchId: batch.id,
+          action: 'BATCH_CREATED',
+          toStatus: 'PENDING',
+          details: `Batch created with ${eligibleVendors.length} vendors, total ₦${totalNet.toLocaleString()}`,
+          performedBy: input.createdBy,
+          performedByName: input.createdByName,
         },
       });
-    }
-    
-    await prisma.mvm_payout_log.create({
-      data: {
-        tenantId,
-        batchId: batch.id,
-        action: 'BATCH_CREATED',
-        toStatus: 'PENDING',
-        details: `Batch created with ${eligibleVendors.length} vendors, total ₦${totalNet.toLocaleString()}`,
-        performedBy: input.createdBy,
-        performedByName: input.createdByName,
-      },
+      
+      return batch;
     });
     
     return {
-      id: batch.id,
-      batchNumber: batch.batchNumber,
-      description: batch.description || undefined,
-      status: batch.status as any,
-      periodType: batch.periodType as PayoutPeriodType,
-      periodStart: batch.periodStart,
-      periodEnd: batch.periodEnd,
-      vendorCount: batch.vendorCount,
-      payoutCount: batch.payoutCount,
-      totalGross: Number(batch.totalGross),
-      totalDeductions: Number(batch.totalDeductions),
-      totalNet: Number(batch.totalNet),
-      currency: batch.currency,
-      isDemo: batch.isDemo,
-      createdAt: batch.createdAt,
-      createdBy: batch.createdBy,
+      id: result.id,
+      batchNumber: result.batchNumber,
+      description: result.description || undefined,
+      status: result.status as any,
+      periodType: result.periodType as PayoutPeriodType,
+      periodStart: result.periodStart,
+      periodEnd: result.periodEnd,
+      vendorCount: result.vendorCount,
+      payoutCount: result.payoutCount,
+      totalGross: Number(result.totalGross),
+      totalDeductions: Number(result.totalDeductions),
+      totalNet: Number(result.totalNet),
+      currency: result.currency,
+      isDemo: result.isDemo,
+      createdAt: result.createdAt,
+      createdBy: result.createdBy,
     };
   }
   
@@ -347,8 +365,7 @@ export function createPayoutExecutionService(tenantId: string) {
     const payouts = await prisma.mvm_payout.findMany({
       where: {
         tenantId,
-        periodStart: batch.periodStart,
-        periodEnd: batch.periodEnd,
+        batchId: batch.id,
         status: 'PENDING',
       },
     });
@@ -483,52 +500,69 @@ export function createPayoutExecutionService(tenantId: string) {
       throw new Error(`Cannot cancel batch in ${batch.status} status`);
     }
     
-    const payouts = await prisma.mvm_payout.findMany({
-      where: {
-        tenantId,
-        periodStart: batch.periodStart,
-        periodEnd: batch.periodEnd,
-        status: 'PENDING',
-      },
-    });
-    
-    for (const payout of payouts) {
-      await prisma.mvm_commission.updateMany({
-        where: { payoutId: payout.id },
-        data: {
-          payoutId: null,
-          status: 'CLEARED',
+    const result = await prisma.$transaction(async (tx) => {
+      const payouts = await tx.mvm_payout.findMany({
+        where: {
+          tenantId,
+          batchId: batch.id,
+          status: 'PENDING',
         },
       });
       
-      await prisma.mvm_payout.update({
-        where: { id: payout.id },
-        data: { status: 'CANCELLED' },
+      for (const payout of payouts) {
+        await tx.mvm_commission.updateMany({
+          where: { payoutId: payout.id },
+          data: {
+            payoutId: null,
+            status: 'CLEARED',
+          },
+        });
+        
+        await tx.mvm_payout.update({
+          where: { id: payout.id },
+          data: { status: 'CANCELLED' },
+        });
+        
+        await tx.mvm_payout_log.create({
+          data: {
+            tenantId,
+            payoutId: payout.id,
+            batchId: batch.id,
+            action: 'PAYOUT_CANCELLED',
+            fromStatus: 'PENDING',
+            toStatus: 'CANCELLED',
+            details: input.reason || 'Batch cancelled',
+            performedBy: input.cancelledBy,
+            performedByName: input.cancelledByName,
+          },
+        });
+      }
+      
+      const updated = await tx.mvm_payout_batch.update({
+        where: { id: input.batchId },
+        data: {
+          status: 'CANCELLED',
+          failureReason: input.reason,
+        },
       });
-    }
-    
-    const updated = await prisma.mvm_payout_batch.update({
-      where: { id: input.batchId },
-      data: {
-        status: 'CANCELLED',
-        failureReason: input.reason,
-      },
+      
+      await tx.mvm_payout_log.create({
+        data: {
+          tenantId,
+          batchId: batch.id,
+          action: 'BATCH_CANCELLED',
+          fromStatus: batch.status,
+          toStatus: 'CANCELLED',
+          details: input.reason || 'Batch cancelled',
+          performedBy: input.cancelledBy,
+          performedByName: input.cancelledByName,
+        },
+      });
+      
+      return updated;
     });
     
-    await prisma.mvm_payout_log.create({
-      data: {
-        tenantId,
-        batchId: batch.id,
-        action: 'BATCH_CANCELLED',
-        fromStatus: batch.status,
-        toStatus: 'CANCELLED',
-        details: input.reason || 'Batch cancelled',
-        performedBy: input.cancelledBy,
-        performedByName: input.cancelledByName,
-      },
-    });
-    
-    return formatBatchSummary(updated);
+    return formatBatchSummary(result);
   }
   
   async function listBatches(filters?: {
@@ -582,8 +616,7 @@ export function createPayoutExecutionService(tenantId: string) {
     const payouts = await prisma.mvm_payout.findMany({
       where: {
         tenantId,
-        periodStart: batch.periodStart,
-        periodEnd: batch.periodEnd,
+        batchId: batchId,
       },
       include: {
         vendor: true,
