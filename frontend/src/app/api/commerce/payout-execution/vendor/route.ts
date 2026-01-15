@@ -26,7 +26,7 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     let vendorId = searchParams.get('vendorId');
 
-    if (!vendorId) {
+    if (!vendorId && session.user.email) {
       const vendor = await prisma.mvm_vendor.findFirst({
         where: {
           tenantId,
