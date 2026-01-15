@@ -10,28 +10,35 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
+import { getCurrentSession } from '@/lib/auth';
 import { createDriverSmsService } from '@/lib/parkhub/sms';
 
 export async function POST(request: NextRequest) {
   try {
+    const session = await getCurrentSession();
+    if (!session?.user?.id) {
+      return NextResponse.json(
+        { success: false, error: 'Unauthorized' },
+        { status: 401 }
+      );
+    }
+
+    const tenantId = session.activeTenantId;
+    if (!tenantId) {
+      return NextResponse.json(
+        { success: false, error: 'No active tenant' },
+        { status: 400 }
+      );
+    }
+
     const body = await request.json();
     const {
-      tenantId,
       driverId,
       tripId,
       messageType,
       customMessage,
-      sentById,
-      sentByName,
       isDemo,
     } = body;
-
-    if (!tenantId) {
-      return NextResponse.json(
-        { success: false, error: 'tenantId is required' },
-        { status: 400 }
-      );
-    }
 
     if (!driverId) {
       return NextResponse.json(
@@ -85,8 +92,8 @@ export async function POST(request: NextRequest) {
       tripId,
       messageType,
       customMessage,
-      sentById,
-      sentByName,
+      sentById: session.user.id,
+      sentByName: session.user.name || session.user.email || 'Unknown',
       isDemo: isDemo ?? false,
     });
 
@@ -102,18 +109,26 @@ export async function POST(request: NextRequest) {
 
 export async function GET(request: NextRequest) {
   try {
-    const { searchParams } = new URL(request.url);
-    const tenantId = searchParams.get('tenantId');
-    const driverId = searchParams.get('driverId');
-    const tripId = searchParams.get('tripId');
-    const limit = parseInt(searchParams.get('limit') || '20', 10);
+    const session = await getCurrentSession();
+    if (!session?.user?.id) {
+      return NextResponse.json(
+        { success: false, error: 'Unauthorized' },
+        { status: 401 }
+      );
+    }
 
+    const tenantId = session.activeTenantId;
     if (!tenantId) {
       return NextResponse.json(
-        { success: false, error: 'tenantId is required' },
+        { success: false, error: 'No active tenant' },
         { status: 400 }
       );
     }
+
+    const { searchParams } = new URL(request.url);
+    const driverId = searchParams.get('driverId');
+    const tripId = searchParams.get('tripId');
+    const limit = parseInt(searchParams.get('limit') || '20', 10);
 
     if (!driverId && !tripId) {
       return NextResponse.json(

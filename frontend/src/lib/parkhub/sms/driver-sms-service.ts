@@ -273,6 +273,8 @@ export class DriverSmsService {
 
   /**
    * Send custom message
+   * Note: Custom messages also respect driver's prefersSmsNotifications setting
+   * unless explicitly overridden with forceDelivery=true (admin-only use cases)
    */
   async sendCustomMessage(
     driverId: string,
@@ -280,8 +282,58 @@ export class DriverSmsService {
     tripId?: string,
     sentById?: string,
     sentByName?: string,
-    isDemo?: boolean
+    isDemo?: boolean,
+    forceDelivery?: boolean
   ): Promise<SendDriverSmsResult> {
+    if (forceDelivery) {
+      const driver = await prisma.park_driver.findUnique({
+        where: { id: driverId },
+      });
+      
+      if (!driver || driver.tenantId !== this.tenantId) {
+        return { success: false, error: 'Driver not found or access denied' };
+      }
+      
+      if (!driver.phone) {
+        return { success: false, error: 'Driver has no phone number' };
+      }
+
+      const smsLog = await prisma.park_driver_sms_log.create({
+        data: {
+          tenantId: this.tenantId,
+          driverId,
+          tripId: tripId || null,
+          messageType: 'CUSTOM',
+          phoneNumber: driver.phone,
+          messageContent: message,
+          status: 'PENDING',
+          sentById: sentById || null,
+          sentByName: sentByName || null,
+          isDemo: isDemo ?? false,
+        },
+      });
+
+      const sendResult = await this.deliverSms(driver.phone, message, isDemo ?? false);
+
+      await prisma.park_driver_sms_log.update({
+        where: { id: smsLog.id },
+        data: {
+          status: sendResult.success ? 'SENT' : 'FAILED',
+          externalId: sendResult.externalId || null,
+          errorMessage: sendResult.error || null,
+          sentAt: sendResult.success ? new Date() : null,
+        },
+      });
+
+      return {
+        success: sendResult.success,
+        smsLogId: smsLog.id,
+        externalId: sendResult.externalId,
+        error: sendResult.error,
+        message,
+      };
+    }
+    
     return this.sendDriverSms({
       tenantId: this.tenantId,
       driverId,
@@ -296,17 +348,21 @@ export class DriverSmsService {
 
   /**
    * Get SMS history for a driver
+   * Enforces tenant isolation - only returns data if driver belongs to this tenant
    */
   async getDriverSmsHistory(
     driverId: string,
     limit: number = 20
   ): Promise<DriverSmsHistory | null> {
-    const driver = await prisma.park_driver.findUnique({
-      where: { id: driverId },
-      select: { id: true, fullName: true, phone: true },
+    const driver = await prisma.park_driver.findFirst({
+      where: { 
+        id: driverId,
+        tenantId: this.tenantId,
+      },
+      select: { id: true, fullName: true, phone: true, tenantId: true },
     });
 
-    if (!driver) return null;
+    if (!driver || driver.tenantId !== this.tenantId) return null;
 
     const [messages, totalCount] = await Promise.all([
       prisma.park_driver_sms_log.findMany({
@@ -326,7 +382,11 @@ export class DriverSmsService {
     ]);
 
     return {
-      driver,
+      driver: {
+        id: driver.id,
+        fullName: driver.fullName,
+        phone: driver.phone,
+      },
       messages: messages.map((m: SmsLog) => ({
         id: m.id,
         driverId: m.driverId,
@@ -346,8 +406,19 @@ export class DriverSmsService {
 
   /**
    * Get recent SMS logs for a trip
+   * Enforces tenant isolation - only returns data if trip belongs to this tenant
    */
   async getTripSmsLogs(tripId: string): Promise<SmsLogEntry[]> {
+    const trip = await prisma.park_trip.findFirst({
+      where: {
+        id: tripId,
+        tenantId: this.tenantId,
+      },
+      select: { id: true },
+    });
+
+    if (!trip) return [];
+
     const logs = await prisma.park_driver_sms_log.findMany({
       where: {
         tenantId: this.tenantId,
@@ -394,10 +465,11 @@ export class DriverSmsService {
     const twilioPhone = process.env.TWILIO_PHONE_NUMBER;
 
     if (!twilioSid || !twilioToken || !twilioPhone) {
-      console.log(`[SMS - No Twilio] To: ${phoneNumber}\nMessage: ${message}`);
+      console.warn(`[SMS - No Twilio configured] Would send to: ${phoneNumber}`);
+      console.warn(`Message: ${message}`);
       return {
-        success: true,
-        externalId: `local_${Date.now()}`,
+        success: false,
+        error: 'SMS not configured: Twilio credentials (TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, TWILIO_PHONE_NUMBER) are required for production SMS. Use isDemo=true for testing.',
       };
     }
 

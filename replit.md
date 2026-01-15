@@ -96,6 +96,27 @@ WebWaka is built as a multi-tenant SaaS platform with a modular capability syste
         - Mobile-first design: One-hand usage optimized for Nigeria reality
         - UI/UX only: NO payment logic changes, NO automation
         - Components location: frontend/src/components/svm/mobile-checkout/
+    - **SMS Driver Updates (Wave F7)**: Feature-phone SMS notifications for ParkHub drivers:
+        - Driver & Vehicle Management: park_driver and park_vehicle database models with tenant isolation
+        - SMS-capable phone fields: Nigerian phone format support (0XX, +234XX patterns)
+        - Driver preferences: SMS notification opt-in/out, language selection (en, yo, ig, ha)
+        - SMS Message Types:
+            - TRIP_ASSIGNMENT: Driver assigned to a trip
+            - READY_TO_DEPART: Trip is full or threshold reached
+            - DEPARTURE_REMINDER: Manual reminder before departure
+            - STATUS_CHANGE: Trip status update
+            - CANCELLATION: Trip cancelled
+            - CUSTOM: Ad-hoc messages from admin
+        - Multi-language templates: English, Yoruba, Igbo, Hausa
+        - SMS character optimization: Messages kept under 160 chars for single SMS
+        - Twilio integration: Production SMS delivery via Twilio API
+        - Demo mode: Safe testing without actual SMS sends
+        - SMS logging: park_driver_sms_log tracks all messages with delivery status
+        - Integration layer: Convenience functions for common notification scenarios
+        - API endpoint: /api/parkhub/driver-sms (POST send, GET history)
+        - NO automation, NO background jobs, user-triggered only
+        - Feature-phone compatible: No apps required, works on basic phones
+        - Components location: frontend/src/lib/parkhub/sms/
 
 ## External Dependencies
 - **PostgreSQL**: Primary database.
@@ -106,3 +127,4 @@ WebWaka is built as a multi-tenant SaaS platform with a modular capability syste
 - **Tailwind CSS**: Styling framework.
 - **Radix UI**: Component library.
 - **Meta WhatsApp Cloud API**: For WhatsApp messaging.
+- **Twilio**: For SMS notifications to drivers (ParkHub).
