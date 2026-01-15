@@ -18313,6 +18313,173 @@ model mvm_vendor_registration {
   @@index([phone])
 }
 
+// --------------------------------------------------------------------------
+// PARKHUB DRIVER & VEHICLE MANAGEMENT (Wave F7)
+// --------------------------------------------------------------------------
+
+enum ParkDriverStatus {
+  ACTIVE
+  INACTIVE
+  SUSPENDED
+  ON_LEAVE
+}
+
+model park_driver {
+  id              String   @id @default(cuid())
+  tenantId        String
+  parkId          String   // The motor park this driver belongs to
+
+  // Identity
+  driverNumber    String   // Internal ID like "DRV-001"
+  fullName        String
+  nickName        String?  // Common nickname for easy reference
+
+  // Contact - SMS capable phone is required
+  phone           String   // Primary phone (SMS notifications sent here)
+  alternatePhone  String?  // Backup phone
+  
+  // Verification (basic)
+  licenseNumber   String?
+  licenseExpiry   DateTime?
+  nationalId      String?  // NIN or other ID
+  
+  // Status
+  status          ParkDriverStatus @default(ACTIVE)
+  
+  // Preferences
+  prefersSmsNotifications Boolean @default(true)
+  smsLanguage            String  @default("en") // en, yo, ig, ha
+
+  // Emergency Contact
+  emergencyContactName  String?
+  emergencyContactPhone String?
+  
+  // Notes
+  notes           String?
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  // Relations
+  trips           park_trip[]
+  vehicle         park_vehicle?  @relation("DriverVehicle")
+  smsLogs         park_driver_sms_log[]
+  
+  @@unique([tenantId, driverNumber])
+  @@unique([tenantId, phone])
+  @@index([tenantId])
+  @@index([parkId])
+  @@index([status])
+  @@index([phone])
+}
+
+enum ParkVehicleStatus {
+  AVAILABLE
+  IN_USE
+  MAINTENANCE
+  RETIRED
+}
+
+model park_vehicle {
+  id              String   @id @default(cuid())
+  tenantId        String
+  parkId          String   // The motor park this vehicle belongs to
+
+  // Identity
+  vehicleNumber   String   // Internal ID like "VEH-001"
+  plateNumber     String   // Nigerian plate number
+  
+  // Vehicle Details
+  make            String?  // Toyota, Mercedes, etc.
+  model           String?  // Hiace, Sprinter, etc.
+  year            Int?
+  color           String?
+  vehicleType     String   @default("BUS")  // BUS, MINIBUS, CAR, SUV
+  
+  // Capacity
+  totalSeats      Int
+  
+  // Assigned Driver (optional)
+  assignedDriverId String? @unique
+  assignedDriver   park_driver? @relation("DriverVehicle", fields: [assignedDriverId], references: [id])
+  
+  // Status
+  status          ParkVehicleStatus @default(AVAILABLE)
+  
+  // Last service/inspection
+  lastServiceDate DateTime?
+  nextServiceDue  DateTime?
+  
+  // Notes
+  notes           String?
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  // Relations
+  trips           park_trip[]
+  
+  @@unique([tenantId, vehicleNumber])
+  @@unique([tenantId, plateNumber])
+  @@index([tenantId])
+  @@index([parkId])
+  @@index([status])
+}
+
+// SMS Notification Log for Drivers
+enum ParkDriverSmsType {
+  TRIP_ASSIGNMENT       // You've been assigned to trip X
+  READY_TO_DEPART       // Trip is full/ready, prepare to leave
+  DEPARTURE_REMINDER    // Reminder: Your trip departs in X mins
+  STATUS_CHANGE         // Trip status changed
+  CANCELLATION          // Trip cancelled
+  CUSTOM                // Custom message from admin
+}
+
+enum ParkDriverSmsStatus {
+  PENDING
+  SENT
+  DELIVERED
+  FAILED
+}
+
+model park_driver_sms_log {
+  id              String   @id @default(cuid())
+  tenantId        String
+  
+  // Driver & Trip
+  driverId        String
+  driver          park_driver @relation(fields: [driverId], references: [id])
+  tripId          String?
+  
+  // Message Details
+  messageType     ParkDriverSmsType
+  phoneNumber     String   // Phone message was sent to
+  messageContent  String   // Actual SMS content
+  
+  // Delivery Status
+  status          ParkDriverSmsStatus @default(PENDING)
+  externalId      String?  // Twilio message SID or similar
+  errorMessage    String?
+  
+  // Metadata
+  sentAt          DateTime?
+  deliveredAt     DateTime?
+  sentById        String?  // User who triggered the SMS
+  sentByName      String?
+  
+  // Demo safety
+  isDemo          Boolean  @default(false)
+  
+  createdAt       DateTime @default(now())
+  
+  @@index([tenantId])
+  @@index([driverId])
+  @@index([tripId])
+  @@index([status])
+  @@index([createdAt])
+}
+
 // ParkHub Dynamic Departure
 enum ParkTripDepartureMode {
   SCHEDULED    // Leaves at fixed time
@@ -18369,10 +18536,14 @@ model park_trip {
   updatedAt DateTime @updatedAt
 
   // Relations
-  tickets park_ticket[]
+  tickets  park_ticket[]
+  driver   park_driver?  @relation(fields: [driverId], references: [id])
+  vehicle  park_vehicle? @relation(fields: [vehicleId], references: [id])
 
   @@index([tenantId])
   @@index([routeId])
+  @@index([driverId])
+  @@index([vehicleId])
   @@index([status])
   @@index([scheduledDeparture])
 }
