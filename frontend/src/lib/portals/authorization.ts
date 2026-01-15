@@ -40,11 +40,13 @@ export async function canAccessStudent(
   if (guardianLink) return true;
 
   // Check 2: Fallback to tenant membership (for staff/admin access)
+  // Staff with any admin role can access for administrative purposes
   const tenantMembership = await prisma.tenantMembership.findFirst({
     where: {
       userId,
       tenantId,
-      role: 'TENANT_ADMIN',
+      isActive: true,
+      role: { in: ['TENANT_ADMIN', 'ADMIN', 'OWNER', 'MANAGER', 'STAFF'] },
     },
   });
 
@@ -78,11 +80,13 @@ export async function canAccessPatient(
   if (patientLink) return true;
 
   // Check 2: Fallback to tenant membership (for staff/admin access)
+  // Staff with any admin role can access for administrative purposes
   const tenantMembership = await prisma.tenantMembership.findFirst({
     where: {
       userId,
       tenantId,
-      role: 'TENANT_ADMIN',
+      isActive: true,
+      role: { in: ['TENANT_ADMIN', 'ADMIN', 'OWNER', 'MANAGER', 'STAFF'] },
     },
   });
 

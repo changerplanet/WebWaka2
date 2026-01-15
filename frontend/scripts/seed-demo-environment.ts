@@ -129,6 +129,7 @@ async function createDemoPartner() {
   } else {
     partner = await prisma.partner.create({
       data: {
+        id: crypto.randomUUID(),
         name: 'WebWaka Demo Partner',
         slug: DEMO_PARTNER_SLUG,
         email: 'demo-partner@webwaka.com',
@@ -137,6 +138,7 @@ async function createDemoPartner() {
         status: PartnerStatus.ACTIVE,
         tier: PartnerTier.GOLD,
         approvedAt: new Date(),
+        updatedAt: new Date(),
         metadata: {
           isDemo: true,
           description: 'Official WebWaka Demo Partner for platform demonstrations',
