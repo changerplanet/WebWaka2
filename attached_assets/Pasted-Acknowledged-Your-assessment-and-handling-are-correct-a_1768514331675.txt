@@ -1,0 +1,316 @@
+Acknowledged. Your assessment and handling are correct and acceptable given the constraints of Wave I.1. Let me be explicit and decisive so we keep momentum without architectural drift.
+
+⸻
+
+✅ ARCHITECT REVIEW — WAVE I.1 (SVM PUBLIC STOREFRONT ROUTING)
+
+Verdict: APPROVED AS IMPLEMENTED
+
+You made the right call.
+
+Why this is acceptable
+	•	The concern about tenantId exposure is architecturally valid
+	•	However, resolving it properly would require:
+	•	A server-side API proxy layer
+	•	Refactoring SVMProvider
+	•	Breaking changes across:
+	•	useOfflineCart
+	•	RecentPurchasesTicker
+	•	Social proof hooks
+	•	Checkout and cart providers
+	•	That work would violate Wave I.1’s explicit mandate:
+“Expose existing functionality only — no new business logic”
+
+You:
+	•	Preserved existing SVM architecture
+	•	Implemented server-side tenant resolution at the routing boundary
+	•	Applied fail-safe gating and SEO correctly
+	•	Documented the limitation clearly as architectural debt
+	•	Updated replit.md appropriately
+
+This is exactly how a senior architect should handle scoped constraints.
+
+⸻
+
+✅ IMPLEMENTATION CONFIRMATION
+
+I confirm that Wave I.1 has successfully delivered:
+	•	✅ Public tenant storefronts:
+/[tenantSlug]/store
+	•	✅ Public product pages:
+/[tenantSlug]/product/[productSlug]
+	•	✅ Server-side tenant validation (slug → ACTIVE → SVM enabled)
+	•	✅ SEO metadata & canonical URLs
+	•	✅ Safe 404 behavior for invalid/suspended tenants
+	•	✅ Full reuse of existing SVM components
+	•	✅ No new schemas
+	•	✅ No new business logic
+	•	✅ No automation
+	•	✅ No background jobs
+
+Demo validation path (/demo-store/store) is sufficient and correct.
+
+⸻
+
+📌 ARCHITECTURAL DEBT (FORMALLY ACCEPTED)
+
+The following is now officially recorded technical debt, not a blocker:
+
+“SVM still exposes tenantId to client components due to legacy provider design.
+Full isolation requires a server-side API proxy and provider refactor.”
+
+This is acceptable for:
+	•	MVP
+	•	Public storefront exposure
+	•	Demo and early production tenants
+
+We will revisit this in a Platform Hardening / Security Phase, not in exposure waves.
+
+⸻
+
+🔓 NEXT STEP AUTHORIZATION
+
+Wave I.1 is complete and accepted.
+
+You are now authorized to proceed with:
+
+🔴 WAVE I.2 — MVM PUBLIC MARKETPLACE (COMMERCE)
+
+This is the largest remaining commercial visibility gap.
+
+When you proceed:
+	•	Reuse this same discipline
+	•	Expose existing backend power
+	•	Do not invent new marketplace logic
+	•	Stop immediately if scope pressure appears
+
+⸻
+
+🔴 WAVE I.2 — MVM PUBLIC MARKETPLACE (COMMERCE)
+⸻
+
+CONTEXT
+
+WebWaka already has a fully implemented Multi-Vendor Marketplace (MVM) backend, including:
+	•	Vendor registration & approval
+	•	Product channel configuration (POS / SVM / MVM)
+	•	Order splitting engine
+	•	Vendor commissions
+	•	Vendor ratings & trust badges
+	•	Vendor dashboards
+	•	Payout execution logic (manual, partner-triggered)
+
+What is missing is PUBLIC VISIBILITY.
+
+There is currently NO customer-facing marketplace UI, meaning:
+	•	Customers cannot browse vendors
+	•	Customers cannot browse multi-vendor products
+	•	Customers cannot perform multi-vendor checkout via a marketplace flow
+
+Wave I.2 exists to EXPOSE existing functionality only, not to invent new marketplace logic.
+
+⸻
+
+🔒 NON-NEGOTIABLE CONSTRAINTS (READ CAREFULLY)
+
+You MUST comply with ALL of the following:
+
+❌ DO NOT
+	•	❌ Add new business logic
+	•	❌ Change order splitting logic
+	•	❌ Change commission logic
+	•	❌ Introduce automation or background jobs
+	•	❌ Add new payment logic
+	•	❌ Refactor tenant isolation architecture
+	•	❌ “Fix” known architectural debt (document only if encountered)
+	•	❌ Invent ranking, recommendations, or promotions
+	•	❌ Add search intelligence beyond basic filtering
+	•	❌ Add admin/vendor configuration screens
+
+✅ YOU MAY
+	•	✅ Expose existing APIs via new PUBLIC pages
+	•	✅ Reuse existing components and services
+	•	✅ Create new read-only UI pages
+	•	✅ Add routing + server-side gating
+	•	✅ Add SEO metadata
+	•	✅ Add fail-safe 404s
+	•	✅ Add clear demo vs live labeling
+
+⸻
+
+🎯 WAVE I.2 OBJECTIVE
+
+Deliver a PUBLIC, CUSTOMER-FACING MULTI-VENDOR MARKETPLACE that:
+	•	Allows customers to:
+	•	Browse vendors
+	•	Browse vendor products
+	•	Add products from multiple vendors to cart
+	•	Proceed to checkout using existing MVM logic
+	•	Is tenant-scoped
+	•	Is read-only exposure
+	•	Uses existing MVM backend capabilities exactly as-is
+	•	Works in demo mode and live mode
+	•	Is SEO-ready
+
+⸻
+
+🧭 REQUIRED PUBLIC ROUTES
+
+You MUST implement the following routes:
+
+1️⃣ Marketplace Landing
+
+/[tenantSlug]/marketplace
+
+Purpose
+	•	Entry point to the MVM marketplace for a tenant
+
+Behavior
+	•	Server-side tenant resolution by tenantSlug
+	•	Validate:
+	•	Tenant exists
+	•	Tenant is ACTIVE
+	•	MVM / Commerce capability is enabled
+	•	Show:
+	•	Vendor cards
+	•	Vendor name
+	•	Trust badge (from Vendor Rating System)
+	•	Average rating
+	•	Product count
+	•	Demo tenants clearly labeled
+
+Failure
+	•	Invalid / suspended tenant → 404
+
+⸻
+
+2️⃣ Public Vendor Page
+
+/[tenantSlug]/marketplace/vendor/[vendorSlug]
+
+Purpose
+	•	Public storefront for an individual vendor
+
+Behavior
+	•	Resolve vendor by slug (existing vendor data)
+	•	Show:
+	•	Vendor profile info
+	•	Trust badge & rating breakdown
+	•	Vendor products (MVM-enabled only)
+	•	NO vendor editing
+	•	NO analytics
+	•	NO internal IDs exposed visually
+
+⸻
+
+3️⃣ Product Detail Page (Marketplace Context)
+
+/[tenantSlug]/marketplace/product/[productSlug]
+
+Purpose
+	•	View a product sold by a specific vendor
+
+Behavior
+	•	Uses existing product + channel config
+	•	Shows:
+	•	Vendor attribution
+	•	Price (channel-specific)
+	•	Trust signals
+	•	Add-to-cart uses existing cart logic
+
+⸻
+
+🛒 CART & CHECKOUT RULES
+	•	MUST reuse existing:
+	•	Cart logic
+	•	Order splitting engine
+	•	Checkout flow
+	•	Cart MUST support:
+	•	Multiple vendors
+	•	Vendor attribution per line item
+	•	NO new checkout UI patterns
+	•	NO custom payment flows
+
+If a gap exists:
+	•	Document it
+	•	DO NOT invent a workaround
+
+⸻
+
+🔐 TENANT & SECURITY HANDLING
+
+Follow Wave I.1 precedent:
+	•	Tenant resolved server-side at routing level
+	•	Client components may still receive tenantId if required by existing providers
+	•	DO NOT refactor providers
+	•	If tenantId exposure is unavoidable:
+	•	Document as architectural debt
+	•	Do not block delivery
+
+⸻
+
+🌍 SEO REQUIREMENTS
+
+Each public page must include:
+	•	Dynamic <title>
+	•	Meta description
+	•	Canonical URL
+	•	Indexable content (no auth gating)
+
+⸻
+
+🧪 DEMO MODE RULES
+	•	Demo tenants must:
+	•	Work without authentication
+	•	Be clearly labeled (Demo)
+	•	Demo data must not affect live aggregates
+
+⸻
+
+📄 REQUIRED COMPLETION REPORT
+
+When done, STOP and provide:
+
+1. Routes Implemented
+	•	Exact paths
+	•	Purpose of each
+
+2. UI Components Used
+	•	Existing vs newly created
+
+3. APIs Consumed
+	•	Confirm they already existed
+
+4. Demo vs Live Behavior
+
+5. Explicit Confirmations
+
+You MUST explicitly state:
+	•	❌ No new business logic
+	•	❌ No automation
+	•	❌ No payouts
+	•	❌ No ranking algorithms
+	•	❌ No schema changes (unless absolutely unavoidable — justify if so)
+
+6. Known Gaps (If Any)
+	•	Clearly listed
+	•	No speculative fixes
+
+⸻
+
+🛑 STOP CONDITION
+
+After submitting the Wave I.2 Completion Report:
+	•	STOP
+	•	Do NOT proceed to Wave I.3
+	•	Await explicit approval
+
+⸻
+
+FINAL REMINDER
+
+This wave is about visibility, not capability.
+
+If you find yourself designing instead of exposing — stop and reassess.
+
+⸻
