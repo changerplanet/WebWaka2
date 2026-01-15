@@ -72,7 +72,7 @@ export async function POST(request: NextRequest) {
           extractedDate: extractedDate ? new Date(extractedDate) : undefined,
           extractedBankName,
           submittedById: session.user.id,
-          submittedByName: session.user.name || session.user.email,
+          submittedByName: session.user.name ?? session.user.email ?? undefined,
         });
 
         if (!result.success) {
@@ -95,7 +95,7 @@ export async function POST(request: NextRequest) {
           note,
           customerReference,
           verifiedById: session.user.id,
-          verifiedByName: session.user.name || session.user.email || 'Unknown',
+          verifiedByName: session.user.name ?? session.user.email ?? 'Unknown',
         });
 
         if (!result.success) {
