@@ -228,13 +228,13 @@ export class ParkHubPosService {
         const ticketIds: string[] = [];
 
         for (let i = 0; i < item.ticketCount; i++) {
-          const seatNumber = item.seatNumbers[i] || null;
+          const seatNumber = item.seatNumbers[i] ?? undefined;
           
           const result = await ParkHubService.sellTicket(this.tenantId, {
             tripId: item.tripId,
             passengerName: item.passengerName || 'Walk-up Customer',
-            passengerPhone: item.passengerPhone,
-            seatNumber: seatNumber,
+            passengerPhone: item.passengerPhone ?? undefined,
+            seatNumber,
             paymentMethod: item.paymentMethod as 'CASH' | 'BANK_TRANSFER' | 'POS_CARD',
             soldById: item.agentId,
             soldByName: item.agentName,
