@@ -1,0 +1,285 @@
+
+🔴 GOD-LEVEL PLATFORM TRUTH AUDIT
+
+CONTEXT
+
+WebWaka is a very large, multi-tenant, multi-role, multi-suite platform with:
+	•	Super Admin
+	•	Partners
+	•	Clients (Tenants)
+	•	End Users (Customers, Vendors, Agents, Drivers, Passengers, etc.)
+	•	Dozens of Suites (POS, SVM, MVM, ParkHub, Education, Health, CRM, Accounting, Logistics, Sites & Funnels, etc.)
+	•	Hundreds of capabilities, APIs, services, and models
+
+Over time, many core logics, services, APIs, schemas, and workflows have been implemented, but it is now unclear whether all corresponding interfaces, dashboards, menus, storefronts, marketplaces, routes, and user-facing surfaces have also been implemented and correctly exposed.
+
+We must establish the absolute ground truth of the platform — with zero assumptions.
+
+⸻
+
+🚨 CRITICAL CLARIFICATION (DO NOT MISS THIS)
+
+ParkHub IS A COMMERCE SURFACE
+
+ParkHub is not just an operational or logistics module.
+
+ParkHub MUST be treated as a full commerce surface, with:
+	•	Single-Vendor Storefronts (SVM-equivalent)
+e.g. a transport company selling tickets directly
+	•	Multi-Vendor Marketplaces (MVM-equivalent)
+e.g. multiple transport operators listed in one park or hub
+	•	Public browsing
+	•	Public listings
+	•	Public ticket purchase flows
+	•	Public checkout
+	•	Public verification
+	•	Public receipts / manifests
+
+👉 Any audit that treats ParkHub differently from SVM and MVM is INVALID.
+
+ParkHub must be reviewed as:
+
+Commerce + Marketplace + Storefront + POS + Operations
+
+⸻
+
+🎯 OBJECTIVE (NON-NEGOTIABLE)
+
+You are to carry out a 100% exhaustive, line-by-line review of the entire WebWaka codebase and produce a single, authoritative “state of the platform” report that answers:
+
+What EXACTLY exists, what does NOT exist, what is partially implemented, what is unreachable, what is invisible, and what is only theoretical — across the entire platform.
+
+This includes ALL commerce surfaces, explicitly:
+	•	SVM
+	•	MVM
+	•	ParkHub storefronts
+	•	ParkHub marketplaces
+
+No assumptions. No interpretation without proof.
+
+⸻
+
+🧠 CORE RULES (STILL IN FORCE)
+
+🔒 ABSOLUTE RULES
+	•	❌ NO assumptions
+	•	❌ NO “probably”, “appears to”, “intended to”
+	•	❌ NO skipping ParkHub public surfaces
+	•	❌ NO treating ParkHub as “internal only”
+	•	❌ NO skipping frontend or UI just because backend exists
+	•	❌ NO implementation during this phase (READ-ONLY)
+
+✅ REQUIRED BEHAVIOR
+	•	File-by-file inspection
+	•	Route-by-route verification
+	•	UI-by-UI confirmation
+	•	Role-by-role exposure mapping
+	•	Public vs authenticated surface distinction
+
+⸻
+
+🧩 SCOPE — WHAT MUST BE REVIEWED (ALL OF IT)
+
+⸻
+
+1. ROLES & ENTRY POINTS (ALL ROLES)
+
+For each role, document:
+	•	Super Admin
+	•	Partner
+	•	Tenant Admin
+	•	Tenant Staff
+	•	Vendor
+	•	Agent
+	•	Driver
+	•	Passenger
+	•	Public Customer (unauthenticated)
+
+For EACH role:
+	•	Login entry points
+	•	Dashboards
+	•	Menus
+	•	Accessible routes
+	•	Missing routes
+	•	Expected vs actual visibility
+
+⸻
+
+2. SUITES & PLATFORMS (NON-NEGOTIABLE LIST)
+
+For EVERY suite, including but not limited to:
+	•	POS
+	•	SVM (Single Vendor Marketplace)
+	•	MVM (Multi-Vendor Marketplace)
+	•	ParkHub (as BOTH SVM + MVM equivalent)
+	•	Education
+	•	Health
+	•	CRM
+	•	Accounting
+	•	Logistics
+	•	Sites & Funnels
+	•	Templates
+	•	Payments
+	•	Analytics
+	•	Notifications
+
+For EACH suite, produce a table:
+
+Capability / Feature	Backend Logic	API Exists	DB Models	UI Exists	Public Surface Exists	Menu Linked	Role Accessible	Status
+
+
+Status must be one of:
+	•	✅ Fully Implemented & Exposed
+	•	🟡 Implemented but Hidden
+	•	🟠 Partially Implemented
+	•	🔴 Logic Only (No UI)
+	•	⚫ Demo / Mock Only
+	•	❌ Not Implemented
+
+⸻
+
+3. STOREFRONTS & MARKETPLACES (EXPLICIT SECTION)
+
+You MUST create a dedicated section covering:
+
+SVM Storefronts
+	•	Public product listing
+	•	Product details
+	•	Cart
+	•	Checkout
+	•	Order tracking
+
+MVM Marketplaces
+	•	Vendor listing
+	•	Product aggregation
+	•	Vendor pages
+	•	Split checkout
+	•	Commission visibility
+
+ParkHub Storefronts & Marketplaces
+	•	Public route listings
+	•	Operator listings
+	•	Ticket purchase flow
+	•	Seat selection
+	•	Checkout
+	•	Receipts
+	•	Manifest verification
+
+For each:
+	•	Exists?
+	•	Partially exists?
+	•	Logic only?
+	•	UI missing?
+	•	Route exists but not linked?
+	•	Demo only?
+
+⸻
+
+4. DASHBOARDS & NAVIGATION
+
+Audit:
+	•	Super Admin dashboards
+	•	Partner dashboards
+	•	Tenant dashboards
+	•	Vendor dashboards
+	•	Operator dashboards
+	•	Park Admin dashboards
+
+Identify:
+	•	Missing menus
+	•	Orphaned pages
+	•	Hidden routes
+	•	Dead links
+	•	Features with no entry point
+
+⸻
+
+5. API & SERVICE COVERAGE
+
+For every API route:
+	•	Is it used by UI?
+	•	Used by which role?
+	•	Used by public storefront?
+	•	Demo-only?
+	•	Production-safe?
+	•	Completely unused?
+
+Explicitly list:
+	•	Orphaned APIs
+	•	Orphaned services
+	•	Orphaned models
+
+⸻
+
+6. DATA MODELS vs REAL USAGE
+
+For every Prisma model:
+	•	Actively used
+	•	Used only in demo
+	•	Written but never read
+	•	Read but never written
+	•	Never referenced anywhere
+
+⸻
+
+7. FINAL FEATURE COMPLETENESS MATRIX
+
+Produce a master truth table:
+
+Feature	Applies To (SVM / MVM / ParkHub)	Intended Behavior	Current Reality	Missing UI	Missing Logic	Exposed to Users?	Safe to Ship?
+
+
+
+⸻
+
+📦 REQUIRED DELIVERABLES
+
+1. CANONICAL REPORT
+
+/docs/PLATFORM_GROUND_TRUTH_AUDIT.md
+
+2. EXECUTIVE TRUTH SUMMARY
+	•	% truly complete
+	•	% logic-only
+	•	% hidden
+	•	% demo-only
+	•	% missing
+
+3. ACTIONABLE GAP INVENTORY
+	•	UI gaps
+	•	Storefront gaps
+	•	Marketplace gaps
+	•	Navigation gaps
+	•	Role exposure gaps
+
+⸻
+
+🛑 STOP CONDITION
+	•	❌ Do NOT fix anything
+	•	❌ Do NOT expose anything
+	•	❌ Do NOT refactor anything
+
+Only observe, verify, document, and report.
+
+⸻
+
+✅ FINAL CONFIRMATION REQUIRED
+
+At the end of the report, you MUST state:
+
+“I confirm that this audit involved a complete, exhaustive review of the entire WebWaka platform — including but not limited SVM, MVM, and ParkHub as commerce storefronts and marketplaces — with no assumptions made and no areas skipped.”
+
+⸻
+
+🔴 WHY THIS MATTERS
+
+This audit will:
+	•	Prevent false confidence
+	•	Expose UI vs logic gaps
+	•	Reveal hidden technical debt
+	•	Create a single source of truth
+	•	Enable clean, confident rollout of:
+	•	Templates
+	•	White-label branding
+	•	Partner marketplaces
+	•	Public storefronts
