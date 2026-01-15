@@ -129,6 +129,7 @@ export interface LocationSalesRecord {
   revenue: number;
   orderCount: number;
   lastSaleAt: Date | null;
+  channel: ChannelType;
 }
 
 export interface DailySalesRecord {

@@ -37,8 +37,8 @@ async function authorizeAccess(
     return { authorized: false, error: 'Not a member of this tenant' };
   }
 
-  if (tenantMembership.role !== 'TENANT_ADMIN' && tenantMembership.role !== 'TENANT_USER') {
-    return { authorized: false, error: 'Insufficient permissions for inventory access' };
+  if (tenantMembership.role !== 'TENANT_ADMIN') {
+    return { authorized: false, error: 'Admin access required for inventory visibility' };
   }
 
   return { authorized: true };
