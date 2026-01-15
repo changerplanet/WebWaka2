@@ -54,6 +54,15 @@ WebWaka is a multi-tenant SaaS platform built with a modular capability system, 
     - **Social Proof System (Wave G3)**: Read-only social proof signals for SVM derived from real purchase data. Features include: purchase count signals ("X bought today"), popularity badges (Bestseller/Trending/Popular), city popularity ("Popular in Lagos"), recent purchase ticker (throttled, privacy-safe), batch API for product listings, and demo vs live labeling. Constraints: no dark patterns, no fake urgency/scarcity, no countdown timers, no manipulative nudges, no cross-tenant leakage, all data from real purchases only.
     - **Voice Search (Wave G4)**: POS voice-to-product lookup with Nigerian accent tolerance. Features include: manual mic trigger (no always-on listening), Soundex and Metaphone phonetic matching, Nigerian-specific phonetic mappings, fuzzy matching with Levenshtein distance, offline detection with graceful fallback, demo mode support. Constraints: product lookup only (no commands), no auto-add-to-cart, no payments via voice, no data sent without user action, no background listening.
     - **Multi-Park Operator View (Wave G5)**: Consolidated read-only dashboard for operators managing multiple parks. Features include: cross-park summaries (active trips, ticket sales, cash collected, agent activity), mobile-first tablet-friendly layouts, real-time refresh, park-by-park breakdown, agent performance leaderboard, payment method breakdown, demo mode support. Constraints: read-only (no modifications), no ticket sales flows, no payouts/money movement, no automation, no background jobs, no cross-tenant visibility.
+- **Sites & Funnels Template System (Phase H1)**:
+    - **Super Admin Template Management**: SUPER_ADMIN-only template CRUD with lifecycle management (DRAFT → PUBLISHED → DEPRECATED).
+    - **Template Types**: SITE_TEMPLATE (multi-page sites), FUNNEL_TEMPLATE (multi-step funnels), PAGE_TEMPLATE (single pages).
+    - **Multi-Page Templates**: sf_template_pages model for storing multiple pages per template with sort order.
+    - **Partner Template Browsing**: Read-only catalog access for Partners to browse published, partner-visible templates.
+    - **Token Resolution**: Automatic replacement of {{tenant.name}}, {{brand.primaryColor}}, {{contact.email}}, etc. during cloning.
+    - **Entitlement-Gated Cloning**: Site/Funnel creation via template clone respects existing quotas and feature flags.
+    - **Template Validation**: Schema validation before publish ensuring all required fields and blocks present.
+    - Constraints: NO partner template uploads, NO marketplace, NO payments, NO automation, SUPER_ADMIN only for mutations.
 
 ## External Dependencies
 - **PostgreSQL**: Primary database.

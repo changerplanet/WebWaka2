@@ -110,7 +110,16 @@ export interface CloneFunnelTemplateInput {
   tokenContext?: TokenContext
 }
 
+function deepClone<T>(obj: T): T {
+  return JSON.parse(JSON.stringify(obj))
+}
+
 function resolveTokens(content: unknown, context: TokenContext): unknown {
+  const cloned = deepClone(content)
+  return resolveTokensInternal(cloned, context)
+}
+
+function resolveTokensInternal(content: unknown, context: TokenContext): unknown {
   if (typeof content === 'string') {
     let result = content
 
@@ -150,13 +159,13 @@ function resolveTokens(content: unknown, context: TokenContext): unknown {
   }
 
   if (Array.isArray(content)) {
-    return content.map(item => resolveTokens(item, context))
+    return content.map(item => resolveTokensInternal(item, context))
   }
 
   if (typeof content === 'object' && content !== null) {
     const result: Record<string, unknown> = {}
     for (const [key, value] of Object.entries(content)) {
-      result[key] = resolveTokens(value, context)
+      result[key] = resolveTokensInternal(value, context)
     }
     return result
   }
@@ -387,77 +396,81 @@ export class PartnerTemplateService {
 
       const siteId = randomUUID()
 
-      const site = await prisma.sf_sites.create({
-        data: {
-          id: siteId,
-          tenantId,
-          platformInstanceId,
-          partnerId,
-          name: siteName,
-          slug: siteSlug,
-          description: template.description,
-          status: 'DRAFT',
-          metaTitle: siteName,
-          metaDescription: template.description,
-          settings: template.settings || {},
-          createdBy,
-          updatedBy: createdBy,
-        },
-      })
-
-      for (const templatePage of template.pages) {
-        const pageId = randomUUID()
-        let blocks = templatePage.blocks as unknown[]
-
-        if (tokenContext) {
-          blocks = resolveTokens(blocks, tokenContext) as unknown[]
-        }
-
-        await prisma.sf_pages.create({
+      const result = await prisma.$transaction(async (tx) => {
+        const site = await tx.sf_sites.create({
           data: {
-            id: pageId,
+            id: siteId,
             tenantId,
-            siteId,
-            name: templatePage.name,
-            slug: templatePage.slug,
-            pageType: templatePage.pageType,
-            blocks,
-            metaTitle: templatePage.metaTitle,
-            metaDescription: templatePage.metaDescription,
-            isPublished: false,
-            settings: templatePage.settings || {},
+            platformInstanceId,
+            partnerId,
+            name: siteName,
+            slug: siteSlug,
+            description: template.description,
+            status: 'DRAFT',
+            metaTitle: siteName,
+            metaDescription: template.description,
+            settings: (template.settings || {}) as JsonValue,
             createdBy,
             updatedBy: createdBy,
           },
         })
 
-        if (Array.isArray(blocks)) {
-          for (let i = 0; i < blocks.length; i++) {
-            const block = blocks[i] as Record<string, unknown>
-            await prisma.sf_page_blocks.create({
-              data: {
-                id: randomUUID(),
-                pageId,
-                blockType: (block.type as string) || 'section',
-                name: (block.name as string) || `Block ${i + 1}`,
-                content: (block.content as Record<string, unknown>) || {},
-                styles: (block.styles as Record<string, unknown>) || {},
-                settings: (block.settings as Record<string, unknown>) || {},
-                sortOrder: i,
-                isVisible: true,
-              },
-            })
+        for (const templatePage of template.pages) {
+          const pageId = randomUUID()
+          let blocks = deepClone(templatePage.blocks as unknown[])
+
+          if (tokenContext) {
+            blocks = resolveTokens(blocks, tokenContext) as unknown[]
+          }
+
+          await tx.sf_pages.create({
+            data: {
+              id: pageId,
+              tenantId,
+              siteId,
+              name: templatePage.name,
+              slug: templatePage.slug,
+              pageType: templatePage.pageType,
+              blocks: blocks as JsonValue,
+              metaTitle: templatePage.metaTitle,
+              metaDescription: templatePage.metaDescription,
+              isPublished: false,
+              settings: (templatePage.settings || {}) as JsonValue,
+              createdBy,
+              updatedBy: createdBy,
+            },
+          })
+
+          if (Array.isArray(blocks)) {
+            for (let i = 0; i < blocks.length; i++) {
+              const block = blocks[i] as Record<string, unknown>
+              await tx.sf_page_blocks.create({
+                data: {
+                  id: randomUUID(),
+                  pageId,
+                  blockType: (block.type as string) || 'section',
+                  name: (block.name as string) || `Block ${i + 1}`,
+                  content: ((block.content as Record<string, unknown>) || {}) as JsonValue,
+                  styles: ((block.styles as Record<string, unknown>) || {}) as JsonValue,
+                  settings: ((block.settings as Record<string, unknown>) || {}) as JsonValue,
+                  sortOrder: i,
+                  isVisible: true,
+                },
+              })
+            }
           }
         }
-      }
+
+        return site
+      })
 
       return {
         success: true,
         site: {
-          id: site.id,
-          name: site.name,
-          slug: site.slug,
-          status: site.status,
+          id: result.id,
+          name: result.name,
+          slug: result.slug,
+          status: result.status,
           pageCount: template.pages.length,
           clonedFromTemplateId: templateId,
           clonedFromTemplateVersion: template.version,
@@ -521,79 +534,83 @@ export class PartnerTemplateService {
 
       const funnelId = randomUUID()
 
-      const funnel = await prisma.sf_funnels.create({
-        data: {
-          id: funnelId,
-          tenantId,
-          platformInstanceId,
-          partnerId,
-          siteId,
-          name: funnelName,
-          slug: funnelSlug,
-          description: template.description,
-          status: 'DRAFT',
-          goalType: goalType || template.useCase,
-          settings: template.settings || {},
-          createdBy,
-          updatedBy: createdBy,
-        },
-      })
-
-      for (let i = 0; i < template.pages.length; i++) {
-        const templatePage = template.pages[i]
-        const pageId = randomUUID()
-        let blocks = templatePage.blocks as unknown[]
-
-        if (tokenContext) {
-          blocks = resolveTokens(blocks, tokenContext) as unknown[]
-        }
-
-        await prisma.sf_pages.create({
+      const result = await prisma.$transaction(async (tx) => {
+        const funnel = await tx.sf_funnels.create({
           data: {
-            id: pageId,
+            id: funnelId,
             tenantId,
-            funnelId,
-            name: templatePage.name,
-            slug: templatePage.slug,
-            pageType: templatePage.pageType,
-            funnelOrder: i + 1,
-            blocks,
-            metaTitle: templatePage.metaTitle,
-            metaDescription: templatePage.metaDescription,
-            isPublished: false,
-            settings: templatePage.settings || {},
+            platformInstanceId,
+            partnerId,
+            siteId,
+            name: funnelName,
+            slug: funnelSlug,
+            description: template.description,
+            status: 'DRAFT',
+            goalType: goalType || template.useCase,
+            settings: (template.settings || {}) as JsonValue,
             createdBy,
             updatedBy: createdBy,
           },
         })
 
-        if (Array.isArray(blocks)) {
-          for (let j = 0; j < blocks.length; j++) {
-            const block = blocks[j] as Record<string, unknown>
-            await prisma.sf_page_blocks.create({
-              data: {
-                id: randomUUID(),
-                pageId,
-                blockType: (block.type as string) || 'section',
-                name: (block.name as string) || `Block ${j + 1}`,
-                content: (block.content as Record<string, unknown>) || {},
-                styles: (block.styles as Record<string, unknown>) || {},
-                settings: (block.settings as Record<string, unknown>) || {},
-                sortOrder: j,
-                isVisible: true,
-              },
-            })
+        for (let i = 0; i < template.pages.length; i++) {
+          const templatePage = template.pages[i]
+          const pageId = randomUUID()
+          let blocks = deepClone(templatePage.blocks as unknown[])
+
+          if (tokenContext) {
+            blocks = resolveTokens(blocks, tokenContext) as unknown[]
+          }
+
+          await tx.sf_pages.create({
+            data: {
+              id: pageId,
+              tenantId,
+              funnelId,
+              name: templatePage.name,
+              slug: templatePage.slug,
+              pageType: templatePage.pageType,
+              funnelOrder: i + 1,
+              blocks: blocks as JsonValue,
+              metaTitle: templatePage.metaTitle,
+              metaDescription: templatePage.metaDescription,
+              isPublished: false,
+              settings: (templatePage.settings || {}) as JsonValue,
+              createdBy,
+              updatedBy: createdBy,
+            },
+          })
+
+          if (Array.isArray(blocks)) {
+            for (let j = 0; j < blocks.length; j++) {
+              const block = blocks[j] as Record<string, unknown>
+              await tx.sf_page_blocks.create({
+                data: {
+                  id: randomUUID(),
+                  pageId,
+                  blockType: (block.type as string) || 'section',
+                  name: (block.name as string) || `Block ${j + 1}`,
+                  content: ((block.content as Record<string, unknown>) || {}) as JsonValue,
+                  styles: ((block.styles as Record<string, unknown>) || {}) as JsonValue,
+                  settings: ((block.settings as Record<string, unknown>) || {}) as JsonValue,
+                  sortOrder: j,
+                  isVisible: true,
+                },
+              })
+            }
           }
         }
-      }
+
+        return funnel
+      })
 
       return {
         success: true,
         funnel: {
-          id: funnel.id,
-          name: funnel.name,
-          slug: funnel.slug,
-          status: funnel.status,
+          id: result.id,
+          name: result.name,
+          slug: result.slug,
+          status: result.status,
           stepCount: template.pages.length,
           clonedFromTemplateId: templateId,
           clonedFromTemplateVersion: template.version,

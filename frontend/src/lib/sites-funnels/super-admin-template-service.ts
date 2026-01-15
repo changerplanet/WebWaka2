@@ -153,9 +153,9 @@ export class SuperAdminTemplateService {
           industry: input.industry,
           useCase: input.useCase,
           pageType: input.pageType || 'LANDING',
-          blocks: [],
-          styles: input.styles || {},
-          settings: input.settings || {},
+          blocks: [] as JsonValue,
+          styles: (input.styles || {}) as JsonValue,
+          settings: (input.settings || {}) as JsonValue,
           version: '1.0.0',
           isLatest: true,
           status: 'DRAFT',
@@ -214,9 +214,9 @@ export class SuperAdminTemplateService {
           slug: input.slug,
           pageType: input.pageType || 'CONTENT',
           sortOrder: input.sortOrder || 0,
-          blocks: input.blocks || [],
-          styles: input.styles || {},
-          settings: input.settings || {},
+          blocks: (input.blocks || []) as JsonValue,
+          styles: (input.styles || {}) as JsonValue,
+          settings: (input.settings || {}) as JsonValue,
           metaTitle: input.metaTitle,
           metaDescription: input.metaDescription,
         },
@@ -257,7 +257,7 @@ export class SuperAdminTemplateService {
 
       await prisma.sf_template_pages.update({
         where: { id: pageId },
-        data: { blocks, updatedAt: new Date() },
+        data: { blocks: blocks as JsonValue, updatedAt: new Date() },
       })
 
       return { success: true }
@@ -298,7 +298,7 @@ export class SuperAdminTemplateService {
 
       await prisma.sf_templates.update({
         where: { id: templateId },
-        data: { blocks, updatedAt: new Date() },
+        data: { blocks: blocks as JsonValue, updatedAt: new Date() },
       })
 
       return { success: true }
@@ -514,8 +514,8 @@ export class SuperAdminTemplateService {
           ...(input.thumbnailUrl !== undefined && { thumbnailUrl: input.thumbnailUrl }),
           ...(input.industry !== undefined && { industry: input.industry }),
           ...(input.useCase !== undefined && { useCase: input.useCase }),
-          ...(input.styles !== undefined && { styles: input.styles }),
-          ...(input.settings !== undefined && { settings: input.settings }),
+          ...(input.styles !== undefined && { styles: input.styles as JsonValue }),
+          ...(input.settings !== undefined && { settings: input.settings as JsonValue }),
           ...(input.isDemo !== undefined && { isDemo: input.isDemo }),
           ...(input.partnerVisible !== undefined && { partnerVisible: input.partnerVisible }),
           updatedAt: new Date(),
@@ -727,9 +727,9 @@ export class SuperAdminTemplateService {
           industry: definition.industry,
           useCase: definition.useCase,
           pageType: 'LANDING',
-          blocks: definition.templateType === 'PAGE_TEMPLATE' && definition.pages.length > 0
+          blocks: (definition.templateType === 'PAGE_TEMPLATE' && definition.pages.length > 0
             ? definition.pages[0].blocks || []
-            : [],
+            : []) as JsonValue,
           version: '1.0.0',
           isLatest: true,
           status: 'DRAFT',
@@ -752,9 +752,9 @@ export class SuperAdminTemplateService {
               slug: pageInput.slug,
               pageType: pageInput.pageType || 'CONTENT',
               sortOrder: pageInput.sortOrder ?? i,
-              blocks: pageInput.blocks || [],
-              styles: pageInput.styles || {},
-              settings: pageInput.settings || {},
+              blocks: (pageInput.blocks || []) as JsonValue,
+              styles: (pageInput.styles || {}) as JsonValue,
+              settings: (pageInput.settings || {}) as JsonValue,
               metaTitle: pageInput.metaTitle,
               metaDescription: pageInput.metaDescription,
             },
