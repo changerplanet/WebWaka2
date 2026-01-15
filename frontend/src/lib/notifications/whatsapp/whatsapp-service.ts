@@ -7,6 +7,7 @@
  */
 
 import { prisma } from '@/lib/prisma';
+import { Prisma } from '@prisma/client';
 import {
   WhatsAppProvider,
   WhatsAppConfig,
@@ -251,7 +252,7 @@ export class WhatsAppService {
           status: result.demoMode ? 'DEMO' : result.success ? 'SENT' : 'FAILED',
           messageId: result.messageId,
           error: result.error,
-          payload: request as unknown as Record<string, unknown>,
+          payload: JSON.parse(JSON.stringify(request)) as Prisma.InputJsonValue,
         },
       });
     } catch (error) {
