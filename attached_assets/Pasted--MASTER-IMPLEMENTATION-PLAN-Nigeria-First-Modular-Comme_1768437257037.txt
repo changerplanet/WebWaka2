@@ -1,0 +1,194 @@
+
+✅ MASTER IMPLEMENTATION PLAN
+
+Nigeria-First Modular Commerce (POS, SVM, MVM, ParkHub)
+Execution Mode: Sequential Waves, Approval-Gated
+Rule: Replit must STOP after each wave and await approval
+
+⸻
+
+🔴 WAVE 1 — FOUNDATIONAL ARCHITECTURE (NON-NEGOTIABLE)
+
+Goal: Make modular, multi-channel commerce technically possible
+
+Scope (ALL REQUIRED)
+	1.	Product Channel Configuration System (Platform-Wide)
+	•	Channel visibility (POS / SVM / MVM)
+	•	Channel-specific pricing
+	•	Inventory modes (SHARED / ALLOCATED / UNLIMITED)
+	•	Channel enable / pause / disable lifecycle
+	•	Vendor subscription-aware behavior (POS only / SVM only / combinations)
+	2.	POS Offline Transaction Queue
+	•	IndexedDB persistence
+	•	Sync engine + conflict detection
+	•	Visual offline/online state
+	•	Manual conflict resolution UI
+	3.	Vendor Registration API (MVM)
+	•	Phone-first onboarding
+	•	Optional BVN/CAC
+	•	Admin approval workflow
+	•	Vendor lifecycle states
+	4.	Order Splitting Engine (MVM)
+	•	Parent → sub-orders
+	•	Vendor-isolated fulfillment
+	•	Unified customer view
+	5.	ParkHub Walk-Up POS Interface
+	•	≤3-tap ticket sale
+	•	Offline-first
+	•	Seat capacity deduction
+	6.	Dynamic Departure Model (ParkHub)
+	•	“Leaves when full”
+	•	Capacity-based triggering
+	•	Trip lifecycle enforcement
+	7.	Cash Rounding Module (POS)
+	•	₦5 / ₦10 / ₦50 rounding
+	•	Receipt transparency
+	•	Audit trail
+
+Constraints
+	•	❌ No payout execution yet
+	•	❌ No WhatsApp/SMS
+	•	❌ No visual redesign beyond what’s required
+
+Required Deliverable
+
+📄 Wave 1 Completion Report
+	•	New schemas introduced
+	•	APIs added
+	•	Offline conflict rules
+	•	Demo vs live behavior
+	•	Explicit confirmation of STOP
+
+🛑 STOP AFTER WAVE 1
+
+⸻
+
+🟠 WAVE 2 — MONEY & TRUST ENABLEMENT
+
+Goal: Make the system commercially usable in Nigeria
+
+Scope
+	8.	Bank Transfer Payment Flow (POS + SVM)
+	•	Account display
+	•	Reference capture
+	•	Admin verification
+	•	Auto-timeout handling
+	9.	Cash-on-Delivery Workflow (SVM)
+	•	COD order lifecycle
+	•	Failed delivery handling
+	•	Reconciliation hooks
+	10.	WhatsApp Integration (SVM + MVM)
+
+	•	Order confirmations
+	•	Status updates
+	•	Click-to-chat support
+	•	Product sharing
+
+	11.	Payout Execution Engine (MVM)
+
+	•	Daily / weekly / monthly options
+	•	Thresholds
+	•	Vendor payout history
+
+	12.	Multi-Vendor Storefront (MVM)
+
+	•	Vendor catalog aggregation
+	•	Vendor profiles
+	•	Cart attribution
+
+	13.	Cash Reconciliation (ParkHub + POS)
+
+	•	Per-agent cash tracking
+	•	Shift close variance
+	•	Manager approval
+
+Constraints
+	•	❌ No automation rules
+	•	❌ No revenue splitting logic beyond commissions
+	•	❌ No AI features
+
+Required Deliverable
+
+📄 Wave 2 Completion Report
+	•	Payment flows
+	•	Trust & reconciliation flows
+	•	Failure handling
+	•	Nigerian compliance notes
+
+🛑 STOP AFTER WAVE 2
+
+⸻
+
+🟡 WAVE 3 — OPERATIONAL EXCELLENCE
+
+Goal: Reduce friction, support scale, improve daily usability
+
+Scope
+	14.	Quick User Switch (POS)
+	15.	Receipt Printing (POS)
+	16.	Vendor Mobile Dashboard (MVM)
+	17.	Landmark-Based Addressing (SVM)
+	18.	Mobile Checkout Redesign (SVM)
+	19.	SMS Driver Updates (ParkHub)
+	20.	Manifest Generation (ParkHub)
+
+Required Deliverable
+
+📄 Wave 3 Completion Report
+	•	UX improvements
+	•	Mobile usability verification
+	•	Offline behavior confirmation
+
+🛑 STOP AFTER WAVE 3
+
+⸻
+
+🟢 WAVE 4 — DIFFERENTIATORS & SCALE
+
+Goal: Make WebWaka defensible and ecosystem-ready
+
+Scope
+	21.	Advanced Inventory Sync Engine
+	22.	Vendor Rating System (MVM)
+	23.	Offline Cart Persistence (SVM)
+	24.	Social Proof Components
+	25.	SMS Ticketing (ParkHub)
+	26.	Voice Product Search (POS)
+	27.	Installment Display (SVM)
+	28.	Multi-Park Operator View
+
+Required Deliverable
+
+📄 Wave 4 Completion Report
+	•	Scale assumptions
+	•	Performance notes
+	•	Deferred risks
+
+🛑 STOP AFTER WAVE 4
+
+⸻
+
+🔒 EXECUTION RULES (NON-NEGOTIABLE)
+
+Replit MUST:
+	•	❌ Never jump waves
+	•	❌ Never batch waves
+	•	❌ Never introduce unapproved scope
+	•	❌ Never remove Nigeria-first assumptions
+	•	❌ Never break demo safety
+
+Replit MUST:
+	•	✅ Implement wave by wave
+	•	✅ Produce a report after each wave
+	•	✅ Wait for approval before proceeding
+
+⸻
+
+✅ NEXT ACTION
+
+Wait for me to send provide implementation prompt for WAVE 1 only
+
+When Wave 1 is complete, we will:
+	•	Review architecture correctness
+	•	Validate Nigeria-first realism
+	•	Approve or adjust before Wave 2
