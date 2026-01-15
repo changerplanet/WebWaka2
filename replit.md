@@ -110,6 +110,17 @@ WebWaka is built as a multi-tenant SaaS platform with a modular capability syste
     - Services: VerificationQueueService
     - APIs: /api/commerce/verification-queue for assign, mark_urgent, escalate
   - **Constraints**: No payout execution, no automation, manual verification required
+- **Nigeria-First Modular Commerce (Wave 2.3)**: Vendor Payout Visibility:
+  - **Vendor Earnings Dashboard**: Read-only visibility into vendor earnings
+    - Summary: orders, gross sales, commissions, net earnings
+    - Order-level breakdown with payment method and status
+    - Collection status for COD/Bank Transfer
+  - **Partner Payout Overview**: Aggregate metrics for partners
+    - Tenant-wide gross sales, commissions, vendor earnings
+    - Payment method volume breakdown
+    - Top vendors by earnings
+  - **APIs**: /api/commerce/payout-visibility/vendor, /api/commerce/payout-visibility/partner
+  - **Constraints**: Read-only only, no payouts, no automation, no bank transfers
 
 ### Project Structure
 - `/frontend`: Main Next.js application.
@@ -130,6 +141,8 @@ WebWaka is built as a multi-tenant SaaS platform with a modular capability syste
   - `/src/app/api/commerce/bank-transfer`: Bank Transfer API (Wave 2.2)
   - `/src/app/api/commerce/cod`: COD API (Wave 2.2)
   - `/src/app/api/commerce/verification-queue`: Verification Queue API (Wave 2.2)
+  - `/src/lib/commerce/payout-visibility`: Payout visibility services (Wave 2.3)
+  - `/src/app/api/commerce/payout-visibility`: Payout visibility APIs (Wave 2.3)
 - `/modules`: Contains modular business components for specific verticals (e.g., SVM, POS, MVM).
 
 ## External Dependencies

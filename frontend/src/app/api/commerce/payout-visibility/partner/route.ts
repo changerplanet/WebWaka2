@@ -4,11 +4,70 @@
  * 
  * Read-only partner-level visibility into vendor earnings.
  * NO payout execution - visibility only.
+ * 
+ * Authorization:
+ * - Tenant Admins can access payout overview for their tenant
+ * - Super Admins can access any tenant's payout overview
+ * - Partner operators (via tenant admin role) can access payout overview
+ * - Vendors and regular users cannot access partner-level payout data
  */
 
 import { NextRequest, NextResponse } from 'next/server';
 import { getCurrentSession } from '@/lib/auth';
+import { prisma } from '@/lib/prisma';
 import { createPartnerPayoutService, TimeFilter } from '@/lib/commerce/payout-visibility';
+
+async function isVendorUser(userEmail: string, tenantId: string): Promise<boolean> {
+  const vendorStaff = await prisma.mvm_vendor_staff.findFirst({
+    where: {
+      email: userEmail,
+      isActive: true,
+      vendor: {
+        tenantId,
+      },
+    },
+  });
+
+  if (vendorStaff) return true;
+
+  const vendor = await prisma.mvm_vendor.findFirst({
+    where: {
+      tenantId,
+      email: userEmail,
+    },
+  });
+
+  return !!vendor;
+}
+
+async function authorizePartnerAccess(
+  userEmail: string,
+  userGlobalRole: string | null,
+  tenantId: string,
+  memberships: Array<{ tenantId: string; role: string; isActive: boolean }>
+): Promise<{ authorized: boolean; error?: string }> {
+  if (userGlobalRole === 'SUPER_ADMIN') {
+    return { authorized: true };
+  }
+
+  const tenantMembership = memberships.find(
+    m => m.tenantId === tenantId && m.isActive
+  );
+
+  if (!tenantMembership) {
+    return { authorized: false, error: 'Not a member of this tenant' };
+  }
+
+  if (tenantMembership.role !== 'TENANT_ADMIN') {
+    const isVendor = await isVendorUser(userEmail, tenantId);
+    if (isVendor) {
+      return { authorized: false, error: 'Vendors cannot access partner-level payout overview' };
+    }
+    return { authorized: false, error: 'Partner/Admin access required for payout overview' };
+  }
+
+  return { authorized: true };
+}
 
 export async function GET(request: NextRequest) {
   try {
@@ -20,6 +79,17 @@ export async function GET(request: NextRequest) {
     const tenantId = session.activeTenantId;
     if (!tenantId) {
       return NextResponse.json({ error: 'No active tenant' }, { status: 400 });
+    }
+
+    const authResult = await authorizePartnerAccess(
+      session.user.email || '',
+      session.user.globalRole,
+      tenantId,
+      session.user.memberships || []
+    );
+
+    if (!authResult.authorized) {
+      return NextResponse.json({ error: authResult.error }, { status: 403 });
     }
 
     const { searchParams } = new URL(request.url);

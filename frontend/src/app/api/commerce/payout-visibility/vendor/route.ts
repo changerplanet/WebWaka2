@@ -4,11 +4,81 @@
  * 
  * Read-only visibility into vendor earnings and payment status.
  * NO payout execution - visibility only.
+ * 
+ * Authorization:
+ * - Vendors/staff can only access their own vendor's payout data (via mvm_vendor_staff link)
+ * - Tenant Admins can access any vendor's payout data within their tenant
+ * - Super Admins can access any vendor's payout data
  */
 
 import { NextRequest, NextResponse } from 'next/server';
 import { getCurrentSession } from '@/lib/auth';
+import { prisma } from '@/lib/prisma';
 import { createVendorPayoutService, TimeFilter } from '@/lib/commerce/payout-visibility';
+
+async function getSessionVendorId(userId: string, userEmail: string, tenantId: string): Promise<string | null> {
+  const vendorStaff = await prisma.mvm_vendor_staff.findFirst({
+    where: {
+      email: userEmail,
+      isActive: true,
+      vendor: {
+        tenantId,
+      },
+    },
+    select: { vendorId: true },
+  });
+
+  if (vendorStaff) {
+    return vendorStaff.vendorId;
+  }
+
+  const vendor = await prisma.mvm_vendor.findFirst({
+    where: {
+      tenantId,
+      email: userEmail,
+    },
+    select: { id: true },
+  });
+
+  return vendor?.id || null;
+}
+
+async function authorizeVendorAccess(
+  userId: string,
+  userEmail: string,
+  userGlobalRole: string | null,
+  tenantId: string,
+  requestedVendorId: string,
+  memberships: Array<{ tenantId: string; role: string; isActive: boolean }>
+): Promise<{ authorized: boolean; error?: string }> {
+  if (userGlobalRole === 'SUPER_ADMIN') {
+    return { authorized: true };
+  }
+
+  const tenantMembership = memberships.find(
+    m => m.tenantId === tenantId && m.isActive
+  );
+
+  if (!tenantMembership) {
+    return { authorized: false, error: 'Not a member of this tenant' };
+  }
+
+  if (tenantMembership.role === 'TENANT_ADMIN') {
+    return { authorized: true };
+  }
+
+  const userVendorId = await getSessionVendorId(userId, userEmail, tenantId);
+
+  if (!userVendorId) {
+    return { authorized: false, error: 'No vendor association found for this user' };
+  }
+
+  if (userVendorId !== requestedVendorId) {
+    return { authorized: false, error: 'Access denied to this vendor\'s payout data' };
+  }
+
+  return { authorized: true };
+}
 
 export async function GET(request: NextRequest) {
   try {
@@ -23,7 +93,7 @@ export async function GET(request: NextRequest) {
     }
 
     const { searchParams } = new URL(request.url);
-    const vendorId = searchParams.get('vendorId');
+    let vendorId = searchParams.get('vendorId');
     const view = searchParams.get('view') || 'summary';
     const period = searchParams.get('period') as TimeFilter['period'] || '30d';
     const status = searchParams.get('status');
@@ -31,8 +101,32 @@ export async function GET(request: NextRequest) {
     const limit = parseInt(searchParams.get('limit') || '50', 10);
     const offset = parseInt(searchParams.get('offset') || '0', 10);
 
+    const isAdmin = session.user.globalRole === 'SUPER_ADMIN' ||
+      session.user.memberships?.some(m => m.tenantId === tenantId && m.role === 'TENANT_ADMIN' && m.isActive);
+
     if (!vendorId) {
-      return NextResponse.json({ error: 'Missing required parameter: vendorId' }, { status: 400 });
+      if (isAdmin) {
+        return NextResponse.json({ error: 'Missing required parameter: vendorId' }, { status: 400 });
+      }
+      
+      const userVendorId = await getSessionVendorId(session.user.id, session.user.email || '', tenantId);
+      if (!userVendorId) {
+        return NextResponse.json({ error: 'No vendor association found for this user' }, { status: 403 });
+      }
+      vendorId = userVendorId;
+    }
+
+    const authResult = await authorizeVendorAccess(
+      session.user.id,
+      session.user.email || '',
+      session.user.globalRole,
+      tenantId,
+      vendorId,
+      session.user.memberships || []
+    );
+
+    if (!authResult.authorized) {
+      return NextResponse.json({ error: authResult.error }, { status: 403 });
     }
 
     const payoutService = createVendorPayoutService(tenantId, vendorId);
