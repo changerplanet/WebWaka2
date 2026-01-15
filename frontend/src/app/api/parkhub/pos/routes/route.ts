@@ -1,0 +1,65 @@
+/**
+ * PARKHUB POS ROUTES API
+ * Wave F1: ParkHub Walk-Up POS Interface
+ * 
+ * GET /api/parkhub/pos/routes - List routes for a park
+ */
+
+import { NextRequest, NextResponse } from 'next/server';
+import { getCurrentSession } from '@/lib/auth';
+import { createParkHubPosService } from '@/lib/commerce/parkhub/parkhub-pos-service';
+
+export async function GET(request: NextRequest) {
+  try {
+    const session = await getCurrentSession();
+    
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const tenantId = session.activeTenantId;
+    if (!tenantId) {
+      return NextResponse.json({ error: 'No tenant context' }, { status: 400 });
+    }
+
+    const { searchParams } = new URL(request.url);
+    const parkId = searchParams.get('parkId');
+
+    if (!parkId) {
+      return NextResponse.json({ error: 'parkId is required' }, { status: 400 });
+    }
+
+    const service = createParkHubPosService(tenantId);
+    const routes = await service.getRoutes(parkId);
+
+    return NextResponse.json({
+      success: true,
+      routes: routes.map((r: {
+        id: string;
+        name: string;
+        shortName: string | null;
+        origin: string;
+        destination: string;
+        basePrice: number | { toNumber: () => number };
+        distanceKm: number | null;
+        estimatedDurationMinutes: number | null;
+      }) => ({
+        id: r.id,
+        name: r.name,
+        shortName: r.shortName,
+        origin: r.origin,
+        destination: r.destination,
+        basePrice: typeof r.basePrice === 'object' ? r.basePrice.toNumber() : Number(r.basePrice),
+        distanceKm: r.distanceKm,
+        estimatedDurationMinutes: r.estimatedDurationMinutes,
+      })),
+    });
+
+  } catch (error) {
+    console.error('ParkHub POS routes error:', error);
+    return NextResponse.json(
+      { error: 'Failed to fetch routes' },
+      { status: 500 }
+    );
+  }
+}

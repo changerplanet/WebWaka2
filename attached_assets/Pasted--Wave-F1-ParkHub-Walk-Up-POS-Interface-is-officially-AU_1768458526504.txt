@@ -1,0 +1,183 @@
+✅ Wave F1 — ParkHub Walk-Up POS Interface is officially AUTHORIZED
+
+We’re now ready to begin the first item in Priority Band 0 that remains unimplemented. Below is a precise, production-ready execution plan and prompt you can send to Replit (or use as a blueprint for internal implementation), including all required constraints, deliverables, and stop conditions.
+
+⸻
+
+🔓 AUTHORIZATION — WAVE F1
+
+Feature
+
+ParkHub Walk-Up POS Interface
+
+Objective
+
+Implement a fast, offline-first ParkHub POS interface optimized for real-world Nigerian motor park/transport operators. This interface enables agents to:
+	•	Quickly sell tickets in ≤3 taps
+	•	Select route/destination and trip
+	•	Choose seat(s)
+	•	Handle cash and bank/mobile payments
+	•	Print/preview receipts or share via WhatsApp/SMS
+	•	Work reliably offline
+
+This must integrate with existing Wave 1 structures:
+	•	POS Offline Queue
+	•	Inventory Sync (trip seats as stock)
+	•	Cash Rounding
+	•	Channel Product Config
+	•	Dynamic departure model
+
+⸻
+
+🎯 SCOPE
+
+UI/UX
+
+ParkHub POS Screen
+
+Accessible at:
+
+/parkhub/[parkId]/pos
+
+Mobile-first layout:
+	•	Step 1: Route Selection
+	•	Searchable dropdown (destination / route name)
+	•	Touchable list (large tap targets)
+	•	Step 2: Trip & Seat Selection
+	•	Next available trip(s)
+	•	Show seats left
+	•	Visual seat buttons (grid)
+	•	Departure status (Leaves when full / timed)
+	•	Step 3: Ticket Info
+	•	Passenger name (optional)
+	•	Ticket count
+	•	Price summary
+	•	Step 4: Payment Method
+	•	Cash
+	•	Bank Transfer
+	•	POS (QR/Paystack if enabled)
+	•	COD (agent collects later)
+	•	Step 5: Confirmation
+	•	Show total, rounding suggestion
+	•	“Confirm & Print/Share” button
+	•	Update offline queue + sync indicator
+
+Offline/Online Indicators
+
+Integrate with:
+	•	OfflineIndicator
+	•	SyncStatusBadge
+
+Must show:
+	•	Online/offline state
+	•	Queued vs synced tickets
+	•	Last synced timestamp
+
+⸻
+
+Behavior
+
+Offline-First
+	•	Sales must be queued locally
+	•	Sync on reconnect
+	•	Price & rounding rules apply offline
+	•	No loss of intent
+
+Seat Deduction
+	•	Trip seats should behave like inventory:
+	•	Shared or ALLOCATED mode
+	•	Deduct seats in queue until sync
+	•	Conflict rules apply (e.g., multiple agents offline)
+
+Payment Toggle
+	•	Cash: Default
+	•	Bank Transfer: Allow screenshot upload/notes
+	•	POS/Paystack: Optional if enabled
+	•	COD: Flag for later reconciliation
+
+⸻
+
+🧱 API REQUIREMENTS
+
+Replit must implement/update these endpoints:
+
+Endpoint	Purpose
+POST /api/parkhub/pos/ticket	Queue or process ticket sale
+GET /api/parkhub/pos/trips	List trips and available seats
+GET /api/parkhub/pos/routes	List routes for park
+POST /api/parkhub/pos/sync	Sync queued tickets
+GET /api/parkhub/pos/sync-status	Sync status per agent
+
+All APIs must:
+	•	Use session auth
+	•	Derive parkId from tenant context
+	•	Enforce authorization
+	•	Be demo-safe (log-only if demo)
+
+⸻
+
+📊 Data Model Changes (if needed)
+
+Minimal additive models only:
+	•	parkhub_pos_queue
+	•	id
+	•	tenantId, parkId
+	•	agentId
+	•	routeId, tripId
+	•	seatNumbers
+	•	paymentMethod
+	•	status (QUEUED, SYNCED, ERROR)
+	•	timestamps
+	•	Ensure park_ticket integrates with offline queue on sync
+
+⸻
+
+🧠 Security & Constraints
+
+❌ No automation
+❌ No background jobs
+❌ No silent background sync — agent must control sync
+❌ No business logic outside defined behavior
+❌ Must respect offline/online trust indicators
+
+⸻
+
+📄 Required Deliverables
+
+At completion, Replit must deliver:
+
+1️⃣ Wave F1 Completion Report
+
+Including:
+	•	Components created
+	•	APIs added
+	•	Data models changed
+	•	Offline behaviors
+	•	Demo vs live behavior
+	•	Screenshots or mock walkthroughs
+	•	Any assumptions
+
+2️⃣ Explicit Confirmations
+	•	❌ No automation
+	•	❌ No background jobs
+	•	❌ No scope creep
+
+3️⃣ Stop Condition
+
+Work must STOP and await your approval before proceeding to Wave F2 (Vendor Payout Execution).
+
+⸻
+
+🛑 STOP
+
+Do not start any related or downstream work until:
+	•	You review the Wave F1 Completion Report
+	•	You give explicit approval to proceed
+
+⸻
+
+✔ Next Step
+
+When Replit finishes Wave F1, they should submit the Wave F1 Completion Report here.
+
+I’ll review it line-by-line and then we’ll unlock Wave F2.

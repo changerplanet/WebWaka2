@@ -18239,6 +18239,103 @@ model park_ticket {
   @@index([soldAt])
 }
 
+// ParkHub Route Management
+model park_route {
+  id              String   @id @default(cuid())
+  tenantId        String
+  parkId          String   // The motor park this route belongs to
+
+  // Route Identity
+  name            String   // e.g., "Lagos → Ibadan"
+  shortName       String?  // e.g., "LAG-IBD"
+  origin          String   // Origin city/terminal
+  destination     String   // Destination city/terminal
+
+  // Distance & Duration
+  distanceKm      Int?
+  estimatedDurationMinutes Int?
+
+  // Pricing (NGN)
+  basePrice       Decimal  @db.Decimal(12, 2)
+
+  // Status
+  isActive        Boolean  @default(true)
+  displayOrder    Int      @default(0)
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@unique([tenantId, parkId, name])
+  @@index([tenantId])
+  @@index([parkId])
+  @@index([isActive])
+}
+
+// ParkHub POS Offline Queue
+enum ParkHubPosSyncStatus {
+  QUEUED
+  SYNCING
+  SYNCED
+  ERROR
+}
+
+model parkhub_pos_queue {
+  id              String   @id @default(cuid())
+  tenantId        String
+  parkId          String
+  agentId         String
+  agentName       String
+
+  // Client-Generated Identity
+  clientTicketId  String   // Generated on device
+  clientTimestamp DateTime // When sale happened offline
+
+  // Sale Details
+  routeId         String
+  routeName       String
+  tripId          String
+  tripNumber      String
+  seatNumbers     String[] // Array of seat numbers
+  ticketCount     Int      @default(1)
+
+  // Passenger (optional for walk-up)
+  passengerName   String?
+  passengerPhone  String?
+
+  // Pricing (NGN)
+  unitPrice       Decimal  @db.Decimal(12, 2)
+  subtotal        Decimal  @db.Decimal(12, 2)
+  discount        Decimal  @default(0) @db.Decimal(12, 2)
+  roundingAmount  Decimal  @default(0) @db.Decimal(10, 2)
+  roundingMode    String?  // N5, N10, N50
+  totalAmount     Decimal  @db.Decimal(12, 2)
+
+  // Payment
+  paymentMethod   String   @default("CASH")  // CASH, BANK_TRANSFER, POS_CARD, COD
+  paymentNotes    String?
+  bankProofUrl    String?  // For bank transfer proof
+
+  // Sync Status
+  syncStatus      ParkHubPosSyncStatus @default(QUEUED)
+  syncAttempts    Int      @default(0)
+  lastSyncAttempt DateTime?
+  syncedAt        DateTime?
+  errorMessage    String?
+
+  // Linked Tickets (after sync)
+  syncedTicketIds String[] // park_ticket.id array after sync
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@unique([tenantId, clientTicketId])
+  @@index([tenantId])
+  @@index([parkId])
+  @@index([agentId])
+  @@index([syncStatus])
+  @@index([tripId])
+}
+
 // POS Offline Queue - Sync tracking
 enum PosSyncStatus {
   PENDING
