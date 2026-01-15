@@ -112,6 +112,63 @@ model CustomerAddress {
   @@index([customerId])
 }
 
+// --------------------------------------------------------------------------
+// LANDMARK DELIVERY ADDRESS - Nigeria-first addressing (Wave F5)
+// --------------------------------------------------------------------------
+model LandmarkDeliveryAddress {
+  id         String @id @default(cuid())
+  tenantId   String
+  customerId String
+  
+  // Recipient Info
+  recipientName    String
+  recipientPhone   String
+  alternatePhone   String?
+  
+  // Nigerian Location
+  state    String   // Nigerian state name
+  lga      String   // Local Government Area
+  city     String?  // City/town (optional)
+  area     String   // Neighborhood/area
+  
+  // Landmark-based addressing
+  landmark        String   // Primary landmark (required)
+  landmarkType    String?  // CHURCH, MOSQUE, SCHOOL, MARKET, etc.
+  nearbyLandmark  String?  // Secondary landmark for triangulation
+  
+  // Traditional address components (optional)
+  streetName    String?
+  houseNumber   String?
+  buildingName  String?
+  floor         String?
+  
+  // Delivery guidance
+  deliveryInstructions String?
+  
+  // Formatting
+  formattedAddress String?
+  
+  // Classification
+  isDefault Boolean @default(false)
+  label     String  @default("OTHER")  // HOME, WORK, OTHER
+  
+  // Optional coordinates
+  latitude  Decimal? @db.Decimal(10, 8)
+  longitude Decimal? @db.Decimal(11, 8)
+  
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  // Relations
+  Tenant    Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  
+  @@index([tenantId])
+  @@index([customerId])
+  @@index([tenantId, customerId])
+  @@index([state, lga])
+}
+
 model Entitlement {
   id             String            @id
   tenantId       String
@@ -1182,15 +1239,16 @@ model Tenant {
   activatedAt       DateTime?
   activatedModules  String[]           @default([])
   requestedModules  String[]           @default([])
-  businessProfile   BusinessProfile?
-  entitlements      Entitlement[]
-  invoices          Invoice[]
-  magicLinks        MagicLink[]
-  partnerReferral   PartnerReferral?
-  platformInstances PlatformInstance[]
-  subscription      Subscription?
-  domains           TenantDomain[]
-  memberships       TenantMembership[]
+  businessProfile            BusinessProfile?
+  entitlements               Entitlement[]
+  invoices                   Invoice[]
+  landmarkDeliveryAddresses  LandmarkDeliveryAddress[]
+  magicLinks                 MagicLink[]
+  partnerReferral            PartnerReferral?
+  platformInstances          PlatformInstance[]
+  subscription               Subscription?
+  domains                    TenantDomain[]
+  memberships                TenantMembership[]
 
   @@index([slug])
   @@index([status])

@@ -71,6 +71,17 @@ WebWaka is built as a multi-tenant SaaS platform with a modular capability syste
         - Session-scoped access via vendorId parameter
         - Read-only financials: NO payout execution, NO write operations
         - NO automation, NO background jobs
+    - **Landmark-Based Addressing (Wave F5)**: Nigeria-first addressing system for SVM delivery:
+        - Nigerian geographic data: 36 states + FCT with all Local Government Areas
+        - Landmark-first approach: Uses churches, mosques, markets, bus stops, etc. as primary navigation
+        - LandmarkDeliveryAddress database model with tenant isolation
+        - Address validation with Nigerian phone format support (0XX, +234XX patterns)
+        - Mobile-first UI: LandmarkAddressForm with collapsible optional fields
+        - Address display: LandmarkAddressCard with label icons (Home/Work/Other)
+        - Session-scoped access: Users can only manage their own addresses
+        - REST API: /api/commerce/landmark-address with CRUD operations
+        - State/LGA hierarchy helpers: getStateByName, getLGAsForState
+        - Formatted address generation for delivery receipts
 
 ## External Dependencies
 - **PostgreSQL**: Primary database.
