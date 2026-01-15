@@ -19341,3 +19341,70 @@ model receipt_delivery {
   @@index([status])
   @@index([createdAt])
 }
+
+// ============================================================================
+// MVM VENDOR RATING SYSTEM (Wave G1)
+// ============================================================================
+
+model mvm_vendor_rating {
+  id              String   @id @default(cuid())
+  tenantId        String
+  vendorId        String
+  
+  subOrderId      String   @unique
+  parentOrderId   String
+  
+  customerId      String?
+  customerName    String?
+  customerEmail   String?
+  
+  rating          Int
+  comment         String?  @db.Text
+  
+  isVerifiedPurchase Boolean @default(true)
+  isDemo          Boolean  @default(false)
+  isVisible       Boolean  @default(true)
+  
+  orderDeliveredAt DateTime?
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  @@index([tenantId])
+  @@index([vendorId])
+  @@index([tenantId, vendorId])
+  @@index([parentOrderId])
+  @@index([rating])
+  @@index([createdAt])
+  @@index([isVisible, isDemo])
+}
+
+model mvm_vendor_rating_summary {
+  id              String   @id @default(cuid())
+  tenantId        String
+  vendorId        String   @unique
+  
+  totalRatings    Int      @default(0)
+  averageRating   Decimal  @default(0) @db.Decimal(3, 2)
+  
+  rating1Count    Int      @default(0)
+  rating2Count    Int      @default(0)
+  rating3Count    Int      @default(0)
+  rating4Count    Int      @default(0)
+  rating5Count    Int      @default(0)
+  
+  recentOrdersTotal    Int      @default(0)
+  recentOrdersOnTime   Int      @default(0)
+  recentOrdersCancelled Int     @default(0)
+  
+  scoreBand       String   @default("NEW")
+  
+  lastCalculatedAt DateTime @default(now())
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  @@index([tenantId])
+  @@index([vendorId])
+  @@index([averageRating])
+  @@index([scoreBand])
+}

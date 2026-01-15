@@ -100,6 +100,20 @@ export type {
 } from './marketplace-config-service'
 
 // ============================================================================
+// VENDOR RATINGS (Wave G1)
+// ============================================================================
+
+export { VendorRatingService } from './vendor-rating-service'
+export type {
+  SubmitRatingInput,
+  VendorRatingResult,
+  RatingSummary,
+  RatingListFilters,
+  RatingListResult,
+  ScoreBand
+} from './vendor-rating-service'
+
+// ============================================================================
 // CONVENIENCE RE-EXPORTS
 // ============================================================================
 
@@ -109,6 +123,7 @@ export const MVM = {
   VendorStatus: () => import('./vendor-status-service').then(m => m.VendorStatusService),
   VendorOnboarding: () => import('./vendor-onboarding-service').then(m => m.VendorOnboardingService),
   VendorTier: () => import('./vendor-tier-service').then(m => m.VendorTierService),
+  VendorRating: () => import('./vendor-rating-service').then(m => m.VendorRatingService),
   ProductMapping: () => import('./product-mapping-service').then(m => m.ProductMappingService),
   OrderSplit: () => import('./order-split-service').then(m => m.OrderSplitService),
   SubOrder: () => import('./sub-order-service').then(m => m.SubOrderService),

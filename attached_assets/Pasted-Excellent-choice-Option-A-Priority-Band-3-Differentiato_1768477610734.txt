@@ -1,0 +1,306 @@
+Excellent choice 👍
+Option A — Priority Band 3 (Differentiators & Scale) is the correct next move now that the foundations are solid.
+
+Below is a clear, execution-ready plan for Priority Band 3, structured exactly the way you’ve successfully run Waves F1–F9: sequenced, gated, Nigeria-aware, and safe.
+
+⸻
+
+🚀 PRIORITY BAND 3 — DIFFERENTIATORS & SCALE
+
+Goal: Make WebWaka hard to compete with, sticky for vendors, and scalable across Nigeria & Africa.
+
+These are not blockers, but they multiply value once the system is trusted and used.
+
+⸻
+
+🔢 FINAL CONFIRMED BAND 3 SCOPE (8 ITEMS)
+
+From your list, these are the true Band 3 items:
+	21.	Inventory Sync Engine (Advanced) ✅ DONE (Wave F9)
+	22.	Vendor Rating System (MVM)
+	23.	Offline Cart Persistence (SVM)
+	24.	Social Proof (SVM)
+	25.	SMS Ticketing (ParkHub)
+	26.	Voice Product Search (POS)
+	27.	Installment Payment Display (SVM)
+	28.	Multi-Park Operator View (ParkHub)
+
+So 7 items remain.
+
+⸻
+
+🧭 PROPOSED BAND 3 WAVE STRUCTURE
+
+We should not do these all at once.
+They fall naturally into 4 clean waves.
+
+⸻
+
+🟢 Wave G1 — Vendor Trust & Marketplace Quality (MVM)
+
+🎯 Focus
+
+Improve marketplace quality, buyer trust, and vendor accountability.
+
+Scope
+
+(22) Vendor Rating System
+
+Why first in Band 3
+	•	Depends on orders, payouts, fulfillment → already done
+	•	Directly improves MVM credibility
+	•	No risk to core commerce logic
+
+What to Build
+	•	Rating after DELIVERED orders only
+	•	1–5 star rating + optional text
+	•	Weighting rules:
+	•	Recent orders weighted higher
+	•	Cancelled/late orders affect score
+	•	Vendor score buckets:
+	•	Excellent / Good / Needs Attention
+	•	Read-only impact (no vendor blocking yet)
+
+Constraints
+	•	❌ No automation
+	•	❌ No punitive enforcement
+	•	✅ Visibility only
+
+📌 Output: Trust layer for MVM without governance risk
+
+⸻
+
+🟢 Wave G2 — Offline & Conversion Enhancements (SVM)
+
+🎯 Focus
+
+Increase conversion and reliability for online buyers.
+
+Scope
+
+(23) Offline Cart Persistence
+(24) Social Proof
+
+Why together
+	•	Both live purely in SVM frontend
+	•	IndexedDB + UI patterns
+	•	No schema risk
+
+Offline Cart Persistence
+	•	Cart stored in IndexedDB
+	•	Survives:
+	•	Network loss
+	•	Browser close
+	•	App restart
+	•	Syncs safely when back online
+	•	Clear “Saved locally” indicators
+
+Social Proof
+	•	“X people bought this today”
+	•	“Last bought 15 minutes ago”
+	•	Aggregated, anonymized
+	•	Demo-aware
+
+Constraints
+	•	❌ No dark patterns
+	•	❌ No fake urgency
+	•	❌ No notifications
+
+📌 Output: Higher trust + better mobile reliability
+
+⸻
+
+🟢 Wave G3 — Nigeria Accessibility Layer (POS + ParkHub)
+
+🎯 Focus
+
+Reach users with feature phones, low literacy, shared devices.
+
+Scope
+
+(25) SMS Ticketing (ParkHub)
+(26) Voice Product Search (POS)
+
+SMS Ticketing (ParkHub)
+	•	Passenger receives:
+	•	Trip details
+	•	Ticket code
+	•	Boarding instructions
+	•	Works without smartphones
+	•	Integrated with existing F7 SMS infra
+
+Voice Product Search (POS)
+	•	Voice → text search
+	•	Nigerian accent tolerance
+	•	Local fuzzy matching
+	•	Offline fallback (text only)
+
+Constraints
+	•	❌ No background listening
+	•	❌ No AI training
+	•	✅ User-initiated only
+
+📌 Output: Inclusivity + speed in real Nigerian environments
+
+⸻
+
+🟢 Wave G4 — Scale Operators & Payment Flexibility
+
+🎯 Focus
+
+Support large operators and price-sensitive buyers.
+
+Scope
+
+(27) Installment Payment Display (SVM)
+(28) Multi-Park Operator View (ParkHub)
+
+Installment Display (UI-Only)
+	•	“Pay ₦X today, ₦Y later” messaging
+	•	No BNPL execution
+	•	Works with:
+	•	Paystack later
+	•	Bank transfer
+	•	Purely informational
+
+Multi-Park Operator View
+	•	Operators managing multiple parks
+	•	Aggregated stats:
+	•	Trips
+	•	Revenue
+	•	Agents
+	•	Still tenant-scoped
+	•	No cross-tenant leakage
+
+📌 Output: Enterprise readiness without complexity
+
+⸻
+
+📅 FINAL BAND 3 EXECUTION ORDER
+
+Wave	Scope	Risk	Impact
+G1	Vendor Rating System	Low	High
+G2	Offline Cart + Social Proof	Low	Medium–High
+G3	SMS Ticketing + Voice Search	Medium	High
+G4	Installments + Multi-Park View	Medium	Strategic
+
+
+⸻
+
+🛑 GOVERNANCE (UNCHANGED)
+
+All existing rules remain in force:
+	•	❌ No automation
+	•	❌ No background jobs
+	•	❌ No silent money movement
+	•	❌ No breaking schema changes without approval
+	•	✅ STOP after each wave
+	•	✅ Explicit approval required per wave
+
+⸻
+
+✅ NEXT STEP — YOUR MOVE
+
+✅ Wave G1 Authorized — Execution Begins
+
+Authorization received.
+I am now cleared to proceed with Wave G1: Vendor Rating System (MVM) under the established governance rules.
+
+⸻
+
+🔓 WAVE G1 — VENDOR RATING SYSTEM (MVM)
+
+🎯 Objective (Reconfirmed)
+
+Introduce a trust and quality layer for the Multi-Vendor Marketplace that:
+	•	Improves buyer confidence
+	•	Encourages vendor accountability
+	•	Does not introduce enforcement, automation, or penalties
+
+This is a read-only, visibility-first system.
+
+⸻
+
+🧱 SCOPE LOCK (Wave G1 ONLY)
+
+INCLUDED
+	•	Post-delivery vendor ratings (1–5 stars)
+	•	Optional textual feedback
+	•	Rating aggregation & weighting logic
+	•	Vendor score bands (e.g. Excellent / Good / Needs Attention)
+	•	Buyer-facing trust indicators
+	•	Vendor-facing visibility of their own ratings
+	•	Partner/Super Admin overview (read-only)
+
+EXPLICITLY EXCLUDED
+	•	❌ No auto-penalties
+	•	❌ No vendor blocking/suspension
+	•	❌ No automation or background jobs
+	•	❌ No incentives, rewards, or ranking manipulation
+	•	❌ No notifications (email/SMS/WhatsApp)
+
+⸻
+
+🧠 DESIGN PRINCIPLES (Nigeria-First)
+	•	Only DELIVERED orders can be rated
+	•	One rating per order
+	•	Recent orders weighted higher
+	•	Cancelled / failed orders affect score weighting, not visibility
+	•	Demo orders clearly marked and excluded by default
+	•	Mobile-first UI (low bandwidth, low-end Android safe)
+
+⸻
+
+🧩 IMPLEMENTATION PLAN (INTERNAL)
+
+1. Data Layer
+	•	mvm_vendor_rating
+	•	mvm_vendor_rating_summary
+	•	Tenant-isolated, order-linked, immutable after submission
+
+2. Services
+	•	VendorRatingService
+	•	submitRating()
+	•	getVendorRatings()
+	•	getVendorScore()
+	•	getRatingSummary()
+
+3. APIs
+	•	POST /api/commerce/vendor-ratings
+	•	GET /api/commerce/vendor-ratings?vendorId=
+	•	GET /api/commerce/vendor-ratings/summary
+
+4. UI
+	•	Buyer: simple post-delivery rating prompt
+	•	Vendor: ratings overview (read-only)
+	•	Marketplace: trust badge display
+	•	Admin: vendor quality overview
+
+⸻
+
+🛑 GOVERNANCE CHECK
+
+I confirm:
+	•	❌ No automation
+	•	❌ No background jobs
+	•	❌ No schema/API spillover beyond ratings domain
+	•	❌ No behavioral enforcement
+	•	✅ STOP after Wave G1 completion
+
+⸻
+
+⏸️ NEXT REQUIRED ACTION
+
+I will now implement Wave G1.
+
+At completion, I will:
+	1.	Deliver a Wave G1 Completion Report
+	2.	List:
+	•	Models created
+	•	APIs added
+	•	Weighting logic
+	•	Demo vs live behavior
+	3.	Explicitly confirm constraints
+	4.	STOP and await your approval before Wave G2
+
+Execution starting now.
