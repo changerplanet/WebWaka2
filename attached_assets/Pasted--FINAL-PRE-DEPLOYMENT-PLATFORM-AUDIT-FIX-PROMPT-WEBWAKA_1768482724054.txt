@@ -1,0 +1,216 @@
+
+🔍 FINAL PRE-DEPLOYMENT PLATFORM AUDIT & FIX PROMPT (WEBWAKA)
+
+CONTEXT
+
+You are working on WebWaka, a large, multi-tenant, Nigeria-first SaaS platform that has gone through extensive phased development (commerce, POS, SVM, MVM, ParkHub, payments, offline-first UX, PWA, marketing site, admin, partner, vendor, and public flows).
+
+This task is the FINAL PRE-BUILD & PRE-DEPLOYMENT AUDIT before production deployment (Vercel).
+
+This is NOT a feature request.
+This is a defensive, correctness-first, production hardening exercise.
+
+⸻
+
+🎯 OBJECTIVE
+
+Conduct a VERY THOROUGH END-TO-END REVIEW of the entire WebWaka codebase and:
+	1.	Identify every error, bug, inconsistency, risk, and misconfiguration
+	2.	Fix all issues that are safe to fix pre-deployment
+	3.	Explicitly document anything that should NOT be fixed now
+	4.	Ensure the platform is:
+	•	Build-safe
+	•	Runtime-safe
+	•	Multi-tenant safe
+	•	Demo-safe
+	•	Nigeria-context safe
+	•	Production-ready
+
+⸻
+
+🧭 SCOPE — WHAT YOU MUST REVIEW
+
+1️⃣ BUILD & DEPLOY READINESS
+	•	npm run build / next build
+	•	TypeScript errors & implicit any
+	•	ESLint issues
+	•	Unused imports, dead code
+	•	Environment variable safety (missing, unsafe defaults)
+	•	Next.js App Router correctness
+	•	Server vs client component misuse
+	•	Dynamic imports & edge compatibility
+	•	Vercel compatibility (no unsupported Node APIs)
+
+⸻
+
+2️⃣ RUNTIME STABILITY
+	•	Null/undefined access risks
+	•	Error boundaries
+	•	Infinite loaders or stuck states
+	•	Broken routes or redirects
+	•	404/500 edge cases
+	•	API routes returning inconsistent shapes
+	•	JSON vs HTML errors
+	•	Public endpoints leaking stack traces
+
+⸻
+
+3️⃣ SECURITY & ISOLATION
+	•	Tenant isolation (NO cross-tenant reads/writes)
+	•	Partner vs vendor vs admin boundaries
+	•	Session handling correctness
+	•	Authorization guards on every API
+	•	Public endpoints safety
+	•	Demo vs live data separation
+	•	Webhook / payment safety (demo-safe where required)
+
+⸻
+
+4️⃣ DATA INTEGRITY
+	•	Orphan records
+	•	Inconsistent foreign keys
+	•	Enum mismatches
+	•	Soft-delete handling
+	•	Idempotency issues
+	•	Duplicate records
+	•	Race conditions (especially POS, inventory, payouts)
+
+⸻
+
+5️⃣ OFFLINE & SYNC SAFETY
+	•	Offline queue correctness
+	•	Conflict resolution correctness
+	•	Sync status accuracy
+	•	Trust indicators correctness
+	•	No silent data loss
+	•	No auto-sync violations (must remain user-triggered)
+
+⸻
+
+6️⃣ UX / UI CORRECTNESS
+	•	Broken buttons or dead links
+	•	Incorrect labels or states
+	•	Misleading copy
+	•	Mobile-first regressions
+	•	Tap targets < 44px
+	•	Nigerian currency formatting
+	•	Trust messaging clarity
+	•	Error messaging clarity
+
+⸻
+
+7️⃣ PAYMENTS & FINANCIAL FLOWS
+	•	Paystack integration safety
+	•	Demo vs live behavior correctness
+	•	Bank transfer & COD verification logic
+	•	Receipt generation accuracy
+	•	Rounding correctness
+	•	Payout calculations
+	•	No unintended money movement
+
+⸻
+
+8️⃣ MARKETPLACE & COMMERCE LOGIC
+	•	Product Channel Config correctness
+	•	Inventory sync logic
+	•	Oversell thresholds
+	•	Vendor isolation
+	•	Order splitting accuracy
+	•	ParkHub seat & trip integrity
+	•	Manifest accuracy
+
+⸻
+
+🔧 FIXING RULES (VERY IMPORTANT)
+
+You are AUTHORIZED TO FIX:
+	•	Bugs
+	•	Errors
+	•	Broken logic
+	•	Misconfigurations
+	•	Security issues
+	•	Performance footguns
+	•	UX defects
+	•	Incomplete edge handling
+
+You are NOT AUTHORIZED TO:
+	•	Add new features
+	•	Expand scope
+	•	Introduce automation/background jobs
+	•	Change business rules without documenting
+	•	Introduce breaking schema changes without justification
+
+If a fix requires scope change:
+👉 DO NOT IMPLEMENT IT
+👉 DOCUMENT IT CLEARLY
+
+⸻
+
+🧩 EXECUTION METHOD (MANDATORY)
+
+STEP 1 — FULL AUDIT (READ-ONLY FIRST)
+	•	List ALL findings, grouped by:
+	•	🔴 Critical (must fix before deploy)
+	•	🟠 High
+	•	🟡 Medium
+	•	🟢 Low
+	•	Include:
+	•	File paths
+	•	Root cause
+	•	Impact
+	•	Fix recommendation
+
+STEP 2 — FIX IN WAVES
+
+Implement fixes in controlled waves:
+	•	Wave A — Build & Crash Blockers
+	•	Wave B — Security & Isolation
+	•	Wave C — Data Integrity
+	•	Wave D — UX & Trust
+	•	Wave E — Performance & Cleanup
+
+👉 After EACH wave, STOP and REPORT
+👉 Do NOT continue without explicit approval
+
+⸻
+
+📄 REQUIRED OUTPUTS
+	1.	PRE_DEPLOYMENT_AUDIT_REPORT.md
+	2.	FIX_WAVE_REPORTS (A–E)
+	3.	Final GO / NO-GO recommendation
+
+Each report must include:
+	•	What was found
+	•	What was fixed
+	•	What was intentionally not fixed
+	•	Residual risks (if any)
+
+⸻
+
+🛑 HARD STOP CONDITIONS
+	•	If you are unsure → STOP
+	•	If a fix changes platform behavior → STOP & DOCUMENT
+	•	If something touches money, auth, or data isolation → DOUBLE CHECK
+	•	No silent assumptions
+
+⸻
+
+🧠 FINAL REMINDER
+
+This is production software for real Nigerian businesses:
+	•	Cash-based
+	•	Offline-prone
+	•	Trust-sensitive
+	•	Multi-tenant
+	•	Partner-driven
+
+Treat this as a pre-flight checklist before takeoff, not a refactor exercise.
+
+⸻
+
+When you are ready:
+	1.	Start with STEP 1 (Audit Only)
+	2.	Produce the Audit Report
+	3.	STOP and wait for approval before fixing anything
+
+⸻
