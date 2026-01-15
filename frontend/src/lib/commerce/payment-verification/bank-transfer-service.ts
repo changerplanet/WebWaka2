@@ -120,7 +120,8 @@ export class BankTransferService {
       return { success: false, error: 'Payment not found' };
     }
 
-    if (payment.status !== 'PENDING_PROOF' && payment.status !== 'PROOF_SUBMITTED') {
+    const allowedStatuses = ['PENDING_PROOF', 'PROOF_SUBMITTED', 'PENDING_VERIFICATION'];
+    if (!allowedStatuses.includes(payment.status)) {
       return { success: false, error: `Cannot submit proof for payment in ${payment.status} status` };
     }
 
@@ -184,33 +185,57 @@ export class BankTransferService {
       request.decision === 'REJECTED' ? 'REJECTED' :
       'PENDING_VERIFICATION';
 
-    await prisma.$transaction([
-      prisma.bank_transfer_payment.update({
-        where: { id: request.paymentId },
-        data: {
-          status: newStatus,
-          verifiedAt: request.decision === 'APPROVED' ? new Date() : undefined,
-          verifiedById: request.verifiedById,
-          verifiedByName: request.verifiedByName,
-          verificationNote: request.note,
-          rejectionReason: request.decision === 'REJECTED' ? request.note : undefined,
-          customerReference: request.customerReference,
-        },
-      }),
-      prisma.payment_verification_queue.updateMany({
-        where: {
-          paymentType: 'BANK_TRANSFER',
-          paymentId: request.paymentId,
-        },
-        data: {
-          decision: request.decision,
-          decisionNote: request.note,
-          decidedAt: new Date(),
-          decidedById: request.verifiedById,
-          decidedByName: request.verifiedByName,
-        },
-      }),
-    ]);
+    if (request.decision === 'NEEDS_MORE_INFO') {
+      await prisma.$transaction([
+        prisma.bank_transfer_payment.update({
+          where: { id: request.paymentId },
+          data: {
+            status: newStatus,
+            verificationNote: request.note,
+          },
+        }),
+        prisma.payment_verification_queue.updateMany({
+          where: {
+            paymentType: 'BANK_TRANSFER',
+            paymentId: request.paymentId,
+          },
+          data: {
+            assignedToId: null,
+            assignedToName: null,
+            assignedAt: null,
+            decisionNote: request.note,
+          },
+        }),
+      ]);
+    } else {
+      await prisma.$transaction([
+        prisma.bank_transfer_payment.update({
+          where: { id: request.paymentId },
+          data: {
+            status: newStatus,
+            verifiedAt: request.decision === 'APPROVED' ? new Date() : undefined,
+            verifiedById: request.verifiedById,
+            verifiedByName: request.verifiedByName,
+            verificationNote: request.note,
+            rejectionReason: request.decision === 'REJECTED' ? request.note : undefined,
+            customerReference: request.customerReference,
+          },
+        }),
+        prisma.payment_verification_queue.updateMany({
+          where: {
+            paymentType: 'BANK_TRANSFER',
+            paymentId: request.paymentId,
+          },
+          data: {
+            decision: request.decision,
+            decisionNote: request.note,
+            decidedAt: new Date(),
+            decidedById: request.verifiedById,
+            decidedByName: request.verifiedByName,
+          },
+        }),
+      ]);
+    }
 
     return { success: true };
   }
@@ -277,9 +302,9 @@ export class BankTransferService {
       },
     });
 
+    const dueBy = new Date(Date.now() + 2 * 60 * 60 * 1000);
+
     if (!existing) {
-      const dueBy = new Date(Date.now() + 2 * 60 * 60 * 1000);
-      
       await prisma.payment_verification_queue.create({
         data: {
           tenantId: this.tenantId,
@@ -287,6 +312,14 @@ export class BankTransferService {
           paymentId,
           priority: 0,
           dueBy,
+        },
+      });
+    } else if (!existing.decision) {
+      await prisma.payment_verification_queue.update({
+        where: { id: existing.id },
+        data: {
+          dueBy,
+          priority: existing.priority + 1,
         },
       });
     }

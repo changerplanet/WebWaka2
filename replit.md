@@ -97,6 +97,19 @@ WebWaka is built as a multi-tenant SaaS platform with a modular capability syste
     - Vendor contact, ParkHub support
   - **Audit Trail**: All messages logged to whatsapp_message_log (including demo mode)
   - **Constraints**: Transactional only, no automations, no AI, no marketing
+- **Nigeria-First Modular Commerce (Wave 2.2)**: Bank Transfer & COD Deepening:
+  - **Bank Transfer Payments**: Proof upload, reference validation, manual verification
+    - States: PENDING_PROOF → PROOF_SUBMITTED → VERIFIED/REJECTED/EXPIRED
+    - Services: BankTransferService, PaymentExpiryService
+    - APIs: /api/commerce/bank-transfer for create, submit_proof, verify, cancel
+  - **COD Lifecycle**: Full cash-on-delivery workflow with collection tracking
+    - States: PENDING_DELIVERY → OUT_FOR_DELIVERY → COLLECTED/FAILED → RECONCILED
+    - Services: CodService
+    - APIs: /api/commerce/cod for create, assign_agent, collect, reconcile
+  - **Verification Queue**: Admin/Partner review workflow
+    - Services: VerificationQueueService
+    - APIs: /api/commerce/verification-queue for assign, mark_urgent, escalate
+  - **Constraints**: No payout execution, no automation, manual verification required
 
 ### Project Structure
 - `/frontend`: Main Next.js application.
@@ -113,6 +126,10 @@ WebWaka is built as a multi-tenant SaaS platform with a modular capability syste
   - `/src/app/api/commerce`: Commerce API routes (Wave 1)
   - `/src/lib/notifications/whatsapp`: WhatsApp notification services (Wave 2.1)
   - `/src/app/api/notifications/whatsapp`: WhatsApp API routes (Wave 2.1)
+  - `/src/lib/commerce/payment-verification`: Bank Transfer & COD services (Wave 2.2)
+  - `/src/app/api/commerce/bank-transfer`: Bank Transfer API (Wave 2.2)
+  - `/src/app/api/commerce/cod`: COD API (Wave 2.2)
+  - `/src/app/api/commerce/verification-queue`: Verification Queue API (Wave 2.2)
 - `/modules`: Contains modular business components for specific verticals (e.g., SVM, POS, MVM).
 
 ## External Dependencies
