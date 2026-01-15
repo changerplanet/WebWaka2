@@ -79,10 +79,19 @@ export type ScoreBand = 'EXCELLENT' | 'GOOD' | 'NEEDS_ATTENTION' | 'NEW'
 // ============================================================================
 
 function calculateScoreBand(averageRating: number, totalRatings: number): ScoreBand {
+  // Wave G1 Score Band Thresholds:
+  // EXCELLENT: ≥4.5 average with ≥5 ratings
+  // GOOD: ≥3.5 average with ≥3 ratings
+  // NEEDS_ATTENTION: <3.0 average with ≥3 ratings
+  // NEW: all other cases (including <3 ratings or 3.0-3.49 with insufficient volume)
+  
   if (totalRatings < 3) return 'NEW'
-  if (averageRating >= 4.5) return 'EXCELLENT'
-  if (averageRating >= 3.5) return 'GOOD'
-  return 'NEEDS_ATTENTION'
+  
+  if (averageRating >= 4.5 && totalRatings >= 5) return 'EXCELLENT'
+  if (averageRating >= 3.5 && totalRatings >= 3) return 'GOOD'
+  if (averageRating < 3.0 && totalRatings >= 3) return 'NEEDS_ATTENTION'
+  
+  return 'NEW'
 }
 
 // ============================================================================
