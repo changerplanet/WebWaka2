@@ -1,0 +1,291 @@
+
+🔒 AUTHORIZATION — NIGERIA-FIRST MODULAR COMMERCE ENHANCEMENT REVIEW
+
+POS • Single Vendor Marketplace (SVM) • Multi-Vendor Marketplace (MVM) • ParkHub
+
+⸻
+
+CONTEXT
+
+You are reviewing an already-implemented, production-ready multi-tenant SaaS platform (WebWaka).
+
+The platform already includes:
+	•	POS
+	•	Single Vendor Marketplace (SVM)
+	•	Multi-Vendor Marketplace (MVM)
+	•	ParkHub
+
+The system is stable, demo-ready, and deployed with real tenants and real data.
+
+⚠️ This task is DESIGN REVIEW ONLY.
+❌ No bug fixes
+❌ No code
+❌ No schema changes
+❌ No API changes
+
+⸻
+
+🎯 PRIMARY OBJECTIVE
+
+Carry out a deep, Nigeria-contextual enhancement review of:
+	1.	POS
+	2.	Single Vendor Marketplace (SVM)
+	3.	Multi-Vendor Marketplace (MVM)
+	4.	ParkHub
+
+Your goal is to propose enhancements that make these modules deeply useful in Nigeria, factoring in:
+	•	Mobile-first usage
+	•	Offline-first operation
+	•	PWA-first experience
+	•	Low bandwidth
+	•	Power and connectivity instability
+	•	Informal and semi-formal business realities
+
+⸻
+
+🔑 CORE NON-NEGOTIABLE DESIGN AXIS
+
+MODULAR COMMERCE + VENDOR-CONTROLLED PRODUCT SYNC
+
+This is the most important requirement and must be treated as a first-class architectural concern, not an afterthought.
+
+⸻
+
+🔌 MODULAR SUBSCRIPTION MODEL (MANDATORY)
+
+A vendor may subscribe to ANY combination of the following, independently:
+	•	POS only
+	•	SVM only
+	•	MVM only
+	•	POS + SVM
+	•	POS + MVM
+	•	SVM + MVM
+	•	POS + SVM + MVM
+
+You must assume ALL combinations are valid and common.
+
+❗ No module may assume the existence of another module.
+
+⸻
+
+🔄 VENDOR-CONTROLLED PRODUCT SYNC (MANDATORY)
+
+Vendors must be able to explicitly choose:
+	•	Which products exist only in POS
+	•	Which products appear in SVM (their own online store)
+	•	Which products are exposed to MVM (resellers / marketplace)
+	•	Which products sync inventory across:
+	•	POS ↔ SVM
+	•	POS ↔ MVM
+	•	SVM ↔ MVM
+	•	POS ↔ SVM ↔ MVM
+
+This means:
+	•	Product sync is opt-in, not automatic
+	•	Inventory sync is per-product and per-channel
+	•	Pricing may diverge by channel
+	•	Availability may diverge by channel
+
+⸻
+
+🧠 CRITICAL SCENARIOS YOU MUST DESIGN FOR
+
+You must explicitly analyze and propose designs for scenarios such as:
+	•	Vendor uses SVM only (no POS, no MVM)
+	•	Vendor uses POS + SVM, but disables MVM
+	•	Vendor uses POS + MVM, but no SVM
+	•	Vendor uses SVM + MVM, no physical POS
+	•	Vendor disables one channel temporarily
+	•	Vendor sells offline on POS while:
+	•	SVM is live
+	•	MVM orders are coming in
+	•	Conflicting stock updates across channels
+	•	Offline sales reconciliation when device reconnects
+
+⸻
+
+📐 REQUIRED ANALYSIS DIMENSIONS (MANDATORY)
+
+For EACH module (POS, SVM, MVM, ParkHub), you MUST cover:
+
+⸻
+
+1️⃣ CURRENT STATE ANALYSIS
+	•	What the module already does well
+	•	Nigerian business types it already fits
+	•	Hidden assumptions (desktop, stable internet, single channel)
+
+⸻
+
+2️⃣ MODULAR SUBSCRIPTION & PRODUCT SYNC BEHAVIOR
+
+(THIS SECTION IS REQUIRED FOR EVERY MODULE)
+
+Explicitly analyze:
+	•	Product ownership (who owns the master?)
+	•	Channel-level product visibility controls
+	•	Inventory synchronization rules
+	•	Pricing divergence rules
+	•	Offline conflict resolution strategies
+	•	Channel enable / disable lifecycle behavior
+	•	What breaks today and why
+
+⸻
+
+3️⃣ NIGERIA-SPECIFIC REALITY GAPS
+
+Identify gaps related to:
+	•	Power outages
+	•	Shared devices
+	•	Cash-first workflows
+	•	Trust & fraud prevention
+	•	Poor GPS accuracy
+	•	Market levies & informal fees
+	•	Low digital literacy
+
+⸻
+
+4️⃣ MOBILE-FIRST UX ENHANCEMENTS
+
+Propose:
+	•	Card-based layouts instead of tables
+	•	Large tap targets (≥44px)
+	•	Camera-first workflows (QR, receipts, proof)
+	•	One-hand usage patterns
+	•	Minimal typing flows
+
+⸻
+
+5️⃣ OFFLINE-FIRST DESIGN (DESIGN ONLY)
+
+Propose:
+	•	What works fully offline
+	•	What queues for later sync
+	•	How users see sync status
+	•	How conflicts are resolved in UX
+	•	How trust is maintained offline
+
+⸻
+
+6️⃣ PWA-FIRST STRATEGY
+
+Cover:
+	•	Installability improvements
+	•	Home-screen-centric usage
+	•	Background sync readiness
+	•	Storage constraints on low-end Android phones
+	•	Clear offline indicators
+
+⸻
+
+7️⃣ BUSINESS & REVENUE IMPACT
+
+For every enhancement:
+	•	Who benefits (vendor, partner, customer)
+	•	Revenue impact
+	•	Adoption friction
+	•	Competitive advantage in Nigeria/Africa
+
+⸻
+
+📊 REQUIRED OUTPUT FORMAT (STRICT)
+
+Produce ONE CONSOLIDATED DOCUMENT with this structure:
+
+⸻
+
+📘 TITLE
+
+Nigeria-First Modular Commerce Enhancement Blueprint
+
+⸻
+
+SECTION A — EXECUTIVE SUMMARY
+	•	Strategic importance
+	•	Key insights
+	•	Biggest opportunities
+
+⸻
+
+SECTION B — MODULE-BY-MODULE ANALYSIS
+
+B1. POS
+	•	Current strengths
+	•	Nigeria-specific gaps
+	•	Modular sync challenges
+	•	Proposed enhancements
+	•	Mobile/offline strategy
+	•	Priority matrix
+
+B2. Single Vendor Marketplace (SVM)
+(same structure)
+
+B3. Multi-Vendor Marketplace (MVM)
+(same structure)
+
+B4. ParkHub
+(same structure, including POS interaction)
+
+⸻
+
+SECTION C — CROSS-MODULE SYNC ARCHITECTURE (DESIGN ONLY)
+	•	Product master strategy
+	•	Channel visibility model
+	•	Inventory sync rules
+	•	Pricing divergence model
+	•	Offline conflict resolution
+	•	Channel enable/disable lifecycle
+
+⸻
+
+SECTION D — PRIORITIZED ENHANCEMENT BACKLOG
+
+Table including:
+	•	Enhancement
+	•	Module(s)
+	•	Priority (P0 / P1 / P2)
+	•	Effort (Low / Medium / High)
+	•	Impact (Revenue / UX / Scale / Trust)
+	•	Dependencies
+
+⸻
+
+SECTION E — PHASED ROLLOUT RECOMMENDATION
+	•	Phase N1: Quick wins (0–4 weeks)
+	•	Phase N2: Structural improvements (1–3 months)
+	•	Phase N3: Platform differentiators (3–6 months)
+
+⸻
+
+SECTION F — EXPLICIT CONFIRMATIONS
+
+You MUST explicitly state:
+	•	❌ No code written
+	•	❌ No schema changes
+	•	❌ No API changes
+	•	❌ No deployments
+
+⸻
+
+🛑 HARD STOP RULE
+
+After submitting the report:
+	•	STOP
+	•	Do not implement anything
+	•	Wait for explicit approval per enhancement group
+
+⸻
+
+🎯 EXPECTED DEPTH & MINDSET
+
+Think like:
+	•	A market trader with poor network
+	•	A roadside vendor with one phone
+	•	A supermarket with POS + online sales
+	•	A reseller on a marketplace
+	•	A park operator managing daily cash flow
+
+Avoid Silicon Valley assumptions.
+Design for Nigeria first, Africa second, global later.
+
+⸻
