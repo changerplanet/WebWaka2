@@ -18317,3 +18317,53 @@ model pos_cash_rounding {
   @@index([shiftId])
   @@index([appliedAt])
 }
+
+// WhatsApp Message Types (Wave 2.1)
+enum WhatsAppMessageType {
+  ORDER_CONFIRMATION
+  POS_RECEIPT
+  VENDOR_ORDER_ALERT
+  PARKHUB_TICKET
+  PAYMENT_CONFIRMATION
+  DELIVERY_UPDATE
+}
+
+enum WhatsAppProvider {
+  META_CLOUD
+  TWILIO
+  DEMO
+}
+
+enum WhatsAppMessageStatus {
+  SENT
+  FAILED
+  DEMO
+}
+
+// WhatsApp Message Log (Wave 2.1)
+model whatsapp_message_log {
+  id          String   @id @default(cuid())
+  tenantId    String
+  
+  // Recipient
+  to          String   // Phone number
+  
+  // Message Details
+  messageType WhatsAppMessageType
+  provider    WhatsAppProvider
+  status      WhatsAppMessageStatus
+  messageId   String?  // Provider message ID
+  error       String?
+  
+  // Full payload for audit
+  payload     Json
+  
+  createdAt   DateTime @default(now())
+
+  @@index([tenantId])
+  @@index([to])
+  @@index([messageType])
+  @@index([status])
+  @@index([createdAt])
+}
+
