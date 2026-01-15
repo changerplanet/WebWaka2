@@ -85,6 +85,18 @@ WebWaka is built as a multi-tenant SaaS platform with a modular capability syste
   - **Cash Rounding**: NGN-realistic rounding (₦5, ₦10, ₦50) with audit trail
     - Services: CashRoundingService with receipt formatting
     - APIs: /api/commerce/cash-rounding for calculate/apply/report
+- **Nigeria-First Modular Commerce (Wave 2.1)**: WhatsApp Integration (Foundational):
+  - **WhatsApp Notifications**: Transactional messaging for commerce events
+    - Provider-agnostic: Meta WhatsApp Cloud API (primary), Twilio (alternative)
+    - Demo-safe: Log-only fallback when not configured
+    - Message types: Order confirmations, POS receipts, vendor alerts, ParkHub tickets
+    - Services: WhatsAppService with commerce integration helpers
+    - APIs: /api/notifications/whatsapp for send, /api/notifications/whatsapp/click-to-chat for links
+  - **Click-to-WhatsApp**: User-initiated support links (no automation)
+    - Support inquiry, order inquiry, delivery help, refund request
+    - Vendor contact, ParkHub support
+  - **Audit Trail**: All messages logged to whatsapp_message_log (including demo mode)
+  - **Constraints**: Transactional only, no automations, no AI, no marketing
 
 ### Project Structure
 - `/frontend`: Main Next.js application.
@@ -99,6 +111,8 @@ WebWaka is built as a multi-tenant SaaS platform with a modular capability syste
   - `/src/app/portal`: Portal UI pages (mobile-first design)
   - `/src/app/api/portal`: Portal API routes
   - `/src/app/api/commerce`: Commerce API routes (Wave 1)
+  - `/src/lib/notifications/whatsapp`: WhatsApp notification services (Wave 2.1)
+  - `/src/app/api/notifications/whatsapp`: WhatsApp API routes (Wave 2.1)
 - `/modules`: Contains modular business components for specific verticals (e.g., SVM, POS, MVM).
 
 ## External Dependencies
