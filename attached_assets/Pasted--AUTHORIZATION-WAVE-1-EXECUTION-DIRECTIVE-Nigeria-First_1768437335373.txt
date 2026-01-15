@@ -1,0 +1,162 @@
+
+🔓 AUTHORIZATION — WAVE 1 EXECUTION DIRECTIVE
+
+Nigeria-First Modular Commerce Enhancement
+
+STATUS
+	•	Strategy & Design: ✅ Approved
+	•	Execution Mode: Sequential, Approval-Gated
+	•	Current Wave: 🟥 WAVE 1 — FOUNDATIONAL ARCHITECTURE
+	•	All other waves: 🔒 LOCKED
+
+⸻
+
+🎯 WAVE 1 OBJECTIVE (DO NOT EXPAND)
+
+Make modular, multi-channel commerce technically possible across:
+	•	POS
+	•	Single Vendor Marketplace (SVM)
+	•	Multi-Vendor Marketplace (MVM)
+	•	ParkHub
+
+This wave establishes core architecture only. No polish, no integrations beyond what’s listed.
+
+⸻
+
+✅ WAVE 1 SCOPE — MUST IMPLEMENT ALL
+
+1️⃣ Product Channel Configuration System (PLATFORM-WIDE)
+
+Implement a vendor-controlled, channel-aware product system that allows:
+	•	Channel visibility: POS / SVM / MVM (independently)
+	•	Channel-specific pricing overrides
+	•	Inventory modes:
+	•	SHARED
+	•	ALLOCATED
+	•	UNLIMITED
+	•	Sync rules per channel (price + inventory)
+	•	Channel lifecycle:
+	•	INACTIVE → ACTIVE → PAUSED → ACTIVE
+	•	Vendor subscription awareness:
+	•	POS only
+	•	SVM only
+	•	MVM only
+	•	Any combination of the three
+
+⚠️ Core product remains master. Channel config must not duplicate product.
+
+⸻
+
+2️⃣ POS Offline Transaction Queue (CRITICAL)
+
+Implement a true offline-first POS layer:
+	•	IndexedDB persistence
+	•	Offline sale queue
+	•	Sync engine on reconnect
+	•	Conflict detection (oversell, price mismatch)
+	•	Manual conflict resolution UI
+	•	Clear offline/online visual indicator
+
+⸻
+
+3️⃣ Vendor Registration API (MVM)
+
+Implement real backend vendor onboarding:
+	•	Phone-first registration
+	•	Optional BVN / CAC
+	•	Vendor lifecycle states
+	•	Admin approval flow
+	•	Tenant + partner scoping enforced
+
+❌ No payouts yet
+❌ No WhatsApp/SMS yet
+
+⸻
+
+4️⃣ Order Splitting Engine (MVM)
+
+Implement actual order splitting:
+	•	Parent marketplace order
+	•	Vendor-specific sub-orders
+	•	Isolated fulfillment
+	•	Unified customer view
+	•	Inventory deduction aligned with channel rules
+
+⸻
+
+5️⃣ ParkHub Walk-Up POS Interface
+
+Implement agent-first, offline-first ticket sales:
+	•	≤3 tap ticket sale
+	•	Route/destination search
+	•	Seat deduction per trip
+	•	Receipt support
+	•	Cash + transfer toggle
+
+⸻
+
+6️⃣ Dynamic Departure Model (ParkHub)
+
+Implement Nigerian-realistic trip logic:
+	•	“Leaves when full” support
+	•	Capacity-based departure
+	•	Trip auto-close on threshold
+	•	Status lifecycle enforcement
+
+⸻
+
+7️⃣ Cash Rounding Module (POS)
+
+Implement NGN-realistic rounding:
+	•	₦5 / ₦10 / ₦50 options
+	•	Display rounding on receipt
+	•	Audit trail for adjustments
+
+⸻
+
+🚫 EXPLICIT WAVE 1 CONSTRAINTS (NON-NEGOTIABLE)
+
+Replit MUST NOT:
+	•	❌ Start Wave 2 features
+	•	❌ Implement payouts
+	•	❌ Add WhatsApp or SMS
+	•	❌ Redesign UI beyond necessity
+	•	❌ Add automations or notifications
+	•	❌ Skip offline handling
+	•	❌ Break demo safety
+
+⸻
+
+📄 REQUIRED DELIVERABLE (MANDATORY)
+
+At completion, Replit MUST produce:
+
+WAVE 1 COMPLETION REPORT
+
+Including:
+	1.	Schemas introduced or modified
+	2.	APIs created
+	3.	Offline behavior details
+	4.	Conflict resolution rules
+	5.	Demo vs live behavior
+	6.	Explicit confirmation:
+	•	❌ No Wave 2 features implemented
+	•	❌ No scope creep
+	•	🛑 STOPPED and awaiting approval
+
+⸻
+
+🛑 HARD STOP RULE
+
+After submitting the Wave 1 Completion Report,
+STOP IMMEDIATELY and wait for approval.
+
+No continuation without explicit authorization.
+
+⸻
+
+▶️ START NOW
+
+You are authorized to begin Wave 1 implementation immediately.
+
+When the Wave 1 report is ready, paste it here for architectural and Nigeria-context review before Wave 2 is unlocked.

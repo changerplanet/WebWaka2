@@ -62,12 +62,43 @@ WebWaka is built as a multi-tenant SaaS platform with a modular capability syste
 - **Authorization System**: Robust, role-scoped authorization (`SUPER_ADMIN`, `PARTNER_*`, `TENANT_USER`) across API routes and UI components to prevent cross-tenant data leaks and ensure secure access control.
 - **Marketing Website**: Comprehensive marketing site with reusable components, suite data modules, and SEO optimization (metadata, OpenGraph, performance hardening).
 - **Demo System**: Advanced demo data seeding and a "Strong Demo Matrix" across 11 vertical suites, enabling comprehensive demonstrations for potential partners and clients.
+- **Nigeria-First Modular Commerce (Wave 1)**: Foundational architecture for multi-channel commerce:
+  - **Product Channel Configuration**: Vendor-controlled visibility, pricing, and inventory modes across POS/SVM/MVM channels
+    - Services: ChannelConfigService with channel-specific pricing and inventory allocation
+    - APIs: /api/commerce/channel-config for enable/pause/disable/bulk operations
+  - **POS Offline Sync**: IndexedDB-based offline queue with server-side conflict detection
+    - Services: PosOfflineService (server), posOfflineClient (browser)
+    - Conflict types: OVERSELL, PRICE_MISMATCH, PRODUCT_UNAVAILABLE
+    - APIs: /api/commerce/pos-offline for queue/sync/resolve operations
+  - **MVM Vendor Registration**: Phone-first onboarding with optional KYC (BVN/CAC)
+    - Services: VendorRegistrationService with approval workflow
+    - States: PENDING_APPROVAL → APPROVED/REJECTED → SUSPENDED
+    - APIs: /api/commerce/mvm-vendor for registration lifecycle
+  - **Order Splitting**: Multi-vendor marketplace order decomposition
+    - Services: OrderSplittingService with parent/sub-order creation
+    - Commission calculation per vendor with payout tracking
+    - APIs: /api/commerce/order-splitting for create/status updates
+  - **ParkHub POS**: Walk-up ticket sales with dynamic departure model
+    - Services: ParkHubService for trip management and ticket sales
+    - Departure modes: SCHEDULED, WHEN_FULL, HYBRID ("leaves when full")
+    - APIs: /api/commerce/parkhub for trip/ticket lifecycle
+  - **Cash Rounding**: NGN-realistic rounding (₦5, ₦10, ₦50) with audit trail
+    - Services: CashRoundingService with receipt formatting
+    - APIs: /api/commerce/cash-rounding for calculate/apply/report
 
 ### Project Structure
 - `/frontend`: Main Next.js application.
   - `/src/lib/portals`: End-user portal services (Education, Health)
+  - `/src/lib/commerce`: Nigeria-First Commerce services
+    - `/channel-config`: Product channel visibility and pricing
+    - `/pos-offline`: Offline queue (server + client)
+    - `/mvm-vendor`: Vendor registration and onboarding
+    - `/order-splitting`: Multi-vendor order decomposition
+    - `/parkhub`: Trip and ticket management
+    - `/cash-rounding`: NGN rounding with audit
   - `/src/app/portal`: Portal UI pages (mobile-first design)
   - `/src/app/api/portal`: Portal API routes
+  - `/src/app/api/commerce`: Commerce API routes (Wave 1)
 - `/modules`: Contains modular business components for specific verticals (e.g., SVM, POS, MVM).
 
 ## External Dependencies

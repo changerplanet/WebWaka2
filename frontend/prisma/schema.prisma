@@ -865,9 +865,10 @@ model Product {
   publishedAt      DateTime?
   createdAt        DateTime         @default(now())
   updatedAt        DateTime
-  InventoryLevel   InventoryLevel[]
-  ProductCategory  ProductCategory? @relation(fields: [categoryId], references: [id])
-  ProductVariant   ProductVariant[]
+  InventoryLevel        InventoryLevel[]
+  ProductCategory       ProductCategory? @relation(fields: [categoryId], references: [id])
+  ProductVariant        ProductVariant[]
+  ProductChannelConfig  ProductChannelConfig[]
 
   @@unique([tenantId, sku])
   @@unique([tenantId, slug])
@@ -17998,4 +17999,321 @@ model political_event {
   @@index([eventType])
   @@index([startDate])
   @@index([status])
+}
+
+// ============================================================
+// WAVE 1: NIGERIA-FIRST MODULAR COMMERCE ARCHITECTURE
+// ============================================================
+
+// Product Channel Configuration - Vendor-controlled channel visibility
+enum ChannelType {
+  POS
+  SVM
+  MVM
+}
+
+enum ChannelStatus {
+  INACTIVE  // Never enabled
+  ACTIVE    // Currently live
+  PAUSED    // Temporarily disabled, orders still process
+}
+
+enum InventoryMode {
+  SHARED      // All channels draw from same pool
+  ALLOCATED   // Fixed quantity per channel
+  UNLIMITED   // No inventory tracking (services, digital)
+}
+
+model ProductChannelConfig {
+  id        String   @id @default(cuid())
+  tenantId  String
+  productId String
+  channel   ChannelType
+
+  // Visibility & Status
+  status    ChannelStatus @default(INACTIVE)
+
+  // Pricing
+  useBasePrice  Boolean  @default(true)
+  channelPrice  Decimal? @db.Decimal(12, 2)
+
+  // Inventory Mode
+  inventoryMode     InventoryMode @default(SHARED)
+  allocatedQuantity Int?          // If ALLOCATED mode
+
+  // Sync Rules
+  syncInventory Boolean @default(true)
+  syncPrice     Boolean @default(true)
+
+  // Channel-Specific Limits
+  minOrderQuantity Int?
+  maxOrderQuantity Int?
+
+  // Metadata
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  Product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, productId, channel])
+  @@index([tenantId])
+  @@index([productId])
+  @@index([channel])
+  @@index([status])
+}
+
+// MVM Vendor Registration - Nigeria-first onboarding (uses existing MvmVendorStatus, MvmOnboardingStep)
+model mvm_vendor_registration {
+  id        String   @id @default(cuid())
+  tenantId  String
+  partnerId String?
+
+  // Phone-First Identity
+  phone           String
+  phoneVerified   Boolean   @default(false)
+  phoneVerifiedAt DateTime?
+
+  // Basic Profile
+  businessName    String?
+  contactName     String?
+  email           String?
+  description     String?
+  slug            String?
+
+  // Location
+  address         String?
+  city            String?
+  state           String?
+  lga             String?  // Local Government Area
+
+  // Optional KYC (Nigeria)
+  bvn             String?  // Bank Verification Number
+  cacNumber       String?  // Corporate Affairs Commission
+  taxId           String?
+
+  // Bank Details
+  bankName        String?
+  accountNumber   String?
+  accountName     String?
+
+  // Status & Lifecycle
+  status          MvmVendorStatus @default(PENDING_APPROVAL)
+  onboardingStep  MvmOnboardingStep @default(REGISTERED)
+  
+  // Admin Review
+  reviewedById    String?
+  reviewedByName  String?
+  reviewedAt      DateTime?
+  rejectionReason String?
+
+  // Link to approved vendor (if approved)
+  approvedVendorId String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([tenantId, phone])
+  @@unique([tenantId, slug])
+  @@index([tenantId])
+  @@index([partnerId])
+  @@index([status])
+  @@index([phone])
+}
+
+// ParkHub Dynamic Departure
+enum ParkTripDepartureMode {
+  SCHEDULED    // Leaves at fixed time
+  WHEN_FULL    // Leaves when capacity reached
+  HYBRID       // Leaves at time OR when full, whichever first
+}
+
+enum ParkTripStatus {
+  SCHEDULED
+  BOARDING
+  READY_TO_DEPART
+  DEPARTED
+  IN_TRANSIT
+  ARRIVED
+  COMPLETED
+  CANCELLED
+}
+
+model park_trip {
+  id              String   @id @default(cuid())
+  tenantId        String
+  routeId         String
+  vehicleId       String?
+  driverId        String?
+
+  // Trip Identity
+  tripNumber      String   @unique
+
+  // Schedule
+  departureMode   ParkTripDepartureMode @default(SCHEDULED)
+  scheduledDeparture DateTime?
+  actualDeparture    DateTime?
+  estimatedArrival   DateTime?
+  actualArrival      DateTime?
+
+  // Capacity
+  totalSeats        Int
+  bookedSeats       Int      @default(0)
+  availableSeats    Int
+  departureThreshold Int?    // For WHEN_FULL mode
+
+  // Pricing (NGN)
+  basePrice       Decimal  @db.Decimal(12, 2)
+  currentPrice    Decimal  @db.Decimal(12, 2)  // May vary by demand
+
+  // Status
+  status          ParkTripStatus @default(SCHEDULED)
+
+  // Agent/Staff
+  boardingAgentId   String?
+  boardingAgentName String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  tickets park_ticket[]
+
+  @@index([tenantId])
+  @@index([routeId])
+  @@index([status])
+  @@index([scheduledDeparture])
+}
+
+model park_ticket {
+  id              String   @id @default(cuid())
+  tenantId        String
+  tripId          String
+
+  // Ticket Identity
+  ticketNumber    String   @unique
+  seatNumber      String?
+
+  // Passenger
+  passengerName   String
+  passengerPhone  String?
+
+  // Pricing (NGN)
+  price           Decimal  @db.Decimal(12, 2)
+  discount        Decimal  @default(0) @db.Decimal(12, 2)
+  totalPaid       Decimal  @db.Decimal(12, 2)
+
+  // Cash Rounding
+  roundingAmount  Decimal  @default(0) @db.Decimal(10, 2)
+  roundingMode    String?  // N5, N10, N50
+
+  // Payment
+  paymentMethod   String   @default("CASH")  // CASH, BANK_TRANSFER, POS_CARD
+  paymentStatus   String   @default("PAID")  // PAID, PENDING, REFUNDED
+  paymentReference String?
+
+  // Sale Context
+  saleChannel     String   @default("WALK_UP")  // WALK_UP, ONLINE, AGENT
+  soldById        String?
+  soldByName      String?
+  soldAt          DateTime @default(now())
+
+  // Status
+  status          String   @default("ACTIVE")  // ACTIVE, BOARDED, NO_SHOW, CANCELLED, REFUNDED
+
+  // Offline Sync
+  offlineSaleId   String?  // Client-generated ID for offline sales
+  syncedAt        DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  trip park_trip @relation(fields: [tripId], references: [id])
+
+  @@unique([tenantId, offlineSaleId])
+  @@index([tenantId])
+  @@index([tripId])
+  @@index([ticketNumber])
+  @@index([passengerPhone])
+  @@index([soldAt])
+}
+
+// POS Offline Queue - Sync tracking
+enum PosSyncStatus {
+  PENDING
+  SYNCING
+  SYNCED
+  CONFLICT
+  RESOLVED
+}
+
+enum PosConflictType {
+  OVERSELL
+  PRICE_MISMATCH
+  CHANNEL_DISABLED
+  PRODUCT_UNAVAILABLE
+}
+
+model pos_offline_sale {
+  id              String   @id @default(cuid())
+  tenantId        String
+  locationId      String
+
+  // Client-Generated Identity
+  clientSaleId    String   // Generated on device
+  clientTimestamp DateTime // When sale happened offline
+
+  // Sale Data (JSON serialized)
+  saleData        Json     // Full sale object
+
+  // Sync Status
+  syncStatus      PosSyncStatus @default(PENDING)
+  syncAttempts    Int           @default(0)
+  lastSyncAttempt DateTime?
+  syncedAt        DateTime?
+  syncedSaleId    String?       // pos_sale.id after sync
+
+  // Conflict Handling
+  hasConflict     Boolean       @default(false)
+  conflictType    PosConflictType?
+  conflictDetails Json?
+  resolvedAt      DateTime?
+  resolvedById    String?
+  resolutionAction String?      // ACCEPT, REJECT, ADJUST
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([tenantId, clientSaleId])
+  @@index([tenantId])
+  @@index([locationId])
+  @@index([syncStatus])
+  @@index([hasConflict])
+}
+
+// Cash Rounding Tracking
+model pos_cash_rounding {
+  id              String   @id @default(cuid())
+  tenantId        String
+  saleId          String?
+  shiftId         String?
+
+  // Rounding Details
+  originalAmount  Decimal  @db.Decimal(12, 2)
+  roundedAmount   Decimal  @db.Decimal(12, 2)
+  roundingDiff    Decimal  @db.Decimal(10, 2)  // Positive = rounded up, Negative = rounded down
+  roundingMode    String   // N5, N10, N50
+
+  // Context
+  appliedAt       DateTime @default(now())
+  appliedById     String?
+  appliedByName   String?
+
+  createdAt DateTime @default(now())
+
+  @@index([tenantId])
+  @@index([saleId])
+  @@index([shiftId])
+  @@index([appliedAt])
 }
