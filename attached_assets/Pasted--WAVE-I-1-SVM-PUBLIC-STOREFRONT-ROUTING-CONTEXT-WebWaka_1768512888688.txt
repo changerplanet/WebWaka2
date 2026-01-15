@@ -1,0 +1,289 @@
+🔴 WAVE I.1 — SVM PUBLIC STOREFRONT ROUTING
+⸻
+
+CONTEXT
+
+WebWaka already has a fully implemented Single Vendor Marketplace (SVM) backend and UI components (product grid, product detail, cart, checkout, offline cart, social proof).
+
+However, the storefront is not publicly exposed due to missing tenant-based routing.
+
+This task is to expose what already exists, not to build new commerce logic.
+
+⸻
+
+OBJECTIVE
+
+Implement public, SEO-safe, tenant-based storefront routing so each tenant has a real online store.
+
+⸻
+
+SCOPE — MUST IMPLEMENT
+
+1. Public Storefront Routing
+
+Create public routes:
+	•	/[tenantSlug]/store
+	•	/[tenantSlug]/product/[productSlug]
+
+Tenant resolution must be server-side and must:
+	•	Resolve tenant by tenantSlug
+	•	Fail safely with a “Store Not Available” page if:
+	•	Tenant does not exist
+	•	Store capability is disabled
+	•	Tenant is suspended
+
+⸻
+
+2. Use Existing Components ONLY
+
+You must reuse existing components:
+	•	ProductGrid
+	•	ProductDetail
+	•	CartDrawer / MiniCart
+	•	CheckoutPage
+	•	OfflineCartIndicator
+	•	SocialProofBadge / RecentPurchasesTicker
+
+❌ Do NOT create new product, cart, or checkout logic
+❌ Do NOT modify pricing, inventory, or payment logic
+
+⸻
+
+3. Tenant Isolation & Security
+	•	All API calls must resolve tenant context from tenantSlug
+	•	No tenantId passed from client
+	•	No cross-tenant leakage
+	•	Demo tenants remain accessible as-is
+
+⸻
+
+4. SEO & UX Requirements
+	•	Proper <title> and meta tags per tenant
+	•	Canonical URLs
+	•	Clean 404 for invalid tenant/product
+	•	Mobile-first layouts preserved
+
+⸻
+
+5. Explicit Non-Goals (DO NOT DO)
+	•	❌ No marketplace logic
+	•	❌ No vendor features
+	•	❌ No new schemas
+	•	❌ No automation
+	•	❌ No background jobs
+
+⸻
+
+DELIVERABLES
+
+At completion, you must produce:
+	1.	List of new routes created
+	2.	Tenant resolution strategy used
+	3.	Screenshots or route confirmation for:
+	•	Valid tenant storefront
+	•	Invalid tenant fallback
+	4.	Confirmation that checkout, offline cart, and social proof still work
+	5.	Explicit confirmation of NO new business logic
+
+⸻
+
+STOP CONDITION
+
+After completing Wave I.1:
+	•	STOP
+	•	Do NOT proceed to Wave I.2
+	•	Await explicit approval
+
+⸻
+
+⸻
+
+🔴 WAVE I.2 — MVM PUBLIC MARKETPLACE (COMMERCE)
+
+Replit Execution Prompt
+
+⸻
+
+CONTEXT
+
+WebWaka has a complete Multi-Vendor Marketplace (MVM) backend:
+	•	Vendor registration
+	•	Product channel config
+	•	Order splitting
+	•	Commissions
+	•	Payout logic
+	•	Vendor ratings & trust badges
+
+What is missing is the public marketplace UI.
+
+⸻
+
+OBJECTIVE
+
+Expose a public multi-vendor marketplace where customers can browse vendors and products and place orders.
+
+⸻
+
+SCOPE — MUST IMPLEMENT
+
+1. Public Marketplace Routes
+
+Create public routes:
+	•	/marketplace
+	•	/marketplace/vendor/[vendorSlug]
+	•	/marketplace/product/[productSlug]
+
+⸻
+
+2. Marketplace Features (UI Only)
+	•	Vendor listing page
+	•	Vendor profile pages
+	•	Product listings across vendors
+	•	Vendor trust badges & ratings (reuse existing)
+	•	Multi-vendor cart UI
+	•	Marketplace checkout UI
+
+⸻
+
+3. Use Existing Logic ONLY
+
+You must reuse:
+	•	Order splitting engine
+	•	Vendor rating system
+	•	Commission logic
+	•	ProductChannelConfig
+	•	Existing checkout/payment services
+
+❌ No new marketplace logic
+❌ No new payout logic
+❌ No new schemas
+
+⸻
+
+4. Isolation & Safety
+	•	Tenant-scoped marketplace
+	•	Vendors only visible within their tenant
+	•	Demo vendors clearly labeled
+
+⸻
+
+5. Explicit Non-Goals
+	•	❌ No vendor onboarding changes
+	•	❌ No promotions
+	•	❌ No automation
+	•	❌ No background jobs
+
+⸻
+
+DELIVERABLES
+
+At completion, provide:
+	1.	Routes implemented
+	2.	Screens list (Marketplace, Vendor Page, Product Page)
+	3.	Confirmation multi-vendor checkout works end-to-end
+	4.	Confirmation ratings & trust badges display correctly
+	5.	Explicit confirmation NO backend changes
+
+⸻
+
+STOP CONDITION
+
+After completion:
+	•	STOP
+	•	Await approval before Wave I.3
+
+⸻
+
+⸻
+
+🔴 WAVE I.3 — PARKHUB PUBLIC MARKETPLACE
+
+Replit Execution Prompt
+
+⸻
+
+CONTEXT
+
+ParkHub already supports:
+	•	Public booking
+	•	Walk-up POS
+	•	Ticketing
+	•	Manifests
+	•	Operator dashboards
+
+What is missing is operator discovery — ParkHub must also function as a marketplace, not only a booking flow.
+
+⸻
+
+OBJECTIVE
+
+Expose ParkHub as a public transport marketplace with operator and route discovery.
+
+⸻
+
+SCOPE — MUST IMPLEMENT
+
+1. Public ParkHub Marketplace Routes
+
+Create:
+	•	/parkhub/operators
+	•	/parkhub/operator/[operatorSlug]
+	•	/parkhub/routes (standalone browser)
+
+⸻
+
+2. Features
+	•	Operator/company listings
+	•	Operator profile pages
+	•	Routes & schedules per operator
+	•	Entry into existing booking flow
+	•	Display ratings/trust where applicable
+
+⸻
+
+3. Use Existing Systems
+	•	park_route
+	•	park_trip
+	•	park_ticket
+	•	Booking flow
+	•	Receipt & manifest verification
+
+❌ No new trip logic
+❌ No pricing changes
+❌ No automation
+
+⸻
+
+4. Constraints
+	•	Read-only public browsing
+	•	Booking still happens via existing flow
+	•	Demo operators clearly marked
+
+⸻
+
+DELIVERABLES
+
+At completion:
+	1.	List of new public routes
+	2.	Operator listing screenshots
+	3.	Route browser confirmation
+	4.	Booking handoff confirmation
+	5.	Explicit confirmation NO operational logic changed
+
+⸻
+
+STOP CONDITION
+
+After Wave I.3:
+	•	STOP COMPLETELY
+	•	Await next phase authorization
+
+⸻
+
+✅ FINAL NOTE FOR REPLIT
+
+These waves are exposure waves, not feature waves.
+
+If any task requires new core logic, schemas, or automation — STOP and report immediately.
+
+⸻
