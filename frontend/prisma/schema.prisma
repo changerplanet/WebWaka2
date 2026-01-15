@@ -18795,3 +18795,191 @@ model payment_verification_queue {
   @@index([createdAt])
   @@index([priority])
 }
+
+// ============================================
+// Wave F3: Receipt Printing — POS + ParkHub
+// ============================================
+
+// Receipt Type
+enum ReceiptType {
+  POS_SALE        // Retail POS sale
+  PARKHUB_TICKET  // ParkHub ticket sale
+  REFUND          // Refund receipt
+  VOID            // Void receipt
+}
+
+// Receipt Sync Status (for offline-first)
+enum ReceiptSyncStatus {
+  SYNCED          // Receipt is synced and verified
+  PENDING_SYNC    // Generated offline, pending sync
+  SYNC_FAILED     // Sync attempted but failed
+}
+
+// Receipt Delivery Channel
+enum ReceiptDeliveryChannel {
+  ON_SCREEN       // Displayed on device
+  THERMAL_PRINT   // Printed on thermal printer
+  WHATSAPP        // Sent via WhatsApp
+  EMAIL           // Sent via email
+  QR_DOWNLOAD     // Downloaded via QR code
+}
+
+// Main Receipt Model - Unified for POS and ParkHub
+model receipt {
+  id              String   @id @default(cuid())
+  tenantId        String
+  platformInstanceId String?
+  locationId      String?  // Physical location (store, motor park)
+  
+  // Receipt Identity
+  receiptNumber   String   @unique // Human-readable: RCP-YYYYMMDD-XXXXX
+  receiptType     ReceiptType
+  
+  // Sync Status (Offline-first)
+  syncStatus      ReceiptSyncStatus @default(SYNCED)
+  offlineId       String?  // Client-generated ID when offline
+  syncedAt        DateTime?
+  
+  // Source Reference
+  sourceType      String   // POS_SALE, PARKHUB_QUEUE, PARKHUB_TICKET
+  sourceId        String   // ID of the source (pos_sale.id, parkhub_pos_queue.id)
+  
+  // Business Info (denormalized for offline access)
+  businessName    String
+  businessAddress String?
+  businessPhone   String?
+  businessTaxId   String?  // CAC number or VAT ID
+  
+  // Transaction Summary
+  transactionDate DateTime
+  currency        String   @default("NGN")
+  subtotal        Decimal  @db.Decimal(14, 2)
+  discountTotal   Decimal  @default(0) @db.Decimal(12, 2)
+  taxTotal        Decimal  @default(0) @db.Decimal(12, 2)
+  roundingAmount  Decimal  @default(0) @db.Decimal(10, 2) // Cash rounding
+  roundingMode    String?  // N5, N10, N50
+  grandTotal      Decimal  @db.Decimal(14, 2)
+  
+  // Payment Info
+  paymentMethod   String   // CASH, CARD, BANK_TRANSFER, MOBILE_MONEY, COD, SPLIT
+  amountTendered  Decimal? @db.Decimal(12, 2) // For cash payments
+  changeGiven     Decimal? @db.Decimal(12, 2) // For cash payments
+  paymentReference String? // Bank reference, card auth code, etc.
+  
+  // Customer Info
+  customerName    String?
+  customerPhone   String?
+  customerEmail   String?
+  
+  // Staff/Agent Info
+  staffId         String
+  staffName       String
+  
+  // Trust Markers
+  isDemo          Boolean  @default(false)
+  isVerified      Boolean  @default(true)  // Set to false if sync pending
+  verificationQrCode String? // URL for receipt verification
+  
+  // ParkHub-specific fields (nullable for POS)
+  routeId         String?
+  routeName       String?
+  tripId          String?
+  tripNumber      String?
+  seatNumbers     String[] // Array of seat numbers
+  departureMode   String?  // WHEN_FULL, SCHEDULED, HYBRID
+  manifestId      String?  // Link to passenger manifest
+  
+  // Metadata
+  notes           String?
+  metadata        Json?    // Additional custom fields
+  
+  // Timestamps
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  // Relations
+  items           receipt_item[]
+  deliveries      receipt_delivery[]
+  
+  @@index([tenantId])
+  @@index([locationId])
+  @@index([receiptType])
+  @@index([syncStatus])
+  @@index([sourceType, sourceId])
+  @@index([staffId])
+  @@index([transactionDate])
+  @@index([offlineId])
+  @@index([tripId])
+}
+
+// Receipt Line Items
+model receipt_item {
+  id              String   @id @default(cuid())
+  receiptId       String   // FK to receipt
+  
+  // Item Identity
+  itemType        String   // PRODUCT, TICKET, SERVICE, FEE
+  productId       String?  // FK to product (for POS)
+  
+  // Description
+  description     String   // Product name, route name, etc.
+  sku             String?  // For products
+  
+  // Quantity & Price (NGN)
+  quantity        Int      @default(1)
+  unitPrice       Decimal  @db.Decimal(12, 2)
+  discount        Decimal  @default(0) @db.Decimal(12, 2)
+  tax             Decimal  @default(0) @db.Decimal(10, 2)
+  lineTotal       Decimal  @db.Decimal(14, 2)
+  
+  // ParkHub-specific
+  seatNumber      String?  // Specific seat for this line item
+  passengerName   String?  // For ticket items
+  
+  // Order
+  displayOrder    Int      @default(0)
+  
+  createdAt       DateTime @default(now())
+  
+  // Relations
+  receipt         receipt  @relation(fields: [receiptId], references: [id], onDelete: Cascade)
+  
+  @@index([receiptId])
+  @@index([productId])
+}
+
+// Receipt Delivery Log - Track how receipts were delivered
+model receipt_delivery {
+  id              String   @id @default(cuid())
+  receiptId       String   // FK to receipt
+  
+  // Delivery Details
+  channel         ReceiptDeliveryChannel
+  status          String   @default("SUCCESS") // SUCCESS, FAILED, PENDING
+  
+  // For print deliveries
+  printerType     String?  // BLUETOOTH, WEBUSB, USB
+  printerName     String?
+  
+  // For WhatsApp/Email deliveries
+  recipientPhone  String?
+  recipientEmail  String?
+  messageId       String?  // External message ID
+  
+  // Error tracking
+  errorMessage    String?
+  
+  // Staff who initiated
+  initiatedById   String?
+  initiatedByName String?
+  
+  createdAt       DateTime @default(now())
+  
+  // Relations
+  receipt         receipt  @relation(fields: [receiptId], references: [id], onDelete: Cascade)
+  
+  @@index([receiptId])
+  @@index([channel])
+  @@index([status])
+  @@index([createdAt])
+}

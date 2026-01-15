@@ -1,0 +1,115 @@
+🟢 Wave F3 — AUTHORIZED
+
+Authorization confirmed.
+
+⸻
+
+🔓 WAVE F3 UNLOCKED
+
+Wave: F3
+Scope: Receipt Printing — POS + ParkHub
+Priority Band: 🟡 Operational Excellence
+Status: 🟢 APPROVED TO START
+
+Replit is now authorized to begin Wave F3 implementation immediately under the existing governance rules.
+
+⸻
+
+🎯 WAVE F3 OBJECTIVE (CONFIRMED)
+
+Implement Nigeria-appropriate receipt generation and printing that:
+
+Core Goals
+	•	Works for POS (retail, supermarkets, roadside vendors)
+	•	Works for ParkHub (motor parks, agents, inspectors)
+	•	Supports offline-first workflows
+	•	Supports cash, bank transfer, POS/card, COD
+	•	Builds trust, auditability, and compliance
+
+⸻
+
+🧾 REQUIRED CAPABILITIES
+
+1. Receipt Generation (Foundational)
+	•	Unique receipt number (human-readable)
+	•	Date/time (local timezone)
+	•	Business name + location
+	•	Transaction breakdown:
+	•	Items / tickets
+	•	Quantity
+	•	Price
+	•	Cash rounding (if applied)
+	•	Payment method
+	•	Agent/staff identifier
+	•	Trust markers:
+	•	Demo / Verified
+	•	Offline / Synced status
+
+2. Receipt Delivery Channels
+	•	Thermal printer (Bluetooth / WebUSB)
+	•	On-screen receipt preview
+	•	WhatsApp receipt (PDF or text fallback) (via Wave 2.1 infra)
+	•	QR code for verification (receipt ID lookup)
+
+3. Offline-First Behavior
+	•	Receipts generated even when offline
+	•	Marked as:
+	•	OFFLINE — PENDING SYNC
+	•	Sync status updates after reconciliation
+	•	Re-print supported after sync
+
+4. ParkHub-Specific Additions
+	•	Route name
+	•	Trip ID
+	•	Seat number(s)
+	•	Departure mode:
+	•	WHEN_FULL / SCHEDULED
+	•	Manifest linkage (receipt ↔ passenger list)
+
+⸻
+
+🚫 CONSTRAINTS (STILL IN FORCE)
+	•	❌ No background jobs
+	•	❌ No automatic printing
+	•	❌ No external print services
+	•	❌ No payout or accounting logic
+	•	✅ Agent/user initiated only
+	•	✅ Demo-safe
+	•	✅ Mobile-first
+
+⸻
+
+🛑 REQUIRED STOP CONDITION (MANDATORY)
+
+At completion, Replit must STOP and deliver:
+	1.	Wave F3 Completion Report
+	2.	Explicit list of:
+	•	Models added/updated
+	•	APIs added
+	•	Printer strategies supported
+	•	Offline vs online behavior
+	3.	Explicit confirmation:
+	•	❌ No automation
+	•	❌ No background jobs
+	•	❌ No financial side effects
+	4.	Clear note on:
+	•	What is production-ready
+	•	What is demo-only / stubbed
+
+Only after review will Wave F4 be unlocked.
+
+⸻
+
+🔒 NEXT WAVES (LOCKED)
+
+Wave	Scope	Status
+F4	Vendor Mobile Dashboard (MVM)	🔒 Locked
+F5	Landmark Addressing + Mobile Checkout (SVM)	🔒 Locked
+F6	Inventory Sync Engine (Advanced)	🔒 Locked
+
+
+⸻
+
+Proceed with Wave F3.
+
+I’m standing by for the Wave F3 Completion Report.

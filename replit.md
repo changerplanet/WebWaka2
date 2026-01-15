@@ -49,6 +49,18 @@ WebWaka is built as a multi-tenant SaaS platform with a modular capability syste
         - Immutable audit trail (mvm_payout_log)
         - Demo-safe with isDemo flag
         - NO automation, NO background jobs, partner-triggered only
+    - **Receipt Printing System (Wave F3)**: Nigeria-appropriate receipt generation for POS and ParkHub:
+        - Unified receipt model with unique human-readable receipt numbers (RCP-YYYYMMDD-XXXXX, PHB-YYYYMMDD-XXXXX)
+        - Supports POS sales, ParkHub tickets, refunds, and voids
+        - Offline-first with sync status tracking (SYNCED, PENDING_SYNC, SYNC_FAILED)
+        - Trust markers: Demo/Verified badges, offline sync status indicators
+        - ParkHub-specific fields: route, trip, seat numbers, departure mode, manifest linkage
+        - Delivery channels: On-screen preview, thermal printer (Bluetooth/WebUSB), WhatsApp, QR verification
+        - Payment method support: Cash, Card, Bank Transfer, Mobile Money, COD
+        - Cash rounding display with NGN-realistic amounts
+        - QR code verification for receipt authenticity
+        - NO automatic printing, agent/user initiated only
+        - Demo-safe behavior
 
 ## External Dependencies
 - **PostgreSQL**: Primary database.
