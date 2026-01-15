@@ -1,0 +1,250 @@
+Below is the tight, production-grade Replit execution prompt for Wave I.3 — ParkHub Public Operator Marketplace.
+It is written to be unambiguous, enforce constraints, and align with everything learned from Waves I.1 and I.2.
+
+⸻
+
+🔷 REPLIT EXECUTION PROMPT
+
+Wave I.3 — ParkHub Public Operator Marketplace (Exposure Only)
+
+CONTEXT
+
+WebWaka is a multi-tenant Nigeria-first platform.
+ParkHub is not just a booking flow — it is a transport commerce marketplace, equivalent in concept to:
+	•	SVM → single-vendor storefront
+	•	MVM → multi-vendor marketplace
+	•	ParkHub → transport operator marketplace
+
+At present:
+	•	ParkHub booking (/parkhub/booking) exists and works
+	•	Walk-up POS exists
+	•	Operator dashboards exist
+	•	Backend models and APIs for operators, routes, trips, tickets already exist
+
+What is missing is PUBLIC EXPOSURE, not logic.
+
+⸻
+
+🎯 WAVE I.3 OBJECTIVE
+
+Expose ParkHub as a public marketplace of transport operators and routes, using ONLY existing backend logic, models, and services.
+
+This wave is READ-ONLY EXPOSURE ONLY.
+
+⸻
+
+🧱 HARD CONSTRAINTS (NON-NEGOTIABLE)
+
+You MUST comply with all of the following:
+
+❌ ABSOLUTELY FORBIDDEN
+	•	❌ No new business logic
+	•	❌ No new booking logic
+	•	❌ No new pricing logic
+	•	❌ No schema changes
+	•	❌ No automation
+	•	❌ No background jobs
+	•	❌ No new services that alter behavior
+	•	❌ No “temporary” workaround logic
+	•	❌ No inferred behavior
+
+✅ ALLOWED
+	•	✅ New routes/pages
+	•	✅ New read-only UI components
+	•	✅ Server-side resolvers that call existing services or Prisma directly
+	•	✅ Demo-safe behavior where already present
+	•	✅ 404 gating for invalid or inactive tenants/operators
+	•	✅ SEO metadata
+
+🔴 CRITICAL RULE
+
+If a required capability does not exist, you MUST document it as a GAP.
+DO NOT invent or simulate missing behavior.
+
+⸻
+
+📦 SCOPE OF WORK
+
+1. PUBLIC PARKHUB LANDING (TENANT-SCOPED)
+
+Route:
+
+/[tenantSlug]/parkhub
+
+Purpose:
+	•	Entry point for ParkHub commerce under a tenant
+	•	Introduces ParkHub as a transport marketplace
+
+Must show (read-only):
+	•	List of active transport operators under the tenant
+	•	Count of active routes/trips (derived from existing data)
+	•	CTA to explore operators or routes
+
+Must NOT:
+	•	Perform bookings directly
+	•	Modify data
+	•	Show admin-only information
+
+⸻
+
+2. OPERATOR LISTING (MARKETPLACE VIEW)
+
+Route:
+
+/[tenantSlug]/parkhub/operators
+
+Purpose:
+Public marketplace listing of transport companies/operators.
+
+Data sources (existing only):
+	•	park operators / vendors
+	•	park assignments
+	•	routes/trips already linked to operators
+
+Operator cards should display ONLY IF DATA EXISTS:
+	•	Operator name
+	•	Assigned parks
+	•	Cities/regions served (if available)
+	•	Active routes count (derived)
+	•	Trust/verification badge (if exists)
+
+❗ If some fields (e.g. logo, description) do not exist → document as GAP
+
+⸻
+
+3. OPERATOR PROFILE PAGE
+
+Route:
+
+/[tenantSlug]/parkhub/operator/[operatorSlug]
+
+Purpose:
+Public-facing operator storefront.
+
+Expose (read-only):
+	•	Operator identity
+	•	Assigned parks
+	•	Routes operated
+	•	Available trips (summary view)
+	•	Link into booking flow (existing /parkhub/booking)
+
+Do NOT:
+	•	Duplicate booking logic
+	•	Show internal admin data
+	•	Create new availability calculations
+
+⸻
+
+4. PUBLIC ROUTE & SCHEDULE BROWSER
+
+Route:
+
+/[tenantSlug]/parkhub/routes
+
+Purpose:
+Allow users to browse routes/schedules outside the booking funnel.
+
+Expose:
+	•	Origin → destination routes
+	•	Operators serving each route
+	•	Upcoming trips (summary only)
+
+Important:
+	•	Use the SAME data the booking flow already uses
+	•	This is read-only discovery, not booking
+
+⸻
+
+🔐 TENANT & SAFETY RULES
+	•	Tenant MUST be resolved server-side via tenantSlug
+	•	Tenant must be:
+	•	ACTIVE
+	•	ParkHub-enabled
+	•	Invalid or suspended tenants → 404
+	•	Demo tenants must continue to work
+
+⸻
+
+🧪 DEMO & TESTING
+
+You MUST verify:
+	•	/demo-tenant/parkhub → 200
+	•	Invalid tenant → 404
+	•	Tenant without ParkHub enabled → 404
+	•	Operator with no public data → still renders safely
+	•	Booking links correctly forward into existing booking flow
+
+⸻
+
+📝 REQUIRED OUTPUT: WAVE I.3 COMPLETION REPORT
+
+At the end of the work, produce a report titled:
+
+WAVE I.3 COMPLETION REPORT — ParkHub Public Operator Marketplace
+
+It MUST include:
+
+1. Routes Implemented
+
+| Route | Purpose | Status |
+
+2. Existing Services / Models Used
+
+(List exact services, Prisma models, or query patterns used)
+
+3. UI Components
+	•	Reused components
+	•	Newly created read-only components
+
+4. Demo vs Live Behavior
+	•	How demo tenants behave
+	•	Any limitations
+
+5. Explicit Confirmations
+
+You MUST explicitly state:
+	•	❌ No new business logic
+	•	❌ No schema changes
+	•	❌ No automation
+	•	❌ No background jobs
+
+6. GAP LIST (MANDATORY)
+
+Document every missing capability discovered, for example:
+	•	Missing public operator metadata
+	•	Missing route summaries
+	•	Missing schedule visibility
+	•	Missing SEO fields
+
+Each GAP must include:
+	•	What is missing
+	•	Why it cannot be solved in Wave I
+	•	That it is deferred to post–Wave I gap resolution
+
+⸻
+
+🛑 STOP CONDITION
+
+When Wave I.3 is complete:
+	•	STOP immediately
+	•	Do NOT proceed to Wave I.4
+	•	Await explicit approval
+
+⸻
+
+🔚 SUCCESS CRITERIA
+
+Wave I.3 is successful only if:
+	•	ParkHub is clearly exposed as a marketplace
+	•	Users can discover operators and routes publicly
+	•	No new logic was invented
+	•	All gaps are explicitly documented
+	•	Booking still happens only through existing flows
+
+⸻
+
+🚀 BEGIN WAVE I.3 EXECUTION NOW
+
+This is an exposure wave, not a feature wave.
+Precision > speed.
+Documentation > assumptions.
