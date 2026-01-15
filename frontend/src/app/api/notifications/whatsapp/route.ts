@@ -67,20 +67,6 @@ export async function POST(request: NextRequest) {
         );
         break;
 
-      case 'custom':
-        if (!body.textBody) {
-          return NextResponse.json(
-            { error: 'Missing textBody for custom message' },
-            { status: 400 }
-          );
-        }
-        result = await whatsappService.sendMessage({
-          to,
-          messageType: body.messageType || 'ORDER_CONFIRMATION',
-          textBody: body.textBody,
-        });
-        break;
-
       default:
         return NextResponse.json(
           { error: `Unknown action: ${action}` },

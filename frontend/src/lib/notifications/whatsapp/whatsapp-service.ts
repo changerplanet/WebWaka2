@@ -79,22 +79,29 @@ export class WhatsAppService {
   async sendMessage(request: SendMessageRequest): Promise<SendMessageResult> {
     const { to, messageType, textBody } = request;
 
-    if (!this.isConfigured()) {
-      return this.logDemoMessage(request);
-    }
-
     try {
       let result: SendMessageResult;
 
-      switch (this.config.provider) {
-        case 'META_CLOUD':
-          result = await this.sendViaMetaCloud(request);
-          break;
-        case 'TWILIO':
-          result = await this.sendViaTwilio(request);
-          break;
-        default:
-          result = await this.logDemoMessage(request);
+      if (!this.isConfigured()) {
+        result = this.createDemoResult();
+        console.log('[WhatsApp DEMO MODE] Message would be sent:', {
+          to: request.to,
+          messageType: request.messageType,
+          textBody: request.textBody?.substring(0, 100),
+          templateName: request.templateName,
+          timestamp: new Date().toISOString(),
+        });
+      } else {
+        switch (this.config.provider) {
+          case 'META_CLOUD':
+            result = await this.sendViaMetaCloud(request);
+            break;
+          case 'TWILIO':
+            result = await this.sendViaTwilio(request);
+            break;
+          default:
+            result = this.createDemoResult();
+        }
       }
 
       await this.logMessage(request, result);
@@ -110,6 +117,16 @@ export class WhatsAppService {
       await this.logMessage(request, failResult);
       return failResult;
     }
+  }
+
+  private createDemoResult(): SendMessageResult {
+    return {
+      success: true,
+      messageId: `demo-${Date.now()}`,
+      provider: 'DEMO',
+      timestamp: new Date(),
+      demoMode: true,
+    };
   }
 
   private async sendViaMetaCloud(request: SendMessageRequest): Promise<SendMessageResult> {
@@ -209,24 +226,6 @@ export class WhatsAppService {
       messageId: data.sid,
       provider: 'TWILIO',
       timestamp: new Date(),
-    };
-  }
-
-  private async logDemoMessage(request: SendMessageRequest): Promise<SendMessageResult> {
-    console.log('[WhatsApp DEMO MODE] Message would be sent:', {
-      to: request.to,
-      messageType: request.messageType,
-      textBody: request.textBody?.substring(0, 100),
-      templateName: request.templateName,
-      timestamp: new Date().toISOString(),
-    });
-
-    return {
-      success: true,
-      messageId: `demo-${Date.now()}`,
-      provider: 'DEMO',
-      timestamp: new Date(),
-      demoMode: true,
     };
   }
 
