@@ -26,16 +26,21 @@ export async function GET(
     const { pageId } = await params;
     
     const session = await getCurrentSession();
-    if (!session?.user?.tenantId) {
+    if (!session?.user?.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const authCheck = await requireTenantRole(session.user.id, session.user.tenantId, ['PARTNER_ADMIN', 'PARTNER_EDITOR']);
-    if (!authCheck.authorized) {
-      return NextResponse.json({ error: authCheck.error }, { status: 403 });
+    const tenantId = session.activeTenantId;
+    if (!tenantId) {
+      return NextResponse.json({ error: 'No tenant context' }, { status: 400 });
     }
 
-    const result = await getPageForEditing(pageId, session.user.tenantId);
+    const authCheck = await requireTenantRole(session.user.id, tenantId, ['PARTNER_ADMIN', 'PARTNER_EDITOR']);
+    if (!authCheck.authorized) {
+      return NextResponse.json({ error: 'Insufficient permissions' }, { status: 403 });
+    }
+
+    const result = await getPageForEditing(pageId, tenantId);
 
     if (!result.success) {
       return NextResponse.json({ error: result.error }, { status: 404 });
@@ -60,13 +65,18 @@ export async function PUT(
     const { pageId } = await params;
     
     const session = await getCurrentSession();
-    if (!session?.user?.tenantId) {
+    if (!session?.user?.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const authCheck = await requireTenantRole(session.user.id, session.user.tenantId, ['PARTNER_ADMIN', 'PARTNER_EDITOR']);
+    const tenantId = session.activeTenantId;
+    if (!tenantId) {
+      return NextResponse.json({ error: 'No tenant context' }, { status: 400 });
+    }
+
+    const authCheck = await requireTenantRole(session.user.id, tenantId, ['PARTNER_ADMIN', 'PARTNER_EDITOR']);
     if (!authCheck.authorized) {
-      return NextResponse.json({ error: authCheck.error }, { status: 403 });
+      return NextResponse.json({ error: 'Insufficient permissions' }, { status: 403 });
     }
 
     const body = await request.json();
