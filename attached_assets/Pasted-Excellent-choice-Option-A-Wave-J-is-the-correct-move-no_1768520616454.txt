@@ -1,0 +1,312 @@
+Excellent choice.
+Option A (Wave J) is the correct move now — this is where WebWaka graduates from “impressively broad” to structurally unbreakable.
+
+Below is a clear, architect-grade Wave J plan, structured so Replit can execute it without ambiguity, and so you retain full control over scope, sequencing, and risk.
+
+⸻
+
+🚧 WAVE J — CORE ARCHITECTURE GAP CLOSURE
+
+Objective: Eliminate structural gaps discovered in Wave I that block long-term scalability, correctness, and security — without breaking existing functionality.
+
+Principle:
+
+Wave J fixes foundations, not features.
+If it doesn’t reduce architectural debt, it doesn’t belong here.
+
+⸻
+
+🧱 WAVE J — GAP CATEGORIES & EXECUTION ORDER
+
+Wave J is not one blob. It must be executed in strict sub-waves, because later work depends on earlier abstractions.
+
+⸻
+
+🔴 WAVE J.1 — Unified Order Abstraction (FOUNDATIONAL)
+
+Problem Being Solved
+
+Right now:
+	•	SVM orders
+	•	MVM parent orders
+	•	ParkHub tickets
+
+…are three different mental models, schemas, and APIs.
+
+This blocks:
+	•	Unified customer order portal
+	•	Unified receipts
+	•	Unified notifications
+	•	Unified analytics
+	•	Any future mobile app
+
+⸻
+
+🎯 Wave J.1 Goal
+
+Introduce a read-only canonical order abstraction that wraps existing schemas without rewriting them.
+
+❗ This is NOT a schema rewrite
+❗ This is NOT a migration
+❗ This is an abstraction layer
+
+⸻
+
+What Must Be Built
+
+1️⃣ CanonicalOrder Interface (Code-Level Only)
+
+interface CanonicalOrder {
+  id: string
+  tenantId: string
+  type: 'SVM' | 'MVM' | 'PARKHUB'
+  reference: string
+  status: CanonicalOrderStatus
+  amount: Money
+  currency: 'NGN'
+  items: CanonicalOrderItem[]
+  customer: CanonicalCustomer
+  createdAt: Date
+  metadata: Record<string, any>
+}
+
+2️⃣ Order Resolvers
+	•	resolveSvmOrderToCanonical()
+	•	resolveMvmOrderToCanonical()
+	•	resolveParkTicketToCanonical()
+
+3️⃣ Canonical Status Map
+Map existing enums → canonical statuses:
+
+CREATED
+PENDING_PAYMENT
+PAID
+FULFILLED
+CANCELLED
+FAILED
+
+4️⃣ Read-Only Aggregation Service
+
+CanonicalOrderService.listByCustomer()
+CanonicalOrderService.getByReference()
+
+
+⸻
+
+Explicit Constraints
+	•	❌ No schema changes
+	•	❌ No status mutations
+	•	❌ No order creation
+	•	❌ No business logic changes
+	•	✅ Read-only adapters only
+
+⸻
+
+🔴 WAVE J.2 — Canonical Customer Identity Layer
+
+Problem
+
+Customers currently exist as:
+	•	email in SVM
+	•	phone in ParkHub
+	•	anonymous in MVM
+
+There is no unifying identity, which blocks:
+	•	customer dashboards
+	•	receipts
+	•	notifications
+	•	loyalty / history
+
+⸻
+
+🎯 Wave J.2 Goal
+
+Create a CanonicalCustomer abstraction that links, not replaces, existing identifiers.
+
+⸻
+
+What Must Be Built
+
+CanonicalCustomer Interface
+
+interface CanonicalCustomer {
+  id: string
+  tenantId: string
+  emails: string[]
+  phones: string[]
+  source: 'SVM' | 'MVM' | 'PARKHUB'
+}
+
+Identity Resolution Rules
+	•	Email OR phone is sufficient
+	•	No authentication yet
+	•	Matching is deterministic and transparent
+	•	Demo-safe
+
+Services
+	•	resolveCustomerFromOrder()
+	•	listOrdersForCustomerIdentity()
+
+⸻
+
+Explicit Constraints
+	•	❌ No auth system
+	•	❌ No login
+	•	❌ No schema changes
+	•	❌ No PII enrichment
+	•	✅ Read-only linking only
+
+⸻
+
+🔴 WAVE J.3 — Receipt ↔ Order Universal Linking
+
+Problem
+
+Receipts exist, orders exist — but they are not reliably connected across suites.
+
+⸻
+
+🎯 Wave J.3 Goal
+
+Introduce a universal receipt attachment layer that works across:
+	•	POS
+	•	SVM
+	•	MVM
+	•	ParkHub
+
+⸻
+
+What Must Be Built
+
+ReceiptLink Resolver
+	•	Match receipts to canonical orders using:
+	•	reference numbers
+	•	metadata
+	•	timestamps
+	•	tenantId
+
+Canonical Receipt View
+
+interface CanonicalReceipt {
+  receiptId: string
+  orderReference?: string
+  verificationUrl: string
+  issuedAt: Date
+}
+
+
+⸻
+
+Constraints
+	•	❌ No schema changes
+	•	❌ No receipt regeneration
+	•	❌ No auto-linking writes
+	•	✅ Computed linking only
+
+⸻
+
+🟠 WAVE J.4 — Tenant-Opaque API Boundary (SVM First)
+
+Problem
+
+Tenant IDs leak into:
+	•	SVMProvider
+	•	Offline cart
+	•	Social proof
+	•	Storefront
+
+This is a security and correctness liability.
+
+⸻
+
+🎯 Wave J.4 Goal
+
+Introduce a server-side tenant proxy layer without breaking existing APIs.
+
+⸻
+
+What Must Be Built
+
+Server Tenant Resolver
+	•	Derives tenantId from:
+	•	slug
+	•	domain
+	•	session
+
+Proxy Pattern
+
+/api/storefront/* → internal SVM APIs
+
+Client never sees tenantId again.
+
+⸻
+
+Constraints
+	•	❌ No API deletions
+	•	❌ No breaking changes
+	•	❌ No rewrite of all providers at once
+	•	✅ Incremental migration
+
+⸻
+
+🟡 WAVE J.5 — MVM Cart & Checkout Design (DESIGN ONLY)
+
+Problem
+
+MVM order splitting exists after checkout, but:
+	•	No multi-vendor cart
+	•	No vendor-aware checkout
+
+⸻
+
+🎯 Wave J.5 Goal
+
+Produce a design-only specification for:
+	•	multi-vendor cart
+	•	vendor isolation rules
+	•	split checkout UX
+	•	payment allocation
+
+⸻
+
+Deliverables
+	•	Schema proposal (NOT implemented)
+	•	Flow diagrams
+	•	API contracts
+	•	UX wireframes (textual)
+
+⸻
+
+Constraints
+	•	❌ No implementation
+	•	❌ No schema changes
+	•	❌ No frontend pages
+	•	✅ Design doc only
+
+⸻
+
+📦 FINAL WAVE J DELIVERABLES
+
+At the end of Wave J you will have:
+
+✅ Canonical Order abstraction
+✅ Canonical Customer identity layer
+✅ Universal receipt linkage
+✅ Reduced tenantId exposure
+✅ Clear path to real customer accounts
+✅ Clear path to real mobile apps
+✅ Clear path to real MVM checkout
+
+⸻
+
+🛑 GOVERNANCE RULES (NON-NEGOTIABLE)
+	•	Each sub-wave must stop and report
+	•	No cross-wave leakage
+	•	No “while we’re here” changes
+	•	No schema changes unless explicitly approved later
+	•	Every gap discovered must be logged
+
+⸻
+
+NEXT STEP:
+Wait for next prompt to commence Wave J
