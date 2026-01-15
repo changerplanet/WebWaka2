@@ -9912,6 +9912,40 @@ enum MvmPayoutMethod {
   WALLET
 }
 
+enum MvmPayoutPeriodType {
+  DAILY
+  WEEKLY
+  ON_DEMAND
+}
+
+enum MvmPayoutBatchStatus {
+  PENDING     // Batch created, awaiting approval
+  APPROVED    // Approved by partner/admin, ready to process
+  PROCESSING  // Payouts being executed
+  COMPLETED   // All payouts completed
+  FAILED      // Batch failed (partial or complete)
+  CANCELLED   // Batch cancelled before processing
+}
+
+enum MvmPayoutLogAction {
+  BATCH_CREATED
+  BATCH_APPROVED
+  BATCH_PROCESSING
+  BATCH_COMPLETED
+  BATCH_FAILED
+  BATCH_CANCELLED
+  PAYOUT_CREATED
+  PAYOUT_PROCESSING
+  PAYOUT_COMPLETED
+  PAYOUT_FAILED
+  PAYOUT_CANCELLED
+  PAYOUT_RETRY
+  VENDOR_ADDED
+  VENDOR_REMOVED
+  AMOUNT_ADJUSTED
+  NOTES_ADDED
+}
+
 // --------------------------------------------------------------------------
 // MVM VENDOR - Core vendor/seller entity
 // --------------------------------------------------------------------------
@@ -10448,6 +10482,100 @@ model mvm_payout {
   @@index([status])
   @@index([periodStart, periodEnd])
   @@index([createdAt])
+}
+
+// --------------------------------------------------------------------------
+// MVM PAYOUT BATCH - Groups vendor payouts for batch processing
+// Wave F2: Payout Execution Engine
+// --------------------------------------------------------------------------
+model mvm_payout_batch {
+  id       String @id @default(cuid())
+  tenantId String
+
+  // Batch Identity
+  batchNumber String @unique
+  description String?
+
+  // Period
+  periodType  MvmPayoutPeriodType @default(DAILY)
+  periodStart DateTime
+  periodEnd   DateTime
+
+  // Status Lifecycle: PENDING → APPROVED → PROCESSING → COMPLETED / FAILED
+  status MvmPayoutBatchStatus @default(PENDING)
+
+  // Aggregate Amounts (NGN)
+  currency       String  @default("NGN")
+  totalGross     Decimal @default(0) @db.Decimal(14, 2)
+  totalDeductions Decimal @default(0) @db.Decimal(12, 2)
+  totalNet       Decimal @default(0) @db.Decimal(14, 2)
+  vendorCount    Int     @default(0)
+  payoutCount    Int     @default(0)
+
+  // Thresholds Applied
+  minPayoutThreshold Decimal @default(5000) @db.Decimal(12, 2)
+
+  // Demo vs Live
+  isDemo Boolean @default(false)
+
+  // Workflow
+  createdBy   String
+  approvedAt  DateTime?
+  approvedBy  String?
+  processedAt DateTime?
+  processedBy String?
+  completedAt DateTime?
+  failedAt    DateTime?
+  failureReason String?
+
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  logs mvm_payout_log[]
+
+  @@index([tenantId])
+  @@index([status])
+  @@index([periodStart, periodEnd])
+  @@index([createdAt])
+}
+
+// --------------------------------------------------------------------------
+// MVM PAYOUT LOG - Immutable audit trail for payout state changes
+// Wave F2: Payout Execution Engine
+// --------------------------------------------------------------------------
+model mvm_payout_log {
+  id       String @id @default(cuid())
+  tenantId String
+
+  // Reference (either payout or batch)
+  payoutId String?
+  batchId  String?
+
+  // Action
+  action      MvmPayoutLogAction
+  fromStatus  String?
+  toStatus    String?
+
+  // Details
+  details     String?
+  metadata    Json?
+
+  // Actor
+  performedBy   String
+  performedByName String?
+  performedAt   DateTime @default(now())
+
+  // Immutable - no updatedAt
+
+  // Relations
+  batch mvm_payout_batch? @relation(fields: [batchId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+  @@index([payoutId])
+  @@index([batchId])
+  @@index([performedAt])
 }
 
 // --------------------------------------------------------------------------

@@ -1,0 +1,113 @@
+✅ Wave F2 Authorized — Payout Execution Engine (MVM)
+
+Authorization received and acknowledged.
+
+⸻
+
+🔓 WAVE F2 — OFFICIALLY UNLOCKED
+
+Wave: F2
+Scope: Multi-Vendor Marketplace — Payout Execution Engine
+Priority Band: 🟠 Priority Band 1 (Revenue & Trust Enabler)
+Status: 🟢 APPROVED TO START
+
+This wave is now cleared to proceed under the same governance, safety, and stop rules that have been enforced successfully across all prior waves.
+
+⸻
+
+🎯 WAVE F2 OBJECTIVE (RECONFIRMED)
+
+Implement a Nigeria-realistic, trust-safe payout execution system that:
+	•	Enables vendors to actually get paid
+	•	Supports daily / weekly / on-demand payout cycles
+	•	Works for formal and informal vendors
+	•	Is tenant-scoped, partner-controlled, vendor-visible
+	•	Is manual-triggered first (no automation unless later approved)
+	•	Integrates cleanly with:
+	•	Vendor Registration ✅
+	•	Order Splitting Engine ✅
+	•	Payout Visibility APIs (Wave 2.3) ✅
+	•	Payment Transactions (Paystack, Bank Transfer, COD) ✅
+
+⸻
+
+🔒 GOVERNANCE RULES (STILL IN FORCE)
+
+The following constraints remain binding:
+	•	❌ No background jobs
+	•	❌ No automatic payouts
+	•	❌ No cron / schedulers
+	•	❌ No auto-settlement
+	•	❌ No revenue splitting beyond already-approved commission logic
+	•	❌ No vendor-initiated payouts
+	•	❌ No cross-tenant access
+
+All payouts must be:
+	•	Explicitly triggered by Partner / Tenant Admin
+	•	Auditable
+	•	Reversible (where possible)
+	•	Clearly labeled demo vs live
+
+⸻
+
+🧱 EXPECTED WAVE F2 DELIVERABLES
+
+At completion, Wave F2 must produce:
+
+1. Payout Execution Model
+	•	Payout batches
+	•	Linked sub-orders
+	•	Net amount after commission
+	•	Status lifecycle:
+	•	PENDING → APPROVED → PROCESSING → PAID / FAILED
+
+2. Payout Execution APIs
+	•	Partner-triggered payout creation
+	•	Vendor-scoped payout views
+	•	Clear separation:
+	•	Visibility ≠ execution
+
+3. Nigeria-First Payout Logic
+	•	Daily / weekly payout grouping
+	•	Minimum payout thresholds
+	•	Bank transfer focus
+	•	COD settlement support
+	•	Partial payout handling
+
+4. Security & Audit
+	•	Session-derived vendorId (no spoofing)
+	•	Immutable payout logs
+	•	Who approved, who executed, when
+	•	Demo-safe behavior
+
+⸻
+
+🛑 REQUIRED STOP CONDITION (MANDATORY)
+
+When Wave F2 is complete, the agent must STOP and provide:
+	1.	Wave F2 Completion Report
+	2.	Explicit list of:
+	•	Models created
+	•	APIs created
+	•	Status lifecycles
+	•	Demo vs live behavior
+	3.	Explicit confirmations:
+	•	❌ No automation
+	•	❌ No background jobs
+	•	❌ No silent payouts
+	4.	Await explicit approval before any next wave
+
+⸻
+
+🧭 WHAT COMES NEXT (LOCKED)
+	•	Wave F3 — Receipt Printing (POS + ParkHub)
+	•	Wave F4 — Vendor Mobile Dashboard (MVM)
+	•	Wave F5 — Landmark Addressing + Mobile Checkout (SVM)
+
+These remain 🔒 LOCKED until Wave F2 is reviewed and approved.
+
+⸻
+
+You are clear to proceed.
+
+I’m standing by to review the Wave F2 Completion Report once ready.
