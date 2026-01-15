@@ -1,0 +1,96 @@
+Authorization received ✅
+Wave F9 — Inventory Sync Engine (Advanced) is now APPROVED TO START.
+
+⸻
+
+🔓 AUTHORIZATION CONFIRMATION — WAVE F9
+
+Status
+	•	Waves F1–F8: ✅ Complete & Locked
+	•	Wave F9: 🟢 Authorized
+	•	Subsequent waves: 🔒 Locked until Wave F9 completion + approval
+
+Scope (as previously defined)
+Wave F9 delivers the advanced, platform-wide inventory sync engine that ensures reliable, Nigeria-first multi-channel commerce across:
+	•	POS
+	•	SVM
+	•	MVM
+	•	ParkHub (seat/capacity as inventory)
+
+This wave builds on the Product Channel Configuration System, POS Offline Queue, and MVM Order Splitting already completed.
+
+⸻
+
+🎯 WAVE F9 OBJECTIVES (RECONFIRMED)
+	1.	Real-Time (Event-Driven) Cross-Channel Sync
+	•	POS ↔ SVM ↔ MVM stock updates
+	•	ParkHub trip capacity treated as inventory
+	•	No background cron jobs; event-triggered only
+	2.	Conflict Detection & Resolution
+	•	Offline-first conflict handling (oversell, stale price, channel-disabled)
+	•	Severity-based outcomes with audit trails
+	•	Manual resolution UI (no automation)
+	3.	Inventory Modes Enforcement
+	•	SHARED / ALLOCATED / UNLIMITED honored end-to-end
+	•	Channel-specific allocations respected
+	•	Clear reconciliation workflows
+	4.	Stock Visibility & Traceability
+	•	“What sold where” across channels
+	•	Per-channel available vs reserved vs allocated views
+	•	Historical movement logs
+	5.	Nigeria-First Reliability
+	•	Offline-safe queuing and replay
+	•	Clear sync states and trust signals
+	•	Mobile/PWA-friendly performance
+
+⸻
+
+🚧 EXECUTION PLAN (HIGH-LEVEL)
+
+Phase F9.1 — Core Engine
+	•	InventorySyncEngine (event-driven)
+	•	Unified stock ledger
+	•	Channel adapters (POS, SVM, MVM, ParkHub)
+
+Phase F9.2 — Conflict & Resolution Layer
+	•	Conflict classifier (mild/severe oversell, price mismatch, disabled channel)
+	•	Manual resolution workflows
+	•	Audit logs & receipts linkage
+
+Phase F9.3 — Visibility APIs & UI Hooks
+	•	Stock dashboards (admin-only)
+	•	Traceability endpoints
+	•	Low-stock + reconciliation views (no automation)
+
+Phase F9.4 — Offline Replay & Integrity
+	•	Deterministic replay from offline queues
+	•	Idempotent event handling
+	•	Sync status propagation to UI components
+
+⸻
+
+🛑 GOVERNANCE & CONSTRAINTS (STILL IN FORCE)
+	•	❌ No automation or cron jobs
+	•	❌ No background workers
+	•	❌ No auto-reordering
+	•	❌ No schema changes outside inventory domain
+	•	❌ No cross-tenant data access
+	•	✅ Manual, user-triggered reconciliation only
+	•	✅ Demo-safe operation maintained
+
+⸻
+
+📦 REQUIRED DELIVERABLES (AT STOP)
+
+At completion, I will provide a Wave F9 Completion Report including:
+	1.	Services & APIs created
+	2.	Data models added/extended
+	3.	Conflict types & resolution flows
+	4.	Offline vs online behavior
+	5.	POS/SVM/MVM/ParkHub integration points
+	6.	Explicit confirmations of constraints
+	7.	Next-wave recommendations
+
+I will STOP after the report and wait for your approval before any further work.
+
+Proceeding now with Wave F9 — Inventory Sync Engine (Advanced).
