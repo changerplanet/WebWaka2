@@ -111,3 +111,25 @@ export {
   checkLocalPickupAvailable,
   formatCheckoutLine
 } from './checkout-service'
+
+// Offline Cart Service (Wave G2)
+export {
+  // Types
+  type OfflineCart,
+  type OfflineCartItem,
+  type CartConflict,
+  type CartMergeResult,
+  type CartRestoreResult,
+  type CartSyncStatus,
+  type CartStatusSignal,
+  type ProductCheckResult,
+  
+  // Services
+  OfflineCartService,
+  CartConflictDetector,
+  CartMergeService,
+  
+  // Functions
+  getCartStatusSignal,
+  formatConflictNotice
+} from './offline-cart-service'

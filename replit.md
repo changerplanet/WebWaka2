@@ -50,6 +50,7 @@ WebWaka is a multi-tenant SaaS platform built with a modular capability system, 
     - **Manifest Generation (Wave F8)**: Legal passenger manifest system for ParkHub trips, featuring paper-first output, offline support, public QR verification, and detailed audit trails.
     - **Inventory Sync Engine (Wave F9)**: Advanced cross-channel inventory synchronization with an event-driven architecture, channel adapters, conflict classification, and manual resolution workflows.
     - **Vendor Rating System (Wave G1)**: Read-only trust layer for MVM vendors featuring customer ratings (1-5 stars with comments), weighted average calculation with recency weighting (30-day ratings weighted 1.0, decaying to 0.2 after 365 days), score band classification (EXCELLENT ≥4.5 with ≥5 ratings, GOOD ≥3.5 with ≥3, NEEDS_ATTENTION <3.0 with ≥3, NEW otherwise), trust badges for marketplace display, vendor ratings dashboard, and admin quality overview.
+    - **Offline Cart Persistence (Wave G2)**: IndexedDB-backed cart storage for SVM with network resilience. Features include: cart persistence across network drops/app refresh/browser close, versioned cart schema, graceful conflict resolution (price changes, stock changes, removed items), user-triggered cart merge with server on reconnect, UX signals ("Saved offline" badge, "Price changed" notice), tenant-isolated API endpoints, and mobile-first design optimized for low-end Android. Constraints: no automation, no background sync, no auto-checkout.
 
 ## External Dependencies
 - **PostgreSQL**: Primary database.
