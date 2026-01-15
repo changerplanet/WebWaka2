@@ -4,11 +4,12 @@
  * Mobile Checkout Page
  * Wave F6: Mobile Checkout Redesign (SVM)
  * 
- * Orchestrates the mobile-first checkout flow for Nigeria.
- * Integrates all step components into a seamless experience.
+ * UI orchestration for mobile-first checkout flow.
+ * Pure UI rendering - all state managed by parent.
+ * Totals, selections, and options are all provided by parent to ensure consistency.
  */
 
-import { useState, useCallback } from 'react';
+import { useCallback } from 'react';
 import { ArrowLeft, ShoppingBag } from 'lucide-react';
 import { MobileCheckoutProgress } from './MobileCheckoutProgress';
 import { MobileAddressStep } from './MobileAddressStep';
@@ -20,7 +21,6 @@ import {
   NigeriaShippingAddress,
   ShippingOption,
   PaymentMethod,
-  getNextStep,
   getPreviousStep,
   NIGERIA_PAYMENT_METHODS,
 } from './types';
@@ -35,178 +35,81 @@ interface CartItem {
   quantity: number;
 }
 
-interface MobileCheckoutPageProps {
-  items: CartItem[];
+interface CheckoutTotals {
   subtotal: number;
-  discountTotal?: number;
-  taxTotal?: number;
-  tenantId: string;
-  onBack: () => void;
-  onComplete: (result: { orderId: string; orderNumber: string }) => void;
-  fetchShippingOptions?: (address: NigeriaShippingAddress) => Promise<ShippingOption[]>;
-  fetchPaymentMethods?: (amount: number, state: string) => Promise<PaymentMethod[]>;
-  submitOrder?: (data: {
-    address: NigeriaShippingAddress;
-    shipping: ShippingOption;
-    payment: PaymentMethod;
-    items: CartItem[];
-  }) => Promise<{ success: boolean; orderId?: string; orderNumber?: string; error?: string }>;
+  discountTotal: number;
+  taxTotal: number;
+  shippingTotal: number;
+  paymentFee: number;
+  grandTotal: number;
 }
 
-const MOCK_SHIPPING_OPTIONS: ShippingOption[] = [
-  {
-    id: 'standard',
-    name: 'Standard Delivery',
-    carrier: 'GIG Logistics',
-    fee: 2500,
-    estimatedDays: { min: 3, max: 5 },
-    isFree: false,
-  },
-  {
-    id: 'express',
-    name: 'Express Delivery',
-    carrier: 'Kwik Delivery',
-    fee: 4500,
-    estimatedDays: { min: 1, max: 2 },
-    isFree: false,
-  },
-  {
-    id: 'pickup',
-    name: 'Pickup from Store',
-    fee: 0,
-    estimatedDays: { min: 1, max: 1 },
-    isFree: true,
-    isLocalPickup: true,
-  },
-];
+interface MobileCheckoutPageProps {
+  items: CartItem[];
+  currentStep: MobileCheckoutStep;
+  address: NigeriaShippingAddress | null;
+  shippingOptions: ShippingOption[];
+  selectedShipping: ShippingOption | null;
+  paymentMethods?: PaymentMethod[];
+  selectedPayment: PaymentMethod | null;
+  totals: CheckoutTotals;
+  isLoading?: boolean;
+  error?: string | null;
+  onStepChange: (step: MobileCheckoutStep) => void;
+  onBack: () => void;
+  onAddressSubmit: (address: NigeriaShippingAddress) => void;
+  onShippingSelect: (option: ShippingOption) => void;
+  onPaymentSelect: (method: PaymentMethod) => void;
+  onPlaceOrder: () => void;
+}
 
 export function MobileCheckoutPage({
   items,
-  subtotal,
-  discountTotal = 0,
-  taxTotal = 0,
-  tenantId,
+  currentStep,
+  address,
+  shippingOptions,
+  selectedShipping,
+  paymentMethods = NIGERIA_PAYMENT_METHODS,
+  selectedPayment,
+  totals,
+  isLoading = false,
+  error = null,
+  onStepChange,
   onBack,
-  onComplete,
-  fetchShippingOptions,
-  fetchPaymentMethods,
-  submitOrder,
+  onAddressSubmit,
+  onShippingSelect,
+  onPaymentSelect,
+  onPlaceOrder,
 }: MobileCheckoutPageProps) {
-  const [currentStep, setCurrentStep] = useState<MobileCheckoutStep>('address');
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
-  const [address, setAddress] = useState<NigeriaShippingAddress | null>(null);
-  const [shippingOptions, setShippingOptions] = useState<ShippingOption[]>([]);
-  const [selectedShipping, setSelectedShipping] = useState<ShippingOption | null>(null);
-  const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>(NIGERIA_PAYMENT_METHODS);
-  const [selectedPayment, setSelectedPayment] = useState<PaymentMethod | null>(null);
-
-  const shippingTotal = selectedShipping?.fee || 0;
-  const paymentFee = selectedPayment?.fee || 0;
-  const grandTotal = subtotal - discountTotal + shippingTotal + taxTotal + paymentFee;
-
-  const handleAddressSubmit = useCallback(async (newAddress: NigeriaShippingAddress) => {
-    setIsLoading(true);
-    setError(null);
-    setAddress(newAddress);
-
-    try {
-      if (fetchShippingOptions) {
-        const options = await fetchShippingOptions(newAddress);
-        setShippingOptions(options);
-      } else {
-        await new Promise(resolve => setTimeout(resolve, 500));
-        setShippingOptions(MOCK_SHIPPING_OPTIONS);
-      }
-
-      if (fetchPaymentMethods) {
-        const methods = await fetchPaymentMethods(subtotal, newAddress.state);
-        setPaymentMethods(methods);
-      }
-
-      setCurrentStep('delivery');
-    } catch (err) {
-      setError('Failed to load delivery options. Please try again.');
-    } finally {
-      setIsLoading(false);
-    }
-  }, [fetchShippingOptions, fetchPaymentMethods, subtotal]);
-
-  const handleDeliverySelect = useCallback((option: ShippingOption) => {
-    setSelectedShipping(option);
-  }, []);
+  const handleAddressSubmit = useCallback((newAddress: NigeriaShippingAddress) => {
+    onAddressSubmit(newAddress);
+  }, [onAddressSubmit]);
 
   const handleDeliverySubmit = useCallback(() => {
     if (selectedShipping) {
-      setCurrentStep('payment');
+      onStepChange('payment');
     }
-  }, [selectedShipping]);
-
-  const handlePaymentSelect = useCallback((method: PaymentMethod) => {
-    setSelectedPayment(method);
-  }, []);
+  }, [selectedShipping, onStepChange]);
 
   const handlePaymentSubmit = useCallback(() => {
     if (selectedPayment) {
-      setCurrentStep('confirm');
+      onStepChange('confirm');
     }
-  }, [selectedPayment]);
-
-  const handlePlaceOrder = useCallback(async () => {
-    if (!address || !selectedShipping || !selectedPayment) {
-      return;
-    }
-
-    setIsLoading(true);
-    setError(null);
-
-    try {
-      if (submitOrder) {
-        const result = await submitOrder({
-          address,
-          shipping: selectedShipping,
-          payment: selectedPayment,
-          items,
-        });
-
-        if (result.success && result.orderId && result.orderNumber) {
-          onComplete({
-            orderId: result.orderId,
-            orderNumber: result.orderNumber,
-          });
-        } else {
-          setError(result.error || 'Failed to place order. Please try again.');
-        }
-      } else {
-        await new Promise(resolve => setTimeout(resolve, 1500));
-        const mockOrderId = `order_${Date.now()}`;
-        const mockOrderNumber = `ORD-${new Date().toISOString().slice(0, 10).replace(/-/g, '')}-${Math.random().toString(36).substr(2, 4).toUpperCase()}`;
-        
-        onComplete({
-          orderId: mockOrderId,
-          orderNumber: mockOrderNumber,
-        });
-      }
-    } catch (err) {
-      setError('Failed to place order. Please try again.');
-    } finally {
-      setIsLoading(false);
-    }
-  }, [address, selectedShipping, selectedPayment, items, submitOrder, onComplete]);
+  }, [selectedPayment, onStepChange]);
 
   const goBack = useCallback(() => {
     const prevStep = getPreviousStep(currentStep);
     if (prevStep) {
-      setCurrentStep(prevStep);
+      onStepChange(prevStep);
     } else {
       onBack();
     }
-  }, [currentStep, onBack]);
+  }, [currentStep, onStepChange, onBack]);
 
   const goToStep = useCallback((step: MobileCheckoutStep) => {
-    setCurrentStep(step);
-  }, []);
+    onStepChange(step);
+  }, [onStepChange]);
 
   if (items.length === 0) {
     return (
@@ -262,7 +165,7 @@ export function MobileCheckoutPage({
             shippingOptions={shippingOptions}
             selectedOption={selectedShipping || undefined}
             address={address}
-            onSelect={handleDeliverySelect}
+            onSelect={onShippingSelect}
             onSubmit={handleDeliverySubmit}
             onBack={goBack}
             isLoading={isLoading}
@@ -273,8 +176,8 @@ export function MobileCheckoutPage({
           <MobilePaymentStep
             paymentMethods={paymentMethods}
             selectedMethod={selectedPayment || undefined}
-            orderTotal={subtotal + shippingTotal}
-            onSelect={handlePaymentSelect}
+            orderTotal={totals.subtotal - totals.discountTotal + totals.shippingTotal + totals.taxTotal}
+            onSelect={onPaymentSelect}
             onSubmit={handlePaymentSubmit}
             onBack={goBack}
             isLoading={isLoading}
@@ -287,17 +190,17 @@ export function MobileCheckoutPage({
             shippingOption={selectedShipping}
             paymentMethod={selectedPayment}
             items={items}
-            subtotal={subtotal}
-            discountTotal={discountTotal}
-            shippingTotal={shippingTotal}
-            taxTotal={taxTotal}
-            paymentFee={paymentFee}
-            grandTotal={grandTotal}
-            onSubmit={handlePlaceOrder}
+            subtotal={totals.subtotal}
+            discountTotal={totals.discountTotal}
+            shippingTotal={totals.shippingTotal}
+            taxTotal={totals.taxTotal}
+            paymentFee={totals.paymentFee}
+            grandTotal={totals.grandTotal}
+            onSubmit={onPlaceOrder}
             onBack={goBack}
-            onEditAddress={() => setCurrentStep('address')}
-            onEditDelivery={() => setCurrentStep('delivery')}
-            onEditPayment={() => setCurrentStep('payment')}
+            onEditAddress={() => onStepChange('address')}
+            onEditDelivery={() => onStepChange('delivery')}
+            onEditPayment={() => onStepChange('payment')}
             isLoading={isLoading}
           />
         )}

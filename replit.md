@@ -82,6 +82,20 @@ WebWaka is built as a multi-tenant SaaS platform with a modular capability syste
         - REST API: /api/commerce/landmark-address with CRUD operations
         - State/LGA hierarchy helpers: getStateByName, getLGAsForState
         - Formatted address generation for delivery receipts
+    - **Mobile Checkout Redesign (Wave F6)**: Mobile-first checkout experience for SVM:
+        - Nigeria-optimized: NGN currency formatting, State/LGA selectors, landmark addressing integration
+        - Thumb-zone optimized: Sticky bottom CTAs, large touch targets (py-3.5/py-4), single-column layout
+        - 4-step flow: Address → Delivery → Payment → Confirm
+        - MobileCheckoutProgress: Compact step navigation with clickable completed steps
+        - MobileAddressStep: Integrates Wave F5 landmark addressing with collapsible optional fields
+        - MobileDeliveryStep: Nigerian shipping options with carrier info and delivery estimates
+        - MobilePaymentStep: Nigeria payment methods (Card, Bank Transfer, COD, USSD) with trust signals
+        - MobileConfirmStep: Order review with collapsible items, NGN totals, and edit capability
+        - Payment method explanations: COD exact change warning, Bank Transfer confirmation flow
+        - Trust signals: Shield icons, secure payment messaging, clear fee disclosures
+        - Mobile-first design: One-hand usage optimized for Nigeria reality
+        - UI/UX only: NO payment logic changes, NO automation
+        - Components location: frontend/src/components/svm/mobile-checkout/
 
 ## External Dependencies
 - **PostgreSQL**: Primary database.

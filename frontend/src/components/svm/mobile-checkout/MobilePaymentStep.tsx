@@ -178,28 +178,43 @@ export function MobilePaymentStep({
           )}
         </div>
 
-        {selectedMethod?.code === 'COD' && (
-          <div className="bg-amber-50 border border-amber-200 rounded-xl p-3">
-            <div className="flex gap-2">
-              <Info className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
-              <div>
-                <p className="text-sm font-medium text-amber-800">Cash on Delivery</p>
-                <p className="text-sm text-amber-700">
-                  Please have exact change ready. Our rider may not have change for large notes.
-                </p>
+        {selectedMethod?.code === 'COD' && (() => {
+          const codFee = calculateFee(selectedMethod);
+          const totalWithFee = orderTotal + codFee;
+          return (
+            <div className="bg-amber-50 border border-amber-200 rounded-xl p-4">
+              <div className="flex gap-3">
+                <Banknote className="w-6 h-6 text-amber-600 flex-shrink-0" />
+                <div className="space-y-2">
+                  <p className="font-semibold text-amber-800">Pay on Delivery - Important</p>
+                  <ul className="text-sm text-amber-700 space-y-1">
+                    <li>• Please prepare exact change ({formatNGN(totalWithFee)})</li>
+                    <li>• Our delivery rider may not have change for large notes (₦1,000+)</li>
+                    {codFee > 0 && (
+                      <li>• A {formatNGN(codFee)} COD fee applies to this order</li>
+                    )}
+                    <li>• Pay only when you receive and inspect your items</li>
+                  </ul>
+                </div>
               </div>
             </div>
-          </div>
-        )}
+          );
+        })()}
 
         {selectedMethod?.code === 'BANK_TRANSFER' && (
-          <div className="bg-blue-50 border border-blue-200 rounded-xl p-3">
-            <div className="flex gap-2">
-              <Info className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
-              <div>
-                <p className="text-sm font-medium text-blue-800">Bank Transfer</p>
-                <p className="text-sm text-blue-700">
-                  You'll receive account details after placing your order. Your order will be processed once payment is confirmed.
+          <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
+            <div className="flex gap-3">
+              <Building2 className="w-6 h-6 text-blue-600 flex-shrink-0" />
+              <div className="space-y-2">
+                <p className="font-semibold text-blue-800">Bank Transfer Payment</p>
+                <ul className="text-sm text-blue-700 space-y-1">
+                  <li>1. Place your order to see our bank account details</li>
+                  <li>2. Transfer the exact amount shown to our account</li>
+                  <li>3. Tap "I Have Paid" button after making your transfer</li>
+                  <li>4. We'll confirm and process your order (5-30 mins)</li>
+                </ul>
+                <p className="text-xs text-blue-600 mt-2 font-medium">
+                  Tip: Use your Order Number as payment reference for faster confirmation.
                 </p>
               </div>
             </div>
