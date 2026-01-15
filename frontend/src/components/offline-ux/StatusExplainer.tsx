@@ -59,18 +59,26 @@ export function StatusExplainer({
 
   if (variant === 'tooltip') {
     return (
-      <div className={cn('relative inline-block', className)}>
+      <div className={cn('relative inline-block group', className)}>
         <button
-          className="text-gray-400 hover:text-gray-600 focus:outline-none"
+          className="text-gray-400 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 rounded-full"
           aria-label="More information"
+          aria-describedby="tooltip-content"
         >
           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
         </button>
-        <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-gray-900 text-white text-xs rounded-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all max-w-xs">
+        <div
+          id="tooltip-content"
+          role="tooltip"
+          className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-gray-900 text-white text-xs rounded-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible group-focus-within:opacity-100 group-focus-within:visible transition-all max-w-xs pointer-events-none z-10"
+        >
           <div className="font-medium">{title}</div>
           <div className="mt-1 opacity-80">{description}</div>
+          <div className="absolute top-full left-1/2 transform -translate-x-1/2 -mt-1">
+            <div className="border-4 border-transparent border-t-gray-900"></div>
+          </div>
         </div>
       </div>
     );

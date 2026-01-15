@@ -141,6 +141,22 @@ WebWaka is built as a multi-tenant SaaS platform with a modular capability syste
   - **APIs**: /api/commerce/inventory-sync for stock views, low-stock, traceability, reconciliation
   - **Authorization**: TENANT_ADMIN and SUPER_ADMIN only
   - **Constraints**: Read-only visibility, no automation, no background jobs, demo-safe
+- **Nigeria-First Modular Commerce (Wave 2.5)**: Offline UX Clarity & Trust Signals:
+  - **Offline Indicators**: Visual cues for connection state
+    - OfflineIndicator: Shows online/offline/unstable with plain-language messages
+    - OfflineBanner: Fixed banner for persistent offline awareness
+    - useOnlineStatus hook: Browser event-based connection detection
+  - **Sync Status Components**: Clear sync state visibility
+    - SyncStatusBadge: Synced/Syncing/Queued/Error/Pending Review states
+    - LastSyncedTimestamp: Simple "Last synced: X ago" display
+    - QueuedItemsIndicator: Shows pending offline queue items
+    - useSyncStatus hook: Manual sync state management
+  - **Trust Signals**: Confidence-building badges
+    - TrustSignal: Verified/Pending/Demo/Unverified/Rejected levels
+    - StatusExplainer: "What this means" + "What to do" contextual help
+  - **Plain-Language Messaging**: Non-technical explanations for all states
+  - **Target Users**: POS operators, Park agents, Vendors, Partners
+  - **Constraints**: NO automation, NO background jobs, purely informational
 
 ### Project Structure
 - `/frontend`: Main Next.js application.
@@ -165,6 +181,8 @@ WebWaka is built as a multi-tenant SaaS platform with a modular capability syste
   - `/src/app/api/commerce/payout-visibility`: Payout visibility APIs (Wave 2.3)
   - `/src/lib/commerce/inventory-sync`: Inventory sync services (Wave 2.4)
   - `/src/app/api/commerce/inventory-sync`: Inventory sync APIs (Wave 2.4)
+  - `/src/lib/offline-ux`: Offline UX hooks and types (Wave 2.5)
+  - `/src/components/offline-ux`: Offline UX components (Wave 2.5)
 - `/modules`: Contains modular business components for specific verticals (e.g., SVM, POS, MVM).
 
 ## External Dependencies
