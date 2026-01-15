@@ -383,3 +383,61 @@ export async function requireSuperAdmin(request: Request): Promise<AdminApiAuthR
   
   return { authorized: true, session }
 }
+
+/**
+ * Protected Tenant API result type
+ */
+export type TenantApiAuthResult = 
+  | { authorized: true; session: ApiSession; tenantRole: TenantRole }
+  | { authorized: false; response: NextResponse }
+
+/**
+ * Protect an API route that requires specific tenant roles
+ * Use this at the start of routes that require tenant-level authorization
+ * 
+ * @param userId - The user's ID
+ * @param tenantId - The tenant ID to check access for
+ * @param allowedRoles - Array of allowed tenant roles (or partner roles that map to access)
+ * @returns TenantApiAuthResult with tenant role if authorized, or error response if not
+ * 
+ * @example
+ * const authCheck = await requireTenantRole(session.user.id, tenantId, ['PARTNER_ADMIN', 'PARTNER_EDITOR'])
+ * if (!authCheck.authorized) return authCheck.response
+ */
+export async function requireTenantRole(
+  userId: string,
+  tenantId: string,
+  allowedRoles: (TenantRole | PartnerRole | string)[]
+): Promise<{ authorized: true; tenantRole?: TenantRole | null } | { authorized: false; response: NextResponse }> {
+  // Check if user has a tenant membership with allowed role
+  const tenantRole = await getUserTenantRole(userId, tenantId)
+  
+  if (tenantRole && allowedRoles.includes(tenantRole)) {
+    return { authorized: true, tenantRole }
+  }
+  
+  // Check if user has a partner role that allows access
+  const partnerInfo = await getPartnerUserInfo(userId)
+  
+  if (partnerInfo && allowedRoles.includes(partnerInfo.role)) {
+    return { authorized: true, tenantRole: null }
+  }
+  
+  // Check if user is a SUPER_ADMIN
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { globalRole: true }
+  })
+  
+  if (user && isSuperAdmin(user.globalRole)) {
+    return { authorized: true, tenantRole: null }
+  }
+  
+  return {
+    authorized: false,
+    response: NextResponse.json(
+      { success: false, error: 'Insufficient permissions for this operation' },
+      { status: 403 }
+    )
+  }
+}
