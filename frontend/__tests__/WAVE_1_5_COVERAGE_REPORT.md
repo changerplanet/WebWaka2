@@ -3,8 +3,8 @@
 
 **Generated:** January 15, 2026  
 **Status:** ✅ COMPLETE  
-**Total Tests:** 119 unit tests  
-**All Passing:** Yes (5 test suites, 119 tests passed)
+**Total Tests:** 113 unit tests  
+**All Passing:** Yes (5 test suites, 113 tests passed)
 
 ---
 
@@ -16,7 +16,7 @@ Wave 1.5 automated test hardening is complete. All Wave 1 logic-heavy components
 
 ## Test Coverage by Component
 
-### 1. ProductChannelConfig (27 tests)
+### 1. ProductChannelConfig (21 tests)
 **File Tested:** `src/lib/commerce/channel-config/channel-config-service.ts`  
 **Test File:** `__tests__/unit/commerce/channel-config.test.ts`
 
@@ -39,7 +39,7 @@ Wave 1.5 automated test hardening is complete. All Wave 1 logic-heavy components
 
 ---
 
-### 2. POS Offline Sync (22 tests)
+### 2. POS Offline Sync (18 tests)
 **File Tested:** `src/lib/commerce/pos-offline/pos-offline-service.ts`  
 **Test File:** `__tests__/unit/commerce/pos-offline.test.ts`
 
@@ -86,7 +86,7 @@ Wave 1.5 automated test hardening is complete. All Wave 1 logic-heavy components
 
 ---
 
-### 4. ParkHub Trip Logic (21 tests)
+### 4. ParkHub Trip Logic (19 tests)
 **File Tested:** `src/lib/commerce/parkhub/parkhub-service.ts`  
 **Test File:** `__tests__/unit/commerce/parkhub.test.ts`
 
@@ -110,7 +110,7 @@ Wave 1.5 automated test hardening is complete. All Wave 1 logic-heavy components
 
 ---
 
-### 5. Cash Rounding (30 tests)
+### 5. Cash Rounding (36 tests)
 **File Tested:** `src/lib/commerce/cash-rounding/cash-rounding-service.ts`  
 **Test File:** `__tests__/unit/commerce/cash-rounding.test.ts`
 
@@ -178,7 +178,7 @@ cd frontend && npm test -- --testPathPatterns="commerce/"
 
 ## Confirmation
 
-✅ **Wave 1 behavior is now LOCKED by 119 automated unit tests.**
+✅ **Wave 1 behavior is now LOCKED by 113 automated unit tests.**
 
 All critical business logic thresholds are tested:
 - OVERSELL tolerance: 2 units
