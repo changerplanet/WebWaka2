@@ -49,6 +49,7 @@ WebWaka is a multi-tenant SaaS platform built with a modular capability system, 
     - **SMS Driver Updates (Wave F7)**: Feature-phone compatible SMS notifications for ParkHub drivers, supporting multi-language templates and Twilio integration for delivery.
     - **Manifest Generation (Wave F8)**: Legal passenger manifest system for ParkHub trips, featuring paper-first output, offline support, public QR verification, and detailed audit trails.
     - **Inventory Sync Engine (Wave F9)**: Advanced cross-channel inventory synchronization with an event-driven architecture, channel adapters, conflict classification, and manual resolution workflows.
+    - **Vendor Rating System (Wave G1)**: Read-only trust layer for MVM vendors featuring customer ratings (1-5 stars with comments), weighted average calculation with recency weighting (30-day ratings weighted 1.0, decaying to 0.2 after 365 days), score band classification (EXCELLENT ≥4.5 with ≥5 ratings, GOOD ≥3.5 with ≥3, NEEDS_ATTENTION <3.0 with ≥3, NEW otherwise), trust badges for marketplace display, vendor ratings dashboard, and admin quality overview.
 
 ## External Dependencies
 - **PostgreSQL**: Primary database.
