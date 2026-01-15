@@ -1,0 +1,347 @@
+Excellent. ✅
+Option C — Priority Band 3 (Differentiators & Scale) is now formally activated.
+
+Below is a clear, sequenced execution plan that respects everything we’ve learned so far: Nigeria-first realities, offline-first constraints, demo safety, and governance discipline (wave-by-wave authorization).
+
+⸻
+
+🚀 PRIORITY BAND 3 — EXECUTION PLAN
+
+Theme: Differentiators & Scale
+Philosophy: These features do not block commerce, but once live, they make WebWaka hard to compete with.
+
+We will proceed in five tightly scoped waves, each independently valuable and low-risk.
+
+⸻
+
+🟢 WAVE G1 — Vendor Rating System (MVM)
+
+Why First
+	•	Improves marketplace trust
+	•	Low technical risk
+	•	No financial side effects
+	•	Purely additive and read-only at first
+
+Scope
+
+Rating Sources
+	•	Order completion (auto-eligible)
+	•	Manual admin moderation (no automation)
+
+Data Model
+	•	mvm_vendor_rating
+	•	mvm_vendor_rating_summary
+
+Capabilities
+	•	1–5 star ratings
+	•	Optional text review
+	•	Aggregate score (avg, count, trend)
+	•	“Verified Purchase” badge
+	•	Demo-safe labeling
+
+Constraints
+	•	❌ No incentives
+	•	❌ No ranking manipulation
+	•	❌ No automation
+	•	❌ No public shaming (hidden low ratings until volume threshold)
+
+Outcome
+	•	Marketplace trust layer
+	•	Foundation for future discovery & ranking
+
+⛔ STOP required after Wave G1
+
+⸻
+
+🟢 WAVE G2 — Offline Cart Persistence (SVM)
+
+Why Second
+	•	Complements POS offline strength
+	•	Directly improves conversion
+	•	Highly Nigeria-relevant (network drops mid-browse)
+
+Scope
+
+Offline Cart Layer
+	•	IndexedDB-backed cart storage
+	•	Auto-restore on reconnect
+	•	Versioned cart schema
+
+Behavior
+	•	Cart survives:
+	•	App close
+	•	Network loss
+	•	Browser refresh
+	•	Graceful conflict resolution:
+	•	Price change
+	•	Stock change
+	•	Removed items
+
+UX Signals
+	•	“Saved offline” badge
+	•	“Price changed” notice
+	•	Retry + edit prompts
+
+Constraints
+	•	❌ No background sync
+	•	❌ No auto checkout
+	•	❌ User-triggered restore only
+
+Outcome
+	•	Dramatically reduced cart abandonment
+	•	Trust in unstable connectivity
+
+⛔ STOP required after Wave G2
+
+⸻
+
+🟢 WAVE G3 — Social Proof (SVM)
+
+Why Third
+	•	Conversion booster
+	•	Leverages existing data
+	•	No operational risk
+
+Scope
+
+Signals Introduced
+	•	“X people bought this today”
+	•	“Last purchased 2h ago”
+	•	“Popular in your area” (LGA/state scoped)
+	•	Vendor trust badges (from Wave G1)
+
+Data Sources
+	•	Completed orders only
+	•	Demo clearly labeled
+	•	Cached aggregates (no real-time pressure)
+
+UX
+	•	Lightweight badges
+	•	No dark patterns
+	•	No fake urgency
+
+Constraints
+	•	❌ No countdown timers
+	•	❌ No artificial scarcity
+	•	❌ No automation
+
+Outcome
+	•	Improved buyer confidence
+	•	Higher checkout completion
+
+⛔ STOP required after Wave G3
+
+⸻
+
+🟢 WAVE G4 — Voice Product Search (POS)
+
+Why Fourth
+	•	Accessibility & speed feature
+	•	Valuable in noisy retail environments
+	•	Strong Nigeria-specific usability
+
+Scope
+
+Search Modes
+	•	Voice → text → fuzzy match
+	•	Fallback to manual search
+
+Optimizations
+	•	Nigerian accents (basic tolerance)
+	•	Partial word matching
+	•	SKU + nickname matching
+
+UX
+	•	Push-to-talk button
+	•	Clear listening / processing states
+	•	Confidence display (“Searching for ‘Paracetamol’”)
+
+Offline Behavior
+	•	❌ No voice offline
+	•	Clear message: “Voice search requires internet”
+
+Constraints
+	•	❌ No AI inference layer
+	•	❌ Browser-native Speech API only
+
+Outcome
+	•	Faster POS operations
+	•	Accessibility differentiator
+
+⛔ STOP required after Wave G4
+
+⸻
+
+🟢 WAVE G5 — Multi-Park Operator View (ParkHub)
+
+Why Last
+	•	Scale feature
+	•	Targets mature operators
+	•	Depends on stable ParkHub core (already achieved)
+
+Scope
+
+Operator Dashboard
+	•	Multiple parks under one operator
+	•	Aggregated:
+	•	Trips
+	•	Revenue
+	•	Tickets sold
+	•	Cash vs transfer breakdown
+
+Controls
+	•	Park-level filters
+	•	Date range filters
+	•	Export (CSV only)
+
+Authorization
+	•	Operator role only
+	•	No cross-tenant visibility
+
+Constraints
+	•	❌ No automation
+	•	❌ No payouts
+	•	❌ Read-only analytics
+
+Outcome
+	•	Enables enterprise-scale transport operators
+	•	Differentiates ParkHub strongly
+
+⛔ STOP required after Wave G5
+
+⸻
+
+📊 EXECUTION SUMMARY
+
+Wave	Feature	Risk	Impact	Nigeria Relevance
+G1	Vendor Ratings	Low	High	Trust
+G2	Offline Cart	Medium	High	Connectivity
+G3	Social Proof	Low	Medium	Buyer confidence
+G4	Voice Search	Medium	Medium	Speed & access
+G5	Multi-Park View	Low	Medium	Scale
+
+
+⸻
+
+🔐 GOVERNANCE RULES (STILL IN FORCE)
+
+For every wave:
+	1.	Implementation → Completion Report
+	2.	Explicit confirmations (no automation, demo-safe)
+	3.	⛔ STOP
+	4.	Only proceed on your approval
+
+⸻
+
+NEXT ACTION REQUIRED
+
+🟢 Wave G1 — Vendor Rating System (MVM) AUTHORIZED
+
+Authorization acknowledged and locked in.
+Wave G1 is now formally approved to start.
+
+⸻
+
+🔓 AUTHORIZATION CONFIRMATION
+
+Scope Unlocked:
+Priority Band 3 – Wave G1: Vendor Rating System (MVM)
+
+Status
+	•	Band 3: 🟢 Active
+	•	Wave G1: 🟢 Authorized
+	•	Waves G2–G5: 🔒 Locked (do not start)
+
+⸻
+
+🎯 WAVE G1 OBJECTIVE (RECONFIRMED)
+
+Introduce a trust and quality layer to the Multi-Vendor Marketplace by enabling:
+	•	Transparent vendor ratings
+	•	Verified purchase credibility
+	•	Nigeria-appropriate safeguards against abuse
+	•	Demo-safe, non-punitive design
+
+This wave does NOT affect money, automation, payouts, or rankings.
+
+⸻
+
+🧩 IMPLEMENTATION BOUNDARIES (MANDATORY)
+
+The following constraints remain strictly enforced:
+
+❌ No automation
+❌ No incentives or gamification
+❌ No ranking manipulation
+❌ No public shaming
+❌ No financial logic
+❌ No background jobs
+❌ No AI moderation
+
+✅ Read-only aggregation
+✅ Tenant-scoped
+✅ Session-authenticated
+✅ Demo-safe labeling
+
+⸻
+
+📦 DELIVERABLES EXPECTED AT COMPLETION
+
+At the end of Wave G1, Replit must provide:
+
+1. Data Models
+	•	Vendor rating model
+	•	Rating summary/aggregate model
+
+2. APIs
+	•	Submit rating (eligible orders only)
+	•	Fetch vendor rating summary
+	•	Admin moderation endpoint (manual only)
+
+3. Eligibility Rules
+	•	Only completed & delivered orders
+	•	One rating per order
+	•	Verified Purchase flag
+
+4. Safeguards
+	•	Minimum rating count before public visibility
+	•	Demo vs live clearly distinguished
+	•	Rating suppression rules for low volume
+
+5. UI Touchpoints
+	•	Vendor profile rating display
+	•	Trust badges (Verified Purchase, Demo)
+	•	Read-only rating summary (no editing)
+
+6. Explicit Confirmations
+	•	❌ No automation
+	•	❌ No ranking logic
+	•	❌ No incentives
+	•	❌ No financial side effects
+
+⸻
+
+🛑 REQUIRED STOP CONDITION
+
+Once Wave G1 implementation is complete, Replit must:
+	1.	Produce a Wave G1 Completion Report
+	2.	List:
+	•	Models created
+	•	APIs created
+	•	Rating rules enforced
+	•	Demo vs live behavior
+	3.	Explicitly confirm all constraints
+	4.	STOP and wait for approval before Wave G2
+
+⸻
+
+🚦 NEXT STEP
+
+You may now proceed with Wave G1 implementation.
+
+When the Wave G1 Completion Report is ready, paste it here and I will:
+	•	Review architecture & trust implications
+	•	Approve (or request adjustments)
+	•	Unlock Wave G2 — Offline Cart Persistence (SVM) if satisfied
+
+Proceed.
