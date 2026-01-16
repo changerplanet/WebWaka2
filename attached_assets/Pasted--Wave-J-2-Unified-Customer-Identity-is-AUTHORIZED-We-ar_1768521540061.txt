@@ -1,0 +1,200 @@
+✅ Wave J.2 — Unified Customer Identity is AUTHORIZED
+
+We are clear to proceed.
+
+Below is the official Replit execution prompt for Wave J.2, written tightly to scope, aligned with lessons from Waves I & J.1, and enforcing all architectural constraints.
+
+⸻
+
+🔐 WAVE J.2 — UNIFIED CUSTOMER IDENTITY
+
+Replit Execution Prompt
+
+OBJECTIVE
+
+Introduce a read-only, canonical customer identity layer that unifies customer identification across SVM, MVM, and ParkHub without modifying any existing schemas or business logic.
+
+This wave exists solely to normalize identity resolution, not to authenticate users or change flows.
+
+⸻
+
+🚫 HARD CONSTRAINTS (NON-NEGOTIABLE)
+	•	❌ NO schema changes
+	•	❌ NO data mutations
+	•	❌ NO authentication system
+	•	❌ NO background jobs
+	•	❌ NO automation
+	•	❌ NO tenantId changes
+	•	❌ NO modification of existing order logic
+	•	❌ NO customer accounts
+	•	❌ NO new tables
+	•	❌ NO PII enrichment
+
+This wave is purely a read-only abstraction.
+
+⸻
+
+✅ WHAT IS ALLOWED
+	•	Canonical types (TypeScript only)
+	•	Resolver functions
+	•	Normalization logic
+	•	Metadata preservation
+	•	Documentation of gaps
+
+⸻
+
+🎯 SCOPE OF WORK
+
+1️⃣ Canonical Customer Type
+
+Create a CanonicalCustomer type that represents a customer across all commerce systems:
+
+CanonicalCustomer {
+  canonicalId: string          // derived hash (email|phone)
+  email?: string
+  phone?: string
+  name?: string
+  sourceSystems: ("SVM" | "MVM" | "PARKHUB")[]
+  originalReferences: {
+    svmCustomerId?
+    mvmCustomerId?
+    parkPassengerId?
+  }
+  metadata: Record<string, any>
+}
+
+	•	canonicalId must be deterministic (e.g. hash of normalized email/phone)
+	•	Preserve original system IDs only as metadata
+	•	Do not invent missing data
+
+⸻
+
+2️⃣ Identity Resolution Rules (STRICT)
+
+Resolution priority (read-only):
+	1.	Email (case-insensitive)
+	2.	Phone (normalized to Nigerian formats)
+	3.	Fallback: system-specific reference (ticketRef, orderRef)
+
+⚠️ If multiple records match:
+	•	DO NOT merge
+	•	DO NOT guess
+	•	Return multiple CanonicalCustomer entries
+	•	Flag ambiguity in metadata
+
+⸻
+
+3️⃣ Source Adapters (READ-ONLY)
+
+Implement resolvers for:
+
+System	Source
+SVM	svm_orders, svm_customers (if exists)
+MVM	mvm_parent_order, mvm_sub_order
+ParkHub	park_ticket, passenger fields
+
+Each resolver must:
+	•	Read only
+	•	Preserve original structures
+	•	Map to CanonicalCustomer without mutation
+
+⸻
+
+4️⃣ CanonicalCustomerService
+
+Create a service with read-only APIs:
+
+getByEmail(tenantSlug, email)
+getByPhone(tenantSlug, phone)
+resolveFromOrder(reference, tenantSlug)
+listAmbiguous(tenantSlug)
+
+	•	Tenant isolation enforced
+	•	Demo tenants allowed without auth
+	•	Live tenants require tenantSlug only (NO auth yet)
+
+⸻
+
+5️⃣ Public API (READ-ONLY)
+
+Expose internal-use APIs only (not UI-facing yet):
+
+GET /api/customers/canonical?tenantSlug=X&email=Y
+GET /api/customers/canonical?tenantSlug=X&phone=Z
+GET /api/customers/canonical/from-order?reference=ABC&tenantSlug=X
+
+All endpoints:
+	•	Read-only
+	•	JSON only
+	•	No pagination (document gap)
+
+⸻
+
+📌 REQUIRED GAP DOCUMENTATION (MANDATORY)
+
+You MUST document the following gaps explicitly in code comments and report:
+	1.	No persistent customer table
+	2.	No authentication / login system
+	3.	No deduplication or merge strategy
+	4.	No customer consent tracking
+	5.	No cross-tenant identity resolution
+	6.	No customer profile UI
+	7.	Phone number format inconsistencies
+	8.	Email trustworthiness not guaranteed
+	9.	No soft-delete handling
+	10.	No customer lifecycle state
+
+📍 These gaps must be listed in the Wave J.2 Completion Report.
+
+⸻
+
+🧪 DEMO VS LIVE BEHAVIOR
+
+Mode	Behavior
+Demo	Works without auth
+Live	Requires tenantSlug
+Ambiguous	Returns multiple results
+Missing identity	Returns empty array
+
+
+⸻
+
+📄 REQUIRED DELIVERABLES
+
+1️⃣ Wave J.2 Completion Report
+
+Must include:
+	•	CanonicalCustomer definition
+	•	APIs created
+	•	Resolver coverage (SVM/MVM/ParkHub)
+	•	Explicit gap list
+	•	Confirmation of constraint compliance
+
+2️⃣ STOP CONDITION
+
+After report is produced:
+	•	🛑 STOP
+	•	Await approval
+	•	DO NOT proceed to Wave J.3
+
+⸻
+
+🧠 CONTEXT REMINDER
+
+This wave does not fix identity — it reveals it safely.
+
+It is the foundation for:
+	•	Secure customer portals
+	•	Receipts & proofs
+	•	Notifications
+	•	Authentication (later)
+	•	Cross-suite analytics
+
+⸻
+
+✅ AUTHORIZATION CONFIRMED
+
+Wave J.2 is unlocked.
+Replit may proceed immediately under the above constraints.
+
+When the completion report is ready, paste it here for review.
