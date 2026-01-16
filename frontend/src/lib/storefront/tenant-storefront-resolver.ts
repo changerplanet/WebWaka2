@@ -1,5 +1,6 @@
 import { prisma } from '../prisma'
 import { TenantStatus } from '@prisma/client'
+import { TenantContextResolver, type TenantContext } from '../tenant-context'
 
 export interface StorefrontTenant {
   id: string
@@ -37,44 +38,38 @@ export type ProductResolutionResult =
   | { success: true; product: StorefrontProduct; tenant: StorefrontTenant }
   | { success: false; reason: 'tenant_not_found' | 'product_not_found' | 'store_disabled' | 'suspended' }
 
+function contextToStorefrontTenant(ctx: TenantContext): StorefrontTenant {
+  return {
+    id: ctx.tenantId,
+    name: ctx.tenantName,
+    slug: ctx.tenantSlug,
+    status: 'ACTIVE' as TenantStatus,
+    appName: ctx.appName,
+    logoUrl: ctx.logoUrl,
+    faviconUrl: ctx.faviconUrl,
+    primaryColor: ctx.primaryColor,
+    secondaryColor: ctx.secondaryColor,
+    activatedModules: ctx.enabledModules,
+  }
+}
+
 export async function resolveStorefrontBySlug(tenantSlug: string): Promise<StorefrontResolutionResult> {
-  const tenant = await prisma.tenant.findUnique({
-    where: { slug: tenantSlug },
-    select: {
-      id: true,
-      name: true,
-      slug: true,
-      status: true,
-      appName: true,
-      logoUrl: true,
-      faviconUrl: true,
-      primaryColor: true,
-      secondaryColor: true,
-      activatedModules: true,
+  const result = await TenantContextResolver.resolveForSVM(tenantSlug)
+
+  if (!result.success) {
+    if (result.reason === 'not_found') {
+      return { success: false, reason: 'not_found' }
     }
-  })
-
-  if (!tenant) {
-    return { success: false, reason: 'not_found' }
-  }
-
-  if (tenant.status === 'SUSPENDED') {
+    if (result.reason === 'suspended') {
+      return { success: false, reason: 'suspended' }
+    }
+    if (result.reason === 'module_disabled') {
+      return { success: false, reason: 'store_disabled' }
+    }
     return { success: false, reason: 'suspended' }
   }
 
-  if (tenant.status !== 'ACTIVE') {
-    return { success: false, reason: 'suspended' }
-  }
-
-  const storeEnabled = tenant.activatedModules.includes('svm') || 
-                       tenant.activatedModules.includes('commerce') ||
-                       tenant.activatedModules.includes('store')
-
-  if (!storeEnabled) {
-    return { success: false, reason: 'store_disabled' }
-  }
-
-  return { success: true, tenant }
+  return { success: true, tenant: contextToStorefrontTenant(result.context) }
 }
 
 export async function resolveProductBySlug(

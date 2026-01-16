@@ -63,7 +63,38 @@
  */
 
 import { prisma } from '@/lib/prisma'
-import { resolveStorefrontBySlug, type StorefrontTenant, type StorefrontResolutionResult } from '@/lib/storefront/tenant-storefront-resolver'
+import { TenantContextResolver, type TenantContext } from '@/lib/tenant-context'
+import type { TenantStatus } from '@prisma/client'
+
+export interface ParkHubTenant {
+  id: string
+  name: string
+  slug: string
+  status: TenantStatus
+  appName: string
+  logoUrl: string | null
+  faviconUrl: string | null
+  primaryColor: string
+  secondaryColor: string
+  activatedModules: string[]
+}
+
+type StorefrontTenant = ParkHubTenant
+
+function contextToParkHubTenant(ctx: TenantContext): ParkHubTenant {
+  return {
+    id: ctx.tenantId,
+    name: ctx.tenantName,
+    slug: ctx.tenantSlug,
+    status: 'ACTIVE' as TenantStatus,
+    appName: ctx.appName,
+    logoUrl: ctx.logoUrl,
+    faviconUrl: ctx.faviconUrl,
+    primaryColor: ctx.primaryColor,
+    secondaryColor: ctx.secondaryColor,
+    activatedModules: ctx.enabledModules,
+  }
+}
 
 export interface ParkHubOperator {
   id: string
@@ -144,38 +175,26 @@ type ResolutionFailure = {
 }
 
 /**
- * Check if tenant has ParkHub capability enabled
- * Uses activatedModules from tenant record
- */
-function hasParkHubCapability(activatedModules: string[]): boolean {
-  const parkHubModules = ['parkhub', 'transport', 'commerce', 'mvm']
-  return activatedModules.some(m => parkHubModules.includes(m.toLowerCase()))
-}
-
-/**
  * Resolve ParkHub landing page data
+ * Wave J.4: Refactored to use TenantContextResolver
  */
 export async function resolveParkHubLanding(
   tenantSlug: string
 ): Promise<ParkHubLandingResult | ResolutionFailure> {
-  const tenantResult = await resolveStorefrontBySlug(tenantSlug)
+  const result = await TenantContextResolver.resolveForParkHub(tenantSlug)
   
-  if (!tenantResult.success) {
-    if (tenantResult.reason === 'not_found') {
+  if (!result.success) {
+    if (result.reason === 'not_found') {
       return { success: false, reason: 'tenant_not_found' }
+    }
+    if (result.reason === 'module_disabled') {
+      return { success: false, reason: 'parkhub_not_enabled' }
     }
     return { success: false, reason: 'tenant_inactive' }
   }
 
-  const tenant = tenantResult.tenant
-  const isDemo = tenant.slug?.startsWith('demo') || tenant.name?.toLowerCase().includes('demo') || false
-
-  if (!isDemo) {
-    const hasCapability = hasParkHubCapability(tenant.activatedModules)
-    if (!hasCapability) {
-      return { success: false, reason: 'parkhub_not_enabled' }
-    }
-  }
+  const tenant = contextToParkHubTenant(result.context)
+  const isDemo = result.context.isDemo
 
   const [operatorCount, activeRoutesCount, activeTripsCount] = await Promise.all([
     prisma.mvm_vendor.count({
@@ -211,28 +230,25 @@ export async function resolveParkHubLanding(
 /**
  * Resolve operator listing for ParkHub marketplace
  * GAP: Using MVM vendors as transport operators. No dedicated operator model.
+ * Wave J.4: Refactored to use TenantContextResolver
  */
 export async function resolveParkHubOperators(
   tenantSlug: string
 ): Promise<ParkHubOperatorListResult | ResolutionFailure> {
-  const tenantResult = await resolveStorefrontBySlug(tenantSlug)
+  const result = await TenantContextResolver.resolveForParkHub(tenantSlug)
   
-  if (!tenantResult.success) {
-    if (tenantResult.reason === 'not_found') {
+  if (!result.success) {
+    if (result.reason === 'not_found') {
       return { success: false, reason: 'tenant_not_found' }
+    }
+    if (result.reason === 'module_disabled') {
+      return { success: false, reason: 'parkhub_not_enabled' }
     }
     return { success: false, reason: 'tenant_inactive' }
   }
 
-  const tenant = tenantResult.tenant
-  const isDemo = tenant.slug?.startsWith('demo') || tenant.name?.toLowerCase().includes('demo') || false
-
-  if (!isDemo) {
-    const hasCapability = hasParkHubCapability(tenant.activatedModules)
-    if (!hasCapability) {
-      return { success: false, reason: 'parkhub_not_enabled' }
-    }
-  }
+  const tenant = contextToParkHubTenant(result.context)
+  const isDemo = result.context.isDemo
 
   const vendors = await prisma.mvm_vendor.findMany({
     where: {
@@ -299,29 +315,26 @@ export async function resolveParkHubOperators(
 
 /**
  * Resolve single operator profile
+ * Wave J.4: Refactored to use TenantContextResolver
  */
 export async function resolveParkHubOperator(
   tenantSlug: string,
   operatorSlug: string
 ): Promise<ParkHubOperatorDetailResult | ResolutionFailure> {
-  const tenantResult = await resolveStorefrontBySlug(tenantSlug)
+  const result = await TenantContextResolver.resolveForParkHub(tenantSlug)
   
-  if (!tenantResult.success) {
-    if (tenantResult.reason === 'not_found') {
+  if (!result.success) {
+    if (result.reason === 'not_found') {
       return { success: false, reason: 'tenant_not_found' }
+    }
+    if (result.reason === 'module_disabled') {
+      return { success: false, reason: 'parkhub_not_enabled' }
     }
     return { success: false, reason: 'tenant_inactive' }
   }
 
-  const tenant = tenantResult.tenant
-  const isDemo = tenant.slug?.startsWith('demo') || tenant.name?.toLowerCase().includes('demo') || false
-
-  if (!isDemo) {
-    const hasCapability = hasParkHubCapability(tenant.activatedModules)
-    if (!hasCapability) {
-      return { success: false, reason: 'parkhub_not_enabled' }
-    }
-  }
+  const tenant = contextToParkHubTenant(result.context)
+  const isDemo = result.context.isDemo
 
   const vendor = await prisma.mvm_vendor.findFirst({
     where: {
@@ -431,28 +444,25 @@ export async function resolveParkHubOperator(
 /**
  * Resolve public routes browser
  * Shows all routes across all operators
+ * Wave J.4: Refactored to use TenantContextResolver
  */
 export async function resolveParkHubRoutes(
   tenantSlug: string
 ): Promise<ParkHubRoutesResult | ResolutionFailure> {
-  const tenantResult = await resolveStorefrontBySlug(tenantSlug)
+  const result = await TenantContextResolver.resolveForParkHub(tenantSlug)
   
-  if (!tenantResult.success) {
-    if (tenantResult.reason === 'not_found') {
+  if (!result.success) {
+    if (result.reason === 'not_found') {
       return { success: false, reason: 'tenant_not_found' }
+    }
+    if (result.reason === 'module_disabled') {
+      return { success: false, reason: 'parkhub_not_enabled' }
     }
     return { success: false, reason: 'tenant_inactive' }
   }
 
-  const tenant = tenantResult.tenant
-  const isDemo = tenant.slug?.startsWith('demo') || tenant.name?.toLowerCase().includes('demo') || false
-
-  if (!isDemo) {
-    const hasCapability = hasParkHubCapability(tenant.activatedModules)
-    if (!hasCapability) {
-      return { success: false, reason: 'parkhub_not_enabled' }
-    }
-  }
+  const tenant = contextToParkHubTenant(result.context)
+  const isDemo = result.context.isDemo
 
   const routes = await prisma.park_route.findMany({
     where: {

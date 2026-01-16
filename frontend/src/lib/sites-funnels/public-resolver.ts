@@ -63,6 +63,7 @@
 
 import { prisma } from '../prisma'
 import { TenantStatus, SiteStatus, FunnelStatus } from '@prisma/client'
+import { TenantContextResolver, type TenantContext } from '../tenant-context'
 
 export interface PublicTenant {
   id: string
@@ -169,64 +170,41 @@ export type FormResolutionResult =
   | { success: true; form: PublicForm; tenant: PublicTenant }
   | { success: false; reason: 'tenant_not_found' | 'form_not_found' | 'not_active' | 'suspended' | 'sites_funnels_disabled' }
 
-function isDemo(tenant: { slug: string; name: string }): boolean {
-  return tenant.slug.toLowerCase().startsWith('demo') || 
-         tenant.name.toLowerCase().includes('demo')
-}
-
-function hasSitesFunnelsCapability(modules: string[], isDemoTenant: boolean): boolean {
-  if (isDemoTenant) return true
-  return modules.some(m => 
-    m === 'sites_funnels' || 
-    m === 'sites-funnels' || 
-    m === 'sitesfunnels' ||
-    m === 'sites' ||
-    m === 'funnels' ||
-    m === 'page_builder'
-  )
+function contextToPublicTenant(ctx: TenantContext): PublicTenant {
+  return {
+    id: ctx.tenantId,
+    name: ctx.tenantName,
+    slug: ctx.tenantSlug,
+    status: 'ACTIVE' as TenantStatus,
+    appName: ctx.appName,
+    logoUrl: ctx.logoUrl,
+    faviconUrl: ctx.faviconUrl,
+    primaryColor: ctx.primaryColor,
+    secondaryColor: ctx.secondaryColor,
+    activatedModules: ctx.enabledModules,
+    isDemo: ctx.isDemo,
+  }
 }
 
 export async function resolveTenantBySlug(tenantSlug: string): Promise<TenantResolutionResult> {
-  const tenant = await prisma.tenant.findUnique({
-    where: { slug: tenantSlug },
-    select: {
-      id: true,
-      name: true,
-      slug: true,
-      status: true,
-      appName: true,
-      logoUrl: true,
-      faviconUrl: true,
-      primaryColor: true,
-      secondaryColor: true,
-      activatedModules: true,
+  const result = await TenantContextResolver.resolveForSitesFunnels(tenantSlug)
+
+  if (!result.success) {
+    if (result.reason === 'not_found') {
+      return { success: false, reason: 'not_found' }
     }
-  })
-
-  if (!tenant) {
-    return { success: false, reason: 'not_found' }
-  }
-
-  const isDemoTenant = isDemo(tenant)
-
-  if (!isDemoTenant && tenant.status === 'SUSPENDED') {
+    if (result.reason === 'suspended') {
+      return { success: false, reason: 'suspended' }
+    }
+    if (result.reason === 'module_disabled') {
+      return { success: false, reason: 'sites_funnels_disabled' }
+    }
     return { success: false, reason: 'suspended' }
-  }
-
-  if (!isDemoTenant && tenant.status !== 'ACTIVE') {
-    return { success: false, reason: 'suspended' }
-  }
-
-  if (!hasSitesFunnelsCapability(tenant.activatedModules, isDemoTenant)) {
-    return { success: false, reason: 'sites_funnels_disabled' }
   }
 
   return { 
     success: true, 
-    tenant: {
-      ...tenant,
-      isDemo: isDemoTenant
-    }
+    tenant: contextToPublicTenant(result.context)
   }
 }
 
