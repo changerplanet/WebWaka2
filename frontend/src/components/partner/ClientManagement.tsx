@@ -10,7 +10,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { 
   Building2, Plus, Search, Filter, MoreHorizontal, 
   ExternalLink, Settings, RefreshCw, Loader2, AlertCircle,
-  CheckCircle, Clock, XCircle
+  CheckCircle, Clock, XCircle, Palette
 } from 'lucide-react'
 import { ClientCreationWizard } from './ClientCreationWizard'
 
@@ -101,6 +101,19 @@ export function ClientManagement({ partnerId }: ClientManagementProps) {
         {status.replace('_', ' ')}
       </span>
     )
+  }
+
+  const getBrandingStatus = (branding: ClientPlatform['branding']) => {
+    const hasLogo = !!branding.logoUrl
+    const hasCustomColors = branding.primaryColor !== '#6366f1' || branding.secondaryColor !== '#8b5cf6'
+    const hasAppName = branding.appName && branding.appName.length > 0
+    
+    if (hasLogo && hasCustomColors && hasAppName) {
+      return { status: 'complete', label: 'Branded', color: 'text-green-600', bg: 'bg-green-50' }
+    } else if (hasAppName || hasCustomColors) {
+      return { status: 'partial', label: 'Partial', color: 'text-amber-600', bg: 'bg-amber-50' }
+    }
+    return { status: 'default', label: 'Default', color: 'text-slate-500', bg: 'bg-slate-50' }
   }
   
   if (showWizard) {
@@ -251,9 +264,9 @@ export function ClientManagement({ partnerId }: ClientManagementProps) {
                 </div>
               </div>
               
-              {/* Domains & Instances Summary */}
+              {/* Domains & Branding Summary */}
               <div className="mt-4 pt-4 border-t border-slate-100 flex items-center gap-4 text-sm">
-                <div>
+                <div className="flex-1">
                   <span className="text-slate-500">Domains: </span>
                   {client.domains.slice(0, 2).map(d => (
                     <span key={d.id} className="text-slate-700 mr-2">
@@ -263,6 +276,21 @@ export function ClientManagement({ partnerId }: ClientManagementProps) {
                   {client.domains.length > 2 && (
                     <span className="text-slate-400">+{client.domains.length - 2} more</span>
                   )}
+                </div>
+                {/* Branding Status Indicator */}
+                <div className="shrink-0">
+                  {(() => {
+                    const brandStatus = getBrandingStatus(client.branding)
+                    return (
+                      <span 
+                        className={`inline-flex items-center gap-1 px-2 py-1 rounded text-xs ${brandStatus.bg} ${brandStatus.color}`}
+                        title={`Branding: ${brandStatus.label}`}
+                      >
+                        <Palette className="w-3 h-3" />
+                        {brandStatus.label}
+                      </span>
+                    )
+                  })()}
                 </div>
               </div>
             </div>

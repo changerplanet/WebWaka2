@@ -1,7 +1,7 @@
 'use client'
 
-import { useState } from 'react'
-import { Palette, Save, Loader2, Upload, Eye, RotateCcw } from 'lucide-react'
+import { useState, useEffect } from 'react'
+import { Palette, Save, Loader2, Upload, Eye, RotateCcw, Globe, ExternalLink } from 'lucide-react'
 
 interface BrandingConfig {
   appName: string
@@ -11,11 +11,19 @@ interface BrandingConfig {
   secondaryColor: string
 }
 
+interface TenantDomain {
+  id: string
+  domain: string
+  type: 'SUBDOMAIN' | 'CUSTOM'
+  status: 'PENDING' | 'VERIFIED' | 'FAILED'
+}
+
 interface TenantSettingsPartial {
   id: string
   name: string
   slug: string
   branding: BrandingConfig
+  domains?: TenantDomain[]
 }
 
 interface BrandingSettingsProps {
@@ -32,9 +40,27 @@ export function BrandingSettings({ settings, tenantSlug, onUpdate }: BrandingSet
   const [faviconUrl, setFaviconUrl] = useState(settings.branding.faviconUrl || '')
   const [saving, setSaving] = useState(false)
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null)
+  const [domains, setDomains] = useState<TenantDomain[]>(settings.domains || [])
   
   const DEFAULT_PRIMARY = '#6366f1'
   const DEFAULT_SECONDARY = '#8b5cf6'
+
+  useEffect(() => {
+    async function fetchDomains() {
+      try {
+        const res = await fetch(`/api/tenants/${tenantSlug}/domains`)
+        const data = await res.json()
+        if (data.success && data.domains) {
+          setDomains(data.domains)
+        }
+      } catch (err) {
+        // Silent fail - domains are optional display
+      }
+    }
+    if (!settings.domains || settings.domains.length === 0) {
+      fetchDomains()
+    }
+  }, [tenantSlug, settings.domains])
   
   async function handleSave() {
     setSaving(true)
@@ -73,8 +99,54 @@ export function BrandingSettings({ settings, tenantSlug, onUpdate }: BrandingSet
     setSecondaryColor(DEFAULT_SECONDARY)
   }
   
+  const subdomainUrl = `${tenantSlug}.webwaka.com`
+  const customDomain = domains.find(d => d.type === 'CUSTOM' && d.status === 'VERIFIED')
+  
   return (
     <div className="space-y-6">
+      {/* Domain Display - Read Only */}
+      <div className="bg-white rounded-xl border border-slate-200 p-6">
+        <div className="flex items-center gap-2 mb-4">
+          <Globe className="w-5 h-5 text-blue-500" />
+          <h3 className="font-semibold text-slate-900">Your Public URLs</h3>
+        </div>
+        <div className="space-y-3">
+          <div className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
+            <div>
+              <p className="text-sm font-medium text-slate-700">Subdomain</p>
+              <p className="text-slate-900">{subdomainUrl}</p>
+            </div>
+            <a 
+              href={`https://${subdomainUrl}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="p-2 hover:bg-slate-200 rounded-lg transition"
+            >
+              <ExternalLink className="w-4 h-4 text-slate-500" />
+            </a>
+          </div>
+          {customDomain && (
+            <div className="flex items-center justify-between p-3 bg-green-50 rounded-lg">
+              <div>
+                <p className="text-sm font-medium text-green-700">Custom Domain</p>
+                <p className="text-green-900">{customDomain.domain}</p>
+              </div>
+              <a 
+                href={`https://${customDomain.domain}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="p-2 hover:bg-green-200 rounded-lg transition"
+              >
+                <ExternalLink className="w-4 h-4 text-green-600" />
+              </a>
+            </div>
+          )}
+          <p className="text-xs text-slate-500">
+            These URLs show your branding to visitors. Manage domains in the Domains tab.
+          </p>
+        </div>
+      </div>
+
       {/* Main Card */}
       <div className="bg-white rounded-xl border border-slate-200 p-6">
         <div className="flex items-center justify-between mb-6">

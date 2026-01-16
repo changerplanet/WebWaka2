@@ -40,6 +40,7 @@ WebWaka is a multi-tenant SaaS platform built with a modular capability system, 
 - **Public Routing**: Unified routing for SVM storefronts, MVM marketplaces, ParkHub operator marketplaces, and Sites & Funnels pages.
 - **Sites & Funnels Template System**: SUPER_ADMIN-managed template CRUD (SITE_TEMPLATE, FUNNEL_TEMPLATE, PAGE_TEMPLATE) with token resolution and entitlement-gated cloning.
 - **Template UI (Wave E1)**: Admin template management at `/admin/templates` (CRUD, publish/deprecate) and Partner template gallery at `/partner-portal/templates` (browse, preview, clone) with server-side demo/live separation.
+- **White-Label Branding (Wave E2)**: Domain-based tenant resolution (subdomain + custom domain), tenant branding on public surfaces (SVM/MVM/ParkHub/Sites), read-only domain display in tenant settings, partner branding status indicators, and Super Admin branding override capability.
 
 ## External Dependencies
 - **PostgreSQL**: Primary database.

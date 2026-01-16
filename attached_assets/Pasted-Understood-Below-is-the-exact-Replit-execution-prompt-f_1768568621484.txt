@@ -1,0 +1,180 @@
+Understood. Below is the exact Replit execution prompt for Wave E2 — White-Label Domains & Partner Branding, written with strict scope control, hard stop conditions, and zero ambiguity, consistent with how we’ve been running Bands A–E.
+
+⸻
+
+🟣 WAVE E2 — WHITE-LABEL DOMAINS & PARTNER BRANDING
+
+Replit Execution Prompt (Authoritative)
+
+🔒 WAVE CLASSIFICATION
+	•	Band: E — Branding & Partner Power
+	•	Wave: E2
+	•	Risk Level: MEDIUM (Public surface + branding)
+	•	Money Movement: ❌ NONE
+	•	Automation / Jobs: ❌ FORBIDDEN
+	•	External Integrations: ❌ FORBIDDEN
+	•	Template Ingestion: ❌ FORBIDDEN
+
+⸻
+
+🎯 OBJECTIVE
+
+Enable safe, controlled white-label branding for tenants and partners without changing core logic, without exposing new public attack surfaces, and without breaking demo/live separation.
+
+This wave is FOUNDATIONAL BRANDING ONLY, not monetization, not theming engines, and not marketplace logic.
+
+⸻
+
+🧩 SCOPE OF WORK (ALLOWED)
+
+1️⃣ DOMAIN MAPPING (READ + RENDER ONLY)
+
+Implement domain-based tenant resolution:
+	•	Support:
+	•	tenantSlug.webwaka.app
+	•	customdomain.com
+	•	www.customdomain.com
+	•	Domain → tenant resolution must:
+	•	Be server-side only
+	•	Resolve to an existing tenant
+	•	Respect tenant.status and enabled modules
+	•	No DNS automation
+	•	No SSL provisioning
+	•	No redirects or rewrites beyond resolution
+
+📌 Explicitly out of scope:
+	•	Certificate management
+	•	DNS verification workflows
+	•	Wildcard domain provisioning
+
+⸻
+
+2️⃣ TENANT BRANDING LAYER (SAFE OVERRIDES ONLY)
+
+Enable branding overrides using existing tenant data or metadata only:
+
+Allowed branding fields:
+	•	Logo (light / dark)
+	•	Brand name
+	•	Primary color
+	•	Secondary color
+	•	Favicon
+	•	Email sender name (display only)
+
+Rules:
+	•	Branding must never override functional UI
+	•	Branding must never affect admin or partner portals
+	•	Branding applies only to:
+	•	Public storefronts (SVM)
+	•	Marketplaces (MVM)
+	•	ParkHub public pages
+	•	Sites & Funnels public rendering
+
+📌 Do NOT introduce:
+	•	New theme engines
+	•	CSS injection
+	•	Arbitrary style overrides
+	•	Per-page branding logic
+
+⸻
+
+3️⃣ PARTNER BRANDING BOUNDARIES
+
+Partner branding rules:
+	•	Partner may:
+	•	Apply branding to their own tenants
+	•	View branding status
+	•	Partner may NOT:
+	•	Apply branding globally
+	•	Affect Super Admin assets
+	•	Override system trust indicators
+	•	Super Admin remains final authority
+
+⸻
+
+4️⃣ DEMO VS LIVE SAFETY (MANDATORY)
+	•	Demo tenants:
+	•	Can use demo branding assets
+	•	Must be visually marked as DEMO
+	•	Live tenants:
+	•	Must NOT see demo branding
+	•	Branding resolution must use:
+	•	tenant.isDemo from DB
+	•	❌ NOT slug or name heuristics
+
+⸻
+
+5️⃣ UI EXPOSURE (MINIMAL, CONTROLLED)
+
+Tenant Admin
+	•	Branding preview panel
+	•	Read-only domain display
+	•	No DNS instructions
+	•	No SSL instructions
+
+Partner Portal
+	•	Branding status indicator per tenant
+	•	No upload flows
+	•	No edit controls
+
+Super Admin
+	•	Full visibility
+	•	Override capability
+	•	Emergency reset
+
+⸻
+
+🚫 EXPLICITLY FORBIDDEN IN WAVE E2
+
+❌ New Prisma models
+❌ New public APIs
+❌ Background jobs / cron
+❌ CSS/theme engines
+❌ External branding uploads
+❌ Domain verification flows
+❌ White-label billing logic
+❌ Template changes
+❌ Marketplace exposure
+
+If any of the above appear necessary → STOP AND REPORT
+
+⸻
+
+🛑 HARD STOP CONDITIONS (NON-NEGOTIABLE)
+
+Replit MUST STOP and request review when:
+	1.	Domain resolution is working for:
+	•	tenantSlug.webwaka.app
+	•	custom domain
+	2.	Branding renders correctly on:
+	•	SVM storefront
+	•	MVM marketplace
+	•	ParkHub public pages
+	•	Sites & Funnels
+	3.	Admin/Partner portals are NOT affected
+	4.	Demo/live separation is enforced server-side
+	5.	No new schemas or endpoints were added
+
+Deliver a Wave E2 Completion Report including:
+	•	Resolved surfaces
+	•	Screenshots or route list
+	•	Demo vs live behavior confirmation
+	•	Explicit list of anything NOT implemented
+
+🚨 Do NOT proceed to Wave F or E3
+🚨 Do NOT “improve UX” beyond scope
+🚨 Do NOT refactor unrelated code
+
+⸻
+
+✅ SUCCESS CRITERIA
+
+Wave E2 is successful if:
+	•	Branding is predictable, safe, reversible
+	•	Domains resolve correctly without security regression
+	•	No partner or tenant can escalate privileges
+	•	Public surfaces feel white-labeled without breaking trust
+
+⸻
+
+END OF WAVE E2 PROMPT
