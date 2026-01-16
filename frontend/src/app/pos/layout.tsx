@@ -1,43 +1,107 @@
 'use client'
 
-import { ReactNode, useEffect, useState } from 'react'
+import { ReactNode, useEffect, useState, createContext, useContext } from 'react'
 import { useRouter } from 'next/navigation'
 import { AuthProvider, useAuth } from '@/components/AuthProvider'
-import { Loader2, AlertCircle, Building2, ShoppingCart } from 'lucide-react'
+import { Loader2, AlertCircle, Building2, ShoppingCart, ShieldAlert } from 'lucide-react'
+
+export type POSRole = 'POS_CASHIER' | 'POS_SUPERVISOR' | 'POS_MANAGER'
+
+interface POSRoleContextType {
+  posRole: POSRole
+  hasPermission: (permission: string) => boolean
+}
+
+const POSRoleContext = createContext<POSRoleContextType | null>(null)
+
+export function usePOSRole() {
+  const context = useContext(POSRoleContext)
+  if (!context) {
+    throw new Error('usePOSRole must be used within POSLayout')
+  }
+  return context
+}
+
+export function getPOSRole(tenantRole: string): POSRole {
+  if (tenantRole === 'TENANT_ADMIN') {
+    return 'POS_MANAGER'
+  }
+  const storedRole = typeof window !== 'undefined' 
+    ? localStorage.getItem('webwaka_pos_role') 
+    : null
+  if (storedRole && ['POS_CASHIER', 'POS_SUPERVISOR', 'POS_MANAGER'].includes(storedRole)) {
+    return storedRole as POSRole
+  }
+  return 'POS_CASHIER'
+}
+
+export function hasPOSPermission(role: POSRole, permission: string): boolean {
+  const permissions: Record<POSRole, string[]> = {
+    POS_CASHIER: [
+      'pos.sale.create', 'pos.sale.add_item', 'pos.sale.remove_item',
+      'pos.sale.complete', 'pos.payment.cash', 'pos.payment.card',
+      'pos.payment.transfer', 'pos.discount.apply_preset'
+    ],
+    POS_SUPERVISOR: [
+      'pos.sale.create', 'pos.sale.add_item', 'pos.sale.remove_item',
+      'pos.sale.complete', 'pos.sale.void', 'pos.payment.cash', 
+      'pos.payment.card', 'pos.payment.transfer', 'pos.payment.split',
+      'pos.discount.apply_preset', 'pos.discount.apply_custom',
+      'pos.refund.create', 'pos.report.all_sales'
+    ],
+    POS_MANAGER: [
+      'pos.sale.create', 'pos.sale.add_item', 'pos.sale.remove_item',
+      'pos.sale.complete', 'pos.sale.void', 'pos.sale.void_others',
+      'pos.payment.cash', 'pos.payment.card', 'pos.payment.transfer',
+      'pos.payment.split', 'pos.discount.apply_preset', 
+      'pos.discount.apply_custom', 'pos.discount.override_max',
+      'pos.refund.create', 'pos.refund.without_receipt', 'pos.refund.approve',
+      'pos.report.all_sales', 'pos.report.staff', 'pos.report.export',
+      'pos.settings.view', 'pos.settings.edit'
+    ]
+  }
+  return permissions[role]?.includes(permission) ?? false
+}
 
 function POSContent({ children }: { children: ReactNode }) {
   const { user, activeTenantId, activeTenant, isLoading, isAuthenticated, switchTenant } = useAuth()
   const router = useRouter()
   const [isInitializing, setIsInitializing] = useState(true)
+  const [posRole, setPosRole] = useState<POSRole>('POS_CASHIER')
 
   useEffect(() => {
     async function init() {
-      // Wait for auth to load
       if (isLoading) return
 
-      // If not authenticated, redirect to login
       if (!isAuthenticated) {
         router.push('/login')
         return
       }
 
-      // If no tenant selected and user has memberships
       if (!activeTenantId && user && user.memberships.length > 0) {
-        // If only one membership, auto-select
         if (user.memberships.length === 1) {
           await switchTenant(user.memberships[0].tenantId)
         } else {
-          // Multiple memberships - redirect to select
           router.push('/select-tenant?redirect=/pos')
           return
         }
+      }
+
+      if (activeTenant) {
+        const role = getPOSRole(activeTenant.role)
+        setPosRole(role)
       }
 
       setIsInitializing(false)
     }
 
     init()
-  }, [isLoading, isAuthenticated, activeTenantId, user, router, switchTenant])
+  }, [isLoading, isAuthenticated, activeTenantId, activeTenant, user, router, switchTenant])
+  
+  const roleContextValue: POSRoleContextType = {
+    posRole,
+    hasPermission: (permission: string) => hasPOSPermission(posRole, permission)
+  }
 
   // Loading state
   if (isLoading || isInitializing) {
@@ -108,7 +172,11 @@ function POSContent({ children }: { children: ReactNode }) {
     )
   }
 
-  return children
+  return (
+    <POSRoleContext.Provider value={roleContextValue}>
+      {children}
+    </POSRoleContext.Provider>
+  )
 }
 
 export default function POSLayout({

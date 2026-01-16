@@ -18,7 +18,8 @@ import {
   Users, 
   RefreshCw,
   Package,
-  Grid3X3
+  Grid3X3,
+  X
 } from 'lucide-react'
 
 // ============================================================================
@@ -39,6 +40,7 @@ function POSMainScreen() {
   
   const [view, setView] = useState<'sale' | 'payment'>('sale')
   const [showQuickGrid, setShowQuickGrid] = useState(true)
+  const [showMobileCart, setShowMobileCart] = useState(false)
 
   // Load products on mount
   useEffect(() => {
@@ -141,8 +143,26 @@ function POSMainScreen() {
           )}
         </div>
 
-        {/* Right: Cart */}
-        <div className="w-96 bg-white border-l border-slate-200 flex flex-col" data-testid="cart-panel">
+        {/* Right: Cart - Responsive drawer on mobile */}
+        <div 
+          className={`
+            fixed inset-y-0 right-0 z-40 w-full max-w-md bg-white border-l border-slate-200 flex flex-col transform transition-transform duration-300 ease-in-out
+            md:relative md:inset-auto md:z-auto md:w-96 md:max-w-none md:transform-none
+            ${showMobileCart ? 'translate-x-0' : 'translate-x-full md:translate-x-0'}
+          `}
+          data-testid="cart-panel"
+        >
+          {/* Mobile cart header */}
+          <div className="md:hidden flex items-center justify-between p-4 border-b border-slate-200">
+            <h2 className="font-semibold text-lg">Cart ({cart.items.length})</h2>
+            <button
+              onClick={() => setShowMobileCart(false)}
+              className="p-2 hover:bg-slate-100 rounded-lg"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </div>
+          
           <div className="flex-1 overflow-hidden">
             <POSCart />
           </div>
@@ -156,10 +176,31 @@ function POSMainScreen() {
               data-testid="checkout-btn"
             >
               <CreditCard className="w-6 h-6" />
-              Checkout ${cart.grandTotal.toFixed(2)}
+              Checkout ₦{cart.grandTotal.toLocaleString('en-NG', { minimumFractionDigits: 2 })}
             </button>
           </div>
         </div>
+        
+        {/* Mobile cart overlay */}
+        {showMobileCart && (
+          <div 
+            className="fixed inset-0 bg-black/50 z-30 md:hidden"
+            onClick={() => setShowMobileCart(false)}
+          />
+        )}
+        
+        {/* Mobile cart FAB */}
+        <button
+          onClick={() => setShowMobileCart(true)}
+          className="fixed bottom-6 right-6 z-20 md:hidden w-16 h-16 bg-green-600 hover:bg-green-700 text-white rounded-full shadow-lg flex items-center justify-center touch-manipulation"
+        >
+          <ShoppingBag className="w-7 h-7" />
+          {cart.items.length > 0 && (
+            <span className="absolute -top-1 -right-1 w-6 h-6 bg-red-500 text-white text-xs font-bold rounded-full flex items-center justify-center">
+              {cart.items.length}
+            </span>
+          )}
+        </button>
       </div>
     </div>
   )

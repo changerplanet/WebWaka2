@@ -1,0 +1,177 @@
+Authorization acknowledged. ✅
+Below is the exact Replit execution prompt for POS-P2, written to your required standard: Nigeria-first, mobile-first, offline-first, PWA-aware, with strict scope control and hard stop conditions.
+
+This prompt is designed to fix P0/P1 gaps only, without scope creep.
+
+⸻
+
+🔧 POS-P2 — Core Nigerian POS Completion
+
+Execution Prompt for Replit
+
+CONTEXT
+
+You are working on the WebWaka POS system.
+A full read-only audit (POS-P1) has been completed and approved.
+This wave is POS-P2, which is a FIX wave, not an audit.
+
+You MUST NOT re-analyze or question the gaps.
+You MUST implement only what is explicitly listed below.
+
+⸻
+
+🎯 OBJECTIVE
+
+Bring WebWaka POS to minimum real-world operability for Nigerian merchants, fixing critical (P0) and high-priority (P1) gaps identified in POS-P1.
+
+This wave focuses on:
+	•	Nigerian payment reality
+	•	Role & permission enforcement
+	•	Mobile usability blockers
+	•	Legal/tax correctness
+	•	Core trust flows (but NOT full receipts yet)
+
+⸻
+
+⛔ NON-NEGOTIABLE CONSTRAINTS
+	•	❌ NO new features beyond listed scope
+	•	❌ NO speculative UX improvements
+	•	❌ NO reports, analytics, or dashboards
+	•	❌ NO background jobs
+	•	❌ NO breaking existing offline behavior
+	•	❌ NO refactors unrelated to listed gaps
+	•	❌ NO POS-P3 or POS-P4 work
+
+If a gap requires broader architecture, document it and stop.
+
+⸻
+
+📌 IN-SCOPE GAPS (AUTHORITATIVE)
+
+🔴 P0 — MUST FIX
+
+POS-P2-1: Bank Transfer Payment Method (NX-1)
+Implement TRANSFER as a first-class POS payment method.
+
+Requirements:
+	•	Add TRANSFER to PaymentMethod
+	•	Allow sale finalization with TRANSFER
+	•	Offline-compatible (queued like CASH)
+	•	No payment gateway integration
+	•	Must appear in PaymentScreen UI
+
+⸻
+
+POS-P2-2: Transfer Reference Capture (NX-2)
+For TRANSFER payments:
+	•	Require reference input (text field)
+	•	Optional photo upload (image only, stored locally if offline)
+	•	Persist reference with sale event
+	•	Display reference in sale confirmation summary
+
+No OCR, no verification logic.
+
+⸻
+
+POS-P2-3: VAT Correction (NX-6)
+	•	Change VAT from 8% → 7.5%
+	•	Must apply consistently across:
+	•	POS totals
+	•	Offline calculations
+	•	API payloads
+	•	No multi-tax system
+
+⸻
+
+POS-P2-4: Role Validation Enforcement (PERM-4)
+	•	Validate posRole against tenant membership metadata
+	•	Block POS access if role is missing or invalid
+	•	Do NOT rely on frontend assumptions
+
+⸻
+
+🟠 P1 — SHOULD FIX
+
+POS-P2-5: Supervisor Override for Voids (PERM-3)
+	•	Introduce Void Sale flow (post-payment)
+	•	Requires supervisor PIN or role elevation
+	•	No refunds yet (void only)
+	•	Audit log entry required
+
+⸻
+
+POS-P2-6: Responsive Cart Panel (MF-1)
+	•	Cart panel must collapse on small screens
+	•	Mobile-first behavior:
+	•	Toggle drawer
+	•	Full-screen cart on phones
+	•	Desktop behavior unchanged
+
+⸻
+
+POS-P2-7: Quantity Input Mobile UX (MF-2)
+	•	Replace free-text quantity input with:
+	•	Stepper buttons (+ / –)
+	•	Numeric keypad where typing is needed
+	•	Must work offline
+
+⸻
+
+POS-P2-8: NGN Cash Rounding (NX-5)
+	•	Implement Nigerian cash rounding:
+	•	Round to nearest ₦5 / ₦10 (configurable)
+	•	Applies to CASH only
+	•	Must be visible to cashier before finalization
+
+⸻
+
+🧪 REQUIRED VERIFICATION PER ITEM
+
+After each gap is implemented, you MUST:
+	•	State exact files changed
+	•	Show before vs after behavior
+	•	Confirm offline behavior unchanged
+	•	Confirm demo mode behavior unchanged
+
+⸻
+
+🛑 HARD STOP CONDITIONS
+
+You MUST STOP immediately when:
+	•	All P0 + P1 items above are implemented
+	•	All changes compile and run
+	•	No other gaps are touched
+
+At STOP, produce:
+
+📄 POS-P2 COMPLETION REPORT
+
+Including:
+	1.	Gap-by-gap checklist (P0/P1)
+	2.	Screenshots or UI description (textual OK)
+	3.	Offline behavior confirmation
+	4.	Known deferred gaps (P2/P3)
+	5.	Explicit statement:
+“POS-P2 scope complete. No additional changes made.”
+
+DO NOT proceed to:
+	•	POS-P3
+	•	Receipts
+	•	WhatsApp
+	•	Fintech integrations
+	•	PWA work
+	•	Reporting
+
+⸻
+
+🧠 REMINDER
+
+This wave is about making POS usable in real Nigerian shops, not perfect.
+
+Correct > Complete > Pretty
+
+⸻
+
+🚦 BEGIN POS-P2 IMPLEMENTATION NOW
+
+Stop only when POS-P2 COMPLETION REPORT is produced.

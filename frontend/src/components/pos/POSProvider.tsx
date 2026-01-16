@@ -49,6 +49,15 @@ export interface POSLocation {
   isDefault: boolean
 }
 
+export interface PaymentData {
+  paymentMethod: string
+  transferReference?: string
+  transferImage?: string | null
+  roundingMode?: 'N5' | 'N10' | null
+  roundingAdjustment?: number
+  amountPaid?: number
+}
+
 export interface POSState {
   // Connection & sync
   isOnline: boolean
@@ -90,7 +99,7 @@ interface POSContextValue extends POSState {
   applyDiscount: (itemId: string, discount: number) => void
   setCustomer: (customerId: string, customerName: string) => void
   clearCart: () => void
-  checkout: (paymentMethod: string) => Promise<{ success: boolean; saleId?: string; error?: string }>
+  checkout: (paymentMethod: string, paymentData?: PaymentData) => Promise<{ success: boolean; saleId?: string; error?: string }>
   refreshProducts: () => Promise<void>
   syncOfflineTransactions: () => Promise<void>
 }
@@ -343,7 +352,7 @@ export function POSProvider({ children, tenantId }: POSProviderProps) {
   const calculateCartTotals = useCallback((items: CartItem[]): POSCart => {
     const subtotal = items.reduce((sum, item) => sum + (item.unitPrice * item.quantity), 0)
     const discountTotal = items.reduce((sum, item) => sum + item.discount, 0)
-    const taxRate = 0.08 // 8% tax - would come from Core in production
+    const taxRate = 0.075 // 7.5% VAT - Nigeria standard rate (POS-P2-3)
     const taxTotal = (subtotal - discountTotal) * taxRate
     const grandTotal = subtotal - discountTotal + taxTotal
     
@@ -443,7 +452,7 @@ export function POSProvider({ children, tenantId }: POSProviderProps) {
     }))
   }, [])
 
-  const checkout = useCallback(async (paymentMethod: string) => {
+  const checkout = useCallback(async (paymentMethod: string, paymentData?: PaymentData) => {
     const saleData = {
       tenantId,
       locationId: state.locationId,
@@ -464,6 +473,11 @@ export function POSProvider({ children, tenantId }: POSProviderProps) {
       taxTotal: state.cart.taxTotal,
       grandTotal: state.cart.grandTotal,
       paymentMethod,
+      transferReference: paymentData?.transferReference,
+      transferImage: paymentData?.transferImage,
+      roundingMode: paymentData?.roundingMode,
+      roundingAdjustment: paymentData?.roundingAdjustment,
+      amountPaid: paymentData?.amountPaid || state.cart.grandTotal,
       timestamp: new Date().toISOString()
     }
 
