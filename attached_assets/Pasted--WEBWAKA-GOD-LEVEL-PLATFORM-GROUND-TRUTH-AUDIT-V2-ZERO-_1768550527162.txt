@@ -1,0 +1,298 @@
+
+WEBWAKA — GOD-LEVEL PLATFORM GROUND TRUTH AUDIT (V2 – ZERO OMISSIONS)
+
+⸻
+
+🚨 NON-NEGOTIABLE PREMISE
+
+You are NOT performing:
+	•	A commerce audit
+	•	A POS audit
+	•	A UI audit
+	•	A feature highlights report
+
+You are performing a COMPLETE PLATFORM CENSUS.
+
+This audit must enumerate and classify every single Suite, Module, Capability, Page, API, Service, Model, and UI surface in WebWaka — including those that are:
+	•	Partially implemented
+	•	Demo-only
+	•	Backend-only
+	•	UI-only
+	•	Orphaned
+	•	Disabled
+	•	Unlinked
+	•	Deprecated
+	•	Hidden
+	•	Incomplete
+	•	Unreachable
+	•	Unused
+
+❗ Missing even one suite, module, or platform is a FAILURE.
+
+⸻
+
+🎯 OBJECTIVE
+
+Produce a single source of truth document that answers, with certainty:
+
+“What EXACTLY exists in WebWaka today, and what EXACTLY does not?”
+
+This includes all industries, all suites, all roles, and all public/private surfaces.
+
+⸻
+
+🧠 MANDATORY MENTAL MODEL
+
+You MUST assume nothing.
+
+You MUST discover everything empirically by:
+	•	File inspection
+	•	Route enumeration
+	•	Schema inspection
+	•	Capability flags
+	•	Navigation trees
+	•	Demo seeds
+	•	Feature toggles
+	•	Hardcoded enums
+	•	Folder structure
+	•	Naming conventions
+
+If something looks like it should exist, but does not — that is a finding.
+
+⸻
+
+🧱 STEP 1 — FULL SUITE & PLATFORM ENUMERATION (NO EXCEPTIONS)
+
+You MUST generate a master list of ALL SUITES, including but not limited to:
+
+Commerce & Operations
+	•	POS
+	•	SVM (Single Vendor Marketplace)
+	•	MVM (Multi-Vendor Marketplace)
+	•	ParkHub (Transport / Ticketing)
+	•	Logistics
+	•	Procurement
+	•	Inventory
+	•	Warehouse / Advanced Warehouse
+	•	Accounting
+	•	Billing
+	•	Payments
+	•	Subscriptions
+	•	B2B Commerce
+
+Industry Suites
+	•	Education
+	•	Health
+	•	Hospitality
+	•	Church
+	•	Civic / Government
+	•	Political
+	•	Legal Practice
+	•	Real Estate
+	•	Recruitment
+	•	Project Management
+	•	Agriculture (if present)
+	•	Manufacturing (if present)
+	•	NGO / Non-Profit (if present)
+
+Platform & Infrastructure
+	•	Sites & Funnels
+	•	Page Builder
+	•	Funnel Builder
+	•	Form Builder
+	•	AI / Automation
+	•	Analytics
+	•	Compliance
+	•	HR
+	•	CRM
+	•	Marketing
+	•	Integrations
+	•	Notifications (WhatsApp, SMS, Email)
+	•	Identity & Access
+	•	Partner Platform
+	•	White-label / Branding
+	•	Template System
+
+⚠️ If a folder, schema, enum, capability flag, or route exists for something — it must appear in this list.
+
+⸻
+
+🧱 STEP 2 — FOR EACH SUITE, BUILD A FULL CAPABILITY MATRIX
+
+For EVERY SINGLE SUITE, produce a table with NO SKIPPED COLUMNS:
+
+Capability	Backend Logic Exists	API Exists	DB Models Exist	UI Exists	Publicly Accessible	Menu Linked	Demo Only	Role Access	Status
+
+
+Status must be one of:
+	•	✅ Fully End-to-End
+	•	🟡 Partially Implemented
+	•	🟠 Logic-Only
+	•	🔴 Not Implemented
+	•	🧪 Demo-Only
+
+❗ If you are unsure, you must investigate until you are sure.
+
+⸻
+
+🧱 STEP 3 — ROLE-BASED ENTRY POINT AUDIT (ALL ROLES)
+
+Enumerate every role that exists or is implied, including:
+	•	Super Admin
+	•	Partner
+	•	Partner Staff
+	•	Tenant Admin
+	•	Tenant Staff
+	•	Vendor (MVM)
+	•	Vendor Staff
+	•	POS Agent
+	•	Park Agent
+	•	Park Operator
+	•	Driver
+	•	Customer (Authenticated)
+	•	Customer (Unauthenticated)
+	•	Passenger
+	•	Student
+	•	Parent
+	•	Patient
+	•	Regulator
+	•	Auditor
+
+For EACH role:
+	•	Login entry point
+	•	Dashboard route
+	•	Menu visibility
+	•	What they can ACTUALLY do vs what logic exists
+	•	Missing dashboards
+	•	Missing menus
+	•	Orphaned functionality
+
+⸻
+
+🧱 STEP 4 — PUBLIC SURFACE AUDIT (CRITICAL)
+
+You MUST treat SVM, MVM, AND ParkHub equally as commerce platforms.
+
+Explicitly audit:
+	•	SVM Storefronts
+	•	MVM Marketplaces
+	•	ParkHub Operator Marketplaces
+	•	Public vendor pages
+	•	Public operator pages
+	•	Public product pages
+	•	Public route/schedule pages
+	•	SEO exposure
+	•	URL patterns
+	•	Tenant slug routing
+	•	Domain routing (if any)
+
+If ParkHub does NOT have the same marketplace exposure rigor as SVM/MVM, that MUST be stated clearly.
+
+⸻
+
+🧱 STEP 5 — API VS UI USAGE CROSS-CHECK
+
+For EVERY API group:
+	•	Count routes
+	•	Identify which are called by UI
+	•	Identify orphaned APIs
+	•	Identify demo-only APIs
+	•	Identify APIs blocked by missing UI
+
+No guessing allowed — verify imports and usage.
+
+⸻
+
+🧱 STEP 6 — DATA MODEL REALITY CHECK
+
+For ALL Prisma models:
+	•	Identify models actively used
+	•	Models demo-seeded only
+	•	Models never queried
+	•	Models with no UI
+	•	Models with no API
+	•	Models representing unfinished features
+
+⸻
+
+🧱 STEP 7 — NAVIGATION & DISCOVERABILITY AUDIT
+
+Explicitly list:
+	•	Pages that exist but are not linked anywhere
+	•	Expected pages that do not exist
+	•	Dead routes
+	•	Dev/test pages
+	•	Demo pages
+
+⸻
+
+🧱 STEP 8 — STORE THE TRUTH IN ONE FINAL MATRIX
+
+Produce a FINAL FEATURE TRUTH TABLE:
+
+| Feature | Suite | Intended Purpose | Backend | API | UI | Public | Real Users Can Use | Safe to Ship | Notes |
+
+No marketing language. Only facts.
+
+⸻
+
+🧾 REQUIRED OUTPUTS (MANDATORY)
+
+1️⃣ Master Report
+
+WEBWAKA_GROUND_TRUTH_AUDIT.md
+
+2️⃣ Gap Inventory
+	•	Grouped by Suite
+	•	Grouped by Severity
+	•	Explicitly states WHY each gap exists
+
+3️⃣ No-Assumption Statement
+
+At the end, you MUST include:
+
+“I confirm that this audit was conducted via full codebase inspection, with no assumptions, and that every identifiable suite, module, and capability has been accounted for.”
+
+⸻
+
+🚫 ABSOLUTELY FORBIDDEN
+	•	❌ Skipping “minor” suites
+	•	❌ Grouping unrelated features
+	•	❌ Saying “out of scope”
+	•	❌ Assuming intent
+	•	❌ Inferring future plans
+	•	❌ Collapsing ParkHub into MVM/SVM
+	•	❌ Saying “likely”
+	•	❌ Saying “appears to”
+
+⸻
+
+🛑 STOP CONDITION
+
+Once the report is complete:
+	•	STOP
+	•	DO NOT suggest fixes
+	•	DO NOT propose waves
+	•	DO NOT prioritize
+	•	DO NOT implement anything
+
+This is observation only.
+
+⸻
+
+⚠️ FAILURE CONDITIONS (VERY IMPORTANT)
+
+This execution is considered FAILED if:
+	•	Any suite present in code is missing from the report
+	•	ParkHub is not treated as a first-class marketplace
+	•	Any role is ignored
+	•	Any public surface is skipped
+	•	Any assumption is made without evidence
+
+⸻
+
+🎯 SUCCESS CRITERIA
+
+When complete, the leadership team must be able to say:
+
+“This document tells us, with 100% certainty, what WebWaka truly is today.”
