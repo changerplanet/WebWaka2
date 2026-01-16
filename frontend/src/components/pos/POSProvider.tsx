@@ -1,6 +1,15 @@
 'use client'
 
-import { useState, useEffect, useCallback, createContext, useContext } from 'react'
+import { useState, useEffect, useCallback, createContext, useContext, useRef } from 'react'
+import {
+  initDB,
+  addPendingTransaction,
+  getPendingTransactions,
+  getPendingTransactionCount,
+  removePendingTransaction,
+  isIndexedDBSupported,
+  PendingTransaction
+} from '@/lib/pos-indexed-db'
 
 // ============================================================================
 // TYPES
@@ -215,7 +224,6 @@ export function POSProvider({ children, tenantId }: POSProviderProps) {
   useEffect(() => {
     const session = loadFromStorage<POSSession>(STORAGE_KEYS.SESSION, {})
     const cart = loadFromStorage(STORAGE_KEYS.CART, state.cart)
-    const pending = loadFromStorage<any[]>(STORAGE_KEYS.PENDING_TRANSACTIONS, [])
     
     setState(s => ({
       ...s,
@@ -223,9 +231,50 @@ export function POSProvider({ children, tenantId }: POSProviderProps) {
       locationName: session.locationName || null,
       staffId: session.staffId || null,
       staffName: session.staffName || null,
-      cart,
-      pendingTransactions: pending.length
+      cart
     }))
+    
+    const loadPendingCount = async () => {
+      if (isIndexedDBSupported()) {
+        try {
+          await initDB()
+          
+          // Migrate any pending transactions from localStorage to IndexedDB
+          const localPending = loadFromStorage<any[]>(STORAGE_KEYS.PENDING_TRANSACTIONS, [])
+          if (localPending.length > 0) {
+            console.log('[POS] Migrating', localPending.length, 'pending transactions from localStorage to IndexedDB')
+            for (const txn of localPending) {
+              const pendingTxn: PendingTransaction = {
+                offlineId: txn.offlineId || `migrated-${Date.now()}-${Math.random().toString(36).slice(2)}`,
+                timestamp: txn.timestamp || Date.now(),
+                status: 'pending',
+                retryCount: 0,
+                data: txn
+              }
+              try {
+                await addPendingTransaction(pendingTxn)
+              } catch (e) {
+                console.warn('[POS] Failed to migrate transaction:', e)
+              }
+            }
+            // Clear localStorage after successful migration
+            localStorage.removeItem(STORAGE_KEYS.PENDING_TRANSACTIONS)
+            console.log('[POS] Migration complete, cleared localStorage')
+          }
+          
+          const count = await getPendingTransactionCount()
+          setState(s => ({ ...s, pendingTransactions: count }))
+        } catch (e) {
+          console.warn('IndexedDB not available, falling back to localStorage:', e)
+          const pending = loadFromStorage<any[]>(STORAGE_KEYS.PENDING_TRANSACTIONS, [])
+          setState(s => ({ ...s, pendingTransactions: pending.length }))
+        }
+      } else {
+        const pending = loadFromStorage<any[]>(STORAGE_KEYS.PENDING_TRANSACTIONS, [])
+        setState(s => ({ ...s, pendingTransactions: pending.length }))
+      }
+    }
+    loadPendingCount()
   }, [])
 
   // Save cart to storage on change
@@ -287,10 +336,12 @@ export function POSProvider({ children, tenantId }: POSProviderProps) {
       }
     }
     
-    // Fallback to cached products (which includes demo products)
+    // Fallback to cached products
     const cached = loadFromStorage<POSProduct[]>(STORAGE_KEYS.PRODUCTS_CACHE, [])
+    // Filter out any legacy demo products from cache
+    const realProducts = cached.filter(p => !p.productId.startsWith('demo-'))
     const q = query.toLowerCase()
-    return cached.filter(p => 
+    return realProducts.filter(p => 
       p.name.toLowerCase().includes(q) ||
       p.sku?.toLowerCase().includes(q) ||
       p.barcode?.toLowerCase().includes(q) ||
@@ -393,12 +444,21 @@ export function POSProvider({ children, tenantId }: POSProviderProps) {
   }, [calculateCartTotals])
 
   const applyDiscount = useCallback((itemId: string, discount: number) => {
+    // Validate discount: clamp to 0 if negative or NaN
+    const validDiscount = isNaN(discount) || discount < 0 ? 0 : discount
+    
     setState(s => {
-      const newItems = s.cart.items.map(item => 
-        item.id === itemId 
-          ? { ...item, discount, total: item.quantity * item.unitPrice - discount }
-          : item
-      )
+      const newItems = s.cart.items.map(item => {
+        if (item.id !== itemId) return item
+        // Ensure discount doesn't exceed item total
+        const maxDiscount = item.quantity * item.unitPrice
+        const clampedDiscount = Math.min(validDiscount, maxDiscount)
+        return { 
+          ...item, 
+          discount: clampedDiscount, 
+          total: item.quantity * item.unitPrice - clampedDiscount 
+        }
+      })
       return { ...s, cart: calculateCartTotals(newItems) }
     })
   }, [calculateCartTotals])
@@ -522,11 +582,32 @@ export function POSProvider({ children, tenantId }: POSProviderProps) {
       }
     }
 
-    const pending = loadFromStorage<any[]>(STORAGE_KEYS.PENDING_TRANSACTIONS, [])
-    pending.push({ ...saleData, isOffline: true })
-    saveToStorage(STORAGE_KEYS.PENDING_TRANSACTIONS, pending)
+    if (isIndexedDBSupported()) {
+      try {
+        const pendingTxn: PendingTransaction = {
+          offlineId: idempotencyKey,
+          timestamp: Date.now(),
+          status: 'pending',
+          retryCount: 0,
+          data: saleData
+        }
+        await addPendingTransaction(pendingTxn)
+        const count = await getPendingTransactionCount()
+        setState(s => ({ ...s, pendingTransactions: count }))
+      } catch (e) {
+        console.warn('IndexedDB failed, falling back to localStorage:', e)
+        const pending = loadFromStorage<any[]>(STORAGE_KEYS.PENDING_TRANSACTIONS, [])
+        pending.push({ ...saleData, offlineId: idempotencyKey, isOffline: true })
+        saveToStorage(STORAGE_KEYS.PENDING_TRANSACTIONS, pending)
+        setState(s => ({ ...s, pendingTransactions: pending.length }))
+      }
+    } else {
+      const pending = loadFromStorage<any[]>(STORAGE_KEYS.PENDING_TRANSACTIONS, [])
+      pending.push({ ...saleData, offlineId: idempotencyKey, isOffline: true })
+      saveToStorage(STORAGE_KEYS.PENDING_TRANSACTIONS, pending)
+      setState(s => ({ ...s, pendingTransactions: pending.length }))
+    }
     
-    setState(s => ({ ...s, pendingTransactions: pending.length }))
     clearCart()
     
     return { 
@@ -542,21 +623,53 @@ export function POSProvider({ children, tenantId }: POSProviderProps) {
     
     setState(s => ({ ...s, isSyncing: true }))
     
-    const pending = loadFromStorage<any[]>(STORAGE_KEYS.PENDING_TRANSACTIONS, [])
+    let pendingTransactions: PendingTransaction[] = []
+    let usingIndexedDB = false
+    
+    if (isIndexedDBSupported()) {
+      try {
+        pendingTransactions = await getPendingTransactions()
+        usingIndexedDB = true
+      } catch (e) {
+        console.warn('IndexedDB failed, falling back to localStorage:', e)
+        const localPending = loadFromStorage<any[]>(STORAGE_KEYS.PENDING_TRANSACTIONS, [])
+        pendingTransactions = localPending.map(t => ({
+          offlineId: t.offlineId || `legacy-${Date.now()}`,
+          timestamp: t.timestamp || Date.now(),
+          status: 'pending' as const,
+          retryCount: 0,
+          data: t
+        }))
+      }
+    } else {
+      const localPending = loadFromStorage<any[]>(STORAGE_KEYS.PENDING_TRANSACTIONS, [])
+      pendingTransactions = localPending.map(t => ({
+        offlineId: t.offlineId || `legacy-${Date.now()}`,
+        timestamp: t.timestamp || Date.now(),
+        status: 'pending' as const,
+        retryCount: 0,
+        data: t
+      }))
+    }
+    
     const synced: string[] = []
     const rejected: string[] = []
     
-    for (const transaction of pending) {
+    for (const transaction of pendingTransactions) {
       if (!transaction.offlineId) {
         console.warn('[POS Sync] Rejecting transaction without offlineId')
         rejected.push(transaction.offlineId || 'unknown')
         continue
       }
       
-      const isOnlineOnlyMethod = ONLINE_ONLY_PAYMENT_METHODS.includes(transaction.paymentMethod as any)
+      const txnData = transaction.data || transaction
+      const isOnlineOnlyMethod = ONLINE_ONLY_PAYMENT_METHODS.includes(txnData.paymentMethod as any)
       if (isOnlineOnlyMethod) {
-        console.warn('[POS Sync] Rejecting offline online-only payment:', transaction.offlineId, transaction.paymentMethod)
+        console.warn('[POS Sync] Rejecting offline online-only payment:', transaction.offlineId, txnData.paymentMethod)
         rejected.push(transaction.offlineId)
+        if (usingIndexedDB) {
+          await removePendingTransaction(transaction.offlineId)
+        }
         continue
       }
 
@@ -565,28 +678,39 @@ export function POSProvider({ children, tenantId }: POSProviderProps) {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            ...transaction,
+            ...txnData,
+            offlineId: transaction.offlineId,
             isOffline: true,
           })
         })
         if (res.ok) {
           synced.push(transaction.offlineId)
+          if (usingIndexedDB) {
+            await removePendingTransaction(transaction.offlineId)
+          }
         }
       } catch (e) {
         console.warn('Failed to sync transaction:', transaction.offlineId)
       }
     }
     
-    const remaining = pending.filter(t => 
-      !synced.includes(t.offlineId) && !rejected.includes(t.offlineId)
-    )
-    saveToStorage(STORAGE_KEYS.PENDING_TRANSACTIONS, remaining)
+    let remainingCount = 0
+    if (usingIndexedDB) {
+      remainingCount = await getPendingTransactionCount()
+    } else {
+      const localPending = loadFromStorage<any[]>(STORAGE_KEYS.PENDING_TRANSACTIONS, [])
+      const remaining = localPending.filter(t => 
+        !synced.includes(t.offlineId) && !rejected.includes(t.offlineId)
+      )
+      saveToStorage(STORAGE_KEYS.PENDING_TRANSACTIONS, remaining)
+      remainingCount = remaining.length
+    }
     
     setState(s => ({ 
       ...s, 
       isSyncing: false, 
       lastSyncTime: new Date(),
-      pendingTransactions: remaining.length
+      pendingTransactions: remainingCount
     }))
   }, [tenantId, state.isOnline])
 
