@@ -106,13 +106,16 @@ function POSMainScreen() {
 
   const fetchCurrentShift = async () => {
     try {
-      const res = await fetch(`/api/pos/shifts?locationId=${locationId}&status=OPEN`)
+      const res = await fetch(`/api/pos/shifts?locationId=${locationId}&limit=1`)
       const data = await res.json()
       if (data.success && data.shifts.length > 0) {
         setCurrentShift(data.shifts[0])
+      } else {
+        setCurrentShift(null)
       }
     } catch (err) {
       console.error('Failed to fetch shift:', err)
+      setCurrentShift(null)
     }
   }
 

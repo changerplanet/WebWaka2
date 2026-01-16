@@ -134,8 +134,16 @@ Manager Menu (hamburger icon)
 
 ## Files Modified
 
-1. `frontend/src/app/pos/page.tsx` - Integrated 4 new modal components with permission/state gates
+1. `frontend/src/app/pos/page.tsx` - Integrated 4 new modal components with permission/state gates, fixed shift fetch to return most recent shift regardless of status
 2. `frontend/src/components/pos/TransactionHistory.tsx` - Added VoidSaleModal integration with void button
+
+## Fix Applied
+
+- **Shift State Fetch**: Changed `fetchCurrentShift()` to fetch the most recent shift regardless of status (removed `status=OPEN` filter, added `limit=1`). This ensures:
+  - Shift button always shows the current/most recent shift state
+  - DailyReconciliation menu item appears when shift is RECONCILED
+  - VoidSaleModal correctly blocked when shift is CLOSED
+  - Manager Tools section visible when shift is RECONCILED
 
 ## Integration Rules Followed
 
