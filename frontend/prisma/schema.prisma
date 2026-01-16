@@ -10334,12 +10334,13 @@ model mvm_parent_order {
   internalNotes String?
 
   // Timestamps
-  splitAt      DateTime? // When split into sub-orders
-  completedAt  DateTime?
-  cancelledAt  DateTime?
-  cancelReason String?
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime  @updatedAt
+  splitAt             DateTime? // When split into sub-orders
+  completedAt         DateTime?
+  cancelledAt         DateTime?
+  cancelReason        String?
+  inventoryDeductedAt DateTime? // P0-1 FIX: Track when inventory was deducted (for idempotency)
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
 
   // Relations
   items     mvm_parent_order_item[]
@@ -18983,6 +18984,35 @@ model parkhub_pos_queue {
   @@index([agentId])
   @@index([syncStatus])
   @@index([tripId])
+}
+
+// --------------------------------------------------------------------------
+// P0-2 FIX: PARKHUB SEAT LOCK - Atomic seat reservation
+// --------------------------------------------------------------------------
+model parkhub_seat_lock {
+  id        String   @id @default(cuid())
+  tenantId  String
+  tripId    String
+  seatNumber String
+  
+  // Lock status
+  queueEntryId String?  // Reference to parkhub_pos_queue entry
+  ticketId     String?  // Reference to park_ticket after sync
+  status       String   @default("QUEUED") // QUEUED, SYNCED, RELEASED
+  
+  // P0-2 FIX: TTL for stale lock cleanup (locks expire after 30 minutes)
+  expiresAt DateTime?  // Locks with QUEUED status expire after this time
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  // P0-2 FIX: Unique constraint prevents double-booking at database level
+  // Note: Only enforced for non-RELEASED locks (checked in application logic)
+  @@unique([tripId, seatNumber])
+  @@index([tenantId])
+  @@index([tripId])
+  @@index([queueEntryId])
+  @@index([expiresAt])
 }
 
 // POS Offline Queue - Sync tracking

@@ -1,7 +1,7 @@
 /**
  * Payment Webhook Processor
  * 
- * Wave K.3: Handles payment webhook processing for order finalization
+ * Wave K.3 + B1-Fix: Handles payment webhook processing for order finalization
  * 
  * Canonical flow: PAYMENT_CONFIRMED → ORDER_CONFIRMED → INVENTORY_DEDUCTED
  * 
@@ -12,11 +12,13 @@
  * Key features:
  * - Idempotent processing (duplicate events are safely ignored)
  * - Demo vs live behavior preserved
+ * - P0-1 FIX: Inventory now deducted ONLY on payment success (not at checkout)
  */
 
 import { prisma } from '@/lib/prisma'
 import { TransactionService } from './transaction-service'
 import { OrderSplitService } from '@/lib/mvm/order-split-service'
+import { InventorySyncEngine } from '@/lib/commerce/inventory-engine/inventory-sync-engine'
 import crypto from 'crypto'
 
 export type WebhookEvent = 'charge.success' | 'charge.failed' | 'transfer.success' | 'transfer.failed'
@@ -162,11 +164,12 @@ export class WebhookProcessor {
   /**
    * Finalize order after payment confirmation
    * 
-   * Flow on SUCCESS: PAYMENT_CAPTURED → ORDER_CONFIRMED → sub-orders CONFIRMED
-   * Flow on FAILURE: PAYMENT_FAILED → ORDER_CANCELLED → sub-orders CANCELLED
+   * P0-1 FIX: Inventory deduction now happens HERE, not at checkout.
    * 
-   * NOTE: Inventory was already deducted at checkout (Wave K.2).
-   * On payment failure, inventory is NOT automatically restored (documented gap).
+   * Flow on SUCCESS: PAYMENT_CAPTURED → INVENTORY_DEDUCTED → ORDER_CONFIRMED
+   * Flow on FAILURE: PAYMENT_FAILED → ORDER_CANCELLED (no inventory to restore)
+   * 
+   * This ensures inventory is only permanently deducted after payment is confirmed.
    */
   private static async finalizeOrder(
     orderId: string,
@@ -178,11 +181,15 @@ export class WebhookProcessor {
     if (paymentSuccess) {
       await OrderSplitService.updatePaymentStatus(orderId, 'CAPTURED', paymentRef)
 
+      // P0-1 FIX: Deduct inventory ONLY on confirmed payment
+      await this.deductOrderInventory(orderId)
+
       await prisma.mvm_parent_order.update({
         where: { id: orderId },
         data: {
           status: 'CONFIRMED',
-          paidAt: now
+          paidAt: now,
+          inventoryDeductedAt: now
         }
       })
 
@@ -192,6 +199,9 @@ export class WebhookProcessor {
       })
     } else {
       await OrderSplitService.updatePaymentStatus(orderId, 'FAILED', paymentRef)
+
+      // P0-1 FIX: No inventory restoration needed - inventory was never deducted
+      // (inventory is now deducted only on payment success, not at checkout)
 
       await prisma.mvm_sub_order.updateMany({
         where: { parentOrderId: orderId },
@@ -209,6 +219,54 @@ export class WebhookProcessor {
           cancelledAt: now,
           cancelReason: 'Payment failed'
         }
+      })
+    }
+  }
+
+  /**
+   * P0-1 FIX: Deduct inventory for an order
+   * Called only after payment is confirmed (idempotent via inventoryDeductedAt check)
+   */
+  private static async deductOrderInventory(orderId: string): Promise<void> {
+    const order = await prisma.mvm_parent_order.findUnique({
+      where: { id: orderId },
+      include: {
+        items: {
+          select: {
+            productId: true,
+            variantId: true,
+            quantity: true
+          }
+        }
+      }
+    })
+
+    if (!order) {
+      console.error(`[WebhookProcessor] Order not found for inventory deduction: ${orderId}`)
+      return
+    }
+
+    // Idempotency: skip if already deducted
+    if (order.inventoryDeductedAt) {
+      console.log(`[WebhookProcessor] Inventory already deducted for order ${orderId}, skipping`)
+      return
+    }
+
+    const engine = new InventorySyncEngine(order.tenantId)
+
+    for (const item of order.items) {
+      await engine.processEvent({
+        id: `mvm_payment_${Date.now()}_${item.productId}`,
+        tenantId: order.tenantId,
+        channel: 'MVM',
+        eventType: 'SALE',
+        productId: item.productId,
+        variantId: item.variantId,
+        quantity: -item.quantity,
+        referenceType: 'mvm_order',
+        referenceId: orderId,
+        serverTimestamp: new Date(),
+        isOffline: false
       })
     }
   }

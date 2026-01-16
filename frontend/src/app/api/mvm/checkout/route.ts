@@ -265,7 +265,9 @@ export async function POST(request: NextRequest) {
         )
       }
 
-      await deductInventory(ctx.tenantId, checkoutData.cart.items)
+      // P0-1 FIX: Inventory deduction moved to webhook success handler
+      // Inventory is no longer deducted here - it will be deducted atomically
+      // when payment is confirmed via webhook (see webhook-processor.ts)
 
       await OrderSplitService.updatePaymentStatus(
         orderResult.parentOrderId, 

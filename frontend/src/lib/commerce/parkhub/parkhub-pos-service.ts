@@ -116,16 +116,36 @@ export class ParkHubPosService {
       .map(t => t.seatNumber)
       .filter((s): s is string => s !== null);
 
-    const queuedSeats = await prisma.parkhub_pos_queue.findMany({
+    // P0-2 FIX: Clean up expired and released locks before checking availability
+    const now = new Date();
+    
+    // Delete all released locks for this trip
+    await prisma.parkhub_seat_lock.deleteMany({
       where: {
-        tenantId: this.tenantId,
         tripId,
-        syncStatus: { in: ['QUEUED', 'SYNCING'] },
+        status: 'RELEASED',
       },
-      select: { seatNumbers: true },
+    });
+    
+    // Delete all expired QUEUED locks for this trip
+    await prisma.parkhub_seat_lock.deleteMany({
+      where: {
+        tripId,
+        status: 'QUEUED',
+        expiresAt: { lt: now },
+      },
     });
 
-    const queuedSeatNumbers = queuedSeats.flatMap(q => q.seatNumbers);
+    // P0-2 FIX: Check seat locks table for atomic seat reservations
+    const lockedSeats = await prisma.parkhub_seat_lock.findMany({
+      where: {
+        tripId,
+        status: { in: ['QUEUED', 'SYNCED'] },
+      },
+      select: { seatNumber: true },
+    });
+
+    const lockedSeatNumbers = lockedSeats.map((l: { seatNumber: string }) => l.seatNumber);
 
     const allSeats: Array<{
       number: string;
@@ -138,7 +158,8 @@ export class ParkHubPosService {
       
       if (bookedSeatNumbers.includes(seatNum)) {
         status = 'booked';
-      } else if (queuedSeatNumbers.includes(seatNum)) {
+      } else if (lockedSeatNumbers.includes(seatNum)) {
+        // P0-2 FIX: Use seat_lock table as source of truth for queued seats
         status = 'queued';
       }
       
@@ -155,7 +176,8 @@ export class ParkHubPosService {
     };
   }
 
-  async queueTicket(input: QueueTicketInput): Promise<{ queueId: string }> {
+  async queueTicket(input: QueueTicketInput): Promise<{ queueId: string; conflict?: boolean; conflictSeats?: string[] }> {
+    // Idempotency: check if already queued
     const existing = await prisma.parkhub_pos_queue.findUnique({
       where: {
         tenantId_clientTicketId: {
@@ -169,39 +191,131 @@ export class ParkHubPosService {
       return { queueId: existing.id };
     }
 
-    const queued = await prisma.parkhub_pos_queue.create({
-      data: {
-        tenantId: this.tenantId,
-        parkId: input.parkId,
-        agentId: input.agentId,
-        agentName: input.agentName,
-        clientTicketId: input.clientTicketId,
-        clientTimestamp: input.clientTimestamp,
-        routeId: input.routeId,
-        routeName: input.routeName,
-        tripId: input.tripId,
-        tripNumber: input.tripNumber,
-        seatNumbers: input.seatNumbers,
-        ticketCount: input.ticketCount,
-        passengerName: input.passengerName,
-        passengerPhone: input.passengerPhone,
-        unitPrice: input.unitPrice,
-        subtotal: input.subtotal,
-        discount: input.discount || 0,
-        roundingAmount: input.roundingAmount || 0,
-        roundingMode: input.roundingMode,
-        totalAmount: input.totalAmount,
-        paymentMethod: input.paymentMethod,
-        paymentNotes: input.paymentNotes,
-        bankProofUrl: input.bankProofUrl,
-        syncStatus: 'QUEUED',
-      },
-    });
+    // P0-2 FIX: Use transaction to atomically lock seats and create queue entry
+    try {
+      const result = await prisma.$transaction(async (tx) => {
+        // P0-2 FIX: Clean up all stale locks for the trip before creating new ones
+        const now = new Date();
+        
+        // Delete all RELEASED locks for this trip
+        await tx.parkhub_seat_lock.deleteMany({
+          where: {
+            tripId: input.tripId,
+            status: 'RELEASED',
+          },
+        });
+        
+        // Delete all expired QUEUED locks for this trip
+        await tx.parkhub_seat_lock.deleteMany({
+          where: {
+            tripId: input.tripId,
+            status: 'QUEUED',
+            expiresAt: { lt: now },
+          },
+        });
 
-    return { queueId: queued.id };
+        // Step 1: Attempt to create seat locks for all requested seats
+        // Unique constraint on (tripId, seatNumber) will reject duplicates
+        // P0-2 FIX: Set 30-minute TTL on locks to prevent permanent lockouts
+        const lockExpiresAt = new Date(Date.now() + 30 * 60 * 1000); // 30 minutes
+        const seatLockPromises = input.seatNumbers.map(seatNumber =>
+          tx.parkhub_seat_lock.create({
+            data: {
+              tenantId: this.tenantId,
+              tripId: input.tripId,
+              seatNumber,
+              status: 'QUEUED',
+              expiresAt: lockExpiresAt,
+            },
+          })
+        );
+
+        const seatLocks = await Promise.all(seatLockPromises);
+
+        // Step 2: Create queue entry
+        const queued = await tx.parkhub_pos_queue.create({
+          data: {
+            tenantId: this.tenantId,
+            parkId: input.parkId,
+            agentId: input.agentId,
+            agentName: input.agentName,
+            clientTicketId: input.clientTicketId,
+            clientTimestamp: input.clientTimestamp,
+            routeId: input.routeId,
+            routeName: input.routeName,
+            tripId: input.tripId,
+            tripNumber: input.tripNumber,
+            seatNumbers: input.seatNumbers,
+            ticketCount: input.ticketCount,
+            passengerName: input.passengerName,
+            passengerPhone: input.passengerPhone,
+            unitPrice: input.unitPrice,
+            subtotal: input.subtotal,
+            discount: input.discount || 0,
+            roundingAmount: input.roundingAmount || 0,
+            roundingMode: input.roundingMode,
+            totalAmount: input.totalAmount,
+            paymentMethod: input.paymentMethod,
+            paymentNotes: input.paymentNotes,
+            bankProofUrl: input.bankProofUrl,
+            syncStatus: 'QUEUED',
+          },
+        });
+
+        // Step 3: Link seat locks to queue entry
+        await tx.parkhub_seat_lock.updateMany({
+          where: {
+            id: { in: seatLocks.map((l: { id: string }) => l.id) },
+          },
+          data: {
+            queueEntryId: queued.id,
+          },
+        });
+
+        return { queueId: queued.id };
+      });
+
+      return result;
+    } catch (error) {
+      // P0-2 FIX: Handle unique constraint violation (seat already locked)
+      if (error instanceof Error && error.message.includes('Unique constraint')) {
+        // Find which seats are already locked
+        const existingLocks = await prisma.parkhub_seat_lock.findMany({
+          where: {
+            tripId: input.tripId,
+            seatNumber: { in: input.seatNumbers },
+            status: { in: ['QUEUED', 'SYNCED'] },
+          },
+          select: { seatNumber: true },
+        });
+
+        return {
+          queueId: '',
+          conflict: true,
+          conflictSeats: existingLocks.map((l: { seatNumber: string }) => l.seatNumber),
+        };
+      }
+      throw error;
+    }
   }
 
   async syncQueuedTickets(agentId: string): Promise<SyncResult[]> {
+    // P0-2 FIX: Global cleanup of expired/released locks at start of sync
+    const now = new Date();
+    await prisma.parkhub_seat_lock.deleteMany({
+      where: {
+        tenantId: this.tenantId,
+        status: 'RELEASED',
+      },
+    });
+    await prisma.parkhub_seat_lock.deleteMany({
+      where: {
+        tenantId: this.tenantId,
+        status: 'QUEUED',
+        expiresAt: { lt: now },
+      },
+    });
+
     const queued = await prisma.parkhub_pos_queue.findMany({
       where: {
         tenantId: this.tenantId,
@@ -246,6 +360,17 @@ export class ParkHubPosService {
           ticketIds.push(result.ticket.id);
         }
 
+        // P0-2 FIX: Update seat locks to SYNCED status and link ticket IDs
+        await prisma.parkhub_seat_lock.updateMany({
+          where: {
+            queueEntryId: item.id,
+          },
+          data: {
+            status: 'SYNCED',
+            ticketId: ticketIds[0], // Link to first ticket (for tracking)
+          },
+        });
+
         await prisma.parkhub_pos_queue.update({
           where: { id: item.id },
           data: {
@@ -263,6 +388,13 @@ export class ParkHubPosService {
 
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+
+        // P0-2 FIX: Delete seat locks on sync failure to free seats immediately
+        await prisma.parkhub_seat_lock.deleteMany({
+          where: {
+            queueEntryId: item.id,
+          },
+        });
 
         await prisma.parkhub_pos_queue.update({
           where: { id: item.id },

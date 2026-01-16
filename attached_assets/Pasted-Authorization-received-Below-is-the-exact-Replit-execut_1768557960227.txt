@@ -1,0 +1,198 @@
+Authorization received.
+Below is the exact Replit execution prompt for Wave B1-Fix — Commerce Integrity Remediation, written to enforce surgical scope, zero drift, and hard stop conditions.
+
+⸻
+
+🔧 REPLIT EXECUTION PROMPT
+
+WAVE B1-FIX — COMMERCE INTEGRITY REMEDIATION (P0 ONLY)
+
+⚠️ ABSOLUTE CONTEXT (READ CAREFULLY)
+
+You are executing Wave B1-Fix, which exists only to remediate two P0-critical commerce integrity failures identified in the Wave B1 READ-ONLY Commerce Integrity Analysis.
+
+This is NOT a feature wave.
+This is NOT a refactor wave.
+This is NOT a UX wave.
+This is NOT a payout-enablement wave.
+
+This wave exists solely to make the platform safe for future money movement.
+
+Any deviation = FAILURE.
+
+⸻
+
+🎯 OBJECTIVE (NON-NEGOTIABLE)
+
+Close ONLY the following two P0 blockers:
+
+P0-1: MVM Inventory–Payment Timing Gap
+
+Inventory must never be permanently deducted before confirmed payment.
+
+P0-2: ParkHub Seat Selection Race Condition
+
+Seats must never be double-bookable under concurrency.
+
+⸻
+
+🧱 SCOPE BOUNDARIES (STRICT)
+
+✅ YOU MAY:
+	•	Modify existing commerce logic
+	•	Add minimal supporting logic ONLY where required to close the two gaps
+	•	Add database constraints or fields ONLY if strictly necessary for integrity
+	•	Add inventory restoration paths tied to existing lifecycle events
+	•	Add locking / uniqueness enforcement for seat selection
+
+❌ YOU MUST NOT:
+	•	Add new features
+	•	Add new user-facing UI
+	•	Change checkout UX
+	•	Enable payouts
+	•	Introduce background jobs
+	•	Add cron workers
+	•	Add new APIs unrelated to the fixes
+	•	Refactor unrelated code
+	•	Touch commissions, refunds, wallets, or ledgers beyond necessity
+	•	“Improve” things not explicitly listed below
+
+⸻
+
+🛠️ REQUIRED FIXES (STEP-BY-STEP)
+
+🔴 FIX 1 — MVM INVENTORY–PAYMENT TIMING
+
+Current Broken Behavior
+	•	Inventory is deducted before payment confirmation
+	•	Failed / abandoned payments permanently reduce inventory
+
+REQUIRED REMEDIATION
+Implement ONE of the following safe patterns (choose the least invasive):
+
+Preferred (A):
+	•	Move final inventory deduction to the payment success webhook
+	•	Until payment success:
+	•	Inventory is validated, not deducted
+	•	On webhook success:
+	•	Deduct inventory atomically
+	•	On webhook failure / timeout:
+	•	No inventory change required
+
+Acceptable (B) if A is not feasible:
+	•	Introduce reserved inventory
+	•	Reservation expires or is released on:
+	•	Payment failure
+	•	Order expiration
+	•	Reservation must NOT affect available inventory counts permanently
+
+ALSO REQUIRED
+	•	Restore inventory when:
+	•	Order expires (EXPIRED)
+	•	Payment fails after initiation
+	•	Ensure idempotency:
+	•	Replayed webhooks MUST NOT double-deduct inventory
+
+📌 Verification required:
+Demonstrate (via code comments or tests) that:
+	•	Payment success → inventory deducted once
+	•	Payment failure → inventory unchanged
+	•	Order expiration → inventory restored
+
+⸻
+
+🔴 FIX 2 — PARKHUB SEAT SELECTION RACE CONDITION
+
+Current Broken Behavior
+	•	Seat availability is checked
+	•	Seat is queued later
+	•	No atomic guarantee
+	•	Concurrent agents can select same seat
+
+REQUIRED REMEDIATION
+Implement at least ONE hard integrity guarantee:
+
+Preferred (A):
+	•	Add database-level unique constraint on:
+
+(tripId, seatNumber)
+
+in the queue or ticket table
+
+Acceptable (B):
+	•	Optimistic locking with conflict detection
+	•	On conflict:
+	•	Reject second selection
+	•	Force seat re-selection
+
+ALSO REQUIRED
+	•	Ensure offline-first flow still works
+	•	Ensure sync conflict resolution does NOT create duplicate tickets
+
+📌 Verification required:
+Demonstrate that:
+	•	Two concurrent attempts for same seat → only one succeeds
+	•	Second attempt fails safely with a clear conflict path
+
+⸻
+
+🧪 VERIFICATION REQUIREMENTS (MANDATORY)
+
+At the end of implementation, produce a Wave B1-Fix Verification Report containing:
+	1.	Inventory Flow Proof
+	•	Before payment
+	•	After payment success
+	•	After payment failure
+	•	After order expiration
+	2.	Seat Lock Proof
+	•	Where atomicity is enforced
+	•	Why double booking is now impossible
+	3.	Idempotency Confirmation
+	•	Why retries/webhooks cannot cause duplication
+
+⸻
+
+🛑 HARD STOP CONDITIONS
+
+You MUST STOP immediately when:
+	•	Both P0 issues are fixed
+	•	Verification report is written
+	•	No other gaps are touched
+
+DO NOT:
+	•	Proceed to payouts
+	•	Proceed to Wave C
+	•	Proceed to UX work
+	•	“Clean up” unrelated code
+
+Return control with:
+
+“Wave B1-Fix complete. Ready for verification.”
+
+⸻
+
+❌ FAILURE CONDITIONS (AUTOMATIC REJECTION)
+
+This wave will be rejected if ANY of the following occur:
+	•	Inventory is still deducted before payment confirmation
+	•	Inventory is not restored on expiration/failure
+	•	Seat uniqueness is still enforced only in application logic
+	•	Any unrelated feature is added
+	•	Scope exceeds the two P0 issues
+	•	No clear verification evidence is provided
+
+⸻
+
+📌 FINAL NOTE TO REPLIT
+
+This wave determines whether real money can safely flow through WebWaka.
+
+Precision > speed
+Correctness > cleverness
+Discipline > enthusiasm
+
+Execute only what is required. Stop when done.
+
+⸻
+
+When Replit completes this, we will verify line-by-line before authorizing the next wave.

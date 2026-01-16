@@ -80,6 +80,16 @@ export async function POST(request: NextRequest) {
       bankProofUrl,
     });
 
+    // P0-2 FIX: Handle seat conflict response explicitly
+    if (result.conflict) {
+      return NextResponse.json({
+        success: false,
+        error: 'SEAT_CONFLICT',
+        message: 'One or more selected seats are no longer available',
+        conflictSeats: result.conflictSeats,
+      }, { status: 409 });
+    }
+
     return NextResponse.json({
       success: true,
       queueId: result.queueId,
