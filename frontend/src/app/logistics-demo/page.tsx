@@ -16,6 +16,7 @@
 import { useEffect, useState, Suspense, useCallback } from 'react'
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
+import { DemoGate } from '@/components/demo'
 import {
   Truck,
   Users,
@@ -663,18 +664,20 @@ function LogisticsDemoContent() {
 
 export default function LogisticsDemoPage() {
   return (
-    <DemoModeProvider>
-      <div className="min-h-screen bg-gray-50/50">
-        <div className="container max-w-6xl mx-auto py-8 px-4">
-          <Suspense fallback={
-            <div className="flex items-center justify-center min-h-[400px]">
-              <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
-            </div>
-          }>
-            <LogisticsDemoContent />
-          </Suspense>
+    <DemoGate>
+      <DemoModeProvider>
+        <div className="min-h-screen bg-gray-50/50">
+          <div className="container max-w-6xl mx-auto py-8 px-4">
+            <Suspense fallback={
+              <div className="flex items-center justify-center min-h-[400px]">
+                <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
+              </div>
+            }>
+              <LogisticsDemoContent />
+            </Suspense>
+          </div>
         </div>
-      </div>
-    </DemoModeProvider>
+      </DemoModeProvider>
+    </DemoGate>
   )
 }

@@ -67,7 +67,7 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { DemoModeProvider } from '@/lib/demo/context'
-import { DemoOverlay, QuickStartBanner, StorylineSelector } from '@/components/demo'
+import { DemoOverlay, QuickStartBanner, StorylineSelector, DemoGate } from '@/components/demo'
 import { resolveQuickStart, QuickStartConfig } from '@/lib/demo/quickstart'
 
 // ============================================================================
@@ -1064,18 +1064,20 @@ function CivicDemoContent() {
 
 export default function CivicDemoPage() {
   return (
-    <DemoModeProvider>
-      <div className="min-h-screen bg-gray-50/50">
-        <div className="container max-w-6xl mx-auto py-8 px-4">
-          <Suspense fallback={
-            <div className="flex items-center justify-center min-h-[400px]">
-              <Loader2 className="h-8 w-8 animate-spin text-emerald-600" />
-            </div>
-          }>
-            <CivicDemoContent />
-          </Suspense>
+    <DemoGate>
+      <DemoModeProvider>
+        <div className="min-h-screen bg-gray-50/50">
+          <div className="container max-w-6xl mx-auto py-8 px-4">
+            <Suspense fallback={
+              <div className="flex items-center justify-center min-h-[400px]">
+                <Loader2 className="h-8 w-8 animate-spin text-emerald-600" />
+              </div>
+            }>
+              <CivicDemoContent />
+            </Suspense>
+          </div>
         </div>
-      </div>
-    </DemoModeProvider>
+      </DemoModeProvider>
+    </DemoGate>
   )
 }

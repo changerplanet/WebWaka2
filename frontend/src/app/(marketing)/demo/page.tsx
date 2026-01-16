@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
+import { DemoGate } from '@/components/demo'
 import { 
   Store, Briefcase, Users, Settings, AlertTriangle, ArrowRight, 
   MessageCircle, Play, ChevronRight, Handshake, Building2, Calendar
@@ -36,6 +37,7 @@ export default function DemoPortalPage() {
     : demoTenants.filter(t => t.category === activeCategory)
 
   return (
+    <DemoGate>
     <div className="min-h-screen">
       {/* Hero Section */}
       <section className="relative bg-white overflow-hidden">
@@ -420,5 +422,6 @@ export default function DemoPortalPage() {
         </div>
       </section>
     </div>
+    </DemoGate>
   )
 }

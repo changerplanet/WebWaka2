@@ -2,6 +2,7 @@
 
 import { useState, useEffect, Suspense } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
+import { DemoGate } from '@/components/demo'
 import { 
   Church,
   Users,
@@ -1007,12 +1008,14 @@ function ChurchDemoContent() {
 // Main export with Suspense for useSearchParams
 export default function ChurchDemoPage() {
   return (
-    <Suspense fallback={
-      <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 flex items-center justify-center">
-        <div className="text-indigo-600">Loading Church Suite Demo...</div>
-      </div>
-    }>
-      <ChurchDemoContent />
-    </Suspense>
+    <DemoGate>
+      <Suspense fallback={
+        <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 flex items-center justify-center">
+          <div className="text-indigo-600">Loading Church Suite Demo...</div>
+        </div>
+      }>
+        <ChurchDemoContent />
+      </Suspense>
+    </DemoGate>
   )
 }

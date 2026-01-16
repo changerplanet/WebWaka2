@@ -19,7 +19,7 @@
 
 import { useState, useEffect, useCallback, Suspense } from 'react'
 import { DemoModeProvider } from '@/lib/demo'
-import { DemoOverlay } from '@/components/demo'
+import { DemoOverlay, DemoGate } from '@/components/demo'
 import {
   Warehouse,
   Package,
@@ -703,10 +703,12 @@ function InventoryDemoContent() {
 
 export default function InventoryDemoPage() {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-slate-50 flex items-center justify-center">Loading...</div>}>
-      <DemoModeProvider>
-        <InventoryDemoContent />
-      </DemoModeProvider>
-    </Suspense>
+    <DemoGate>
+      <Suspense fallback={<div className="min-h-screen bg-slate-50 flex items-center justify-center">Loading...</div>}>
+        <DemoModeProvider>
+          <InventoryDemoContent />
+        </DemoModeProvider>
+      </Suspense>
+    </DemoGate>
   )
 }

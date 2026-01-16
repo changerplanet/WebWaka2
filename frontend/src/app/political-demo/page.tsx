@@ -39,7 +39,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Progress } from '@/components/ui/progress'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { QuickStartBanner } from '@/components/demo/QuickStartBanner'
+import { QuickStartBanner, DemoGate } from '@/components/demo'
 import { resolveQuickStart } from '@/lib/demo/quickstart'
 
 // Demo Scenario - Lagos State Assembly Campaign
@@ -213,6 +213,7 @@ export default function PoliticalDemoPage() {
   }
 
   return (
+    <DemoGate>
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-indigo-50">
       {/* Quick Start Banner */}
       {quickStartConfig && (
@@ -853,5 +854,6 @@ export default function PoliticalDemoPage() {
         </Card>
       </div>
     </div>
+    </DemoGate>
   )
 }

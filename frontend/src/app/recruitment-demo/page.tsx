@@ -49,7 +49,7 @@ import {
   TableRow
 } from '@/components/ui/table'
 import { DemoModeProvider, useDemoMode } from '@/lib/demo/context'
-import { DemoOverlay } from '@/components/demo/DemoOverlay'
+import { DemoOverlay, DemoGate } from '@/components/demo'
 import { QuickStartBanner } from '@/components/demo/QuickStartBanner'
 import { resolveQuickStart } from '@/lib/demo/quickstart'
 
@@ -953,8 +953,10 @@ function RecruitmentDemoInner() {
 
 export default function RecruitmentDemoPage() {
   return (
-    <DemoModeProvider>
-      <RecruitmentDemoInner />
-    </DemoModeProvider>
+    <DemoGate>
+      <DemoModeProvider>
+        <RecruitmentDemoInner />
+      </DemoModeProvider>
+    </DemoGate>
   )
 }

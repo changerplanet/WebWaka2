@@ -19,7 +19,7 @@
 
 import { useState, Suspense } from 'react'
 import { DemoModeProvider } from '@/lib/demo'
-import { DemoOverlay } from '@/components/demo'
+import { DemoOverlay, DemoGate } from '@/components/demo'
 import {
   BookOpen,
   FileText,
@@ -814,10 +814,12 @@ function AccountingDemoContent() {
 
 export default function AccountingDemoPage() {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-gray-50 flex items-center justify-center">Loading...</div>}>
-      <DemoModeProvider>
-        <AccountingDemoContent />
-      </DemoModeProvider>
-    </Suspense>
+    <DemoGate>
+      <Suspense fallback={<div className="min-h-screen bg-gray-50 flex items-center justify-center">Loading...</div>}>
+        <DemoModeProvider>
+          <AccountingDemoContent />
+        </DemoModeProvider>
+      </Suspense>
+    </DemoGate>
   )
 }

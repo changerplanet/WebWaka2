@@ -14,6 +14,7 @@
 import { useEffect, useState, Suspense, useCallback } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
+import { DemoGate } from '@/components/demo'
 import {
   GraduationCap,
   Users,
@@ -940,14 +941,16 @@ function EducationDemoWrapper() {
 
 export default function EducationDemoPortal() {
   return (
-    <Suspense fallback={
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <Loader2 className="w-8 h-8 animate-spin text-emerald-600" />
-      </div>
-    }>
-      <DemoModeProvider>
-        <EducationDemoWrapper />
-      </DemoModeProvider>
-    </Suspense>
+    <DemoGate>
+      <Suspense fallback={
+        <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+          <Loader2 className="w-8 h-8 animate-spin text-emerald-600" />
+        </div>
+      }>
+        <DemoModeProvider>
+          <EducationDemoWrapper />
+        </DemoModeProvider>
+      </Suspense>
+    </DemoGate>
   )
 }

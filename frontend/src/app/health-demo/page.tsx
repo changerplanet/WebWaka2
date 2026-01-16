@@ -14,6 +14,7 @@
 import { useEffect, useState, Suspense, useCallback } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
+import { DemoGate } from '@/components/demo'
 import {
   Stethoscope,
   Users,
@@ -1023,14 +1024,16 @@ function HealthDemoWrapper() {
 
 export default function HealthDemoPortal() {
   return (
-    <Suspense fallback={
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <Loader2 className="w-8 h-8 animate-spin text-teal-600" />
-      </div>
-    }>
-      <DemoModeProvider>
-        <HealthDemoWrapper />
-      </DemoModeProvider>
-    </Suspense>
+    <DemoGate>
+      <Suspense fallback={
+        <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+          <Loader2 className="w-8 h-8 animate-spin text-teal-600" />
+        </div>
+      }>
+        <DemoModeProvider>
+          <HealthDemoWrapper />
+        </DemoModeProvider>
+      </Suspense>
+    </DemoGate>
   )
 }
