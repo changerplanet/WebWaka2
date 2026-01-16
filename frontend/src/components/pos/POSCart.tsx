@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { usePOS } from './POSProvider'
-import { Minus, Plus, Trash2, ShoppingCart, User, AlertTriangle, X } from 'lucide-react'
+import { Minus, Plus, Trash2, ShoppingCart, User, AlertTriangle, X, Percent, Tag } from 'lucide-react'
 
 export function POSCart() {
   const { 
@@ -10,14 +10,37 @@ export function POSCart() {
     updateCartItem, 
     removeFromCart, 
     clearCart,
-    setCustomer 
+    setCustomer,
+    applyDiscount
   } = usePOS()
   
   const [showClearConfirm, setShowClearConfirm] = useState(false)
+  const [discountItemId, setDiscountItemId] = useState<string | null>(null)
+  const [discountValue, setDiscountValue] = useState('')
+  const [discountType, setDiscountType] = useState<'fixed' | 'percent'>('percent')
   
   const handleClearCart = () => {
     clearCart()
     setShowClearConfirm(false)
+  }
+  
+  const handleApplyDiscount = () => {
+    if (!discountItemId || !discountValue) return
+    
+    const item = cart.items.find(i => i.id === discountItemId)
+    if (!item) return
+    
+    let discountAmount: number
+    if (discountType === 'percent') {
+      const percent = Math.min(parseFloat(discountValue), 100)
+      discountAmount = (item.unitPrice * item.quantity) * (percent / 100)
+    } else {
+      discountAmount = Math.min(parseFloat(discountValue), item.unitPrice * item.quantity)
+    }
+    
+    applyDiscount(discountItemId, Math.round(discountAmount * 100) / 100)
+    setDiscountItemId(null)
+    setDiscountValue('')
   }
   
   const formatNGN = (amount: number) => {
@@ -100,6 +123,21 @@ export function POSCart() {
               >
                 <Plus className="w-5 h-5" />
               </button>
+              
+              <button
+                onClick={() => {
+                  setDiscountItemId(item.id)
+                  setDiscountValue('')
+                }}
+                className={`w-12 h-12 flex items-center justify-center rounded-xl transition-colors touch-manipulation ${
+                  item.discount > 0 
+                    ? 'bg-emerald-100 text-emerald-600 hover:bg-emerald-200' 
+                    : 'bg-slate-100 text-slate-500 hover:bg-slate-200'
+                }`}
+                aria-label="Apply discount"
+              >
+                <Percent className="w-5 h-5" />
+              </button>
 
               <button
                 onClick={() => removeFromCart(item.id)}
@@ -174,6 +212,106 @@ export function POSCart() {
                 className="flex-1 py-3 px-4 bg-red-600 hover:bg-red-700 text-white rounded-xl font-medium transition-colors touch-manipulation"
               >
                 Clear Cart
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      
+      {discountItemId && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl shadow-xl max-w-sm w-full p-6 animate-in zoom-in-95">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-2">
+                <Tag className="w-5 h-5 text-emerald-600" />
+                <h3 className="text-lg font-semibold text-slate-900">Apply Discount</h3>
+              </div>
+              <button
+                onClick={() => setDiscountItemId(null)}
+                className="p-1 hover:bg-slate-100 rounded-lg"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            
+            {(() => {
+              const item = cart.items.find(i => i.id === discountItemId)
+              if (!item) return null
+              return (
+                <div className="mb-4 p-3 bg-slate-50 rounded-xl">
+                  <p className="font-medium text-slate-900">{item.product.name}</p>
+                  <p className="text-sm text-slate-500">
+                    {item.quantity} x {formatNGN(item.unitPrice)} = {formatNGN(item.unitPrice * item.quantity)}
+                  </p>
+                </div>
+              )
+            })()}
+            
+            <div className="mb-4">
+              <label className="text-sm text-slate-600 mb-2 block">Discount Type</label>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => setDiscountType('percent')}
+                  className={`flex-1 py-2 px-3 rounded-lg font-medium transition-colors ${
+                    discountType === 'percent'
+                      ? 'bg-emerald-100 text-emerald-700 border-2 border-emerald-500'
+                      : 'bg-slate-100 text-slate-600 border-2 border-transparent'
+                  }`}
+                >
+                  <Percent className="w-4 h-4 inline mr-1" />
+                  Percentage
+                </button>
+                <button
+                  onClick={() => setDiscountType('fixed')}
+                  className={`flex-1 py-2 px-3 rounded-lg font-medium transition-colors ${
+                    discountType === 'fixed'
+                      ? 'bg-emerald-100 text-emerald-700 border-2 border-emerald-500'
+                      : 'bg-slate-100 text-slate-600 border-2 border-transparent'
+                  }`}
+                >
+                  ₦ Fixed
+                </button>
+              </div>
+            </div>
+            
+            <div className="mb-6">
+              <label className="text-sm text-slate-600 mb-2 block">
+                {discountType === 'percent' ? 'Discount Percentage' : 'Discount Amount (₦)'}
+              </label>
+              <div className="relative">
+                <input
+                  type="number"
+                  value={discountValue}
+                  onChange={(e) => setDiscountValue(e.target.value)}
+                  placeholder={discountType === 'percent' ? 'e.g. 10' : 'e.g. 500'}
+                  className="w-full px-4 py-3 border border-slate-200 rounded-xl text-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                  min="0"
+                  max={discountType === 'percent' ? '100' : undefined}
+                />
+                <span className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400">
+                  {discountType === 'percent' ? '%' : '₦'}
+                </span>
+              </div>
+            </div>
+            
+            <div className="flex gap-3">
+              <button
+                onClick={() => {
+                  if (discountItemId) {
+                    applyDiscount(discountItemId, 0)
+                  }
+                  setDiscountItemId(null)
+                }}
+                className="flex-1 py-3 px-4 border border-slate-200 rounded-xl text-slate-700 font-medium hover:bg-slate-50 transition-colors touch-manipulation"
+              >
+                Remove Discount
+              </button>
+              <button
+                onClick={handleApplyDiscount}
+                disabled={!discountValue || parseFloat(discountValue) <= 0}
+                className="flex-1 py-3 px-4 bg-emerald-600 hover:bg-emerald-700 disabled:bg-slate-300 text-white rounded-xl font-medium transition-colors touch-manipulation"
+              >
+                Apply
               </button>
             </div>
           </div>

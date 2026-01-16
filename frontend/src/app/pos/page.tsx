@@ -18,7 +18,8 @@ import {
   InventoryAdjustment,
   CashTransfer,
   SupervisorDashboard,
-  DailyReconciliation
+  DailyReconciliation,
+  ShiftBanner
 } from '@/components/pos'
 import { usePOSRole } from './layout'
 import { 
@@ -155,6 +156,14 @@ function POSMainScreen() {
     <div className="h-screen flex flex-col bg-slate-100" data-testid="pos-main-screen">
       {/* Status bar */}
       <POSStatusBar />
+      
+      {/* Shift status banner */}
+      <ShiftBanner
+        shiftStatus={currentShift?.status as 'OPEN' | 'CLOSED' | 'RECONCILED' | null}
+        shiftNumber={currentShift?.shiftNumber}
+        openedAt={currentShift?.openedAt}
+        onOpenShift={() => setShowShiftModal(true)}
+      />
 
       {/* Main content */}
       <div className="flex-1 flex overflow-hidden">
