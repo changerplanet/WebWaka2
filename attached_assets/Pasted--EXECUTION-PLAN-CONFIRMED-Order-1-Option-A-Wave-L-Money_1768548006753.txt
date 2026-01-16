@@ -1,0 +1,419 @@
+✅ EXECUTION PLAN CONFIRMED
+
+Order:
+1️⃣ Option A — Wave L: Money Movement (Refunds & Payouts)
+2️⃣ Option B — Phase H2: Template UI Exposure
+3️⃣ Option C — White-Label Domains & Partner Branding
+
+Each option will be broken into explicit waves, each wave will:
+	•	Have a clear scope
+	•	Declare hard constraints
+	•	Produce a completion report
+	•	Stop for explicit approval
+
+No scope bleed. No silent assumptions.
+
+⸻
+
+🔴 OPTION A — WAVE L
+
+Money Movement (Financial Finalization Layer)
+
+This is where WebWaka transitions from commerce-ready → commercially live.
+
+Why this must come first
+	•	Vendors only trust platforms that pay
+	•	Partners only sell platforms that pay
+	•	Everything else is cosmetic until money moves safely
+
+⸻
+
+🔹 Wave L.1 — Payout Execution (Live Money Movement)
+
+Purpose:
+Execute actual vendor payouts using already-built payout batches.
+
+Scope
+	•	Execute payouts for:
+	•	MVM vendors
+	•	ParkHub operators (if applicable)
+	•	Supported methods:
+	•	Bank Transfer (Paystack / manual)
+	•	Use existing payout batches (Wave F2)
+
+Explicit Constraints
+
+❌ No automation
+❌ No background jobs
+❌ No cron
+❌ No AI
+❌ No silent retries
+
+✅ Partner / Admin triggered only
+✅ Idempotent execution
+✅ Full audit trail
+✅ Demo-safe separation
+
+⸻
+
+🔹 Wave L.2 — Refund Execution (Controlled, Explicit)
+
+Purpose:
+Turn refund intent visibility (Wave K.3) into actual refunds.
+
+Scope
+	•	Execute refunds via payment provider
+	•	Full and partial refunds
+	•	Parent ↔ sub-order aware
+	•	Receipt + proof linkage preserved
+
+Constraints
+
+❌ No auto-refunds
+❌ No background retries
+❌ No customer-triggered refunds
+
+✅ Admin/Partner approval required
+✅ Provider verification required
+✅ Immutable audit logs
+
+⸻
+
+🔹 Wave L.3 — Financial Safety & Reconciliation
+
+Purpose:
+Prevent financial drift.
+
+Scope
+	•	Ledger reconciliation checks
+	•	Payout vs order totals verification
+	•	Refund vs captured payments verification
+	•	Manual discrepancy flags
+
+Constraints
+
+❌ No auto-correction
+❌ No auto-retries
+
+✅ Visibility only
+✅ Read-only reconciliation reports
+
+⸻
+
+🛑 STOP POINT AFTER WAVE L
+Money movement must be explicitly approved before continuing.
+
+⸻
+
+🟠 OPTION B — PHASE H2
+
+Template UI Exposure (Super Admin → Partner)
+
+Backend already exists. This phase exposes it safely.
+
+⸻
+
+🔹 Phase H2.1 — Super Admin Template Dashboard
+
+Route: /admin/templates
+
+Features
+	•	Create / edit templates
+	•	Validate structure
+	•	Publish / deprecate
+	•	Preview template pages
+	•	Demo flag management
+
+Constraints
+
+❌ No partner uploads
+❌ No marketplace
+❌ No payments
+❌ No automation
+
+✅ SUPER_ADMIN only
+✅ Immutable published templates
+
+⸻
+
+🔹 Phase H2.2 — Partner Template Browser
+
+Route: /partner/templates
+
+Features
+	•	Browse published templates
+	•	Preview templates
+	•	Clone into:
+	•	Sites
+	•	Funnels
+	•	Token resolution preview
+
+Constraints
+
+❌ No editing templates
+❌ No uploads
+❌ No monetization
+
+⸻
+
+🛑 STOP POINT AFTER PHASE H2
+
+⸻
+
+🟢 OPTION C — WHITE-LABEL DOMAINS & BRANDING
+
+This is where WebWaka stops looking like WebWaka.
+
+⸻
+
+🔹 Wave W.1 — Subdomain White-Labeling
+
+Examples
+	•	partner.webwaka.app
+	•	tenant.webwaka.app
+
+Scope
+	•	DNS-safe slug resolution
+	•	SSL via platform provider
+	•	TenantContextResolver integration
+	•	SEO-safe canonical URLs
+
+⸻
+
+🔹 Wave W.2 — Custom Domains
+
+Examples
+	•	store.mybusiness.ng
+	•	booking.transportco.com
+
+Scope
+	•	Domain verification
+	•	SSL provisioning
+	•	Domain → tenant mapping
+	•	Safe fallback to platform domain
+
+⸻
+
+🔹 Wave W.3 — Brand Overrides
+
+Scope
+	•	Logo
+	•	Primary color
+	•	Accent color
+	•	Favicon
+	•	Email/SMS sender name
+
+Constraints
+
+❌ No CSS injection
+❌ No JS overrides
+
+✅ Token-based theming only
+
+⸻
+
+🧭 FINAL EXECUTION ORDER (LOCKED)
+	1.	Wave L.1 → L.3 (Money Movement)
+	2.	Phase H2.1 → H2.2 (Template UI)
+	3.	Wave W.1 → W.3 (White-Labeling)
+
+⸻
+
+▶️ NEXT ACTION
+
+Authorization received ✅
+We will now lock scope and issue the Replit execution prompt for Wave L.1 — Payout Execution (Live Money Movement).
+
+Below is the exact prompt to give Replit. It is written to be unambiguous, security-tight, and governance-aligned, and it assumes all prior Waves (F2, K, J) already exist.
+
+⸻
+
+🔐 REPLIT EXECUTION PROMPT
+
+Wave L.1 — Payout Execution (Live Money Movement)
+
+CONTEXT
+
+WebWaka already has:
+	•	Vendor earnings calculation
+	•	Payout batch creation (Wave F2)
+	•	Payout visibility dashboards
+	•	Audit logging infrastructure
+	•	Demo-safe financial separation
+
+What is missing:
+Actual execution of payouts (real money movement).
+
+This wave must ONLY execute payouts that already exist.
+❌ Do NOT invent new payout logic
+❌ Do NOT automate anything
+❌ Do NOT introduce cron, queues, retries, or background jobs
+
+⸻
+
+🎯 OBJECTIVE
+
+Implement live payout execution for MVM vendors (and ParkHub operators if applicable), using existing payout batches, with:
+	•	Explicit human-triggered execution
+	•	Provider-backed transfers (Paystack)
+	•	Full audit trail
+	•	Idempotency guarantees
+	•	Demo-safe behavior
+
+⸻
+
+🧱 SCOPE (STRICT)
+
+1️⃣ Payout Execution Service
+
+Create or extend:
+
+PayoutExecutionService.executeBatch(batchId, executorUserId)
+
+Responsibilities:
+	•	Load payout batch (must exist, status = PENDING)
+	•	Validate:
+	•	Batch not already executed or cancelled
+	•	Vendor bank details exist
+	•	Amount ≥ ₦5,000 threshold
+	•	For each payout in batch:
+	•	Execute transfer via provider
+	•	Capture provider reference
+	•	Update payout status atomically
+	•	Update batch status:
+	•	COMPLETED (all successful)
+	•	PARTIAL_FAILED (some failed)
+	•	FAILED (all failed)
+
+⚠️ Execution must be wrapped in database transactions where applicable.
+
+⸻
+
+2️⃣ Payment Provider Integration
+
+Use existing Paystack configuration.
+
+Required behaviors:
+	•	Bank transfer execution
+	•	Signature / response verification
+	•	Provider error mapping
+
+❌ No retries
+❌ No silent failure handling
+❌ No provider abstraction rewrite
+
+⸻
+
+3️⃣ API Endpoints (New)
+
+Add explicit, admin-triggered endpoints:
+
+POST /api/commerce/payouts/execute-batch
+POST /api/commerce/payouts/cancel-batch
+GET  /api/commerce/payouts/execution-log
+
+Security requirements:
+	•	Session-based authentication
+	•	Role enforcement:
+	•	TENANT_ADMIN
+	•	SUPER_ADMIN
+	•	Tenant isolation enforced via session (no request tenantId)
+
+⸻
+
+4️⃣ Audit & Logging (MANDATORY)
+
+For every payout execution:
+	•	Log:
+	•	Who executed
+	•	When
+	•	Amount
+	•	Vendor
+	•	Provider reference
+	•	Status (SUCCESS / FAILED)
+	•	Persist logs in existing payout log models
+	•	Logs must be immutable
+
+⸻
+
+5️⃣ Demo vs Live Behavior
+	•	Demo tenants:
+	•	❌ NO external API calls
+	•	✅ Simulated “SUCCESS” with fake provider refs
+	•	Clear isDemo = true labeling
+	•	Live tenants:
+	•	✅ Real Paystack calls
+	•	❌ No demo shortcuts
+
+⸻
+
+6️⃣ Idempotency Rules
+	•	Re-executing an already executed batch must:
+	•	❌ NOT duplicate transfers
+	•	✅ Return existing execution result
+	•	Provider duplicate callbacks must be ignored safely
+
+⸻
+
+🚫 EXPLICITLY FORBIDDEN
+	•	❌ Background jobs
+	•	❌ Cron
+	•	❌ Automatic retries
+	•	❌ Auto-payout schedules
+	•	❌ Vendor-triggered payouts
+	•	❌ Wallet balances
+	•	❌ Escrow logic
+	•	❌ New schemas unrelated to execution
+	•	❌ AI / heuristics
+
+⸻
+
+📄 REQUIRED OUTPUTS
+
+1️⃣ Code
+	•	Service layer implementation
+	•	API routes
+	•	Provider integration
+	•	Transaction safety
+
+2️⃣ Tests
+	•	Successful execution
+	•	Partial failure
+	•	Full failure
+	•	Idempotent re-execution
+	•	Demo mode execution
+
+3️⃣ Documentation
+
+Create:
+
+frontend/__tests__/WAVE_L1_COMPLETION_REPORT.md
+
+Include:
+	•	What was implemented
+	•	What was NOT implemented
+	•	Failure scenarios
+	•	Security guarantees
+	•	Known gaps deferred to Wave L.2/L.3
+
+⸻
+
+🛑 STOP CONDITION
+
+After implementation:
+	•	STOP
+	•	DO NOT proceed to refunds
+	•	Await explicit approval
+
+⸻
+
+SUCCESS CRITERIA
+
+Wave L.1 is ONLY complete when:
+	•	Real payouts can be executed manually
+	•	No automation exists
+	•	Audit trail is provably complete
+	•	Demo mode is safe
+	•	No new business logic was invented
+
+⸻

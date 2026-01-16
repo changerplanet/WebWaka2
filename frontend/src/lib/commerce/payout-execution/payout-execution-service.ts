@@ -1,9 +1,20 @@
 /**
  * Payout Execution Service
  * Wave F2: Payout Execution Engine (MVM)
+ * Wave L.1: Live Money Movement Integration
  * 
  * Manual-trigger payout execution for multi-vendor marketplace.
  * NO automation, NO background jobs, partner-triggered only.
+ * 
+ * CONSTRAINTS (Wave L.1):
+ * - NO automation
+ * - NO background jobs
+ * - NO cron
+ * - NO silent retries
+ * - Partner/Admin triggered only
+ * - Idempotent execution
+ * - Full audit trail
+ * - Demo-safe separation
  */
 
 import { prisma } from '@/lib/prisma';
@@ -21,6 +32,7 @@ import {
   PayoutLogEntry,
   PayoutPeriodType,
 } from './types';
+import { PaystackTransferService } from './paystack-transfer-service';
 
 const DEFAULT_MIN_PAYOUT_THRESHOLD = 5000; // ₦5,000
 const CURRENCY = 'NGN';
@@ -327,6 +339,17 @@ export function createPayoutExecutionService(tenantId: string) {
     return formatBatchSummary(updated);
   }
   
+  /**
+   * Execute batch payout (Wave L.1: Live Money Movement)
+   * 
+   * IDEMPOTENCY:
+   * - Already processed payouts are skipped
+   * - Already COMPLETED/FAILED batches return existing result
+   * 
+   * DEMO vs LIVE:
+   * - Demo: Simulated success with fake references
+   * - Live: Real Paystack bank transfers
+   */
   async function processBatch(input: ProcessBatchInput): Promise<BatchSummary> {
     const batch = await prisma.mvm_payout_batch.findUnique({
       where: { id: input.batchId },
@@ -334,6 +357,10 @@ export function createPayoutExecutionService(tenantId: string) {
     
     if (!batch || batch.tenantId !== tenantId) {
       throw new Error('Batch not found');
+    }
+    
+    if (batch.status === 'COMPLETED' || batch.status === 'FAILED') {
+      return formatBatchSummary(batch);
     }
     
     if (batch.status !== 'APPROVED') {
@@ -366,7 +393,10 @@ export function createPayoutExecutionService(tenantId: string) {
       where: {
         tenantId,
         batchId: batch.id,
-        status: 'PENDING',
+        status: { in: ['PENDING', 'PROCESSING'] },
+      },
+      include: {
+        vendor: true,
       },
     });
     
@@ -374,15 +404,31 @@ export function createPayoutExecutionService(tenantId: string) {
     let failCount = 0;
     
     for (const payout of payouts) {
+      if (payout.status === 'COMPLETED') {
+        successCount++;
+        continue;
+      }
+      if (payout.status === 'FAILED') {
+        failCount++;
+        continue;
+      }
+      
+      const now = new Date();
+      
       try {
         if (batch.isDemo) {
+          const demoResult = PaystackTransferService.simulateTransfer(
+            payout.payoutNumber,
+            Math.round(Number(payout.netAmount) * 100)
+          );
+          
           await prisma.mvm_payout.update({
             where: { id: payout.id },
             data: {
               status: 'COMPLETED',
-              processedAt: new Date(),
-              completedAt: new Date(),
-              paymentRef: `DEMO-${Date.now()}`,
+              processedAt: now,
+              completedAt: now,
+              paymentRef: demoResult.transferCode,
             },
           });
           
@@ -390,46 +436,118 @@ export function createPayoutExecutionService(tenantId: string) {
             where: { payoutId: payout.id },
             data: {
               status: 'PAID',
-              paidAt: new Date(),
+              paidAt: now,
+            },
+          });
+          
+          await prisma.mvm_payout_log.create({
+            data: {
+              tenantId,
+              payoutId: payout.id,
+              batchId: batch.id,
+              action: 'PAYOUT_COMPLETED',
+              fromStatus: 'PENDING',
+              toStatus: 'COMPLETED',
+              details: `[DEMO] Payout to ${payout.accountName} simulated: ${demoResult.transferCode}`,
+              performedBy: input.processedBy,
+              performedByName: input.processedByName,
             },
           });
           
           successCount++;
         } else {
-          await prisma.mvm_payout.update({
-            where: { id: payout.id },
-            data: {
-              status: 'COMPLETED',
-              processedAt: new Date(),
-              completedAt: new Date(),
-              paymentRef: `MANUAL-${Date.now()}`,
-            },
-          });
+          if (!payout.bankCode || !payout.accountNumber || !payout.accountName) {
+            throw new Error('Vendor bank details incomplete');
+          }
           
-          await prisma.mvm_commission.updateMany({
-            where: { payoutId: payout.id },
-            data: {
-              status: 'PAID',
-              paidAt: new Date(),
-            },
-          });
-          
-          successCount++;
-        }
-        
-        await prisma.mvm_payout_log.create({
-          data: {
+          const recipientResult = await PaystackTransferService.createRecipient(
             tenantId,
-            payoutId: payout.id,
-            batchId: batch.id,
-            action: 'PAYOUT_COMPLETED',
-            fromStatus: 'PENDING',
-            toStatus: 'COMPLETED',
-            details: `Payout to ${payout.accountName} completed`,
-            performedBy: input.processedBy,
-            performedByName: input.processedByName,
-          },
-        });
+            payout.bankCode,
+            payout.accountNumber,
+            payout.accountName
+          );
+          
+          if (!recipientResult.success || !recipientResult.recipientCode) {
+            throw new Error(recipientResult.error || 'Failed to create transfer recipient');
+          }
+          
+          const amountKobo = Math.round(Number(payout.netAmount) * 100);
+          
+          const transferResult = await PaystackTransferService.initiateTransfer(
+            tenantId,
+            recipientResult.recipientCode,
+            amountKobo,
+            payout.payoutNumber,
+            `Vendor payout: ${payout.vendor.name}`
+          );
+          
+          if (!transferResult.success) {
+            throw new Error(transferResult.errorMessage || 'Transfer failed');
+          }
+          
+          if (transferResult.status === 'SUCCESS') {
+            await prisma.mvm_payout.update({
+              where: { id: payout.id },
+              data: {
+                status: 'COMPLETED',
+                processedAt: now,
+                completedAt: now,
+                paymentRef: transferResult.transferCode,
+              },
+            });
+            
+            await prisma.mvm_commission.updateMany({
+              where: { payoutId: payout.id },
+              data: {
+                status: 'PAID',
+                paidAt: now,
+              },
+            });
+            
+            await prisma.mvm_payout_log.create({
+              data: {
+                tenantId,
+                payoutId: payout.id,
+                batchId: batch.id,
+                action: 'PAYOUT_COMPLETED',
+                fromStatus: 'PENDING',
+                toStatus: 'COMPLETED',
+                details: `Paystack transfer completed: ${transferResult.transferCode}`,
+                performedBy: input.processedBy,
+                performedByName: input.processedByName,
+              },
+            });
+            
+            successCount++;
+          } else if (transferResult.status === 'PENDING') {
+            await prisma.mvm_payout.update({
+              where: { id: payout.id },
+              data: {
+                status: 'PROCESSING',
+                processedAt: now,
+                paymentRef: transferResult.transferCode,
+              },
+            });
+            
+            await prisma.mvm_payout_log.create({
+              data: {
+                tenantId,
+                payoutId: payout.id,
+                batchId: batch.id,
+                action: 'PAYOUT_PROCESSING',
+                fromStatus: 'PENDING',
+                toStatus: 'PROCESSING',
+                details: `Paystack transfer pending: ${transferResult.transferCode}`,
+                performedBy: input.processedBy,
+                performedByName: input.processedByName,
+              },
+            });
+            
+            successCount++;
+          } else {
+            throw new Error(transferResult.errorMessage || 'Transfer failed');
+          }
+        }
         
       } catch (error) {
         failCount++;
@@ -438,7 +556,7 @@ export function createPayoutExecutionService(tenantId: string) {
           where: { id: payout.id },
           data: {
             status: 'FAILED',
-            failedAt: new Date(),
+            failedAt: now,
             failureReason: error instanceof Error ? error.message : 'Unknown error',
           },
         });
@@ -478,7 +596,7 @@ export function createPayoutExecutionService(tenantId: string) {
         action: finalStatus === 'COMPLETED' ? 'BATCH_COMPLETED' : 'BATCH_FAILED',
         fromStatus: 'PROCESSING',
         toStatus: finalStatus,
-        details: `${successCount} succeeded, ${failCount} failed`,
+        details: `${successCount} succeeded, ${failCount} failed${batch.isDemo ? ' [DEMO]' : ''}`,
         performedBy: input.processedBy,
         performedByName: input.processedByName,
       },
