@@ -6,6 +6,8 @@ import type {
   ReceiptDelivery,
   GeneratePosReceiptInput,
   GenerateParkHubReceiptInput,
+  GenerateSvmReceiptInput,
+  GenerateMvmReceiptInput,
   DeliverReceiptInput,
   ThermalPrintData,
   ReceiptVerification,
@@ -294,6 +296,166 @@ export function createReceiptService(tenantId: string) {
     return mapDbReceiptToReceipt(updatedReceipt, items);
   }
   
+  /**
+   * Wave C1: Generate receipt for SVM storefront order
+   * Called on payment success (PAID/CAPTURED)
+   */
+  async function generateSvmReceipt(input: GenerateSvmReceiptInput): Promise<Receipt> {
+    const receiptNumber = generateReceiptNumber('SVM');
+    
+    const receipt = await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
+      const newReceipt = await tx.receipt.create({
+        data: {
+          tenantId: input.tenantId,
+          receiptNumber,
+          receiptType: 'SVM_ORDER',
+          syncStatus: 'SYNCED',
+          syncedAt: new Date(),
+          sourceType: 'SVM_ORDER',
+          sourceId: input.orderId,
+          businessName: input.business.businessName,
+          businessAddress: input.business.businessAddress,
+          businessPhone: input.business.businessPhone,
+          businessTaxId: input.business.businessTaxId,
+          transactionDate: input.transactionDate || new Date(),
+          currency: 'NGN',
+          subtotal: input.subtotal,
+          discountTotal: input.discountTotal || 0,
+          taxTotal: input.taxTotal || 0,
+          grandTotal: input.grandTotal,
+          paymentMethod: input.payment.paymentMethod,
+          paymentReference: input.payment.paymentReference,
+          customerName: input.customer?.customerName,
+          customerPhone: input.customer?.customerPhone,
+          customerEmail: input.customer?.customerEmail,
+          staffId: 'SYSTEM',
+          staffName: 'Online Order',
+          isDemo: input.isDemo || false,
+          isVerified: true,
+          notes: input.notes,
+        },
+      });
+      
+      await tx.receipt.update({
+        where: { id: newReceipt.id },
+        data: {
+          verificationQrCode: buildVerificationUrl(newReceipt.id),
+        },
+      });
+      
+      if (input.items.length > 0) {
+        await tx.receipt_item.createMany({
+          data: input.items.map((item, index) => ({
+            receiptId: newReceipt.id,
+            itemType: item.itemType,
+            productId: item.productId,
+            description: item.description,
+            sku: item.sku,
+            quantity: item.quantity,
+            unitPrice: item.unitPrice,
+            discount: item.discount || 0,
+            tax: item.tax || 0,
+            lineTotal: item.lineTotal,
+            displayOrder: index,
+          })),
+        });
+      }
+      
+      return newReceipt;
+    });
+    
+    const items = await prisma.receipt_item.findMany({
+      where: { receiptId: receipt.id },
+      orderBy: { displayOrder: 'asc' },
+    });
+    
+    const updatedReceipt = await prisma.receipt.findUnique({
+      where: { id: receipt.id },
+    });
+    
+    return mapDbReceiptToReceipt(updatedReceipt, items);
+  }
+  
+  /**
+   * Wave C1: Generate receipt for MVM marketplace parent order
+   * Called on payment success (PAID/CAPTURED)
+   */
+  async function generateMvmReceipt(input: GenerateMvmReceiptInput): Promise<Receipt> {
+    const receiptNumber = generateReceiptNumber('MVM');
+    
+    const receipt = await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
+      const newReceipt = await tx.receipt.create({
+        data: {
+          tenantId: input.tenantId,
+          receiptNumber,
+          receiptType: 'MVM_ORDER',
+          syncStatus: 'SYNCED',
+          syncedAt: new Date(),
+          sourceType: 'MVM_ORDER',
+          sourceId: input.orderId,
+          businessName: input.business.businessName,
+          businessAddress: input.business.businessAddress,
+          businessPhone: input.business.businessPhone,
+          businessTaxId: input.business.businessTaxId,
+          transactionDate: input.transactionDate || new Date(),
+          currency: 'NGN',
+          subtotal: input.subtotal,
+          discountTotal: input.discountTotal || 0,
+          taxTotal: input.taxTotal || 0,
+          grandTotal: input.grandTotal,
+          paymentMethod: input.payment.paymentMethod,
+          paymentReference: input.payment.paymentReference,
+          customerName: input.customer?.customerName,
+          customerPhone: input.customer?.customerPhone,
+          customerEmail: input.customer?.customerEmail,
+          staffId: 'SYSTEM',
+          staffName: 'Marketplace Order',
+          isDemo: input.isDemo || false,
+          isVerified: true,
+          notes: input.notes,
+        },
+      });
+      
+      await tx.receipt.update({
+        where: { id: newReceipt.id },
+        data: {
+          verificationQrCode: buildVerificationUrl(newReceipt.id),
+        },
+      });
+      
+      if (input.items.length > 0) {
+        await tx.receipt_item.createMany({
+          data: input.items.map((item, index) => ({
+            receiptId: newReceipt.id,
+            itemType: item.itemType,
+            productId: item.productId,
+            description: item.description,
+            sku: item.sku,
+            quantity: item.quantity,
+            unitPrice: item.unitPrice,
+            discount: item.discount || 0,
+            tax: item.tax || 0,
+            lineTotal: item.lineTotal,
+            displayOrder: index,
+          })),
+        });
+      }
+      
+      return newReceipt;
+    });
+    
+    const items = await prisma.receipt_item.findMany({
+      where: { receiptId: receipt.id },
+      orderBy: { displayOrder: 'asc' },
+    });
+    
+    const updatedReceipt = await prisma.receipt.findUnique({
+      where: { id: receipt.id },
+    });
+    
+    return mapDbReceiptToReceipt(updatedReceipt, items);
+  }
+  
   async function getReceipt(receiptId: string): Promise<Receipt | null> {
     const receipt = await prisma.receipt.findFirst({
       where: {
@@ -528,6 +690,8 @@ export function createReceiptService(tenantId: string) {
   return {
     generatePosReceipt,
     generateParkHubReceipt,
+    generateSvmReceipt,
+    generateMvmReceipt,
     getReceipt,
     getReceiptByNumber,
     getReceiptsBySource,

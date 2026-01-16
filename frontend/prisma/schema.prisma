@@ -5353,6 +5353,7 @@ model svm_orders {
   createdAt         DateTime             @default(now())
   updatedAt         DateTime
   cancelledAt       DateTime?
+  receiptId         String?              // Wave C1: Link to receipt (written once on payment success)
   svm_order_items   svm_order_items[]
 
   @@index([createdAt])
@@ -5362,6 +5363,7 @@ model svm_orders {
   @@index([paymentStatus])
   @@index([status])
   @@index([tenantId])
+  @@index([receiptId])
 }
 
 model svm_promotion_usages {
@@ -10342,6 +10344,9 @@ model mvm_parent_order {
   createdAt           DateTime  @default(now())
   updatedAt           DateTime  @updatedAt
 
+  // Wave C1: Receipt linkage (written once on payment success)
+  receiptId           String?
+
   // Relations
   items     mvm_parent_order_item[]
   subOrders mvm_sub_order[]
@@ -10353,6 +10358,7 @@ model mvm_parent_order {
   @@index([status])
   @@index([paymentStatus])
   @@index([createdAt])
+  @@index([receiptId])
 }
 
 // --------------------------------------------------------------------------
@@ -19349,6 +19355,8 @@ model payment_verification_queue {
 enum ReceiptType {
   POS_SALE        // Retail POS sale
   PARKHUB_TICKET  // ParkHub ticket sale
+  SVM_ORDER       // SVM storefront order (Wave C1)
+  MVM_ORDER       // MVM marketplace parent order (Wave C1)
   REFUND          // Refund receipt
   VOID            // Void receipt
 }

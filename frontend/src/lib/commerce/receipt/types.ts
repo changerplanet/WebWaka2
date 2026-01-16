@@ -1,4 +1,4 @@
-export type ReceiptType = 'POS_SALE' | 'PARKHUB_TICKET' | 'REFUND' | 'VOID';
+export type ReceiptType = 'POS_SALE' | 'PARKHUB_TICKET' | 'SVM_ORDER' | 'MVM_ORDER' | 'REFUND' | 'VOID';
 
 export type ReceiptSyncStatus = 'SYNCED' | 'PENDING_SYNC' | 'SYNC_FAILED';
 
@@ -95,6 +95,44 @@ export interface GenerateParkHubReceiptInput {
   transactionDate?: Date;
   isDemo?: boolean;
   offlineId?: string;
+  notes?: string;
+}
+
+// Wave C1: SVM Order Receipt Input
+export interface GenerateSvmReceiptInput {
+  tenantId: string;
+  orderId: string;
+  orderNumber: string;
+  business: ReceiptBusinessInfo;
+  customer?: ReceiptCustomerInfo;
+  items: ReceiptItem[];
+  subtotal: number;
+  discountTotal?: number;
+  taxTotal?: number;
+  shippingTotal?: number;
+  grandTotal: number;
+  payment: ReceiptPaymentInfo;
+  transactionDate?: Date;
+  isDemo?: boolean;
+  notes?: string;
+}
+
+// Wave C1: MVM Parent Order Receipt Input
+export interface GenerateMvmReceiptInput {
+  tenantId: string;
+  orderId: string;
+  orderNumber: string;
+  business: ReceiptBusinessInfo;
+  customer?: ReceiptCustomerInfo;
+  items: ReceiptItem[];
+  subtotal: number;
+  discountTotal?: number;
+  taxTotal?: number;
+  shippingTotal?: number;
+  grandTotal: number;
+  payment: ReceiptPaymentInfo;
+  transactionDate?: Date;
+  isDemo?: boolean;
   notes?: string;
 }
 

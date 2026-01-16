@@ -70,6 +70,7 @@
 
 import { prisma } from '../prisma'
 import { TenantStatus } from '@prisma/client'
+import { getSvmOrderReceipt, getMvmOrderReceipt } from '../commerce/receipt/order-receipt-service'
 
 export type OrderType = 'SVM' | 'MVM' | 'PARKHUB'
 
@@ -284,6 +285,13 @@ export async function resolveCustomerOrders(
   })
 
   for (const order of svmOrders) {
+    // Wave C1: Check for linked receipt
+    const orderExt = order as typeof order & { receiptId?: string | null }
+    const receiptId = orderExt.receiptId
+    const receiptUrl = receiptId 
+      ? `/${tenantSlug}/orders/${order.orderNumber}/receipt` 
+      : null
+
     orders.push({
       id: order.id,
       tenantId: order.tenantId,
@@ -311,7 +319,7 @@ export async function resolveCustomerOrders(
       trackingNumber: order.trackingNumber,
       trackingUrl: order.trackingUrl,
       shippingAddress: order.shippingAddress,
-      receiptUrl: null,
+      receiptUrl,
       verificationUrl: null,
     })
   }
@@ -330,6 +338,13 @@ export async function resolveCustomerOrders(
   })
 
   for (const order of mvmOrders) {
+    // Wave C1: Check for linked receipt
+    const orderExt = order as typeof order & { receiptId?: string | null }
+    const receiptId = orderExt.receiptId
+    const receiptUrl = receiptId 
+      ? `/${tenantSlug}/orders/${order.orderNumber}/receipt` 
+      : null
+
     orders.push({
       id: order.id,
       tenantId: order.tenantId,
@@ -357,7 +372,7 @@ export async function resolveCustomerOrders(
       trackingNumber: null,
       trackingUrl: null,
       shippingAddress: order.shippingAddress,
-      receiptUrl: null,
+      receiptUrl,
       verificationUrl: null,
     })
   }

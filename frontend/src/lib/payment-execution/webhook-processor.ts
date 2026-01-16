@@ -19,6 +19,7 @@ import { prisma } from '@/lib/prisma'
 import { TransactionService } from './transaction-service'
 import { OrderSplitService } from '@/lib/mvm/order-split-service'
 import { InventorySyncEngine } from '@/lib/commerce/inventory-engine/inventory-sync-engine'
+import { generateMvmOrderReceipt, generateSvmOrderReceipt } from '@/lib/commerce/receipt/order-receipt-service'
 import crypto from 'crypto'
 
 export type WebhookEvent = 'charge.success' | 'charge.failed' | 'transfer.success' | 'transfer.failed'
@@ -145,7 +146,14 @@ export class WebhookProcessor {
     })
 
     if (transaction.sourceType === 'mvm_order' && transaction.sourceId) {
-      await this.finalizeOrder(
+      await this.finalizeMvmOrder(
+        transaction.sourceId,
+        newStatus === 'SUCCESS',
+        reference
+      )
+    } else if (transaction.sourceType === 'svm_order' && transaction.sourceId) {
+      // Wave C1: Handle SVM order payment confirmation with receipt generation
+      await this.finalizeSvmOrder(
         transaction.sourceId,
         newStatus === 'SUCCESS',
         reference
@@ -162,7 +170,65 @@ export class WebhookProcessor {
   }
 
   /**
-   * Finalize order after payment confirmation
+   * Wave C1: Finalize SVM order after payment confirmation
+   * 
+   * Flow on SUCCESS: PAYMENT_CAPTURED → RECEIPT_GENERATED → ORDER_CONFIRMED
+   * Flow on FAILURE: PAYMENT_FAILED → ORDER_CANCELLED
+   */
+  private static async finalizeSvmOrder(
+    orderId: string,
+    paymentSuccess: boolean,
+    paymentRef: string
+  ): Promise<void> {
+    const now = new Date()
+
+    if (paymentSuccess) {
+      // Update SVM order payment status (using CAPTURED per SvmPaymentStatus enum)
+      await prisma.$executeRaw`
+        UPDATE svm_orders 
+        SET "paymentStatus" = 'CAPTURED',
+            "paymentRef" = ${paymentRef},
+            "paidAt" = ${now},
+            "status" = 'CONFIRMED',
+            "updatedAt" = ${now}
+        WHERE id = ${orderId}
+      `
+
+      console.log(`[WebhookProcessor] SVM order ${orderId} payment confirmed`)
+
+      // Generate receipt for SVM order
+      const order = await prisma.svm_orders.findUnique({
+        where: { id: orderId },
+        select: { tenantId: true }
+      })
+      
+      if (order) {
+        const isDemo = await this.isOrderDemo(order.tenantId)
+        const receiptResult = await generateSvmOrderReceipt(orderId, isDemo)
+        if (receiptResult.success) {
+          console.log(`[WebhookProcessor] Generated receipt ${receiptResult.receiptId} for SVM order ${orderId}`)
+        } else {
+          console.error(`[WebhookProcessor] Failed to generate receipt for SVM order ${orderId}: ${receiptResult.error}`)
+        }
+      }
+    } else {
+      // Update SVM order payment status to failed
+      await prisma.$executeRaw`
+        UPDATE svm_orders 
+        SET "paymentStatus" = 'FAILED',
+            "status" = 'CANCELLED',
+            "cancelledAt" = ${now},
+            "cancelReason" = 'Payment failed',
+            "updatedAt" = ${now}
+        WHERE id = ${orderId}
+      `
+
+      console.log(`[WebhookProcessor] SVM order ${orderId} payment failed`)
+    }
+  }
+
+  /**
+   * Finalize MVM order after payment confirmation
    * 
    * P0-1 FIX: Inventory deduction now happens HERE, not at checkout.
    * 
@@ -171,7 +237,7 @@ export class WebhookProcessor {
    * 
    * This ensures inventory is only permanently deducted after payment is confirmed.
    */
-  private static async finalizeOrder(
+  private static async finalizeMvmOrder(
     orderId: string,
     paymentSuccess: boolean,
     paymentRef: string
@@ -197,6 +263,21 @@ export class WebhookProcessor {
         where: { parentOrderId: orderId, status: 'PENDING' },
         data: { status: 'CONFIRMED' }
       })
+
+      // Wave C1: Generate receipt for MVM order on payment success
+      const order = await prisma.mvm_parent_order.findUnique({
+        where: { id: orderId },
+        select: { tenantId: true }
+      })
+      if (order) {
+        const isDemo = await this.isOrderDemo(order.tenantId)
+        const receiptResult = await generateMvmOrderReceipt(orderId, isDemo)
+        if (receiptResult.success) {
+          console.log(`[WebhookProcessor] Generated receipt ${receiptResult.receiptId} for MVM order ${orderId}`)
+        } else {
+          console.error(`[WebhookProcessor] Failed to generate receipt for MVM order ${orderId}: ${receiptResult.error}`)
+        }
+      }
     } else {
       await OrderSplitService.updatePaymentStatus(orderId, 'FAILED', paymentRef)
 
@@ -268,6 +349,21 @@ export class WebhookProcessor {
         serverTimestamp: new Date(),
         isOffline: false
       })
+    }
+  }
+
+  /**
+   * Wave C1: Check if tenant is in demo mode
+   */
+  private static async isOrderDemo(tenantId: string): Promise<boolean> {
+    try {
+      const tenant = await prisma.tenant.findUnique({
+        where: { id: tenantId },
+        select: { status: true }
+      })
+      return tenant?.status === 'DEMO'
+    } catch {
+      return false
     }
   }
 

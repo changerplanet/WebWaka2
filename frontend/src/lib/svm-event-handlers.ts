@@ -24,6 +24,7 @@ import {
   isSVMEvent,
   type EventHandlerResult
 } from './events/eventTypes'
+import { generateSvmOrderReceipt } from './commerce/receipt/order-receipt-service'
 
 // ============================================================================
 // TYPES (Re-exports for backwards compatibility)
@@ -456,5 +457,58 @@ export async function getSVMEntitlements(tenantId: string): Promise<{
   } catch (error) {
     console.error('[SVM] Error fetching entitlements:', error)
     return null
+  }
+}
+
+// ============================================================================
+// WAVE C1: SVM PAYMENT CONFIRMATION WITH RECEIPT GENERATION
+// ============================================================================
+
+/**
+ * Handle SVM order payment confirmation
+ * Called when payment is successfully captured for an SVM order
+ * Generates receipt automatically on payment success
+ * 
+ * @param orderId - The SVM order ID
+ * @param paymentRef - Payment reference from the provider
+ * @param isDemo - Whether this is a demo tenant order
+ * @returns Result of the payment confirmation and receipt generation
+ */
+export async function confirmSvmOrderPayment(
+  orderId: string,
+  paymentRef: string,
+  isDemo: boolean = false
+): Promise<EventHandlerResult & { receiptId?: string }> {
+  try {
+    // Update order payment status (using CAPTURED per SvmPaymentStatus enum)
+    await prisma.$executeRaw`
+      UPDATE svm_orders 
+      SET "paymentStatus" = 'CAPTURED', 
+          "paymentRef" = ${paymentRef},
+          "paidAt" = ${new Date()},
+          "status" = 'CONFIRMED',
+          "updatedAt" = ${new Date()}
+      WHERE id = ${orderId}
+    `
+
+    console.log(`[SVM] Payment confirmed for order ${orderId} with ref ${paymentRef}`)
+
+    // Wave C1: Generate receipt on payment success
+    const receiptResult = await generateSvmOrderReceipt(orderId, isDemo)
+    
+    if (receiptResult.success) {
+      console.log(`[SVM] Generated receipt ${receiptResult.receiptId} for order ${orderId}`)
+      return { success: true, receiptId: receiptResult.receiptId }
+    } else {
+      console.error(`[SVM] Failed to generate receipt for order ${orderId}: ${receiptResult.error}`)
+      // Payment was confirmed successfully even if receipt failed
+      return { success: true }
+    }
+  } catch (error) {
+    console.error('[SVM] Error confirming payment:', error)
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Unknown error'
+    }
   }
 }

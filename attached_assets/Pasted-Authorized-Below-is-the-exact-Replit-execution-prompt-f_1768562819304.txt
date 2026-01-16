@@ -1,0 +1,197 @@
+Authorized. Below is the exact Replit execution prompt for Wave C1 — Receipt Integration (SVM + MVM + ParkHub Parity), written to enforce strict scope control, schema discipline, and a hard stop for verification.
+
+This prompt is intentionally explicit and non-negotiable.
+
+⸻
+
+🔴 REPLIT EXECUTION PROMPT
+
+WAVE C1 — RECEIPT INTEGRATION (SVM + MVM + PARKHUB PARITY)
+
+🔒 WAVE CLASSIFICATION
+	•	Wave: C1
+	•	Band: Commerce Completeness (Revenue-Critical)
+	•	Mode: IMPLEMENTATION (Schema + Logic + UI where required)
+	•	Stop Discipline: HARD STOP REQUIRED AFTER COMPLETION
+	•	Verification Mandatory: YES
+
+⸻
+
+🎯 OBJECTIVE (NON-NEGOTIABLE)
+
+Bring full receipt parity to SVM and MVM, matching the existing POS/ParkHub receipt system, while preserving backward compatibility and tenant isolation.
+
+After this wave:
+	•	Every paid SVM order must have a verifiable receipt
+	•	Every paid MVM parent order must have a verifiable receipt
+	•	ParkHub receipts must be mandatory where payment exists
+	•	Receipts must support:
+	•	Verification
+	•	WhatsApp / Email delivery
+	•	Canonical proof traversal
+
+⸻
+
+🚫 ABSOLUTE CONSTRAINTS
+
+Replit MUST NOT:
+	1.	Modify or weaken tenant isolation
+	2.	Introduce background jobs beyond receipt delivery already used by POS/ParkHub
+	3.	Change payment execution logic
+	4.	Alter order state machines
+	5.	Add audit trails or immutability (reserved for Wave D)
+	6.	Invent new receipt concepts outside the existing receipt system
+	7.	Auto-generate receipts for unpaid orders
+	8.	Proceed to another wave after completion
+
+⸻
+
+🧱 SCOPE OF WORK (REQUIRED)
+
+1️⃣ SCHEMA EXTENSIONS (REQUIRED)
+
+Receipt Source Types
+	•	Extend receipt system to support:
+	•	SVM_ORDER
+	•	MVM_PARENT_ORDER
+
+Order Linkage
+Add nullable foreign keys:
+	•	svm_orders.receiptId
+	•	mvm_parent_order.receiptId
+
+Rules:
+	•	Receipt IDs are written once (on payment success)
+	•	No retroactive backfills in this wave
+
+⸻
+
+2️⃣ RECEIPT GENERATION LOGIC
+
+Trigger Conditions
+	•	Receipt is generated ONLY WHEN:
+	•	Payment status transitions to PAID / CAPTURED
+	•	OR COD order is confirmed (explicit path)
+
+Systems:
+
+System	Receipt Required	Notes
+SVM	✅ Mandatory	New
+MVM	✅ Mandatory (parent order only)	Vendors rely on parent receipt
+ParkHub	✅ Mandatory when payment exists	Enforce consistency
+
+
+⸻
+
+3️⃣ RECEIPT CONTENT PARITY
+
+Receipts must include:
+	•	Receipt number (existing format)
+	•	Order reference
+	•	Tenant branding
+	•	Customer name
+	•	Items summary
+	•	Total amount
+	•	Payment method
+	•	Timestamp
+	•	Verification QR / link
+
+Do NOT invent new fields.
+
+⸻
+
+4️⃣ DELIVERY CHANNELS
+
+Use existing receipt delivery infrastructure:
+	•	WhatsApp (if phone exists)
+	•	Email (if email exists)
+	•	Thermal print remains POS-only
+
+Failures:
+	•	Must be logged
+	•	No retry logic in this wave (document only)
+
+⸻
+
+5️⃣ PROOF SYSTEM INTEGRATION
+
+Update canonical proof traversal so:
+	•	getProofByOrder() works for:
+	•	SVM orders
+	•	MVM parent orders
+	•	Receipt verification resolves:
+	•	Order → Receipt
+	•	Receipt → Order
+
+⸻
+
+6️⃣ UI / PUBLIC SURFACES (MINIMAL)
+	•	Customer order pages should:
+	•	Display receipt link if available
+	•	No new dashboards
+	•	No redesign work
+
+⸻
+
+🧪 VERIFICATION REQUIREMENTS (MANDATORY)
+
+Replit MUST verify all of the following:
+
+Functional Checks
+	•	Paid SVM order generates receipt
+	•	Paid MVM order generates receipt
+	•	Receipt verification works publicly
+	•	Receipt links back to correct order
+	•	No receipt for unpaid orders
+	•	No duplicate receipts on webhook retries
+
+Security Checks
+	•	Tenant isolation preserved
+	•	Receipt verification does not leak cross-tenant data
+	•	Demo tenant behavior unchanged
+
+Regression Checks
+	•	POS receipts unaffected
+	•	ParkHub receipt flow still works
+	•	Canonical proof APIs still pass
+
+⸻
+
+🧾 REQUIRED DELIVERABLES
+
+Replit MUST produce:
+	1.	WAVE_C1_COMPLETION_REPORT.md
+	•	Schema changes
+	•	Logic changes
+	•	Verification checklist (PASS/FAIL)
+	•	Known limitations deferred
+	2.	Updated Gap Status
+	•	Mark CLOSED:
+	•	B3-G1
+	•	B3-G2
+	•	B3-G7
+	•	B3-G12
+	3.	Explicit STOP CONFIRMATION
+	•	No further work performed
+	•	Awaiting next authorization
+
+⸻
+
+🛑 HARD STOP CONDITION
+
+🚨 STOP IMMEDIATELY AFTER COMPLETION
+
+Replit must not:
+	•	Begin Wave D
+	•	Improve audit trails
+	•	Add hashing
+	•	Modify order mutability
+	•	Touch payouts or ledgers
+
+The only acceptable next action is to wait for explicit authorization.
+
+⸻
+
+✅ EXECUTION AUTHORIZED
+
+Proceed with Wave C1 — Receipt Integration exactly as specified above.
