@@ -1,0 +1,186 @@
+✅ Wave D1 Authorized — Order Audit Trails & Integrity
+
+Below is the exact Replit execution prompt for Wave D1, written to enforce discipline, scope control, and a hard stop at the end.
+This wave is foundational for compliance, disputes, and enterprise readiness.
+
+⸻
+
+🔐 REPLIT EXECUTION PROMPT
+
+WAVE D1 — ORDER AUDIT TRAILS & INTEGRITY
+
+⚠️ MANDATE
+
+This wave implements auditability and tamper-resistance for commerce orders across SVM, MVM, and ParkHub, strictly limited to what has already been identified in Wave B3.
+
+This is NOT a feature wave.
+This is compliance, integrity, and evidence.
+
+⸻
+
+🎯 OBJECTIVES (NON-NEGOTIABLE)
+
+Wave D1 must fully close the following HIGH / MEDIUM severity gaps from Wave B3:
+
+MUST CLOSE (IN SCOPE)
+	•	B3-G3 — No audit trail for order status changes
+	•	B3-G4 — No hash verification for orders
+	•	B3-G5 — Orders mutable without revision history
+	•	B3-G9 — MVM commission calculations not auditable
+	•	B3-G10 — No payment status history
+
+⸻
+
+🚫 EXPLICITLY OUT OF SCOPE
+
+Replit MUST NOT:
+	•	Add UI pages or dashboards
+	•	Add background jobs or cron workers
+	•	Invent new business workflows
+	•	Modify pricing, commissions, or fulfillment logic
+	•	Touch payouts, money movement, or receipts
+	•	Add cross-tenant or cross-order linking
+	•	Add GDPR deletion or consent flows (future wave)
+
+⸻
+
+🧱 REQUIRED DELIVERABLES
+
+1️⃣ ORDER STATUS HISTORY (MANDATORY)
+
+Create immutable audit tables to track every order status change.
+
+Applies to:
+	•	svm_orders
+	•	mvm_parent_order
+	•	mvm_sub_order
+	•	park_ticket
+
+Requirements:
+	•	Old status
+	•	New status
+	•	ChangedAt timestamp
+	•	ChangedBy (SYSTEM | USER | WEBHOOK | POS)
+	•	Source (API / WEBHOOK / POS / ADMIN)
+	•	TenantId (mandatory)
+
+Status updates must append history, never overwrite.
+
+⸻
+
+2️⃣ ORDER REVISION HISTORY (MANDATORY)
+
+Introduce an order_revision system.
+
+Requirements:
+	•	Capture diffs for:
+	•	Amounts
+	•	Items
+	•	Customer-facing fields
+	•	Shipping fields
+	•	Immutable append-only table
+	•	Revision reason (SYSTEM / ADMIN / PAYMENT / RECOVERY)
+	•	Reference to triggering event (transactionId, webhookId if applicable)
+
+❗ Orders may still update, but every mutation must leave evidence.
+
+⸻
+
+3️⃣ ORDER INTEGRITY HASH (MANDATORY)
+
+Add verificationHash to:
+	•	svm_orders
+	•	mvm_parent_order
+	•	mvm_sub_order
+
+Rules:
+	•	Hash covers all financially relevant fields
+	•	Generated:
+	•	On order creation
+	•	On every revision
+	•	Previous hash preserved in revision record
+	•	No cryptographic signing required (hash only)
+
+⸻
+
+4️⃣ PAYMENT STATUS HISTORY (MANDATORY)
+
+Introduce payment_status_history.
+
+Tracks:
+	•	PENDING → PAID → FAILED → REFUNDED
+	•	Timestamp
+	•	Trigger source (WEBHOOK / ADMIN / SYSTEM)
+	•	Linked transactionId where applicable
+
+No logic changes — record only.
+
+⸻
+
+5️⃣ COMMISSION CALCULATION AUDIT (MVM ONLY)
+
+For MVM sub-orders:
+	•	Persist commission inputs:
+	•	Rate used
+	•	Base amount
+	•	Formula version identifier
+	•	Store alongside commission record
+	•	No recalculation logic allowed
+
+Purpose: future dispute resolution.
+
+⸻
+
+🔒 CONSTRAINTS (ABSOLUTE)
+	•	✅ Schema changes allowed (this wave requires them)
+	•	❌ No data backfill unless explicitly unavoidable
+	•	❌ No migrations that rewrite historical data
+	•	❌ No performance optimizations
+	•	❌ No UI exposure
+	•	❌ No cross-suite abstractions
+
+⸻
+
+🧪 REQUIRED VERIFICATION OUTPUT
+
+At the end of Wave D1, Replit MUST STOP and produce:
+
+📄 WAVE_D1_AUDIT_INTEGRITY_REPORT.md
+
+Containing:
+	1.	Tables added (with schema)
+	2.	Hooks where audit entries are written
+	3.	Sample audit records (JSON examples)
+	4.	Proof that:
+	•	No status change happens without history
+	•	No order mutation happens without revision
+	•	Hash changes are deterministic
+	5.	Explicit list of anything NOT solved
+
+⸻
+
+🛑 HARD STOP CONDITION
+
+Replit MUST NOT proceed to:
+	•	Wave D2
+	•	Any UI work
+	•	Any payout or financial execution
+
+until human verification is explicitly granted.
+
+⸻
+
+✅ SUCCESS CRITERIA
+
+Wave D1 is considered SUCCESSFUL only if:
+	•	Every order/ticket mutation is provably traceable
+	•	Tampering becomes detectable after the fact
+	•	Audit data survives retries, webhooks, failures
+	•	No regressions in existing commerce flows
+
+⸻
+
+BEGIN WAVE D1 NOW.
+STOP COMPLETELY AFTER REPORT GENERATION.
+
+⸻

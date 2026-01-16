@@ -20,6 +20,7 @@ import { TransactionService } from './transaction-service'
 import { OrderSplitService } from '@/lib/mvm/order-split-service'
 import { InventorySyncEngine } from '@/lib/commerce/inventory-engine/inventory-sync-engine'
 import { generateMvmOrderReceipt, generateSvmOrderReceipt } from '@/lib/commerce/receipt/order-receipt-service'
+import { logOrderStatusChange, logPaymentStatusChange, createOrderRevision, computeMvmParentOrderHash, computeMvmSubOrderHash, computeSvmOrderHash } from '@/lib/commerce/audit'
 import crypto from 'crypto'
 
 export type WebhookEvent = 'charge.success' | 'charge.failed' | 'transfer.success' | 'transfer.failed'
@@ -182,8 +183,17 @@ export class WebhookProcessor {
   ): Promise<void> {
     const now = new Date()
 
+    const orderBefore = await prisma.svm_orders.findUnique({
+      where: { id: orderId },
+      select: { tenantId: true, status: true, paymentStatus: true }
+    })
+
+    if (!orderBefore) {
+      console.error(`[WebhookProcessor] SVM order not found: ${orderId}`)
+      return
+    }
+
     if (paymentSuccess) {
-      // Update SVM order payment status (using CAPTURED per SvmPaymentStatus enum)
       await prisma.$executeRaw`
         UPDATE svm_orders 
         SET "paymentStatus" = 'CAPTURED',
@@ -194,25 +204,50 @@ export class WebhookProcessor {
         WHERE id = ${orderId}
       `
 
+      await Promise.all([
+        logOrderStatusChange({
+          tenantId: orderBefore.tenantId,
+          orderType: 'SVM_ORDER',
+          orderId,
+          oldStatus: orderBefore.status,
+          newStatus: 'CONFIRMED',
+          source: 'WEBHOOK',
+          sourceRef: paymentRef,
+        }),
+        logPaymentStatusChange({
+          tenantId: orderBefore.tenantId,
+          orderType: 'SVM_ORDER',
+          orderId,
+          oldStatus: orderBefore.paymentStatus,
+          newStatus: 'CAPTURED',
+          source: 'WEBHOOK',
+          paymentRef,
+        }),
+        createOrderRevision({
+          tenantId: orderBefore.tenantId,
+          orderType: 'SVM_ORDER',
+          orderId,
+          reason: 'PAYMENT',
+          reasonDetail: 'Payment confirmed via webhook',
+          changes: {
+            status: { old: orderBefore.status, new: 'CONFIRMED' },
+            paymentStatus: { old: orderBefore.paymentStatus, new: 'CAPTURED' },
+          },
+          triggeredByType: 'WEBHOOK',
+          transactionRef: paymentRef,
+        }),
+      ])
+
       console.log(`[WebhookProcessor] SVM order ${orderId} payment confirmed`)
 
-      // Generate receipt for SVM order
-      const order = await prisma.svm_orders.findUnique({
-        where: { id: orderId },
-        select: { tenantId: true }
-      })
-      
-      if (order) {
-        const isDemo = await this.isOrderDemo(order.tenantId)
-        const receiptResult = await generateSvmOrderReceipt(orderId, isDemo)
-        if (receiptResult.success) {
-          console.log(`[WebhookProcessor] Generated receipt ${receiptResult.receiptId} for SVM order ${orderId}`)
-        } else {
-          console.error(`[WebhookProcessor] Failed to generate receipt for SVM order ${orderId}: ${receiptResult.error}`)
-        }
+      const isDemo = await this.isOrderDemo(orderBefore.tenantId)
+      const receiptResult = await generateSvmOrderReceipt(orderId, isDemo)
+      if (receiptResult.success) {
+        console.log(`[WebhookProcessor] Generated receipt ${receiptResult.receiptId} for SVM order ${orderId}`)
+      } else {
+        console.error(`[WebhookProcessor] Failed to generate receipt for SVM order ${orderId}: ${receiptResult.error}`)
       }
     } else {
-      // Update SVM order payment status to failed
       await prisma.$executeRaw`
         UPDATE svm_orders 
         SET "paymentStatus" = 'FAILED',
@@ -222,6 +257,27 @@ export class WebhookProcessor {
             "updatedAt" = ${now}
         WHERE id = ${orderId}
       `
+
+      await Promise.all([
+        logOrderStatusChange({
+          tenantId: orderBefore.tenantId,
+          orderType: 'SVM_ORDER',
+          orderId,
+          oldStatus: orderBefore.status,
+          newStatus: 'CANCELLED',
+          source: 'WEBHOOK',
+          sourceRef: paymentRef,
+        }),
+        logPaymentStatusChange({
+          tenantId: orderBefore.tenantId,
+          orderType: 'SVM_ORDER',
+          orderId,
+          oldStatus: orderBefore.paymentStatus,
+          newStatus: 'FAILED',
+          source: 'WEBHOOK',
+          paymentRef,
+        }),
+      ])
 
       console.log(`[WebhookProcessor] SVM order ${orderId} payment failed`)
     }
@@ -244,10 +300,19 @@ export class WebhookProcessor {
   ): Promise<void> {
     const now = new Date()
 
+    const orderBefore = await prisma.mvm_parent_order.findUnique({
+      where: { id: orderId },
+      select: { tenantId: true, status: true, paymentStatus: true },
+    })
+
+    if (!orderBefore) {
+      console.error(`[WebhookProcessor] MVM order not found: ${orderId}`)
+      return
+    }
+
     if (paymentSuccess) {
       await OrderSplitService.updatePaymentStatus(orderId, 'CAPTURED', paymentRef)
 
-      // P0-1 FIX: Deduct inventory ONLY on confirmed payment
       await this.deductOrderInventory(orderId)
 
       await prisma.mvm_parent_order.update({
@@ -259,10 +324,60 @@ export class WebhookProcessor {
         }
       })
 
+      const subOrders = await prisma.mvm_sub_order.findMany({
+        where: { parentOrderId: orderId, status: 'PENDING' },
+        select: { id: true, status: true }
+      })
+
       await prisma.mvm_sub_order.updateMany({
         where: { parentOrderId: orderId, status: 'PENDING' },
         data: { status: 'CONFIRMED' }
       })
+
+      await Promise.all([
+        logOrderStatusChange({
+          tenantId: orderBefore.tenantId,
+          orderType: 'MVM_PARENT_ORDER',
+          orderId,
+          oldStatus: orderBefore.status,
+          newStatus: 'CONFIRMED',
+          source: 'WEBHOOK',
+          sourceRef: paymentRef,
+        }),
+        logPaymentStatusChange({
+          tenantId: orderBefore.tenantId,
+          orderType: 'MVM_PARENT_ORDER',
+          orderId,
+          oldStatus: orderBefore.paymentStatus,
+          newStatus: 'CAPTURED',
+          source: 'WEBHOOK',
+          paymentRef,
+        }),
+        createOrderRevision({
+          tenantId: orderBefore.tenantId,
+          orderType: 'MVM_PARENT_ORDER',
+          orderId,
+          reason: 'PAYMENT',
+          reasonDetail: 'Payment confirmed via webhook',
+          changes: {
+            status: { old: orderBefore.status, new: 'CONFIRMED' },
+            paymentStatus: { old: orderBefore.paymentStatus, new: 'CAPTURED' },
+          },
+          triggeredByType: 'WEBHOOK',
+          transactionRef: paymentRef,
+        }),
+        ...subOrders.map(sub =>
+          logOrderStatusChange({
+            tenantId: orderBefore.tenantId,
+            orderType: 'MVM_SUB_ORDER',
+            orderId: sub.id,
+            oldStatus: sub.status,
+            newStatus: 'CONFIRMED',
+            source: 'WEBHOOK',
+            sourceRef: paymentRef,
+          })
+        ),
+      ])
 
       // Wave C1: Generate receipt for MVM order on payment success
       const order = await prisma.mvm_parent_order.findUnique({
