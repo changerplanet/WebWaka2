@@ -30,13 +30,14 @@ WebWaka is a multi-tenant SaaS platform built with a modular capability system, 
     - **Offline Capabilities**: IndexedDB-based POS offline sync, offline cart persistence, and offline-first receipt printing.
     - **Vendor Management**: MVM vendor registration with KYC, order splitting for multi-vendor orders, and vendor payout visibility.
     - **Specialized POS**: ParkHub POS for walk-up ticket sales with dynamic departure models and manifest generation.
-    - **Financials**: NGN-realistic cash rounding, bank transfer, and COD workflows.
+    - **Financials**: NGN-realistic cash rounding (₦5/₦10 modes), bank transfer with reference capture, Nigeria 7.5% VAT rate, and COD workflows.
     - **Customer Experience**: Mobile checkout redesign, landmark-based addressing, and a customer order portal for tracking.
     - **Trust & Social Proof**: Vendor rating system and social proof signals based on real purchase data.
     - **Advanced Inventory**: Unified inventory visibility, low-stock alerts, and cross-channel inventory synchronization.
     - **MVM Cart & Checkout**: Production-grade multi-vendor cart and checkout system with address collection and order splitting.
     - **Commerce Hardening**: Payment webhooks, partial vendor fulfillment, and order recovery mechanisms.
     - **Security Hardening (Wave B1-Fix/B2-Fix)**: Inventory-payment timing fixes, ParkHub seat race condition protection, order access verification for live tenants (email/phone required), and identity fragmentation signaling.
+    - **POS Enhancements (Wave POS-P2)**: Bank transfer payment method with reference/receipt capture, responsive mobile cart drawer with FAB, 48px touch targets, stepper-only quantity controls, role-based access control (POS_CASHIER/POS_SUPERVISOR/POS_MANAGER), and supervisor override for void sales.
 - **Public Routing**: Unified routing for SVM storefronts, MVM marketplaces, ParkHub operator marketplaces, and Sites & Funnels pages.
 - **Sites & Funnels Template System**: SUPER_ADMIN-managed template CRUD (SITE_TEMPLATE, FUNNEL_TEMPLATE, PAGE_TEMPLATE) with token resolution and entitlement-gated cloning.
 - **Template UI (Wave E1)**: Admin template management at `/admin/templates` (CRUD, publish/deprecate) and Partner template gallery at `/partner-portal/templates` (browse, preview, clone) with server-side demo/live separation.
