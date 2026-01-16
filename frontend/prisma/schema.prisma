@@ -19472,6 +19472,12 @@ model receipt {
   isVerified      Boolean  @default(true)  // Set to false if sync pending
   verificationQrCode String? // URL for receipt verification
   
+  // Wave D2: Tamper detection and revocation
+  verificationHash  String?  // SHA-256 hash of receipt data for tamper detection
+  isRevoked         Boolean  @default(false) // True if receipt is voided/revoked
+  revokedAt         DateTime?
+  revokedReason     String?
+  
   // ParkHub-specific fields (nullable for POS)
   routeId         String?
   routeName       String?

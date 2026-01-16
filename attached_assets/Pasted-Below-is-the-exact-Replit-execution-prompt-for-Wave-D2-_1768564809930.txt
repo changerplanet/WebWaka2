@@ -1,0 +1,186 @@
+Below is the exact Replit execution prompt for Wave D2 — Public Proof & Verification Hardening, written to enforce strict scope, discipline, and stop conditions, and aligned with everything already completed in Waves B3 → C1 → D1.
+
+⸻
+
+🔐 REPLIT EXECUTION PROMPT
+
+WAVE D2 — Public Proof & Verification Hardening
+
+⚠️ MANDATE
+
+You are executing Wave D2 of the WebWaka platform hardening plan.
+
+This wave focuses exclusively on public-facing proof and verification surfaces (orders, receipts, tickets, manifests) to ensure they are:
+	•	Secure
+	•	Non-enumerable
+	•	Tenant-safe
+	•	Tamper-aware
+	•	Consistent across SVM, MVM, and ParkHub
+
+This is NOT a feature wave.
+This is NOT a UI/branding wave.
+This is NOT a payout or money movement wave.
+
+⸻
+
+🧱 STRICT CONSTRAINTS (NON-NEGOTIABLE)
+
+❌ YOU MUST NOT:
+	•	Add new product features
+	•	Change business logic
+	•	Introduce automation or background jobs
+	•	Modify financial calculations
+	•	Create partner or admin UI
+	•	Expose new public endpoints beyond what is specified
+	•	Proceed past Wave D2 without explicit stop
+
+✅ YOU MAY:
+	•	Add schema fields only if required for verification or security
+	•	Add guards, rate limits, and validation
+	•	Harden existing public endpoints
+	•	Add read-only metadata
+	•	Improve tamper detection
+	•	Improve tenant and identity verification
+	•	Normalize public verification behavior across systems
+
+⸻
+
+🎯 SCOPE OF WORK (REQUIRED DELIVERABLES)
+
+1️⃣ Harden Public Order Verification
+
+Applies to:
+	•	/[tenantSlug]/orders/[orderRef]
+	•	Any API resolving orders by reference
+
+Required:
+	•	Enforce identity verification (email or phone) for ALL live tenants
+	•	Demo tenants remain unrestricted
+	•	Order reference must no longer act as a bearer token
+	•	Generic error messages (no order existence leakage)
+	•	Ensure verification logic is order-specific, not tenant-wide
+
+⸻
+
+2️⃣ Harden Receipt Verification
+
+Applies to:
+	•	/verify/receipt/[receiptId]
+
+Required:
+	•	Validate receipt integrity using verificationHash
+	•	Detect and flag tampered receipts
+	•	Ensure receipt.sourceType and sourceId are consistent
+	•	Normalize response shape across:
+	•	POS
+	•	SVM
+	•	MVM
+	•	ParkHub
+	•	Do NOT require authentication
+	•	Do NOT introduce tenantSlug requirement (document why if unchanged)
+
+⸻
+
+3️⃣ Harden Ticket Verification (ParkHub)
+
+Applies to:
+	•	/verify/ticket/[ticketRef] (or equivalent)
+
+Required:
+	•	Validate ticket hash and integrity
+	•	Ensure ticket ↔ receipt ↔ manifest linkage is consistent
+	•	Prevent enumeration (generic errors)
+	•	Enforce phone verification for live tenants
+	•	Demo tenants remain unrestricted
+
+⸻
+
+4️⃣ Harden Manifest Verification
+
+Applies to:
+	•	/verify/manifest/[manifestNumber]
+
+Required:
+	•	Validate manifest hash chain
+	•	Ensure manifest references only valid tickets
+	•	Ensure manifests cannot be altered without detection
+	•	Public access allowed (regulatory requirement)
+	•	No tenant leakage
+
+⸻
+
+5️⃣ Introduce Verification Result Semantics
+
+Across ALL public verification endpoints, return explicit status metadata:
+
+Example:
+
+{
+  "valid": true,
+  "tampered": false,
+  "revoked": false,
+  "sourceType": "SVM_ORDER",
+  "verifiedAt": "2026-01-16T12:00:00Z"
+}
+
+Do NOT invent revocation logic — only support metadata flags.
+
+⸻
+
+6️⃣ Documentation (MANDATORY)
+
+Create:
+	•	WAVE_D2_PUBLIC_VERIFICATION_REPORT.md
+
+This must include:
+	•	Every endpoint touched
+	•	Verification logic applied
+	•	What is verified (hash, identity, linkage)
+	•	What is NOT verified (explicitly)
+	•	Known residual risks
+	•	Why remaining gaps are deferred
+
+⸻
+
+🛑 STOP CONDITIONS (ABSOLUTE)
+
+When ALL of the following are true, you MUST STOP and report:
+	•	✅ All public verification endpoints hardened
+	•	✅ No enumeration vectors remain
+	•	✅ No tenant isolation regressions introduced
+	•	✅ Demo vs live behavior explicitly documented
+	•	✅ Hash verification enforced where available
+	•	✅ Report written and committed
+	•	❌ NO UI work done
+	•	❌ NO payouts or money movement touched
+	•	❌ NO Wave D3, E, or beyond started
+
+⸻
+
+🚫 FAILURE CONDITIONS (AUTO-REJECT)
+
+Your work will be rejected if:
+	•	You proceed beyond Wave D2
+	•	You add unrelated features
+	•	You modify commerce logic
+	•	You introduce silent breaking changes
+	•	You skip documentation
+	•	You assume intent not present in code
+
+⸻
+
+🧠 REMINDER
+
+This wave exists to make WebWaka defensible in audits, disputes, and regulatory scrutiny.
+
+Precision > speed
+Security > convenience
+Evidence > appearance
+
+⸻
+
+▶️ BEGIN WAVE D2 NOW
+
+Stop immediately when done and present a Wave D2 Completion Report.
+
+⸻

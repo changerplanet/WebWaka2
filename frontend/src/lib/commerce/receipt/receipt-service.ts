@@ -723,3 +723,37 @@ export async function verifyReceipt(receiptId: string): Promise<ReceiptVerificat
     syncStatus: receipt.syncStatus as ReceiptSyncStatus,
   };
 }
+
+import { verifyReceiptHash } from './receipt-hash-service';
+import type { PublicVerificationResult } from './types';
+
+export async function verifyReceiptPublic(receiptId: string): Promise<PublicVerificationResult | null> {
+  const receipt = await prisma.receipt.findUnique({
+    where: { id: receiptId },
+  });
+  
+  if (!receipt) return null;
+  
+  const receiptExt = receipt as typeof receipt & { isRevoked?: boolean };
+  
+  const hashResult = await verifyReceiptHash(receiptId);
+  
+  const verifiedAt = new Date().toISOString();
+  const isRevoked = receiptExt.isRevoked || false;
+  
+  return {
+    valid: !isRevoked && !hashResult.tampered,
+    tampered: hashResult.tampered,
+    revoked: isRevoked,
+    sourceType: receipt.sourceType,
+    verifiedAt,
+    receiptNumber: receipt.receiptNumber,
+    businessName: receipt.businessName,
+    grandTotal: Number(receipt.grandTotal),
+    currency: receipt.currency,
+    transactionDate: receipt.transactionDate.toISOString(),
+    isDemo: receipt.isDemo,
+    syncStatus: receipt.syncStatus,
+    unsigned: hashResult.unsigned,
+  };
+}

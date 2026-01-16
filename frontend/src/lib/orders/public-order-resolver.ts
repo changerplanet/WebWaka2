@@ -633,16 +633,27 @@ export async function resolveOrderByRef(
   return { success: false, reason: 'order_not_found' }
 }
 
+export type TicketDetailResultWithVerification = 
+  | { success: true; ticket: ParkHubTicket; tenant: OrderPortalTenant }
+  | { success: false; reason: 'tenant_not_found' | 'ticket_not_found' | 'suspended' | 'verification_required'; tenant?: OrderPortalTenant }
+
 export async function resolveTicketByRef(
   tenantSlug: string,
-  ticketRef: string
-): Promise<TicketDetailResult> {
+  ticketRef: string,
+  verification?: { phone?: string }
+): Promise<TicketDetailResultWithVerification> {
   const tenantResult = await resolveOrderPortalTenant(tenantSlug)
   if (!tenantResult.success) {
     return { success: false, reason: tenantResult.reason === 'not_found' ? 'tenant_not_found' : 'suspended' }
   }
 
   const tenant = tenantResult.tenant
+  const requiresVerification = !tenant.isDemo
+  const hasVerification = !!verification?.phone
+
+  if (requiresVerification && !hasVerification) {
+    return { success: false, reason: 'verification_required', tenant }
+  }
 
   const ticket = await prisma.park_ticket.findFirst({
     where: {
@@ -653,6 +664,16 @@ export async function resolveTicketByRef(
 
   if (!ticket) {
     return { success: false, reason: 'ticket_not_found' }
+  }
+
+  if (requiresVerification && verification?.phone) {
+    const verified = verifyCustomerAgainstOrder(
+      { phone: verification.phone },
+      { passengerPhone: ticket.passengerPhone }
+    )
+    if (!verified) {
+      return { success: false, reason: 'ticket_not_found' }
+    }
   }
 
   return {

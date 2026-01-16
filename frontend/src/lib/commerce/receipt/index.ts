@@ -1,5 +1,6 @@
 export * from './types';
-export { createReceiptService, verifyReceipt } from './receipt-service';
+export { createReceiptService, verifyReceipt, verifyReceiptPublic } from './receipt-service';
+export { generateReceiptHash, computeAndStoreReceiptHash, verifyReceiptHash } from './receipt-hash-service';
 export {
   generateThermalReceiptText,
   generatePrintableHtml,

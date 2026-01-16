@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { verifyReceipt } from '@/lib/commerce/receipt/receipt-service';
+import { verifyReceipt, verifyReceiptPublic } from '@/lib/commerce/receipt/receipt-service';
 
 export async function GET(
   request: NextRequest,
@@ -7,12 +7,34 @@ export async function GET(
 ) {
   try {
     const { receiptId } = await params;
+    const url = new URL(request.url);
+    const format = url.searchParams.get('format');
+    
+    if (format === 'public') {
+      const result = await verifyReceiptPublic(receiptId);
+      
+      if (!result) {
+        return NextResponse.json(
+          { 
+            valid: false, 
+            tampered: false, 
+            revoked: false, 
+            sourceType: 'UNKNOWN',
+            verifiedAt: new Date().toISOString(),
+            error: 'Unable to verify' 
+          },
+          { status: 404 }
+        );
+      }
+      
+      return NextResponse.json(result);
+    }
     
     const verification = await verifyReceipt(receiptId);
     
     if (!verification) {
       return NextResponse.json(
-        { error: 'Receipt not found' },
+        { error: 'Unable to verify receipt' },
         { status: 404 }
       );
     }

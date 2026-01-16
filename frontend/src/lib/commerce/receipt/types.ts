@@ -235,3 +235,19 @@ export interface ReceiptVerification {
   transactionDate: Date;
   syncStatus: ReceiptSyncStatus;
 }
+
+export interface PublicVerificationResult {
+  valid: boolean;
+  tampered: boolean;
+  revoked: boolean;
+  sourceType: string;
+  verifiedAt: string;
+  receiptNumber?: string;
+  businessName?: string;
+  grandTotal?: number;
+  currency?: string;
+  transactionDate?: string;
+  isDemo?: boolean;
+  syncStatus?: string;
+  unsigned?: boolean;
+}
