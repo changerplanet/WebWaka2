@@ -1,0 +1,208 @@
+Perfect. Below is the official, tightened Replit execution prompt for Wave K.3 — Close Remaining Commerce Gaps (Post–MVM Checkout Hardening), written to reflect everything learned from Waves K.1 & K.2, and to strictly respect governance rules.
+
+⸻
+
+🔐 WAVE K.3 — CLOSE REMAINING COMMERCE GAPS
+
+Replit Execution Prompt (Authoritative)
+
+Platform: WebWaka
+Phase: Wave K.3 — Commerce Completion & Reliability
+Status: ✅ AUTHORIZED TO START
+Mode: READ–WRITE (Scoped)
+Owner: Replit
+Architectural Authority: WebWaka Core Rules Apply
+
+⸻
+
+🎯 WAVE K.3 OBJECTIVE
+
+Harden and complete the Multi-Vendor Commerce lifecycle by closing post-checkout operational gaps discovered in Wave K.2 — without breaking or re-architecting existing systems.
+
+This wave is about correctness, safety, and production realism, not new features.
+
+⸻
+
+🧭 SCOPE — WHAT MUST BE IMPLEMENTED
+
+1️⃣ Payment Webhooks & Order Finalization
+
+Problem Identified:
+Payments are initiated correctly, but:
+	•	Final confirmation is client-driven
+	•	No canonical server-side payment confirmation flow exists
+
+Implement:
+	•	Webhook handlers for:
+	•	Paystack (primary)
+	•	Demo provider (internal simulation)
+	•	Idempotent webhook processing
+	•	Canonical flow:
+
+PAYMENT_CONFIRMED → ORDER_CONFIRMED → INVENTORY_DEDUCTED
+
+
+	•	Ensure:
+	•	Duplicate webhook events are safely ignored
+	•	Orders are finalized ONLY after verified payment
+
+📌 Constraints
+	•	❌ No new payment providers
+	•	❌ No payout execution
+	•	✅ Use existing PaymentTransaction + Order models
+	•	✅ Respect demo vs live behavior
+
+⸻
+
+2️⃣ Partial Vendor Fulfillment Handling (MVM)
+
+Problem Identified:
+	•	Orders can split into multiple vendor sub-orders
+	•	One vendor may fail while others succeed
+
+Implement:
+	•	Parent order status becomes PARTIALLY_FULFILLED when applicable
+	•	Sub-order-level fulfillment independence
+	•	Parent order aggregates child states correctly
+	•	Customer-facing order view reflects mixed fulfillment
+
+📌 Constraints
+	•	❌ No refunds yet
+	•	❌ No re-routing logic
+	•	✅ Read-only aggregation + state transitions only
+
+⸻
+
+3️⃣ Split Refund Readiness (NO MONEY MOVEMENT)
+
+Problem Identified:
+Refunds are not supported, but must be modeled correctly.
+
+Implement (Model + Visibility only):
+	•	RefundIntent model (NO execution)
+	•	Support:
+	•	Full refund
+	•	Vendor-specific refund
+	•	Admin & Partner visibility
+	•	Customer visibility (read-only)
+
+📌 Constraints
+	•	❌ No payment reversal
+	•	❌ No wallet crediting
+	•	❌ No automation
+	•	✅ Visibility + correctness only
+
+⸻
+
+4️⃣ Shipping Fee Allocation (Multi-Vendor)
+
+Problem Identified:
+Shipping is currently flat or implicit.
+
+Implement:
+	•	Per-vendor shipping allocation
+	•	Parent order shows:
+	•	Total shipping
+	•	Sub-orders show:
+	•	Their share of shipping
+	•	Allocation rules:
+	•	Weight-based if available
+	•	Fallback: proportional by subtotal
+
+📌 Constraints
+	•	❌ No carrier integrations
+	•	❌ No dynamic pricing engines
+	•	✅ Deterministic allocation logic only
+
+⸻
+
+5️⃣ Order Recovery & Resilience
+
+Problem Identified:
+If payment fails mid-flow, recovery is unclear.
+
+Implement:
+	•	Safe retry mechanisms:
+	•	Resume checkout from cart
+	•	Re-initiate payment without duplicating orders
+	•	Order expiration handling:
+	•	EXPIRED state if unpaid beyond threshold
+	•	Clear customer messaging
+
+📌 Constraints
+	•	❌ No cron jobs
+	•	❌ No background workers
+	•	✅ User-triggered recovery only
+
+⸻
+
+🛑 HARD CONSTRAINTS (NON-NEGOTIABLE)
+
+Rule	Status
+No new payment providers	❌
+No payout execution	❌
+No background jobs	❌
+No automations	❌
+No schema rewrites	❌
+No breaking existing APIs	❌
+Idempotency enforced	✅
+Demo-safe behavior preserved	✅
+Tenant isolation enforced	✅
+
+
+⸻
+
+📄 REQUIRED DELIVERABLES (MANDATORY)
+
+At completion, Replit MUST provide:
+
+1️⃣ Wave K.3 Completion Report
+
+Including:
+	•	APIs added or modified
+	•	Models added or extended
+	•	Payment lifecycle diagram
+	•	Order state transition matrix
+	•	Demo vs live behavior
+
+2️⃣ Explicit Gap Register
+	•	List all remaining commerce gaps
+	•	Clearly label:
+	•	Why they exist
+	•	Why they are NOT solved in Wave K.3
+	•	Which future wave they belong to
+
+3️⃣ Explicit Confirmations
+
+Replit must explicitly confirm:
+	•	❌ No money moved
+	•	❌ No automation added
+	•	❌ No background jobs
+	•	❌ No partner/vendor payouts
+	•	❌ No architectural shortcuts
+
+⸻
+
+🛑 REQUIRED STOP CONDITION
+
+After delivering the Wave K.3 report:
+
+STOP. DO NOT PROCEED.
+Await explicit authorization before starting any further work.
+
+⸻
+
+✅ SUCCESS CRITERIA
+
+Wave K.3 is considered successful when:
+	•	MVM orders are payment-correct, resilient, and recoverable
+	•	Partial fulfillment is modeled correctly
+	•	Refunds are visible but inert
+	•	Shipping fees are transparently allocated
+	•	No new architectural debt is introduced
+
+⸻
+
+You are now cleared to proceed with Wave K.3.
+
+When complete, paste the Wave K.3 Completion Report here for final review and approval.

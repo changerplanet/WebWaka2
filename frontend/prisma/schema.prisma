@@ -10553,6 +10553,93 @@ model mvm_commission {
 }
 
 // --------------------------------------------------------------------------
+// MVM REFUND INTENT - Refund visibility (Wave K.3 - NO money movement)
+// --------------------------------------------------------------------------
+model mvm_refund_intent {
+  id            String @id @default(cuid())
+  tenantId      String
+  parentOrderId String
+  subOrderId    String? // NULL for full refund, set for vendor-specific
+
+  // Refund Identity
+  refundNumber String @unique
+
+  // Type
+  refundType MvmRefundType @default(FULL)
+
+  // Amounts (NGN)
+  currency       String  @default("NGN")
+  requestedAmount Decimal @db.Decimal(14, 2)
+  approvedAmount  Decimal? @db.Decimal(14, 2)
+
+  // Reason
+  reason         MvmRefundReason @default(CUSTOMER_REQUEST)
+  reasonDetails  String?
+
+  // Status (visibility only - no actual execution)
+  status MvmRefundStatus @default(PENDING)
+
+  // Customer Info
+  customerEmail String
+  customerName  String?
+
+  // Requester
+  requestedBy   String? // User ID
+  requestedAt   DateTime @default(now())
+
+  // Approval
+  reviewedBy    String?
+  reviewedAt    DateTime?
+  reviewNotes   String?
+
+  // Visibility Flags
+  visibleToCustomer Boolean @default(true)
+  visibleToVendor   Boolean @default(true)
+  visibleToPartner  Boolean @default(true)
+  visibleToAdmin    Boolean @default(true)
+
+  // Metadata
+  metadata Json?
+
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([tenantId])
+  @@index([parentOrderId])
+  @@index([subOrderId])
+  @@index([status])
+  @@index([refundType])
+  @@index([customerEmail])
+  @@index([createdAt])
+}
+
+enum MvmRefundType {
+  FULL            // Full order refund
+  VENDOR_SPECIFIC // Single vendor sub-order refund
+  PARTIAL         // Partial amount refund
+}
+
+enum MvmRefundReason {
+  CUSTOMER_REQUEST
+  ORDER_CANCELLED
+  ITEM_UNAVAILABLE
+  DELIVERY_FAILED
+  QUALITY_ISSUE
+  WRONG_ITEM
+  OTHER
+}
+
+enum MvmRefundStatus {
+  PENDING         // Awaiting review
+  APPROVED        // Approved (visibility only)
+  REJECTED        // Rejected by admin
+  PROCESSING      // Reserved for future execution
+  COMPLETED       // Reserved for future execution
+  CANCELLED       // Cancelled by requester
+}
+
+// --------------------------------------------------------------------------
 // MVM PAYOUT - Batch payouts to vendors
 // --------------------------------------------------------------------------
 model mvm_payout {
