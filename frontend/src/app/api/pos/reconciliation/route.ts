@@ -1,8 +1,15 @@
 export const dynamic = 'force-dynamic'
 
 import { NextRequest, NextResponse } from 'next/server'
-import { getCurrentSession } from '@/lib/auth'
+import { getCurrentSession, AuthSession } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+
+function isSupervisorRole(session: AuthSession): boolean {
+  if (session.user.globalRole === 'SUPER_ADMIN') return true
+  const membership = session.user.memberships?.find(m => m.tenantId === session.activeTenantId)
+  if (membership?.role === 'TENANT_ADMIN') return true
+  return false
+}
 
 const VARIANCE_REASONS = [
   'SHORT_CASH',
@@ -84,9 +91,7 @@ export async function POST(request: NextRequest) {
     }
 
     if (variance !== 0 && supervisorApproval) {
-      const isValidSupervisor = session.user.role === 'POS_SUPERVISOR' || 
-                                 session.user.role === 'POS_MANAGER' || 
-                                 session.user.role === 'TENANT_ADMIN' ||
+      const isValidSupervisor = isSupervisorRole(session) ||
                                  (supervisorApproval.pin && supervisorApproval.pin.length >= 4)
       
       if (!isValidSupervisor) {
@@ -96,11 +101,12 @@ export async function POST(request: NextRequest) {
         }, { status: 403 })
       }
 
+      const membership = session.user.memberships?.find(m => m.tenantId === session.activeTenantId)
       console.log('[POS Audit] Supervisor approved variance:', {
         shiftNumber: shift.shiftNumber,
         variance,
         approvedBy: session.user.id,
-        approvedByRole: session.user.role,
+        approvedByRole: membership?.role || session.user.globalRole,
       })
     }
 

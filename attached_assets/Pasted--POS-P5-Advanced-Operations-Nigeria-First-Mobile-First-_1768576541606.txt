@@ -1,0 +1,183 @@
+
+POS-P5 — Advanced Operations
+
+(Nigeria-First · Mobile-First · Offline-First · POS-Only)
+
+⸻
+
+🔒 EXECUTION MODE
+	•	Mode: IMPLEMENTATION (NOT analysis)
+	•	Scope: POS domain ONLY
+	•	Execution Style: Sequential, sub-wave by sub-wave
+	•	Automation: NONE
+	•	Background jobs: NONE
+	•	Cross-suite effects: FORBIDDEN
+	•	Schema changes: ALLOWED (POS-scoped only, minimal)
+
+⸻
+
+🎯 OVERALL OBJECTIVE
+
+Upgrade POS from “operationally complete” to “enterprise-grade daily operations” by implementing advanced operational controls that Nigerian merchants require after sales occur, without introducing financial automation, accounting exports, or non-POS logic.
+
+⸻
+
+🧱 SUB-WAVE EXECUTION ORDER (STRICT)
+
+▶ POS-P5.1 — Inventory Variance & Adjustment (Post-Shift)
+
+Implement:
+	•	Inventory variance detection per:
+	•	Shift
+	•	Register
+	•	Location
+	•	Supervisor-only adjustment workflow:
+	•	ADJUST_UP
+	•	ADJUST_DOWN
+	•	DAMAGE
+	•	THEFT
+	•	COUNTING_ERROR
+	•	SYSTEM_ERROR
+	•	Mandatory fields:
+	•	Adjustment type
+	•	Quantity
+	•	Reason
+	•	Notes
+	•	Immutable audit log for every adjustment
+
+Constraints (DO NOT VIOLATE):
+	•	❌ No automatic inventory correction
+	•	❌ No silent adjustments
+	•	❌ No background reconciliation
+	•	✅ All adjustments must be explicit + auditable
+	•	✅ Must respect existing inventory + POS isolation
+
+STOP CHECK (P5.1):
+	•	Inventory variance is visible
+	•	Supervisor approval is enforced
+	•	Adjustment history is immutable
+	•	No inventory auto-fixing exists
+
+⛔ STOP AND VERIFY INTERNALLY BEFORE MOVING ON
+
+⸻
+
+▶ POS-P5.2 — Drawer Transfers & Cash Movement
+
+Implement:
+	•	Cash movement flows:
+	•	Drawer → Drawer
+	•	Drawer → Safe (logical container)
+	•	Safe → Drawer
+	•	Dual-control enforcement:
+	•	Initiator
+	•	Supervisor approval
+	•	Mandatory reason + amount
+	•	Cash movements reflected in:
+	•	Shift reconciliation
+	•	X/Z reports
+
+Constraints:
+	•	❌ No bank integrations
+	•	❌ No accounting journals
+	•	❌ No automation
+	•	✅ POS-internal cash only
+
+STOP CHECK (P5.2):
+	•	Transfers appear in reconciliation math
+	•	Audit trail exists for all movements
+	•	Supervisor approval required
+
+⛔ STOP AND VERIFY INTERNALLY BEFORE MOVING ON
+
+⸻
+
+▶ POS-P5.3 — Supervisor Oversight Dashboard
+
+Implement (READ-ONLY):
+Supervisor / Manager dashboard showing:
+	•	Open shifts (by location)
+	•	Pending variances awaiting approval
+	•	Voids issued today
+	•	Refunds issued today
+	•	Drawer transfers executed
+	•	High-risk indicators:
+	•	Excessive voids
+	•	Excessive discounts
+	•	Frequent shortages
+
+Constraints:
+	•	❌ No alerts
+	•	❌ No automation
+	•	❌ No write actions
+	•	✅ Drill-down only
+
+STOP CHECK (P5.3):
+	•	Supervisor can see operational risk hotspots
+	•	All data is traceable to source records
+	•	Dashboard cannot mutate data
+
+⛔ STOP AND VERIFY INTERNALLY BEFORE MOVING ON
+
+⸻
+
+▶ POS-P5.4 — Multi-Register & Multi-Location Reconciliation
+
+Implement (READ-ONLY):
+	•	Daily reconciliation views:
+	•	Per register
+	•	Per location
+	•	Tenant-wide roll-up
+	•	Totals by payment method:
+	•	Cash
+	•	Transfer
+	•	Card
+	•	Variance roll-ups
+	•	Z-report linkage
+
+Constraints:
+	•	❌ No accounting exports
+	•	❌ No auto close
+	•	❌ No cross-day mutation
+	•	✅ Aggregation only
+
+STOP CHECK (P5.4):
+	•	Location managers can reconcile daily activity
+	•	Tenant admin sees cross-location totals
+	•	Numbers reconcile with shifts + transfers + sales
+
+⛔ HARD STOP REQUIRED
+
+⸻
+
+🔐 NON-NEGOTIABLE INVARIANTS
+
+Replit must not break:
+	•	Offline sale queuing
+	•	Existing POS-P4 shift lifecycle
+	•	VAT logic (7.5%)
+	•	POS role system (Cashier / Supervisor / Manager)
+	•	Idempotency via offlineId
+	•	Tenant isolation
+	•	Nigeria-first assumptions
+
+⸻
+
+🛑 FINAL HARD STOP CONDITION (MANDATORY)
+
+After completing POS-P5.4, Replit MUST:
+	1.	STOP all work
+	2.	Produce POS-P5 COMPLETION REPORT
+	3.	Produce Remaining Gap Inventory (if any)
+	4.	Explicitly list:
+	•	What was implemented
+	•	What was intentionally NOT implemented
+	•	Any assumptions made (should be NONE)
+
+🚫 Do NOT proceed to any further POS wave without explicit authorization.
+
+⸻
+
+✅ EXECUTION AUTHORIZATION
+
+This prompt is fully authorized. Begin POS-P5 execution immediately.
