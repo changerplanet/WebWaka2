@@ -1,0 +1,215 @@
+POS-P1 — POS Surface, Workflow & Local Reality Audit
+
+Mode: READ-ONLY ANALYSIS
+Fixes: ❌ FORBIDDEN
+Schema Changes: ❌ FORBIDDEN
+Assumptions: ❌ FORBIDDEN
+Outcome: AUDIT REPORT ONLY
+Hard Stop: REQUIRED
+
+⸻
+
+🎯 OBJECTIVE
+
+Conduct a full, no-assumption, read-only audit of the Point of Sale (POS) suite in WebWaka, covering:
+	1.	Surface completeness
+	2.	Workflow correctness
+	3.	UI ↔ backend parity
+	4.	Nigeria-first, Mobile-first, Offline-first, PWA-first fitness
+
+This audit must reveal what actually exists, what is missing, and what breaks under real Nigerian operating conditions.
+
+⸻
+
+🧱 SCOPE (MANDATORY — NOTHING MAY BE SKIPPED)
+
+A. POS SURFACE CENSUS (GROUND TRUTH)
+
+Enumerate every POS surface across all roles:
+
+1. UI SURFACES
+	•	POS dashboard(s)
+	•	Sales screen(s)
+	•	Cart / line-item editor
+	•	Payment capture screens
+	•	Receipt screens (print / WhatsApp / view)
+	•	Refund / void / cancel flows
+	•	Offline indicators & sync states
+	•	Error / recovery screens
+
+For each screen:
+	•	Route
+	•	Role access
+	•	Desktop vs mobile availability
+	•	Demo vs live behavior
+	•	Whether it is reachable via navigation or orphaned
+
+❌ Do NOT infer missing screens
+❌ Only list what exists in code
+
+⸻
+
+B. POS WORKFLOW AUDIT (END-TO-END)
+
+Trace real cashier workflows step by step:
+	1.	Start sale
+	2.	Add items
+	3.	Modify quantities
+	4.	Apply discounts / rounding
+	5.	Select payment method:
+	•	Cash
+	•	Transfer
+	•	Card
+	•	Mixed
+	6.	Finalize sale
+	7.	Issue receipt
+	8.	Sync (if offline)
+	9.	Error recovery
+
+For each step:
+	•	UI present? (Yes/No)
+	•	Backend logic present? (Yes/No)
+	•	Can the step be completed on mobile only?
+	•	Can the step be completed offline?
+	•	What breaks if network drops?
+
+⸻
+
+C. ROLE & PERMISSION REALITY CHECK
+
+Audit POS behavior for:
+	•	Cashier
+	•	Supervisor
+	•	Manager
+	•	Admin
+
+Identify:
+	•	What each role can do
+	•	What they should do but cannot
+	•	Any privilege leaks or unsafe assumptions
+
+⸻
+
+D. OFFLINE-FIRST TRUTH AUDIT (CRITICAL)
+
+Answer explicitly (no theory):
+	•	What POS actions work fully offline?
+	•	What is queued?
+	•	What is blocked?
+	•	Where conflicts occur on sync
+	•	Whether conflict resolution is:
+	•	deterministic
+	•	explainable to staff
+	•	recoverable without admin
+
+Include:
+	•	IndexedDB usage
+	•	Sync triggers
+	•	Failure modes
+	•	Data loss risks
+
+⸻
+
+E. NIGERIA-FIRST REALITY AUDIT (MANDATORY)
+
+Audit POS against actual Nigerian merchant behavior:
+	•	Cash-heavy flows
+	•	Bank transfer reference capture
+	•	Partial / delayed payments
+	•	Power loss mid-transaction
+	•	Shared devices
+	•	Agent trust models
+
+Identify:
+	•	What Nigerian merchants do today outside software
+	•	Which of those behaviors are not modeled in POS
+
+❌ No “should have” features
+✅ Only documented gaps vs reality
+
+⸻
+
+F. MOBILE-FIRST FITNESS
+
+Evaluate POS on:
+	•	Low-end Android devices
+	•	Small screens
+	•	Touch accuracy
+	•	Typing burden
+	•	Performance under poor memory
+
+Flag:
+	•	Any flow that assumes keyboard/mouse
+	•	Any screen unusable on mobile
+
+⸻
+
+G. PWA-FIRST CHECKLIST
+
+Document:
+	•	Installability
+	•	Offline launch behavior
+	•	Background sync
+	•	Update strategy
+	•	Storage limits & failure behavior
+
+⸻
+
+📦 REQUIRED OUTPUT FORMAT
+
+Create a single report:
+
+POS_P1_AUDIT_REPORT.md
+
+With the following sections in order:
+	1.	POS Surface Inventory (table)
+	2.	POS Workflow Trace (step-by-step)
+	3.	Role & Permission Findings
+	4.	Offline-First Reality Findings
+	5.	Nigeria-First Gap Inventory
+	•	Tag each gap as: NX-#, MF-#, OF-#, PWA-#
+	6.	Mobile-First UX Gaps
+	7.	PWA-First Gaps
+	8.	Confirmed Invariants (things that work and must not be broken)
+	9.	Explicit Gap List (with severity + future wave owner)
+	10.	No-Assumption Confirmation Statement
+
+⸻
+
+🛑 STRICT STOP CONDITIONS
+
+You MUST STOP when:
+	•	The report is complete
+	•	No fixes have been applied
+	•	No code has been changed
+	•	No schemas have been touched
+
+End with:
+
+“POS-P1 COMPLETE — STOP FOR HUMAN VERIFICATION”
+
+You are NOT ALLOWED to:
+	•	Propose fixes
+	•	Begin remediation
+	•	Start POS-P2
+	•	Refactor anything
+
+⸻
+
+⚠️ ENFORCEMENT RULES
+	•	If something is unclear → document ambiguity, do NOT resolve it
+	•	If a feature seems missing → confirm absence in code before listing
+	•	If behavior differs between demo/live → document both
+	•	If offline behavior is partial → document exactly where it breaks
+
+⸻
+
+✅ SUCCESS CRITERIA
+
+After POS-P1, we must be able to say with certainty:
+
+“We know exactly how POS behaves today — in Nigeria, on mobile, offline, and under stress.”
+
+⸻
+
+BEGIN POS-P1 NOW.
