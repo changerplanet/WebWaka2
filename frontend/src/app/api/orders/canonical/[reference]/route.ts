@@ -1,6 +1,7 @@
 /**
  * CANONICAL ORDERS API - Detail Endpoint
  * Wave J.1: Unified Order Abstraction (Read-Only)
+ * Wave J.4: Refactored to use TenantContextResolver
  * 
  * GET /api/orders/canonical/[reference]
  * 
@@ -11,13 +12,8 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server'
-import { prisma } from '@/lib/prisma'
+import { TenantContextResolver } from '@/lib/tenant-context'
 import { CanonicalOrderService } from '@/lib/commerce/canonical-order'
-
-function isDemo(tenant: { slug: string; name: string }): boolean {
-  return tenant.slug.toLowerCase().startsWith('demo') || 
-         tenant.name.toLowerCase().includes('demo')
-}
 
 interface RouteParams {
   params: Promise<{ reference: string }>
@@ -42,28 +38,19 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
     )
   }
 
-  const tenant = await prisma.tenant.findUnique({
-    where: { slug: tenantSlug },
-    select: { id: true, name: true, slug: true, status: true },
-  })
+  const result = await TenantContextResolver.resolveForOrders(tenantSlug)
 
-  if (!tenant) {
+  if (!result.success) {
+    const statusMap = { not_found: 404, suspended: 403, module_disabled: 403 }
     return NextResponse.json(
-      { error: 'Tenant not found' },
-      { status: 404 }
+      { error: result.reason === 'not_found' ? 'Tenant not found' : 'Tenant not active' },
+      { status: statusMap[result.reason] }
     )
   }
 
-  const tenantIsDemo = isDemo(tenant)
+  const ctx = result.context
 
-  if (!tenantIsDemo && tenant.status !== 'ACTIVE') {
-    return NextResponse.json(
-      { error: 'Tenant not active' },
-      { status: 403 }
-    )
-  }
-
-  const order = await CanonicalOrderService.getByReference(tenant.id, reference)
+  const order = await CanonicalOrderService.getByReference(ctx.tenantId, reference)
 
   if (!order) {
     return NextResponse.json(
@@ -74,7 +61,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
 
   return NextResponse.json({
     success: true,
-    isDemo: tenantIsDemo,
+    isDemo: ctx.isDemo,
     order,
   })
 }

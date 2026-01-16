@@ -1,0 +1,180 @@
+🔐 WAVE J.4 — Tenant Context Hardening
+
+Priority: CRITICAL
+Type: Core Architecture
+Mode: Read-heavy, controlled refactor
+Status: AUTHORIZED
+
+⸻
+
+🎯 OBJECTIVE
+
+Harden WebWaka’s tenant context handling across all public and semi-public surfaces by reducing reliance on client-passed tenant identifiers and establishing a server-authoritative tenant resolution layer, without breaking existing functionality.
+
+This wave is about security, correctness, and future-proofing, not feature expansion.
+
+⸻
+
+🧠 CONTEXT (DO NOT IGNORE)
+
+WebWaka currently exposes tenantId / tenantSlug in multiple places, especially in:
+	•	SVM public storefronts
+	•	MVM public marketplace
+	•	ParkHub public marketplace
+	•	Sites & Funnels public rendering
+	•	Canonical order, customer, and proof APIs
+
+This is known architectural debt, already documented in Wave I and Wave J reports.
+
+Wave J.4 exists to:
+	•	Reduce exposure
+	•	Normalize resolution
+	•	Prepare for domains, white-label, and enterprise scale
+
+⸻
+
+🧱 SCOPE — WHAT TO IMPLEMENT
+
+1️⃣ Tenant Context Resolver Layer (NEW, INTERNAL)
+
+Create a single authoritative resolver responsible for tenant context resolution.
+
+Required capabilities:
+	•	Resolve tenant from:
+	•	tenantSlug (public routes)
+	•	request host (future-ready, no domain logic yet)
+	•	Validate:
+	•	tenant exists
+	•	tenant status is ACTIVE
+	•	required capability/module is enabled
+	•	Return a TenantContext object (opaque to clients)
+
+📌 This resolver must be used by:
+	•	SVM storefront routes
+	•	MVM marketplace routes
+	•	ParkHub marketplace routes
+	•	Sites & Funnels public routes
+	•	Canonical APIs (orders, customers, proofs)
+
+⸻
+
+2️⃣ TenantContext Object (NEW CANONICAL TYPE)
+
+Define a canonical, internal-only structure:
+
+TenantContext {
+  tenantId: string
+  tenantSlug: string
+  isDemo: boolean
+  enabledModules: string[]
+  source: "slug" | "host"
+}
+
+⚠️ This object:
+	•	Must be resolved server-side only
+	•	Must NOT be reconstructed client-side
+	•	Must NOT be passed verbatim to client components unless unavoidable
+
+⸻
+
+3️⃣ Public Route Refactors (STRICTLY LIMITED)
+
+Refactor existing public routes to use the resolver:
+	•	/[tenantSlug]/store
+	•	/[tenantSlug]/marketplace/*
+	•	/[tenantSlug]/parkhub/*
+	•	/[tenantSlug]/* (Sites & Funnels public pages)
+	•	/api/orders/canonical
+	•	/api/customers/canonical
+	•	/api/proofs/*
+
+Rules:
+	•	❌ NO new business logic
+	•	❌ NO schema changes
+	•	❌ NO auth system changes
+	•	❌ NO feature additions
+	•	✅ Replace ad-hoc tenant resolution with the resolver
+
+⸻
+
+4️⃣ Controlled Client Exposure (IMPORTANT)
+
+Where tenant identifiers must reach the client (e.g. existing providers):
+	•	Clearly mark as temporary architectural debt
+	•	Centralize the exposure in ONE place
+	•	Document why it cannot yet be removed
+
+📌 Example:
+
+SVMProvider still requires tenantId — allowed, but documented.
+
+⸻
+
+5️⃣ Demo vs Live Rules (MUST PRESERVE)
+	•	Demo tenants:
+	•	Resolver allows bypass
+	•	Mark TenantContext.isDemo = true
+	•	Live tenants:
+	•	Strict validation
+	•	404 on invalid / suspended tenants
+
+⸻
+
+🧾 REQUIRED DOCUMENTATION (MANDATORY)
+
+At completion, produce WAVE_J4_TENANT_CONTEXT_REPORT.md containing:
+
+A. What Was Refactored
+	•	List of routes updated
+	•	Services now using TenantContextResolver
+
+B. What Was NOT Changed
+	•	Explicit confirmation of:
+	•	❌ No schema changes
+	•	❌ No new auth
+	•	❌ No new business logic
+
+C. Remaining Architectural Debt
+	•	All places where tenantId is still exposed
+	•	Why they remain
+	•	Which future wave will address them
+
+D. Security Improvements Achieved
+	•	Before vs after comparison
+	•	Risk reduction summary
+
+⸻
+
+🚫 HARD CONSTRAINTS (NON-NEGOTIABLE)
+	•	❌ Do NOT introduce a new API proxy layer
+	•	❌ Do NOT invent opaque tokens yet
+	•	❌ Do NOT change client contracts unnecessarily
+	•	❌ Do NOT add background jobs
+	•	❌ Do NOT add authentication
+
+This wave is foundational, not transformative.
+
+⸻
+
+🛑 STOP CONDITION
+
+When finished, you must:
+	1.	Deliver WAVE_J4_TENANT_CONTEXT_REPORT.md
+	2.	Explicitly list all remaining tenant exposure gaps
+	3.	STOP and wait for approval before Wave K
+
+⸻
+
+✅ SUCCESS DEFINITION
+
+Wave J.4 is successful if:
+	•	All public surfaces resolve tenant context uniformly
+	•	Tenant validation logic exists in one place
+	•	Exposure is reduced, documented, and controlled
+	•	Platform is ready for:
+	•	White-label domains
+	•	Partner branding
+	•	External templates
+	•	Enterprise onboarding
+
+⸻

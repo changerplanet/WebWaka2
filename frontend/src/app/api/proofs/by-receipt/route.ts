@@ -1,6 +1,7 @@
 /**
  * PROOFS API - By Receipt Endpoint
  * Wave J.3: Receipt & Proof Linking (Read-Only)
+ * Wave J.4: Refactored to use TenantContextResolver
  * 
  * GET /api/proofs/by-receipt
  * 
@@ -15,12 +16,8 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { TenantContextResolver } from '@/lib/tenant-context'
 import { CanonicalProofService } from '@/lib/commerce/canonical-proof'
-
-function isDemo(tenant: { slug: string; name: string }): boolean {
-  return tenant.slug.toLowerCase().startsWith('demo') || 
-         tenant.name.toLowerCase().includes('demo')
-}
 
 function normalizeEmail(email: string | null | undefined): string | undefined {
   if (!email) return undefined
@@ -53,40 +50,31 @@ export async function GET(request: NextRequest) {
     )
   }
 
-  const tenant = await prisma.tenant.findUnique({
-    where: { slug: tenantSlug },
-    select: { id: true, name: true, slug: true, status: true },
-  })
+  const result = await TenantContextResolver.resolveForOrders(tenantSlug)
 
-  if (!tenant) {
+  if (!result.success) {
+    const statusMap = { not_found: 404, suspended: 403, module_disabled: 403 }
     return NextResponse.json(
-      { error: 'Tenant not found' },
-      { status: 404 }
+      { error: result.reason === 'not_found' ? 'Tenant not found' : 'Tenant not active' },
+      { status: statusMap[result.reason] }
     )
   }
 
-  const tenantIsDemo = isDemo(tenant)
+  const ctx = result.context
 
-  if (!tenantIsDemo && tenant.status !== 'ACTIVE') {
-    return NextResponse.json(
-      { error: 'Tenant not active' },
-      { status: 403 }
-    )
-  }
-
-  if (!tenantIsDemo && !email && !phone) {
+  if (!ctx.isDemo && !email && !phone) {
     return NextResponse.json(
       { error: 'email or phone required for non-demo tenants' },
       { status: 400 }
     )
   }
 
-  if (!tenantIsDemo) {
+  if (!ctx.isDemo) {
     const normalizedEmail = normalizeEmail(email)
     const normalizedPhone = normalizePhone(phone)
     
     const receipt = await prisma.receipt.findFirst({
-      where: { tenantId: tenant.id, receiptNumber },
+      where: { tenantId: ctx.tenantId, receiptNumber },
       select: { customerEmail: true, customerPhone: true },
     })
     
@@ -103,7 +91,7 @@ export async function GET(request: NextRequest) {
     }
   }
 
-  const proof = await CanonicalProofService.getProofByReceipt(tenant.id, receiptNumber)
+  const proof = await CanonicalProofService.getProofByReceipt(ctx.tenantId, receiptNumber)
 
   if (!proof) {
     return NextResponse.json(
@@ -114,7 +102,7 @@ export async function GET(request: NextRequest) {
 
   return NextResponse.json({
     success: true,
-    isDemo: tenantIsDemo,
+    isDemo: ctx.isDemo,
     proof,
   })
 }

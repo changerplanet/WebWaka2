@@ -1,6 +1,7 @@
 /**
  * CANONICAL ORDERS API - List Endpoint
  * Wave J.1: Unified Order Abstraction (Read-Only)
+ * Wave J.4: Refactored to use TenantContextResolver
  * 
  * GET /api/orders/canonical
  * 
@@ -12,13 +13,8 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server'
-import { prisma } from '@/lib/prisma'
+import { TenantContextResolver } from '@/lib/tenant-context'
 import { CanonicalOrderService } from '@/lib/commerce/canonical-order'
-
-function isDemo(tenant: { slug: string; name: string }): boolean {
-  return tenant.slug.toLowerCase().startsWith('demo') || 
-         tenant.name.toLowerCase().includes('demo')
-}
 
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams
@@ -34,33 +30,24 @@ export async function GET(request: NextRequest) {
     )
   }
 
-  const tenant = await prisma.tenant.findUnique({
-    where: { slug: tenantSlug },
-    select: { id: true, name: true, slug: true, status: true },
-  })
+  const result = await TenantContextResolver.resolveForOrders(tenantSlug)
 
-  if (!tenant) {
+  if (!result.success) {
+    const statusMap = { not_found: 404, suspended: 403, module_disabled: 403 }
     return NextResponse.json(
-      { error: 'Tenant not found' },
-      { status: 404 }
+      { error: result.reason === 'not_found' ? 'Tenant not found' : 'Tenant not active' },
+      { status: statusMap[result.reason] }
     )
   }
 
-  const tenantIsDemo = isDemo(tenant)
+  const ctx = result.context
 
-  if (!tenantIsDemo && tenant.status !== 'ACTIVE') {
-    return NextResponse.json(
-      { error: 'Tenant not active' },
-      { status: 403 }
-    )
-  }
-
-  if (tenantIsDemo) {
-    const result = await CanonicalOrderService.listAllForTenant(tenant.id, { limit })
+  if (ctx.isDemo) {
+    const listResult = await CanonicalOrderService.listAllForTenant(ctx.tenantId, { limit })
     return NextResponse.json({
       success: true,
       isDemo: true,
-      ...result,
+      ...listResult,
     })
   }
 
@@ -75,8 +62,8 @@ export async function GET(request: NextRequest) {
   }
 
   const identifier = { email: email || undefined, phone: phone || undefined }
-  const result = await CanonicalOrderService.listByCustomerIdentifier(
-    tenant.id,
+  const listResult = await CanonicalOrderService.listByCustomerIdentifier(
+    ctx.tenantId,
     identifier,
     { limit }
   )
@@ -84,6 +71,6 @@ export async function GET(request: NextRequest) {
   return NextResponse.json({
     success: true,
     isDemo: false,
-    ...result,
+    ...listResult,
   })
 }

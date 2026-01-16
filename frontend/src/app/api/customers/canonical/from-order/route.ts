@@ -1,6 +1,7 @@
 /**
  * CANONICAL CUSTOMERS API - From Order Endpoint
  * Wave J.2: Unified Customer Identity (Read-Only)
+ * Wave J.4: Refactored to use TenantContextResolver
  * 
  * GET /api/customers/canonical/from-order
  * 
@@ -11,13 +12,8 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server'
-import { prisma } from '@/lib/prisma'
+import { TenantContextResolver } from '@/lib/tenant-context'
 import { CanonicalCustomerService } from '@/lib/commerce/canonical-customer'
-
-function isDemo(tenant: { slug: string; name: string }): boolean {
-  return tenant.slug.toLowerCase().startsWith('demo') || 
-         tenant.name.toLowerCase().includes('demo')
-}
 
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams
@@ -38,29 +34,20 @@ export async function GET(request: NextRequest) {
     )
   }
 
-  const tenant = await prisma.tenant.findUnique({
-    where: { slug: tenantSlug },
-    select: { id: true, name: true, slug: true, status: true },
-  })
+  const result = await TenantContextResolver.resolveForOrders(tenantSlug)
 
-  if (!tenant) {
+  if (!result.success) {
+    const statusMap = { not_found: 404, suspended: 403, module_disabled: 403 }
     return NextResponse.json(
-      { error: 'Tenant not found' },
-      { status: 404 }
+      { error: result.reason === 'not_found' ? 'Tenant not found' : 'Tenant not active' },
+      { status: statusMap[result.reason] }
     )
   }
 
-  const tenantIsDemo = isDemo(tenant)
-
-  if (!tenantIsDemo && tenant.status !== 'ACTIVE') {
-    return NextResponse.json(
-      { error: 'Tenant not active' },
-      { status: 403 }
-    )
-  }
+  const ctx = result.context
 
   const customer = await CanonicalCustomerService.resolveFromOrder(
-    tenant.id,
+    ctx.tenantId,
     reference
   )
 
@@ -73,7 +60,7 @@ export async function GET(request: NextRequest) {
 
   return NextResponse.json({
     success: true,
-    isDemo: tenantIsDemo,
+    isDemo: ctx.isDemo,
     customer,
   })
 }
