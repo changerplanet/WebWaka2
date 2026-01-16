@@ -1,0 +1,205 @@
+Excellent. We will proceed correctly and safely.
+
+Below is the exact Replit execution prompt for POS-P3, written to enforce Nigeria-first, mobile-first, offline-first, PWA-first, with strict stop-conditions and no scope bleed.
+
+This prompt is designed so Replit cannot skip steps, invent features, or drift into other suites.
+
+⸻
+
+🔐 REPLIT EXECUTION PROMPT
+
+POS-P3 — Payments, Receipts, WhatsApp & Nigerian Fintechs
+
+⚠️ MODE
+
+EXECUTION MODE: IMPLEMENTATION
+CONSTRAINT MODE: STRICT
+STOP CONDITIONS: MANDATORY
+PRIOR WAVES REQUIRED: POS-P1, POS-P2 ✅
+DO NOT PROCEED BEYOND POS-P3
+
+⸻
+
+🎯 WAVE OBJECTIVE
+
+Complete real-world Nigerian POS payment and receipt workflows, ensuring:
+	•	Merchants can collect money the way Nigerians actually pay
+	•	Customers can receive proof the way Nigerians expect
+	•	Staff can operate offline, on mobile, under stress
+	•	No money loss, no silent failures, no automation without user action
+
+⸻
+
+🧱 SCOPE (ONLY THESE ITEMS)
+
+1️⃣ PAYMENT METHODS (POS ONLY)
+
+MUST IMPLEMENT
+	•	Card payments
+	•	Mobile payments
+	•	Bank transfer confirmation flow (already added in P2 – extend)
+	•	Wallet/store credit (if already scaffolded)
+
+NIGERIAN FINTECH INTEGRATIONS
+Implement at least ONE Nigerian processor end-to-end:
+	•	Moniepoint OR
+	•	Paystack POS OR
+	•	OPay (POS mode)
+
+⚠️ Choose ONE.
+⚠️ Use existing payment execution infrastructure.
+⚠️ No new gateway abstractions unless already present.
+
+⸻
+
+2️⃣ OFFLINE PAYMENT SAFETY
+
+You MUST ensure:
+
+Scenario	Required Behavior
+Card/Mobile offline	Blocked with clear UI
+Transfer offline	Allowed + queued
+Cash offline	Allowed + queued
+App crash mid-payment	Sale either recoverable or safely cancelled
+Reconnect	User-triggered sync only
+
+❌ NO background jobs
+❌ NO auto-retry without user confirmation
+
+⸻
+
+3️⃣ RECEIPT SYSTEM (POS)
+
+RECEIPT GENERATION
+Implement itemized POS receipts with:
+	•	Line items
+	•	VAT (7.5%)
+	•	Cash rounding adjustment
+	•	Payment method
+	•	Timestamp
+	•	Location / register
+	•	Staff name
+
+RECEIPT DELIVERY
+Support:
+	•	WhatsApp receipt (PRIMARY)
+	•	Optional: SMS fallback
+	•	On-screen receipt preview
+
+⚠️ WhatsApp delivery MUST:
+	•	Be user-triggered
+	•	Use existing notification infrastructure
+	•	Gracefully fail without blocking sale completion
+
+⸻
+
+4️⃣ RECEIPT OUTPUT
+
+Implement at least one:
+	•	Thermal print (browser print / ESC-POS abstraction)
+	•	Downloadable PDF
+	•	QR-code receipt verification link
+
+⸻
+
+5️⃣ TRANSACTION HISTORY (MINIMAL)
+
+Add a read-only transaction list:
+	•	Today only
+	•	Local cache OK
+	•	Shows: amount, payment type, status, receipt available
+	•	Click → view receipt
+
+❌ No reporting
+❌ No refunds here (already scaffolded)
+
+⸻
+
+6️⃣ SECURITY & AUDIT (MANDATORY)
+
+Ensure:
+	•	Every completed sale:
+	•	Has a receipt ID
+	•	Is audit-logged
+	•	Is immutable
+	•	Voids link to original sale
+	•	Transfer references + photos are stored safely
+	•	No PII leakage to unauthorised staff roles
+
+⸻
+
+🚫 EXPLICITLY FORBIDDEN IN POS-P3
+
+Do NOT implement:
+	•	Z-reports / X-reports
+	•	Full accounting exports
+	•	Inventory adjustments
+	•	Automated refunds
+	•	Background jobs
+	•	New POS roles
+	•	New schemas unrelated to POS payments/receipts
+	•	Partner / marketplace logic
+
+⸻
+
+🛑 HARD STOP CONDITIONS
+
+Replit MUST STOP and produce a POS-P3 COMPLETION REPORT that includes:
+
+A. IMPLEMENTED FEATURES
+	•	Payment methods (list + screenshots)
+	•	Offline behaviors (table)
+	•	Receipt formats
+	•	WhatsApp flow details
+
+B. VERIFIED FLOWS
+	•	Online sale → receipt → WhatsApp
+	•	Offline cash/transfer → sync → receipt
+	•	Failed payment → recovery behavior
+
+C. GAP LIST (MANDATORY)
+
+Document every missing or deferred item, including:
+	•	Fintechs not implemented
+	•	Printer limitations
+	•	WhatsApp delivery failures
+	•	Regulatory limitations
+
+D. CONFIRMATION STATEMENT
+
+Explicitly state:
+
+“No assumptions were made. All behavior described is backed by existing code.”
+
+⸻
+
+🚨 FAILURE CONDITIONS (AUTO-REJECT)
+
+This wave is INVALID if:
+	•	Money moves automatically without user confirmation
+	•	Receipts are not generated for POS
+	•	WhatsApp is mocked or simulated
+	•	Nigerian realities are ignored
+	•	Scope bleeds into reports, inventory, or accounting
+
+⸻
+
+🧠 REMINDER TO AGENT
+
+This is Nigeria-first POS:
+	•	Transfers are common
+	•	WhatsApp is essential
+	•	Offline happens daily
+	•	Staff share devices
+	•	Customers demand proof
+
+If it doesn’t survive a busy Lagos shop with bad network, it’s wrong.
+
+⸻
+
+BEGIN POS-P3 IMPLEMENTATION NOW.
+STOP AT COMPLETION REPORT.
+
+⸻
+
+When Replit completes POS-P3, bring the report here and we will audit it line-by-line before moving to the next suite.

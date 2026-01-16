@@ -58,6 +58,15 @@ export interface PaymentData {
   amountPaid?: number
 }
 
+export interface CheckoutResult {
+  success: boolean
+  saleId?: string
+  receiptId?: string
+  receiptNumber?: string
+  qrVerificationCode?: string
+  error?: string
+}
+
 export interface POSState {
   // Connection & sync
   isOnline: boolean
@@ -84,6 +93,9 @@ export interface POSState {
   locations: POSLocation[]
 }
 
+export const OFFLINE_SAFE_PAYMENT_METHODS = ['CASH', 'TRANSFER', 'BANK_TRANSFER'] as const
+export const ONLINE_ONLY_PAYMENT_METHODS = ['CARD', 'MOBILE_MONEY', 'WALLET'] as const
+
 // ============================================================================
 // CONTEXT
 // ============================================================================
@@ -99,9 +111,10 @@ interface POSContextValue extends POSState {
   applyDiscount: (itemId: string, discount: number) => void
   setCustomer: (customerId: string, customerName: string) => void
   clearCart: () => void
-  checkout: (paymentMethod: string, paymentData?: PaymentData) => Promise<{ success: boolean; saleId?: string; error?: string }>
+  checkout: (paymentMethod: string, paymentData?: PaymentData) => Promise<CheckoutResult>
   refreshProducts: () => Promise<void>
   syncOfflineTransactions: () => Promise<void>
+  canUsePaymentMethod: (method: string) => boolean
 }
 
 const POSContext = createContext<POSContextValue | null>(null)
@@ -452,82 +465,119 @@ export function POSProvider({ children, tenantId }: POSProviderProps) {
     }))
   }, [])
 
-  const checkout = useCallback(async (paymentMethod: string, paymentData?: PaymentData) => {
+  const canUsePaymentMethod = useCallback((method: string): boolean => {
+    if (state.isOnline) return true
+    return OFFLINE_SAFE_PAYMENT_METHODS.includes(method as any)
+  }, [state.isOnline])
+
+  const checkout = useCallback(async (paymentMethod: string, paymentData?: PaymentData): Promise<CheckoutResult> => {
+    if (!canUsePaymentMethod(paymentMethod)) {
+      return { 
+        success: false, 
+        error: `${paymentMethod} is not available while offline. Please use Cash or Bank Transfer.` 
+      }
+    }
+
+    const idempotencyKey = `sale_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`
+    
     const saleData = {
-      tenantId,
-      locationId: state.locationId,
-      staffId: state.staffId,
+      locationId: state.locationId!,
+      locationName: state.locationName || 'POS',
       customerId: state.cart.customerId,
+      customerName: state.cart.customerName,
       items: state.cart.items.map(item => ({
         productId: item.product.productId,
         variantId: item.product.variantId,
+        productName: item.product.name,
         sku: item.product.sku,
-        name: item.product.name,
         quantity: item.quantity,
         unitPrice: item.unitPrice,
         discount: item.discount,
-        total: item.total
+        tax: (item.unitPrice * item.quantity - item.discount) * 0.075,
+        lineTotal: item.total
       })),
       subtotal: state.cart.subtotal,
       discountTotal: state.cart.discountTotal,
       taxTotal: state.cart.taxTotal,
       grandTotal: state.cart.grandTotal,
       paymentMethod,
+      amountTendered: paymentData?.amountPaid,
+      changeGiven: paymentData?.amountPaid ? paymentData.amountPaid - state.cart.grandTotal : undefined,
       transferReference: paymentData?.transferReference,
       transferImage: paymentData?.transferImage,
       roundingMode: paymentData?.roundingMode,
       roundingAdjustment: paymentData?.roundingAdjustment,
-      amountPaid: paymentData?.amountPaid || state.cart.grandTotal,
-      timestamp: new Date().toISOString()
+      offlineId: idempotencyKey,
     }
 
-    // Check if we're using demo products (demo mode)
     const isDemo = state.locationId?.startsWith('demo-')
     
-    // If demo mode, skip API call and treat as successful
     if (isDemo) {
       const saleId = `demo_${Date.now()}`
-      // Save to localStorage for demo purposes
       const demoSales = loadFromStorage<any[]>('pos_demo_sales', [])
       demoSales.push({ ...saleData, saleId, status: 'completed' })
       saveToStorage('pos_demo_sales', demoSales)
       clearCart()
-      return { success: true, saleId }
+      return { 
+        success: true, 
+        saleId,
+        receiptNumber: `RCP-DEMO-${Date.now().toString().slice(-6)}`,
+        qrVerificationCode: `DEMO-${Date.now().toString(36).toUpperCase()}`
+      }
     }
 
-    // If online, submit immediately
     if (state.isOnline) {
       try {
-        const res = await fetch('/api/pos/events', {
+        const res = await fetch('/api/pos/sales', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            eventType: 'pos.sale.completed',
-            tenantId,
-            payload: saleData
-          })
+          body: JSON.stringify(saleData)
         })
         const data = await res.json()
         if (data.success) {
           clearCart()
-          return { success: true, saleId: data.saleId || `sale_${Date.now()}` }
+          return { 
+            success: true, 
+            saleId: data.sale.id,
+            receiptId: data.sale.receiptId,
+            receiptNumber: data.sale.receiptNumber,
+            qrVerificationCode: data.sale.qrVerificationCode
+          }
         }
-        // If API fails, fall through to offline handling
+        return { success: false, error: data.error || 'Failed to process sale' }
       } catch (e) {
-        // Fall through to offline handling
+        const isOnlineOnlyMethod = ONLINE_ONLY_PAYMENT_METHODS.includes(paymentMethod as any)
+        if (isOnlineOnlyMethod) {
+          return { 
+            success: false, 
+            error: `Network error. ${paymentMethod} payments require a stable internet connection. Please check your connection and try again.` 
+          }
+        }
       }
     }
 
-    // Save for offline sync
+    const isOnlineOnlyMethod = ONLINE_ONLY_PAYMENT_METHODS.includes(paymentMethod as any)
+    if (isOnlineOnlyMethod) {
+      return { 
+        success: false, 
+        error: `${paymentMethod} payments cannot be processed offline. Please use Cash or Bank Transfer.` 
+      }
+    }
+
     const pending = loadFromStorage<any[]>(STORAGE_KEYS.PENDING_TRANSACTIONS, [])
-    pending.push({ ...saleData, offlineId: `offline_${Date.now()}` })
+    pending.push({ ...saleData, isOffline: true })
     saveToStorage(STORAGE_KEYS.PENDING_TRANSACTIONS, pending)
     
     setState(s => ({ ...s, pendingTransactions: pending.length }))
     clearCart()
     
-    return { success: true, saleId: `offline_${Date.now()}` }
-  }, [tenantId, state.locationId, state.staffId, state.cart, state.isOnline, clearCart])
+    return { 
+      success: true, 
+      saleId: idempotencyKey,
+      receiptNumber: `RCP-OFFLINE-${idempotencyKey.slice(-6)}`,
+      qrVerificationCode: `PENDING-SYNC`
+    }
+  }, [tenantId, state.locationId, state.locationName, state.staffId, state.cart, state.isOnline, clearCart, canUsePaymentMethod])
 
   const syncOfflineTransactions = useCallback(async () => {
     if (!state.isOnline) return
@@ -536,16 +586,29 @@ export function POSProvider({ children, tenantId }: POSProviderProps) {
     
     const pending = loadFromStorage<any[]>(STORAGE_KEYS.PENDING_TRANSACTIONS, [])
     const synced: string[] = []
+    const rejected: string[] = []
     
     for (const transaction of pending) {
+      if (!transaction.offlineId) {
+        console.warn('[POS Sync] Rejecting transaction without offlineId')
+        rejected.push(transaction.offlineId || 'unknown')
+        continue
+      }
+      
+      const isOnlineOnlyMethod = ONLINE_ONLY_PAYMENT_METHODS.includes(transaction.paymentMethod as any)
+      if (isOnlineOnlyMethod) {
+        console.warn('[POS Sync] Rejecting offline online-only payment:', transaction.offlineId, transaction.paymentMethod)
+        rejected.push(transaction.offlineId)
+        continue
+      }
+
       try {
-        const res = await fetch('/api/pos/events', {
+        const res = await fetch('/api/pos/sales', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            eventType: 'pos.sale.completed',
-            tenantId,
-            payload: transaction
+            ...transaction,
+            isOffline: true,
           })
         })
         if (res.ok) {
@@ -556,8 +619,9 @@ export function POSProvider({ children, tenantId }: POSProviderProps) {
       }
     }
     
-    // Remove synced transactions
-    const remaining = pending.filter(t => !synced.includes(t.offlineId))
+    const remaining = pending.filter(t => 
+      !synced.includes(t.offlineId) && !rejected.includes(t.offlineId)
+    )
     saveToStorage(STORAGE_KEYS.PENDING_TRANSACTIONS, remaining)
     
     setState(s => ({ 
@@ -588,7 +652,8 @@ export function POSProvider({ children, tenantId }: POSProviderProps) {
     clearCart,
     checkout,
     refreshProducts,
-    syncOfflineTransactions
+    syncOfflineTransactions,
+    canUsePaymentMethod
   }
 
   return (

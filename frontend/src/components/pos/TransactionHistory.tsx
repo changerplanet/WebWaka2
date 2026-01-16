@@ -1,0 +1,245 @@
+'use client'
+
+import { useState, useEffect } from 'react'
+import { 
+  Receipt, 
+  Clock, 
+  CreditCard, 
+  Banknote, 
+  Building2,
+  Smartphone,
+  Wallet,
+  ChevronRight,
+  RefreshCw,
+  AlertCircle,
+  Loader2
+} from 'lucide-react'
+import { formatNGNShort } from '@/lib/pos/config'
+import { ReceiptView } from './ReceiptView'
+
+interface Sale {
+  id: string
+  saleNumber: string
+  receiptNumber?: string
+  saleDate: string
+  status: string
+  grandTotal: number
+  paymentMethod: string
+  customerName?: string
+  staffName: string
+  currency: string
+  hasReceipt: boolean
+  receiptId?: string
+}
+
+interface TransactionHistoryProps {
+  locationId?: string
+  tenantId: string
+  onClose: () => void
+}
+
+const PAYMENT_ICONS: Record<string, React.ElementType> = {
+  CASH: Banknote,
+  CARD: CreditCard,
+  TRANSFER: Building2,
+  BANK_TRANSFER: Building2,
+  MOBILE: Smartphone,
+  MOBILE_MONEY: Smartphone,
+  WALLET: Wallet,
+}
+
+export function TransactionHistory({ locationId, tenantId, onClose }: TransactionHistoryProps) {
+  const [sales, setSales] = useState<Sale[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const [selectedReceipt, setSelectedReceipt] = useState<any | null>(null)
+  const [isLoadingReceipt, setIsLoadingReceipt] = useState(false)
+
+  const fetchSales = async () => {
+    setIsLoading(true)
+    setError(null)
+
+    try {
+      const params = new URLSearchParams()
+      if (locationId) params.set('locationId', locationId)
+      
+      const res = await fetch(`/api/pos/sales?${params.toString()}`)
+      const data = await res.json()
+
+      if (data.success) {
+        setSales(data.sales)
+      } else {
+        setError(data.error || 'Failed to load transactions')
+      }
+    } catch (err) {
+      setError('Failed to load transactions')
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    fetchSales()
+  }, [locationId])
+
+  const handleViewReceipt = async (sale: Sale) => {
+    if (!sale.receiptId) return
+
+    setIsLoadingReceipt(true)
+    try {
+      const res = await fetch(`/api/pos/receipts?id=${sale.receiptId}`)
+      const data = await res.json()
+
+      if (data.success) {
+        setSelectedReceipt(data.receipt)
+      }
+    } catch (err) {
+      console.error('Failed to load receipt:', err)
+    } finally {
+      setIsLoadingReceipt(false)
+    }
+  }
+
+  const formatTime = (dateStr: string) => {
+    const date = new Date(dateStr)
+    return date.toLocaleTimeString('en-NG', {
+      hour: '2-digit',
+      minute: '2-digit',
+    })
+  }
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'COMPLETED':
+        return 'bg-emerald-100 text-emerald-700'
+      case 'VOIDED':
+        return 'bg-red-100 text-red-700'
+      case 'REFUNDED':
+        return 'bg-amber-100 text-amber-700'
+      default:
+        return 'bg-slate-100 text-slate-700'
+    }
+  }
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
+      <div className="bg-white rounded-2xl shadow-xl max-w-lg w-full max-h-[90vh] overflow-hidden flex flex-col">
+        <div className="p-4 border-b border-slate-200 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Clock className="w-5 h-5 text-slate-600" />
+            <div>
+              <h2 className="font-bold text-lg">Today&apos;s Transactions</h2>
+              <p className="text-sm text-slate-500">{new Date().toLocaleDateString('en-NG', { weekday: 'long', month: 'long', day: 'numeric' })}</p>
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={fetchSales}
+              disabled={isLoading}
+              className="p-2 hover:bg-slate-100 rounded-lg transition-colors"
+            >
+              <RefreshCw className={`w-5 h-5 ${isLoading ? 'animate-spin' : ''}`} />
+            </button>
+            <button
+              onClick={onClose}
+              className="p-2 hover:bg-slate-100 rounded-lg transition-colors"
+            >
+              ✕
+            </button>
+          </div>
+        </div>
+
+        <div className="flex-1 overflow-y-auto">
+          {isLoading ? (
+            <div className="flex items-center justify-center py-12">
+              <Loader2 className="w-8 h-8 animate-spin text-slate-400" />
+            </div>
+          ) : error ? (
+            <div className="flex flex-col items-center justify-center py-12 text-center">
+              <AlertCircle className="w-12 h-12 text-red-400 mb-4" />
+              <p className="text-red-600 font-medium">{error}</p>
+              <button
+                onClick={fetchSales}
+                className="mt-4 px-4 py-2 bg-slate-100 hover:bg-slate-200 rounded-lg text-sm font-medium"
+              >
+                Try Again
+              </button>
+            </div>
+          ) : sales.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-12 text-center text-slate-400">
+              <Receipt className="w-12 h-12 mb-4" />
+              <p className="font-medium">No transactions today</p>
+              <p className="text-sm">Sales will appear here</p>
+            </div>
+          ) : (
+            <div className="divide-y divide-slate-100">
+              {sales.map((sale) => {
+                const PaymentIcon = PAYMENT_ICONS[sale.paymentMethod] || CreditCard
+                return (
+                  <button
+                    key={sale.id}
+                    onClick={() => handleViewReceipt(sale)}
+                    disabled={!sale.hasReceipt || isLoadingReceipt}
+                    className="w-full p-4 hover:bg-slate-50 transition-colors flex items-center gap-4 text-left touch-manipulation disabled:opacity-50"
+                  >
+                    <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${getStatusColor(sale.status)}`}>
+                      <PaymentIcon className="w-6 h-6" />
+                    </div>
+                    
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2">
+                        <span className="font-medium text-slate-900 truncate">
+                          {sale.customerName || 'Walk-in Customer'}
+                        </span>
+                        <span className={`text-xs px-2 py-0.5 rounded-full ${getStatusColor(sale.status)}`}>
+                          {sale.status}
+                        </span>
+                      </div>
+                      <div className="text-sm text-slate-500 flex items-center gap-2">
+                        <span>{formatTime(sale.saleDate)}</span>
+                        <span>•</span>
+                        <span>{sale.saleNumber}</span>
+                      </div>
+                    </div>
+
+                    <div className="text-right">
+                      <p className="font-bold text-slate-900">{formatNGNShort(sale.grandTotal)}</p>
+                      <p className="text-xs text-slate-500">{sale.paymentMethod}</p>
+                    </div>
+
+                    {sale.hasReceipt && (
+                      <ChevronRight className="w-5 h-5 text-slate-400" />
+                    )}
+                  </button>
+                )
+              })}
+            </div>
+          )}
+        </div>
+
+        <div className="p-4 border-t border-slate-200 bg-slate-50">
+          <div className="flex justify-between text-sm">
+            <span className="text-slate-500">Total Sales Today</span>
+            <span className="font-bold text-slate-900">
+              {formatNGNShort(sales.filter(s => s.status === 'COMPLETED').reduce((sum, s) => sum + s.grandTotal, 0))}
+            </span>
+          </div>
+          <div className="flex justify-between text-sm mt-1">
+            <span className="text-slate-500">Transactions</span>
+            <span className="font-medium text-slate-700">
+              {sales.filter(s => s.status === 'COMPLETED').length} completed
+            </span>
+          </div>
+        </div>
+      </div>
+
+      {selectedReceipt && (
+        <ReceiptView
+          receipt={selectedReceipt}
+          onClose={() => setSelectedReceipt(null)}
+          tenantId={tenantId}
+        />
+      )}
+    </div>
+  )
+}
