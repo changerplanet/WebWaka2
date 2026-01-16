@@ -56,6 +56,7 @@ function buildContext(
     id: string
     slug: string
     name: string
+    status: string
     activatedModules: string[]
     primaryColor: string
     secondaryColor: string
@@ -69,6 +70,7 @@ function buildContext(
     tenantId: tenant.id,
     tenantSlug: tenant.slug,
     tenantName: tenant.name,
+    tenantStatus: tenant.status as TenantContext['tenantStatus'],
     isDemo: isDemo(tenant.slug, tenant.name),
     enabledModules: tenant.activatedModules,
     source,
@@ -252,11 +254,16 @@ export class TenantContextResolver {
     })
   }
 
+  /**
+   * Resolve tenant for canonical orders/customers/proofs
+   * Requires commerce capability (SVM or MVM only)
+   * ParkHub-only tenants do NOT get access - they have separate ticket APIs
+   */
   static async resolveForOrders(
     tenantSlug: string
   ): Promise<TenantContextResolutionResult> {
     return this.resolveFromSlug(tenantSlug, {
-      requiredModules: ['orders'],
+      requiredModules: ['svm', 'mvm'],
     })
   }
 

@@ -17,6 +17,7 @@ export interface TenantContext {
   tenantId: string
   tenantSlug: string
   tenantName: string
+  tenantStatus: 'ACTIVE' | 'SUSPENDED' | 'PENDING' | 'CANCELLED'
   isDemo: boolean
   enabledModules: string[]
   source: TenantContextSource
@@ -43,7 +44,6 @@ export const MODULE_ALIASES: Record<string, string[]> = {
   'mvm': ['mvm', 'marketplace', 'commerce'],
   'parkhub': ['parkhub', 'transport'],
   'sites-funnels': ['sites-funnels', 'sites_funnels', 'sites', 'funnels'],
-  'orders': ['svm', 'mvm', 'parkhub', 'commerce', 'store', 'marketplace', 'transport'],
 }
 
 export type TenantContextResolutionResult =

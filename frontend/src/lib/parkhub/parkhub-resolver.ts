@@ -86,7 +86,7 @@ function contextToParkHubTenant(ctx: TenantContext): ParkHubTenant {
     id: ctx.tenantId,
     name: ctx.tenantName,
     slug: ctx.tenantSlug,
-    status: 'ACTIVE' as TenantStatus,
+    status: ctx.tenantStatus as TenantStatus,
     appName: ctx.appName,
     logoUrl: ctx.logoUrl,
     faviconUrl: ctx.faviconUrl,
