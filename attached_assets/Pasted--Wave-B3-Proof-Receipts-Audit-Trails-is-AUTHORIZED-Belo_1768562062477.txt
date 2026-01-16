@@ -1,0 +1,202 @@
+✅ Wave B3 — Proof, Receipts & Audit Trails is AUTHORIZED
+
+Below is the exact Replit execution prompt, written to enforce discipline, scope control, and hard stop conditions, fully aligned with the platform principles you set and the prior Waves B1/B2 outcomes.
+
+⸻
+
+🔒 REPLIT EXECUTION PROMPT
+
+WAVE B3 — PROOF, RECEIPTS & AUDIT TRAILS
+
+MODE: READ-ONLY ANALYSIS + TARGETED HARDENING (NO SCHEMA CHANGES UNLESS EXPLICITLY AUTHORIZED)
+
+⸻
+
+🎯 WAVE OBJECTIVE
+
+Perform a system-wide verification and hardening of proof artifacts across WebWaka to ensure that:
+	•	Orders, receipts, tickets, and manifests form coherent, traceable, and non-contradictory proof chains
+	•	Public verification endpoints behave correctly, consistently, and safely
+	•	Audit trails are logically tamper-resistant (even if not cryptographically sealed)
+	•	Proof behavior is parity-consistent across SVM, MVM, and ParkHub
+
+This wave is NOT about adding features.
+It is about truth, correctness, and auditability.
+
+⸻
+
+🚫 ABSOLUTE CONSTRAINTS (NON-NEGOTIABLE)
+
+You MUST NOT:
+	•	❌ Introduce new business logic
+	•	❌ Invent new proof relationships
+	•	❌ Create fake links or inferred mappings
+	•	❌ Add automation or background jobs
+	•	❌ Modify schemas unless explicitly approved
+	•	❌ Change money movement behavior
+	•	❌ Relax tenant isolation or identity verification
+	•	❌ Mask or hide gaps — gaps MUST be documented
+
+If something is missing:
+➡️ Document it. Do NOT workaround it.
+
+⸻
+
+🧠 SCOPE OF ANALYSIS
+
+1️⃣ PROOF ARTIFACT ENUMERATION (MANDATORY)
+
+Enumerate ALL proof-bearing artifacts, including but not limited to:
+	•	SVM orders
+	•	MVM parent orders
+	•	MVM sub-orders
+	•	ParkHub tickets
+	•	Receipts
+	•	Manifests
+	•	Manifest revisions
+	•	Any audit / revision / verification records
+
+For EACH artifact, record:
+	•	Source system
+	•	Primary identifier
+	•	Tenant binding
+	•	Customer binding (if any)
+	•	Time of creation
+	•	Mutability status
+	•	Public verifiability (YES/NO)
+
+⸻
+
+2️⃣ PROOF CHAIN VALIDATION (CRITICAL)
+
+For each system, map what chains exist vs what chains are expected:
+
+Chain	Exists	Verifiable	Notes
+Order → Receipt	?	?	
+Order → Ticket	?	?	
+Ticket → Receipt	?	?	
+Ticket → Manifest	?	?	
+Receipt → Manifest	?	?	
+Receipt → Order	?	?	
+Manifest → Tickets	?	?	
+
+⚠️ If a link does not exist in code or schema:
+	•	Mark ❌
+	•	Explain WHY
+	•	State what would be required to fix it (future wave)
+
+⸻
+
+3️⃣ PUBLIC VERIFICATION ENDPOINT AUDIT
+
+Audit ALL public/semi-public verification routes:
+	•	/verify/receipt/[id]
+	•	/verify/manifest/[number]
+	•	Any order / ticket verification endpoints
+
+For EACH:
+	•	What data is exposed?
+	•	Is tenant isolation enforced?
+	•	Is identity verification required?
+	•	Are error messages enumerable?
+	•	Can existence be inferred?
+
+⚠️ Do NOT weaken security — only document or tighten if already allowed.
+
+⸻
+
+4️⃣ AUDIT TRAIL & TAMPER RESISTANCE CHECK
+
+For each proof artifact, answer:
+	•	Is there a revision log?
+	•	Are reprints tracked?
+	•	Are edits allowed?
+	•	Is there a hash / checksum / verification signal?
+	•	Can a proof be silently altered?
+
+Classify each artifact as:
+	•	IMMUTABLE
+	•	APPEND-ONLY
+	•	MUTABLE (WITH AUDIT)
+	•	MUTABLE (NO AUDIT) ❗
+
+⸻
+
+5️⃣ CROSS-SUITE PARITY CHECK
+
+Compare SVM vs MVM vs ParkHub:
+	•	Are receipts conceptually equivalent?
+	•	Are verification guarantees equivalent?
+	•	Are audit signals equivalent?
+	•	Are naming/numbering schemes consistent?
+
+Any divergence MUST be explained.
+
+⸻
+
+6️⃣ GAP INVENTORY (MANDATORY OUTPUT)
+
+Produce a Wave B3 GAP LIST, each gap documented as:
+	•	Gap ID
+	•	Affected suite(s)
+	•	Severity (LOW / MEDIUM / HIGH)
+	•	Risk type (Security / Audit / Compliance / UX / Ops)
+	•	Why it exists
+	•	Why it is NOT fixed in Wave B3
+	•	Which future wave owns it
+
+⚠️ No gap may be omitted.
+
+⸻
+
+📄 REQUIRED DELIVERABLES
+
+You MUST produce:
+	1.	WAVE_B3_PROOF_INTEGRITY_REPORT.md
+	•	Full findings
+	•	Proof chain matrix
+	•	Public exposure analysis
+	•	Parity comparison
+	2.	WAVE_B3_GAPS.md
+	•	Explicit, enumerated gaps only
+	•	No speculative fixes
+	3.	Executive Summary
+	•	Is WebWaka proof/audit layer production-safe?
+	•	What blocks regulated or enterprise usage?
+	•	What is safe to expose publicly?
+
+⸻
+
+🛑 HARD STOP CONDITIONS (VERY IMPORTANT)
+
+You MUST STOP execution when ALL of the following are true:
+	•	✅ All proof artifacts are enumerated
+	•	✅ All proof chains are mapped (even if broken)
+	•	✅ All public verification routes are audited
+	•	✅ Audit/tamper properties are classified
+	•	✅ Gaps are fully documented
+	•	✅ NO fixes beyond permitted hardening are applied
+
+⛔ DO NOT proceed to:
+	•	Fixing gaps
+	•	Adding schema
+	•	Enhancing receipts
+	•	Monetization
+	•	UI work
+
+WAIT FOR EXPLICIT AUTHORIZATION AFTER REPORT DELIVERY.
+
+⸻
+
+🔍 SUCCESS CRITERIA
+
+This wave is successful if, after reading the report, the platform owner can answer with certainty:
+
+“For any order, ticket, receipt, or manifest in WebWaka, I know exactly:
+where it comes from, what it proves, what it does NOT prove,
+who can verify it, and what is missing.”
+
+⸻
+
+BEGIN WAVE B3 NOW.
+STOP WHEN REPORTS ARE COMPLETE.
