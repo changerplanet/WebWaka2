@@ -12,10 +12,13 @@ import {
   ChevronRight,
   RefreshCw,
   AlertCircle,
-  Loader2
+  Loader2,
+  Ban
 } from 'lucide-react'
 import { formatNGNShort } from '@/lib/pos/config'
 import { ReceiptView } from './ReceiptView'
+import { VoidSaleModal } from './VoidSaleModal'
+import { POSRole, hasPOSPermission } from '@/app/pos/layout'
 
 interface Sale {
   id: string
@@ -32,10 +35,17 @@ interface Sale {
   receiptId?: string
 }
 
+interface Shift {
+  id: string
+  status: string
+}
+
 interface TransactionHistoryProps {
   locationId?: string
   tenantId: string
   onClose: () => void
+  currentShift?: Shift | null
+  posRole?: POSRole
 }
 
 const PAYMENT_ICONS: Record<string, React.ElementType> = {
@@ -48,12 +58,16 @@ const PAYMENT_ICONS: Record<string, React.ElementType> = {
   WALLET: Wallet,
 }
 
-export function TransactionHistory({ locationId, tenantId, onClose }: TransactionHistoryProps) {
+export function TransactionHistory({ locationId, tenantId, onClose, currentShift, posRole = 'POS_CASHIER' }: TransactionHistoryProps) {
   const [sales, setSales] = useState<Sale[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [selectedReceipt, setSelectedReceipt] = useState<any | null>(null)
   const [isLoadingReceipt, setIsLoadingReceipt] = useState(false)
+  const [voidingSale, setVoidingSale] = useState<Sale | null>(null)
+  
+  const canVoid = hasPOSPermission(posRole, 'pos.sale.void') || posRole === 'POS_MANAGER'
+  const isShiftOpen = currentShift?.status === 'OPEN'
 
   const fetchSales = async () => {
     setIsLoading(true)
@@ -175,18 +189,21 @@ export function TransactionHistory({ locationId, tenantId, onClose }: Transactio
             <div className="divide-y divide-slate-100">
               {sales.map((sale) => {
                 const PaymentIcon = PAYMENT_ICONS[sale.paymentMethod] || CreditCard
+                const isVoidable = sale.status === 'COMPLETED' && canVoid && isShiftOpen
                 return (
-                  <button
+                  <div
                     key={sale.id}
-                    onClick={() => handleViewReceipt(sale)}
-                    disabled={!sale.hasReceipt || isLoadingReceipt}
-                    className="w-full p-4 hover:bg-slate-50 transition-colors flex items-center gap-4 text-left touch-manipulation disabled:opacity-50"
+                    className="p-4 hover:bg-slate-50 transition-colors flex items-center gap-4"
                   >
                     <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${getStatusColor(sale.status)}`}>
                       <PaymentIcon className="w-6 h-6" />
                     </div>
                     
-                    <div className="flex-1 min-w-0">
+                    <button
+                      onClick={() => handleViewReceipt(sale)}
+                      disabled={!sale.hasReceipt || isLoadingReceipt}
+                      className="flex-1 min-w-0 text-left touch-manipulation disabled:opacity-50"
+                    >
                       <div className="flex items-center gap-2">
                         <span className="font-medium text-slate-900 truncate">
                           {sale.customerName || 'Walk-in Customer'}
@@ -200,17 +217,27 @@ export function TransactionHistory({ locationId, tenantId, onClose }: Transactio
                         <span>•</span>
                         <span>{sale.saleNumber}</span>
                       </div>
-                    </div>
+                    </button>
 
                     <div className="text-right">
                       <p className="font-bold text-slate-900">{formatNGNShort(sale.grandTotal)}</p>
                       <p className="text-xs text-slate-500">{sale.paymentMethod}</p>
                     </div>
 
-                    {sale.hasReceipt && (
+                    {isVoidable && (
+                      <button
+                        onClick={(e) => { e.stopPropagation(); setVoidingSale(sale) }}
+                        className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                        title="Void Sale"
+                      >
+                        <Ban className="w-5 h-5" />
+                      </button>
+                    )}
+
+                    {sale.hasReceipt && !isVoidable && (
                       <ChevronRight className="w-5 h-5 text-slate-400" />
                     )}
-                  </button>
+                  </div>
                 )
               })}
             </div>
@@ -238,6 +265,37 @@ export function TransactionHistory({ locationId, tenantId, onClose }: Transactio
           receipt={selectedReceipt}
           onClose={() => setSelectedReceipt(null)}
           tenantId={tenantId}
+        />
+      )}
+
+      {voidingSale && (
+        <VoidSaleModal
+          saleId={voidingSale.id}
+          saleTotal={voidingSale.grandTotal}
+          currentRole={posRole}
+          onConfirm={async (supervisorPin, reason) => {
+            try {
+              const res = await fetch('/api/pos/sales/void', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  saleId: voidingSale.id,
+                  reason,
+                  supervisorPin: supervisorPin || undefined,
+                })
+              })
+              const data = await res.json()
+              if (data.success) {
+                setVoidingSale(null)
+                fetchSales()
+                return true
+              }
+              return false
+            } catch {
+              return false
+            }
+          }}
+          onCancel={() => setVoidingSale(null)}
         />
       )}
     </div>

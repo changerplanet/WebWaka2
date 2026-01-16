@@ -14,8 +14,13 @@ import {
   ShiftManagement,
   XZReport,
   Reconciliation,
-  TransactionHistory
+  TransactionHistory,
+  InventoryAdjustment,
+  CashTransfer,
+  SupervisorDashboard,
+  DailyReconciliation
 } from '@/components/pos'
+import { usePOSRole } from './layout'
 import { 
   ShoppingBag, 
   CreditCard, 
@@ -28,7 +33,11 @@ import {
   FileText,
   Calculator,
   History,
-  Menu
+  Menu,
+  Eye,
+  ArrowRightLeft,
+  PackageSearch,
+  BarChart3
 } from 'lucide-react'
 
 // ============================================================================
@@ -77,6 +86,16 @@ function POSMainScreen() {
   const [showTransactionHistory, setShowTransactionHistory] = useState(false)
   const [showManagerMenu, setShowManagerMenu] = useState(false)
   const [locations, setLocations] = useState<Location[]>([])
+  
+  const [showInventoryAdjustment, setShowInventoryAdjustment] = useState(false)
+  const [showCashTransfer, setShowCashTransfer] = useState(false)
+  const [showSupervisorDashboard, setShowSupervisorDashboard] = useState(false)
+  const [showDailyReconciliation, setShowDailyReconciliation] = useState(false)
+  
+  const { posRole, hasPermission } = usePOSRole()
+  const isSupervisorOrAbove = posRole === 'POS_SUPERVISOR' || posRole === 'POS_MANAGER'
+  const isManager = posRole === 'POS_MANAGER'
+  const hasZReport = currentShift?.status === 'RECONCILED'
 
   useEffect(() => {
     if (activeTenantId && locationId) {
@@ -206,7 +225,7 @@ function POSMainScreen() {
                     className="fixed inset-0 z-40"
                     onClick={() => setShowManagerMenu(false)}
                   />
-                  <div className="absolute right-0 top-full mt-1 w-48 bg-white rounded-xl shadow-lg border border-slate-200 z-50 py-1">
+                  <div className="absolute right-0 top-full mt-1 w-56 bg-white rounded-xl shadow-lg border border-slate-200 z-50 py-1 max-h-[80vh] overflow-y-auto">
                     <button
                       onClick={() => { setShowTransactionHistory(true); setShowManagerMenu(false) }}
                       className="w-full px-4 py-3 text-left hover:bg-slate-50 flex items-center gap-3 text-sm"
@@ -238,6 +257,62 @@ function POSMainScreen() {
                         >
                           <Calculator className="w-4 h-4 text-emerald-500" />
                           Cash Reconciliation
+                        </button>
+                      </>
+                    )}
+                    
+                    {/* POS-P5 Components - Supervisor+ Only */}
+                    {isSupervisorOrAbove && (
+                      <>
+                        <div className="border-t border-slate-100 my-1" />
+                        <div className="px-4 py-2 text-xs font-semibold text-slate-400 uppercase">
+                          Supervisor Tools
+                        </div>
+                        
+                        {/* Supervisor Dashboard - Read-only, no state gate */}
+                        <button
+                          onClick={() => { setShowSupervisorDashboard(true); setShowManagerMenu(false) }}
+                          className="w-full px-4 py-3 text-left hover:bg-slate-50 flex items-center gap-3 text-sm"
+                        >
+                          <Eye className="w-4 h-4 text-indigo-500" />
+                          Supervisor Dashboard
+                        </button>
+                        
+                        {/* Inventory Adjustment - Shift open or closed */}
+                        <button
+                          onClick={() => { setShowInventoryAdjustment(true); setShowManagerMenu(false) }}
+                          className="w-full px-4 py-3 text-left hover:bg-slate-50 flex items-center gap-3 text-sm"
+                        >
+                          <PackageSearch className="w-4 h-4 text-amber-500" />
+                          Inventory Adjustment
+                        </button>
+                        
+                        {/* Cash Transfer - Shift must be open */}
+                        {currentShift?.status === 'OPEN' && (
+                          <button
+                            onClick={() => { setShowCashTransfer(true); setShowManagerMenu(false) }}
+                            className="w-full px-4 py-3 text-left hover:bg-slate-50 flex items-center gap-3 text-sm"
+                          >
+                            <ArrowRightLeft className="w-4 h-4 text-purple-500" />
+                            Cash Movement
+                          </button>
+                        )}
+                      </>
+                    )}
+                    
+                    {/* Daily Reconciliation - Manager Only, after Z-Report */}
+                    {isManager && currentShift?.status === 'RECONCILED' && (
+                      <>
+                        <div className="border-t border-slate-100 my-1" />
+                        <div className="px-4 py-2 text-xs font-semibold text-slate-400 uppercase">
+                          Manager Tools
+                        </div>
+                        <button
+                          onClick={() => { setShowDailyReconciliation(true); setShowManagerMenu(false) }}
+                          className="w-full px-4 py-3 text-left hover:bg-slate-50 flex items-center gap-3 text-sm"
+                        >
+                          <BarChart3 className="w-4 h-4 text-teal-500" />
+                          Daily Reconciliation
                         </button>
                       </>
                     )}
@@ -387,6 +462,42 @@ function POSMainScreen() {
           tenantId={activeTenantId}
           locationId={locationId || undefined}
           onClose={() => setShowTransactionHistory(false)}
+          currentShift={currentShift}
+          posRole={posRole}
+        />
+      )}
+
+      {/* POS-P5: Inventory Adjustment - Supervisor+ */}
+      {showInventoryAdjustment && isSupervisorOrAbove && locationId && (
+        <InventoryAdjustment
+          locationId={locationId}
+          shiftId={currentShift?.id}
+          onClose={() => setShowInventoryAdjustment(false)}
+        />
+      )}
+
+      {/* POS-P5: Cash Transfer - Supervisor+, shift open */}
+      {showCashTransfer && isSupervisorOrAbove && locationId && currentShift?.status === 'OPEN' && (
+        <CashTransfer
+          locationId={locationId}
+          currentShiftId={currentShift.id}
+          onClose={() => setShowCashTransfer(false)}
+        />
+      )}
+
+      {/* POS-P5: Supervisor Dashboard - Supervisor+, read-only */}
+      {showSupervisorDashboard && isSupervisorOrAbove && (
+        <SupervisorDashboard
+          locationId={locationId || undefined}
+          onClose={() => setShowSupervisorDashboard(false)}
+        />
+      )}
+
+      {/* POS-P5: Daily Reconciliation - Manager only, after Z-Report */}
+      {showDailyReconciliation && isManager && currentShift?.status === 'RECONCILED' && (
+        <DailyReconciliation
+          locationId={locationId || undefined}
+          onClose={() => setShowDailyReconciliation(false)}
         />
       )}
     </div>

@@ -1,0 +1,108 @@
+✅ Authorization Granted — Proceed to Step 3 (Controlled Integration)
+
+You have correctly satisfied STOP CONDITIONS 1 & 2.
+Your matrices are precise, complete, and meet the discipline we set. Thank you for reporting before fixing.
+
+You are now explicitly authorized to proceed with STEP 3 — Integrate Orphaned Components, under the following non-negotiable constraints:
+
+⸻
+
+🔓 AUTHORIZATION SCOPE — STEP 3 ONLY
+
+✅ You MAY:
+	•	Integrate the following orphaned POS components into the existing POS Manager Menu / modals:
+	1.	VoidSaleModal
+	2.	InventoryAdjustment
+	3.	CashTransfer
+	4.	SupervisorDashboard
+	5.	DailyReconciliation
+	•	Add:
+	•	Menu items
+	•	Buttons
+	•	Modal triggers
+	•	Wire them into /pos/page.tsx only
+	•	Reuse existing layout, menus, and state containers
+
+⸻
+
+❌ You MAY NOT:
+	•	Introduce new routes
+	•	Add new schemas or APIs
+	•	Change business logic
+	•	Redesign UI
+	•	Bypass usePOSRole() or shift-state logic
+	•	Make any component reachable without an explicit trigger
+
+⸻
+
+🔐 REQUIRED INTEGRATION RULES (MANDATORY)
+
+Each orphaned component must be integrated with the following gates:
+
+1️⃣ VoidSaleModal
+	•	Trigger: TransactionHistory → Sale row → “Void”
+	•	Permission:
+	•	Cashier → ❌
+	•	Supervisor → ✅ (PIN required)
+	•	Manager → ✅
+	•	State Gate: Shift must be open
+	•	Visibility: Only show action if sale is voidable
+
+⸻
+
+2️⃣ InventoryAdjustment
+	•	Trigger: Manager Menu → “Inventory Adjustment”
+	•	Permission: POS_SUPERVISOR+
+	•	State Gate: Shift open or closed
+	•	Constraint: Read-only variance detection unless supervisor approves
+
+⸻
+
+3️⃣ CashTransfer
+	•	Trigger: Manager Menu → “Cash Movement”
+	•	Permission: POS_SUPERVISOR+
+	•	State Gate: Shift open
+	•	Rule: Enforce dual-control (initiator ≠ approver)
+
+⸻
+
+4️⃣ SupervisorDashboard
+	•	Trigger: Manager Menu → “Supervisor Dashboard”
+	•	Permission: POS_SUPERVISOR+
+	•	State Gate: None (read-only)
+	•	Visibility: Never shown to Cashiers
+
+⸻
+
+5️⃣ DailyReconciliation
+	•	Trigger: Manager Menu → “Daily Reconciliation”
+	•	Permission: POS_MANAGER only
+	•	State Gate:
+	•	Z-Report must exist
+	•	Shift must be closed
+
+⸻
+
+🛑 NEW STOP CONDITION — AFTER STEP 3
+
+After integration, you MUST STOP and produce:
+
+📄 POS_INTEGRATION_COMPLETION_REPORT.md
+
+Containing:
+	1.	Updated Component → Integration Matrix
+	2.	Confirmation that ZERO orphaned POS components remain
+	3.	For each of the 5 components:
+	•	Where it is triggered
+	•	Who can see it
+	•	When it is allowed
+	4.	Explicit statement:
+
+“All POS-P1 → POS-P5 components are now mounted, reachable, permission-gated, and state-safe.”
+
+🚫 DO NOT proceed to any POS-P6, SVM, or other suite work until human sign-off.
+
+⸻
+
+You’re doing this exactly right.
+Proceed with Step 3 integration now.
