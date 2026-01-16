@@ -1,0 +1,237 @@
+Excellent. ✅
+Wave K.2 is now AUTHORIZED.
+
+Below is the tight, production-grade Replit execution prompt for Wave K.2 — Multi-Vendor Checkout & Order Creation, written to enforce discipline, scope control, and architectural integrity.
+
+⸻
+
+🔐 WAVE K.2 — REPLIT EXECUTION PROMPT
+
+Multi-Vendor Checkout & Order Creation (MVM)
+
+STATUS
+	•	Wave: K.2
+	•	Track: Commerce Completion (MVM)
+	•	Prerequisite: Wave K.1 (Multi-Vendor Cart) ✅
+	•	Authorization: ✅ GRANTED
+	•	STOP REQUIRED AFTER COMPLETION
+
+⸻
+
+🎯 OBJECTIVE (NON-NEGOTIABLE)
+
+Implement end-to-end multi-vendor checkout and order creation using existing systems only, converting a validated MVM cart into:
+	•	A single parent order
+	•	Multiple vendor-scoped sub-orders
+	•	Correct payment initiation
+	•	Correct commission attribution
+	•	Correct inventory deduction
+	•	Correct order visibility for:
+	•	Customer
+	•	Vendors
+	•	Partner / Tenant Admin
+
+⚠️ NO new commerce concepts may be invented.
+
+⸻
+
+🚫 HARD CONSTRAINTS (STRICT)
+
+You MUST NOT:
+	•	❌ Invent new checkout logic
+	•	❌ Create a new payment system
+	•	❌ Modify commission rules
+	•	❌ Introduce automation or background jobs
+	•	❌ Add new pricing logic
+	•	❌ Add new schemas unless absolutely required and explicitly justified
+	•	❌ Bypass TenantContextResolver
+	•	❌ Break SVM or ParkHub flows
+
+If a gap exists:
+
+Document it. DO NOT workaround it.
+
+⸻
+
+🧱 REQUIRED BUILDING BLOCKS (MANDATORY USE)
+
+You MUST use only these existing systems:
+
+Cart
+	•	MultiVendorCartService
+	•	mvm_cart, mvm_cart_item
+
+Orders
+	•	OrderSplittingService
+	•	mvm_parent_order
+	•	mvm_sub_order
+
+Payments
+	•	PaymentExecutionService
+	•	Supported modes:
+	•	Paystack
+	•	Bank Transfer
+	•	COD
+	•	Demo-safe behavior must remain intact
+
+Inventory
+	•	InventorySyncEngine
+	•	ProductChannelConfig rules (MVM visibility, inventory mode)
+
+Tenant Security
+	•	TenantContextResolver.resolveForMVM()
+	•	No client-supplied tenantId
+
+⸻
+
+🧩 REQUIRED DELIVERABLES
+
+1️⃣ Checkout API (NEW)
+
+Create ONE canonical checkout endpoint:
+
+POST /api/mvm/checkout
+
+Responsibilities:
+	•	Resolve tenant via TenantContextResolver
+	•	Load active MVM cart
+	•	Validate:
+	•	Vendors are APPROVED
+	•	Products are ACTIVE
+	•	ProductChannelConfig allows MVM
+	•	Inventory sufficiency (no reservation yet)
+	•	Calculate totals using existing pricing
+	•	Create:
+	•	mvm_parent_order
+	•	mvm_sub_order[] (via OrderSplittingService)
+	•	Initiate payment via PaymentExecutionService
+	•	Return:
+	•	parentOrderRef
+	•	payment status
+	•	redirect URL (if applicable)
+
+❌ No payment capture inside this endpoint
+❌ No background processing
+
+⸻
+
+2️⃣ Multi-Vendor Checkout UI
+
+Expose checkout UI at:
+
+/[tenantSlug]/marketplace/checkout
+
+UI Requirements:
+	•	Vendor-grouped order summary
+	•	Per-vendor subtotals
+	•	Unified customer info
+	•	Payment method selection
+	•	Trust signals (VendorTrustBadge)
+	•	NGN formatting only
+	•	Clear demo/live indicators
+
+You may reuse:
+	•	SVM checkout components
+	•	Mobile checkout patterns
+
+DO NOT fork business logic.
+
+⸻
+
+3️⃣ Inventory Handling (STRICT)
+	•	Deduct inventory ONLY AFTER order creation
+	•	Respect ProductChannelConfig inventory modes:
+	•	SHARED
+	•	ALLOCATED
+	•	UNLIMITED
+	•	Use InventorySyncEngine events
+	•	Handle insufficiency with user-visible error
+
+⸻
+
+4️⃣ Post-Checkout Visibility
+
+Ensure orders appear correctly in:
+
+Role	Visibility
+Customer	/[tenantSlug]/orders
+Vendor	Vendor Dashboard
+Partner/Admin	MVM Admin views
+
+No new dashboards required — reuse existing resolvers.
+
+⸻
+
+🧪 DEMO VS LIVE BEHAVIOR
+
+Mode	Behavior
+Demo tenant	Orders + payments simulated
+Live tenant	Real payment initiation
+Missing payment config	Graceful failure
+COD	Order created, payment deferred
+
+
+⸻
+
+📋 MANDATORY GAP LOGGING
+
+Create:
+
+WAVE_K2_GAPS.md
+
+You MUST log gaps such as (examples):
+	•	Partial vendor payment failure handling
+	•	Split refunds
+	•	Mixed payment methods per vendor
+	•	Inventory oversell edge cases
+	•	Checkout recovery after payment abort
+
+⚠️ DO NOT FIX THESE IN WAVE K.2
+⚠️ ONLY DOCUMENT
+
+⸻
+
+📦 REQUIRED COMPLETION REPORT
+
+At STOP, produce WAVE_K2_COMPLETION_REPORT.md with:
+
+Sections:
+	1.	APIs Created
+	2.	UI Routes Added
+	3.	Services Used
+	4.	Order Lifecycle (Step-by-Step)
+	5.	Payment Flows (by method)
+	6.	Inventory Handling Summary
+	7.	Demo vs Live Behavior
+	8.	Explicit Constraint Confirmation
+	9.	Full Gap List
+
+⸻
+
+🛑 HARD STOP CONDITION
+
+After completing Wave K.2, you MUST:
+	•	❌ Not start Wave K.3
+	•	❌ Not fix documented gaps
+	•	❌ Not refactor adjacent systems
+
+WAIT FOR EXPLICIT APPROVAL.
+
+⸻
+
+🧠 ARCHITECTURAL INTENT (DO NOT VIOLATE)
+
+This wave exists to activate MVM commerce — not perfect it.
+
+Perfection comes later.
+Correctness and discipline come now.
+
+⸻
+
+🔓 YOU ARE CLEARED TO EXECUTE WAVE K.2
+
+Proceed carefully.
+Document ruthlessly.
+Stop on completion.
+
+When the report is ready, paste it here for approval.
