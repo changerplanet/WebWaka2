@@ -13,12 +13,24 @@ import {
   RefreshCw,
   AlertCircle,
   Loader2,
-  Ban
+  Ban,
+  RotateCcw
 } from 'lucide-react'
 import { formatNGNShort } from '@/lib/pos/config'
 import { ReceiptView } from './ReceiptView'
 import { VoidSaleModal } from './VoidSaleModal'
+import { RefundModal } from './RefundModal'
 import { POSRole, hasPOSPermission } from '@/app/pos/layout'
+
+interface SaleItem {
+  id: string
+  productName: string
+  quantity: number
+  unitPrice: number
+  lineTotal: number
+  returnedQuantity: number
+  refundedAmount: number
+}
 
 interface Sale {
   id: string
@@ -33,6 +45,7 @@ interface Sale {
   currency: string
   hasReceipt: boolean
   receiptId?: string
+  items?: SaleItem[]
 }
 
 interface Shift {
@@ -65,8 +78,11 @@ export function TransactionHistory({ locationId, tenantId, onClose, currentShift
   const [selectedReceipt, setSelectedReceipt] = useState<any | null>(null)
   const [isLoadingReceipt, setIsLoadingReceipt] = useState(false)
   const [voidingSale, setVoidingSale] = useState<Sale | null>(null)
+  const [refundingSale, setRefundingSale] = useState<Sale | null>(null)
+  const [isLoadingSaleDetails, setIsLoadingSaleDetails] = useState(false)
   
   const canVoid = hasPOSPermission(posRole, 'pos.sale.void') || posRole === 'POS_MANAGER'
+  const canRefund = hasPOSPermission(posRole, 'pos.sale.refund') || posRole === 'POS_MANAGER'
   const isShiftOpen = currentShift?.status === 'OPEN'
 
   const fetchSales = async () => {
@@ -114,6 +130,32 @@ export function TransactionHistory({ locationId, tenantId, onClose, currentShift
     }
   }
 
+  const handleRefundClick = async (sale: Sale) => {
+    setIsLoadingSaleDetails(true)
+    try {
+      const res = await fetch(`/api/pos/sales/${sale.id}`)
+      const data = await res.json()
+      if (data.success) {
+        setRefundingSale({
+          ...sale,
+          items: data.sale.items.map((item: any) => ({
+            id: item.id,
+            productName: item.productName,
+            quantity: item.quantity,
+            unitPrice: Number(item.unitPrice),
+            lineTotal: Number(item.lineTotal),
+            returnedQuantity: item.returnedQuantity || 0,
+            refundedAmount: Number(item.refundedAmount || 0),
+          }))
+        })
+      }
+    } catch (err) {
+      console.error('Failed to load sale details:', err)
+    } finally {
+      setIsLoadingSaleDetails(false)
+    }
+  }
+
   const formatTime = (dateStr: string) => {
     const date = new Date(dateStr)
     return date.toLocaleTimeString('en-NG', {
@@ -130,8 +172,19 @@ export function TransactionHistory({ locationId, tenantId, onClose, currentShift
         return 'bg-red-100 text-red-700'
       case 'REFUNDED':
         return 'bg-amber-100 text-amber-700'
+      case 'PARTIALLY_REFUNDED':
+        return 'bg-orange-100 text-orange-700'
       default:
         return 'bg-slate-100 text-slate-700'
+    }
+  }
+
+  const getStatusLabel = (status: string) => {
+    switch (status) {
+      case 'PARTIALLY_REFUNDED':
+        return 'PARTIAL REFUND'
+      default:
+        return status
     }
   }
 
@@ -190,52 +243,73 @@ export function TransactionHistory({ locationId, tenantId, onClose, currentShift
               {sales.map((sale) => {
                 const PaymentIcon = PAYMENT_ICONS[sale.paymentMethod] || CreditCard
                 const isVoidable = sale.status === 'COMPLETED' && canVoid && isShiftOpen
+                const isRefundable = (sale.status === 'COMPLETED' || sale.status === 'PARTIALLY_REFUNDED') && canRefund
                 return (
                   <div
                     key={sale.id}
-                    className="p-4 hover:bg-slate-50 transition-colors flex items-center gap-4"
+                    className="p-4 hover:bg-slate-50 transition-colors"
                   >
-                    <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${getStatusColor(sale.status)}`}>
-                      <PaymentIcon className="w-6 h-6" />
-                    </div>
-                    
-                    <button
-                      onClick={() => handleViewReceipt(sale)}
-                      disabled={!sale.hasReceipt || isLoadingReceipt}
-                      className="flex-1 min-w-0 text-left touch-manipulation disabled:opacity-50"
-                    >
-                      <div className="flex items-center gap-2">
-                        <span className="font-medium text-slate-900 truncate">
-                          {sale.customerName || 'Walk-in Customer'}
-                        </span>
-                        <span className={`text-xs px-2 py-0.5 rounded-full ${getStatusColor(sale.status)}`}>
-                          {sale.status}
-                        </span>
+                    <div className="flex items-center gap-4">
+                      <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${getStatusColor(sale.status)}`}>
+                        <PaymentIcon className="w-6 h-6" />
                       </div>
-                      <div className="text-sm text-slate-500 flex items-center gap-2">
-                        <span>{formatTime(sale.saleDate)}</span>
-                        <span>•</span>
-                        <span>{sale.saleNumber}</span>
-                      </div>
-                    </button>
-
-                    <div className="text-right">
-                      <p className="font-bold text-slate-900">{formatNGNShort(sale.grandTotal)}</p>
-                      <p className="text-xs text-slate-500">{sale.paymentMethod}</p>
-                    </div>
-
-                    {isVoidable && (
+                      
                       <button
-                        onClick={(e) => { e.stopPropagation(); setVoidingSale(sale) }}
-                        className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors"
-                        title="Void Sale"
+                        onClick={() => handleViewReceipt(sale)}
+                        disabled={!sale.hasReceipt || isLoadingReceipt}
+                        className="flex-1 min-w-0 text-left touch-manipulation disabled:opacity-50"
                       >
-                        <Ban className="w-5 h-5" />
+                        <div className="flex items-center gap-2">
+                          <span className="font-medium text-slate-900 truncate">
+                            {sale.customerName || 'Walk-in Customer'}
+                          </span>
+                          <span className={`text-xs px-2 py-0.5 rounded-full ${getStatusColor(sale.status)}`}>
+                            {getStatusLabel(sale.status)}
+                          </span>
+                        </div>
+                        <div className="text-sm text-slate-500 flex items-center gap-2">
+                          <span>{formatTime(sale.saleDate)}</span>
+                          <span>•</span>
+                          <span>{sale.saleNumber}</span>
+                        </div>
                       </button>
-                    )}
 
-                    {sale.hasReceipt && !isVoidable && (
-                      <ChevronRight className="w-5 h-5 text-slate-400" />
+                      <div className="text-right">
+                        <p className="font-bold text-slate-900">{formatNGNShort(sale.grandTotal)}</p>
+                        <p className="text-xs text-slate-500">{sale.paymentMethod}</p>
+                      </div>
+
+                      {sale.hasReceipt && sale.status === 'VOIDED' && (
+                        <ChevronRight className="w-5 h-5 text-slate-400" />
+                      )}
+                    </div>
+
+                    {(isVoidable || isRefundable) && (
+                      <div className="flex gap-2 mt-3 pt-3 border-t border-slate-100">
+                        {isVoidable && (
+                          <button
+                            onClick={(e) => { e.stopPropagation(); setVoidingSale(sale) }}
+                            className="flex-1 py-2 px-4 text-red-600 bg-red-50 hover:bg-red-100 rounded-lg transition-colors flex items-center justify-center gap-2 touch-manipulation"
+                          >
+                            <Ban className="w-4 h-4" />
+                            Void
+                          </button>
+                        )}
+                        {isRefundable && (
+                          <button
+                            onClick={(e) => { e.stopPropagation(); handleRefundClick(sale) }}
+                            disabled={isLoadingSaleDetails}
+                            className="flex-1 py-2 px-4 text-amber-600 bg-amber-50 hover:bg-amber-100 disabled:opacity-50 rounded-lg transition-colors flex items-center justify-center gap-2 touch-manipulation"
+                          >
+                            {isLoadingSaleDetails ? (
+                              <Loader2 className="w-4 h-4 animate-spin" />
+                            ) : (
+                              <RotateCcw className="w-4 h-4" />
+                            )}
+                            Refund
+                          </button>
+                        )}
+                      </div>
                     )}
                   </div>
                 )
@@ -296,6 +370,41 @@ export function TransactionHistory({ locationId, tenantId, onClose, currentShift
             }
           }}
           onCancel={() => setVoidingSale(null)}
+        />
+      )}
+
+      {refundingSale && refundingSale.items && (
+        <RefundModal
+          saleId={refundingSale.id}
+          saleNumber={refundingSale.saleNumber}
+          saleTotal={refundingSale.grandTotal}
+          items={refundingSale.items}
+          currentRole={posRole}
+          onConfirm={async (data) => {
+            try {
+              const res = await fetch('/api/pos/sales/refund', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  saleId: refundingSale.id,
+                  reason: data.reason,
+                  refundType: data.refundType,
+                  items: data.items,
+                  supervisorPin: data.supervisorPin,
+                })
+              })
+              const result = await res.json()
+              if (result.success) {
+                setRefundingSale(null)
+                fetchSales()
+                return true
+              }
+              return false
+            } catch {
+              return false
+            }
+          }}
+          onCancel={() => setRefundingSale(null)}
         />
       )}
     </div>

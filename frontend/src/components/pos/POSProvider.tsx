@@ -245,22 +245,11 @@ export function POSProvider({ children, tenantId }: POSProviderProps) {
       if (data.success && data.locations?.length > 0) {
         setState(s => ({ ...s, locations: data.locations }))
       } else {
-        // Provide demo locations when no real locations exist
-        const demoLocations: POSLocation[] = [
-          { id: 'seed-location-1', name: 'Main Store', code: 'MAIN', type: 'RETAIL', isDefault: true },
-          { id: 'seed-location-2', name: 'Downtown Branch', code: 'DT01', type: 'RETAIL', isDefault: false },
-          { id: 'demo-warehouse', name: 'Warehouse', code: 'WH01', type: 'WAREHOUSE', isDefault: false }
-        ]
-        setState(s => ({ ...s, locations: demoLocations }))
+        setState(s => ({ ...s, locations: [] }))
       }
     } catch (e) {
       console.warn('Failed to fetch locations:', e)
-      // Provide demo locations on error
-      const demoLocations: POSLocation[] = [
-        { id: 'seed-location-1', name: 'Main Store', code: 'MAIN', type: 'RETAIL', isDefault: true },
-        { id: 'seed-location-2', name: 'Downtown Branch', code: 'DT01', type: 'RETAIL', isDefault: false }
-      ]
-      setState(s => ({ ...s, locations: demoLocations }))
+      setState(s => ({ ...s, locations: [] }))
     }
   }
 
@@ -321,44 +310,13 @@ export function POSProvider({ children, tenantId }: POSProviderProps) {
         setState(s => ({ ...s, products, isLoadingProducts: false }))
         saveToStorage(STORAGE_KEYS.PRODUCTS_CACHE, products)
       } else {
-        // Provide demo products when no real products exist
-        const demoProducts: POSProduct[] = [
-          { productId: 'demo-1', sku: 'COFFEE-001', name: 'Espresso', barcode: '1234567890123', price: 3.50, quantityAvailable: 100, isInStock: true, trackInventory: true, categoryName: 'Beverages' },
-          { productId: 'demo-2', sku: 'COFFEE-002', name: 'Cappuccino', barcode: '1234567890124', price: 4.50, quantityAvailable: 100, isInStock: true, trackInventory: true, categoryName: 'Beverages' },
-          { productId: 'demo-3', sku: 'COFFEE-003', name: 'Latte', barcode: '1234567890125', price: 4.75, quantityAvailable: 100, isInStock: true, trackInventory: true, categoryName: 'Beverages' },
-          { productId: 'demo-4', sku: 'COFFEE-004', name: 'Americano', barcode: '1234567890126', price: 3.25, quantityAvailable: 100, isInStock: true, trackInventory: true, categoryName: 'Beverages' },
-          { productId: 'demo-5', sku: 'TEA-001', name: 'Green Tea', barcode: '1234567890127', price: 2.75, quantityAvailable: 50, isInStock: true, trackInventory: true, categoryName: 'Beverages' },
-          { productId: 'demo-6', sku: 'TEA-002', name: 'Earl Grey', barcode: '1234567890128', price: 2.75, quantityAvailable: 50, isInStock: true, trackInventory: true, categoryName: 'Beverages' },
-          { productId: 'demo-7', sku: 'PASTRY-001', name: 'Croissant', barcode: '1234567890129', price: 3.25, quantityAvailable: 24, isInStock: true, trackInventory: true, categoryName: 'Pastries' },
-          { productId: 'demo-8', sku: 'PASTRY-002', name: 'Blueberry Muffin', barcode: '1234567890130', price: 3.50, quantityAvailable: 18, isInStock: true, trackInventory: true, categoryName: 'Pastries' },
-          { productId: 'demo-9', sku: 'PASTRY-003', name: 'Chocolate Donut', barcode: '1234567890131', price: 2.50, quantityAvailable: 30, isInStock: true, trackInventory: true, categoryName: 'Pastries' },
-          { productId: 'demo-10', sku: 'PASTRY-004', name: 'Cinnamon Roll', barcode: '1234567890132', price: 4.00, quantityAvailable: 12, isInStock: true, trackInventory: true, categoryName: 'Pastries' },
-          { productId: 'demo-11', sku: 'SAND-001', name: 'Ham & Cheese Sandwich', barcode: '1234567890133', price: 7.50, quantityAvailable: 15, isInStock: true, trackInventory: true, categoryName: 'Food' },
-          { productId: 'demo-12', sku: 'SAND-002', name: 'Turkey Club', barcode: '1234567890134', price: 8.50, quantityAvailable: 12, isInStock: true, trackInventory: true, categoryName: 'Food' },
-          { productId: 'demo-13', sku: 'SALAD-001', name: 'Caesar Salad', barcode: '1234567890135', price: 9.00, quantityAvailable: 10, isInStock: true, trackInventory: true, categoryName: 'Food' },
-          { productId: 'demo-14', sku: 'SNACK-001', name: 'Granola Bar', barcode: '1234567890136', price: 2.00, quantityAvailable: 48, isInStock: true, trackInventory: true, categoryName: 'Snacks' },
-          { productId: 'demo-15', sku: 'SNACK-002', name: 'Chips', barcode: '1234567890137', price: 1.75, quantityAvailable: 36, isInStock: true, trackInventory: true, categoryName: 'Snacks' },
-          { productId: 'demo-16', sku: 'DRINK-001', name: 'Bottled Water', barcode: '1234567890138', price: 1.50, quantityAvailable: 100, isInStock: true, trackInventory: true, categoryName: 'Drinks' },
-          { productId: 'demo-17', sku: 'DRINK-002', name: 'Orange Juice', barcode: '1234567890139', price: 3.00, quantityAvailable: 24, isInStock: true, trackInventory: true, categoryName: 'Drinks' },
-          { productId: 'demo-18', sku: 'DRINK-003', name: 'Iced Coffee', barcode: '1234567890140', price: 4.25, quantityAvailable: 40, isInStock: true, trackInventory: true, categoryName: 'Beverages' },
-          { productId: 'demo-19', sku: 'SPECIAL-001', name: 'Mocha Frappe', barcode: '1234567890141', price: 5.50, quantityAvailable: 30, isInStock: true, trackInventory: true, categoryName: 'Beverages' },
-          { productId: 'demo-20', sku: 'SPECIAL-002', name: 'Caramel Macchiato', barcode: '1234567890142', price: 5.25, quantityAvailable: 25, isInStock: true, trackInventory: true, categoryName: 'Beverages' }
-        ]
-        setState(s => ({ ...s, products: demoProducts, isLoadingProducts: false }))
-        saveToStorage(STORAGE_KEYS.PRODUCTS_CACHE, demoProducts)
+        setState(s => ({ ...s, products: [], isLoadingProducts: false }))
+        saveToStorage(STORAGE_KEYS.PRODUCTS_CACHE, [])
       }
     } catch (e) {
       console.warn('Failed to refresh products:', e)
-      // Provide demo products on error as well
-      const demoProducts: POSProduct[] = [
-        { productId: 'demo-1', sku: 'COFFEE-001', name: 'Espresso', price: 3.50, quantityAvailable: 100, isInStock: true, trackInventory: true, categoryName: 'Beverages' },
-        { productId: 'demo-2', sku: 'COFFEE-002', name: 'Cappuccino', price: 4.50, quantityAvailable: 100, isInStock: true, trackInventory: true, categoryName: 'Beverages' },
-        { productId: 'demo-3', sku: 'COFFEE-003', name: 'Latte', price: 4.75, quantityAvailable: 100, isInStock: true, trackInventory: true, categoryName: 'Beverages' },
-        { productId: 'demo-4', sku: 'PASTRY-001', name: 'Croissant', price: 3.25, quantityAvailable: 24, isInStock: true, trackInventory: true, categoryName: 'Pastries' },
-        { productId: 'demo-5', sku: 'PASTRY-002', name: 'Blueberry Muffin', price: 3.50, quantityAvailable: 18, isInStock: true, trackInventory: true, categoryName: 'Pastries' },
-        { productId: 'demo-6', sku: 'SAND-001', name: 'Ham & Cheese Sandwich', price: 7.50, quantityAvailable: 15, isInStock: true, trackInventory: true, categoryName: 'Food' }
-      ]
-      setState(s => ({ ...s, products: demoProducts, isLoadingProducts: false }))
+      const cachedProducts = loadFromStorage<POSProduct[]>(STORAGE_KEYS.PRODUCTS_CACHE, [])
+      setState(s => ({ ...s, products: cachedProducts, isLoadingProducts: false }))
     }
   }, [tenantId, state.locationId])
 

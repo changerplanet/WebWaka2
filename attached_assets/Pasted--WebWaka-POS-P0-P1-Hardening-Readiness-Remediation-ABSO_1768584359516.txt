@@ -1,0 +1,255 @@
+
+WebWaka POS — P0 + P1 Hardening & Readiness Remediation
+
+⸻
+
+⚠️ ABSOLUTE EXECUTION RULES (NON-NEGOTIABLE)
+
+You must follow ALL of the rules below:
+	1.	Work strictly in the order provided — no skipping
+	2.	Do not introduce new features beyond what is explicitly listed
+	3.	Do not refactor unrelated code
+	4.	Do not add demo data, mock flows, or placeholders
+	5.	No UI polish unless explicitly required
+	6.	Every fix must be wired end-to-end (API + UI + state)
+	7.	No background jobs unless explicitly required
+	8.	At the end, STOP and produce a verification report — do NOT continue
+
+⸻
+
+🎯 OBJECTIVE
+
+Bring the WebWaka POS from “Limited Pilot Risk” to “Pilot-Safe & Operationally Correct” by fixing all P0 and P1 blockers identified in the POS Full Real-World Validation Audit.
+
+This is NOT a redesign.
+This is correctness, safety, and realism.
+
+⸻
+
+📦 SCOPE OF WORK (EXECUTE IN THIS EXACT ORDER)
+
+⸻
+
+🔴 STEP 1 — IMPLEMENT VOID SALE BACKEND (P0)
+
+Problem
+	•	VoidSaleModal exists and is integrated
+	•	/api/pos/sales/void endpoint does NOT exist
+	•	UI currently fails with 404
+
+Required Work
+	1.	Create API endpoint:
+
+POST /api/pos/sales/void
+
+
+	2.	Input:
+	•	saleId
+	•	reason
+	•	supervisorId or supervisor PIN verification
+	3.	Backend behavior:
+	•	Validate tenant + shift
+	•	Validate supervisor role
+	•	Ensure sale is VOIDABLE
+	•	Mark sale status = VOIDED
+	•	Reverse inventory movements
+	•	Reverse cash impact (if CASH)
+	•	Log audit trail
+	4.	UI:
+	•	Wire existing VoidSaleModal to this endpoint
+	•	Show success/failure feedback
+	•	Ensure idempotency (cannot void twice)
+
+❌ Do NOT add refunds here
+❌ Do NOT change shift logic
+
+⸻
+
+🔴 STEP 2 — IMPLEMENT REFUNDS (FULL + PARTIAL) (P0)
+
+Problem
+	•	No refund functionality exists
+	•	Critical Nigerian retail blocker
+
+Required Work
+	1.	Create API:
+
+POST /api/pos/sales/refund
+
+
+	2.	Support:
+	•	Full refund
+	•	Partial refund (by item or amount)
+	3.	Backend behavior:
+	•	Validate sale is refundable
+	•	Track refunded quantity/amount
+	•	Return inventory correctly
+	•	Record refund ledger entry
+	•	Prevent over-refund
+	4.	UI:
+	•	Add “Refund” action in TransactionHistory
+	•	Refund modal with:
+	•	Reason
+	•	Amount or items
+	•	Supervisor approval (PIN)
+	5.	Audit:
+	•	Refund must be traceable
+	•	Original sale remains immutable
+
+❌ Do NOT implement exchange workflow
+❌ Do NOT integrate payment gateway refunds (cash/transfer only)
+
+⸻
+
+🔴 STEP 3 — REMOVE DEMO PRODUCT FALLBACK (P0)
+
+Problem
+	•	Demo coffee shop products appear when no products exist
+
+Required Work
+	1.	Identify demo fallback logic in POS product loading
+	2.	Remove fallback entirely
+	3.	Replace with:
+	•	Empty state UI
+	•	Clear message: “No products configured”
+	•	CTA: “Go to Inventory to add products”
+
+❌ Do NOT auto-seed products
+❌ Do NOT keep demo data in production paths
+
+⸻
+
+🔴 STEP 4 — ADD CLEAR CART CONFIRMATION (P0)
+
+Problem
+	•	One tap clears cart with no warning
+
+Required Work
+	1.	Add confirmation modal on Clear Cart:
+	•	Show item count
+	•	Show total value
+	2.	Require explicit confirmation
+	3.	Preserve cart if cancelled
+
+❌ No redesign of cart UI
+
+⸻
+
+🟠 STEP 5 — IMPLEMENT PARTIAL / SPLIT PAYMENTS (P1)
+
+Problem
+	•	Nigerians frequently split payments (cash + transfer)
+
+Required Work
+	1.	Extend checkout flow to support:
+	•	Multiple payment entries per sale
+	2.	Supported combinations:
+	•	CASH + TRANSFER
+	•	CASH + CASH
+	•	TRANSFER + TRANSFER
+	3.	Validation:
+	•	Total payments must equal sale total
+	4.	Receipt:
+	•	Show payment breakdown
+	5.	Backend:
+	•	Persist payment splits per sale
+	•	Preserve offline safety
+
+❌ Do NOT add card/mobile gateway processing
+❌ Do NOT refactor entire payment system
+
+⸻
+
+🟠 STEP 6 — ADD PERSISTENT SHIFT STATUS BANNER (P1)
+
+Problem
+	•	Cashiers lose context of current shift
+
+Required Work
+	1.	Add visible banner/status indicator:
+	•	Shift number
+	•	Location
+	•	Register ID
+	•	OPEN / CLOSED state
+	2.	Banner must:
+	•	Persist across views
+	•	Be visible during checkout
+	•	Update in real time
+
+❌ Do NOT clutter UI
+
+⸻
+
+🟠 STEP 7 — IMPLEMENT PERCENTAGE DISCOUNTS (P1)
+
+Problem
+	•	Only fixed amount discounts supported
+
+Required Work
+	1.	Extend discount logic to support:
+	•	Percentage discount per item
+	2.	Validation:
+	•	Supervisor approval for > X%
+	3.	Display:
+	•	Show discount clearly on receipt
+
+❌ No promo codes
+❌ No cart-wide discounts (out of scope)
+
+⸻
+
+🟠 STEP 8 — MIGRATE OFFLINE QUEUE TO INDEXEDDB (P1)
+
+Problem
+	•	Offline sales stored in localStorage (fragile)
+
+Required Work
+	1.	Move offline sales queue to IndexedDB
+	2.	Preserve:
+	•	offlineId idempotency
+	•	sync behavior
+	3.	Ensure:
+	•	No data loss on refresh
+	•	Recovery after browser restart
+
+❌ Do NOT remove offline support
+❌ Do NOT introduce background sync jobs
+
+⸻
+
+🛑 FINAL STEP — HARD STOP & VERIFICATION
+
+After completing ALL steps above, STOP.
+
+Produce a Verification & Test Report covering:
+	1.	Void sale flow (happy + failure paths)
+	2.	Refund flow (full + partial)
+	3.	Split payment correctness
+	4.	Inventory correctness after:
+	•	Sale
+	•	Void
+	•	Refund
+	5.	Offline sale → online sync durability
+	6.	Demo data fully removed
+	7.	Permissions enforced correctly
+	8.	UX sanity check on mobile
+
+🚫 DO NOT proceed to new features or suites
+🚫 DO NOT refactor beyond scope
+
+⸻
+
+✅ SUCCESS CRITERIA
+
+POS is considered PILOT-READY only if:
+	•	No fake/demo data appears
+	•	No irreversible cash mistakes possible
+	•	Refunds work
+	•	Split payments work
+	•	Offline sales survive refresh
+	•	Supervisors control sensitive actions
+	•	Audit trail is complete
+
+⸻
+
+END OF PROMPT — EXECUTE EXACTLY AS WRITTEN

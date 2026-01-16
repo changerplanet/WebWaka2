@@ -44,16 +44,16 @@ export function hasPOSPermission(role: POSRole, permission: string): boolean {
     ],
     POS_SUPERVISOR: [
       'pos.sale.create', 'pos.sale.add_item', 'pos.sale.remove_item',
-      'pos.sale.complete', 'pos.sale.void', 'pos.payment.cash', 
-      'pos.payment.card', 'pos.payment.transfer', 'pos.payment.split',
-      'pos.discount.apply_preset', 'pos.discount.apply_custom',
+      'pos.sale.complete', 'pos.sale.void', 'pos.sale.refund', 
+      'pos.payment.cash', 'pos.payment.card', 'pos.payment.transfer', 
+      'pos.payment.split', 'pos.discount.apply_preset', 'pos.discount.apply_custom',
       'pos.refund.create', 'pos.report.all_sales'
     ],
     POS_MANAGER: [
       'pos.sale.create', 'pos.sale.add_item', 'pos.sale.remove_item',
       'pos.sale.complete', 'pos.sale.void', 'pos.sale.void_others',
-      'pos.payment.cash', 'pos.payment.card', 'pos.payment.transfer',
-      'pos.payment.split', 'pos.discount.apply_preset', 
+      'pos.sale.refund', 'pos.payment.cash', 'pos.payment.card', 
+      'pos.payment.transfer', 'pos.payment.split', 'pos.discount.apply_preset', 
       'pos.discount.apply_custom', 'pos.discount.override_max',
       'pos.refund.create', 'pos.refund.without_receipt', 'pos.refund.approve',
       'pos.report.all_sales', 'pos.report.staff', 'pos.report.export',

@@ -1308,6 +1308,7 @@ model User {
   passwordSetAt   DateTime?
   phone           String?            @unique
   phoneVerifiedAt DateTime?
+  posPin          String?            // PIN for POS supervisor approvals
   MagicLink       MagicLink[]
   OtpCode         OtpCode[]
   PartnerUser     PartnerUser?
@@ -1322,6 +1323,7 @@ model User {
   @@index([email])
   @@index([globalRole])
   @@index([phone])
+  @@index([posPin])
 }
 
 model Wallet {
@@ -6776,8 +6778,12 @@ enum OrderRevisionReason {
 }
 
 enum TenantRole {
+  TENANT_OWNER
   TENANT_ADMIN
   TENANT_USER
+  POS_MANAGER
+  POS_SUPERVISOR
+  POS_CASHIER
 }
 
 enum TenantStatus {
@@ -9770,6 +9776,7 @@ enum pos_CashMovementType {
   DRAWER_TRANSFER // Transfer between drawers
   SAFE_DROP // Move cash to safe
   SAFE_PICKUP // Move cash from safe to drawer
+  VOID_REVERSAL // Reversal from voided sale
 }
 
 // POS Inventory Adjustment Type (P5.1)
@@ -9940,6 +9947,52 @@ model pos_sale {
   @@index([status])
   @@index([paymentMethod])
   @@index([offlineId])
+}
+
+// POS Void Log - Audit trail for voided sales
+model pos_void_log {
+  id             String   @id @default(cuid())
+  tenantId       String
+  saleId         String   // FK to pos_sale
+  saleNumber     String
+  originalAmount Decimal  @db.Decimal(14, 2)
+  reason         String
+  voidedById     String   // User who initiated void
+  voidedByName   String
+  approvedById   String   // Supervisor who approved
+  approvedByName String
+  shiftId        String?  // Shift during which void occurred
+  locationId     String
+  createdAt      DateTime @default(now())
+
+  @@index([tenantId])
+  @@index([saleId])
+  @@index([shiftId])
+  @@index([createdAt])
+}
+
+// POS Refund Log - Audit trail for refunded sales
+model pos_refund_log {
+  id              String   @id @default(cuid())
+  tenantId        String
+  saleId          String   // FK to pos_sale
+  saleNumber      String
+  refundType      String   // FULL or PARTIAL
+  refundAmount    Decimal  @db.Decimal(14, 2)
+  reason          String
+  itemsRefunded   Json?    // Array of {saleItemId, quantity, amount}
+  processedById   String   // User who processed refund
+  processedByName String
+  approvedById    String   // Supervisor who approved
+  approvedByName  String
+  shiftId         String?  // Shift during which refund occurred
+  locationId      String
+  createdAt       DateTime @default(now())
+
+  @@index([tenantId])
+  @@index([saleId])
+  @@index([shiftId])
+  @@index([createdAt])
 }
 
 // POS Sale Item - Line items for each sale

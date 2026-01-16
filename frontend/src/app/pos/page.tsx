@@ -337,10 +337,21 @@ function POSMainScreen() {
                 </div>
               ) : products.length === 0 ? (
                 <div className="flex items-center justify-center h-full" data-testid="no-products">
-                  <div className="text-center">
-                    <Package className="w-12 h-12 text-slate-300 mx-auto mb-3" />
-                    <p className="text-slate-500">No products available</p>
-                    <p className="text-sm text-slate-400">Use the search bar to find products</p>
+                  <div className="text-center max-w-sm mx-auto p-6">
+                    <Package className="w-16 h-16 text-slate-300 mx-auto mb-4" />
+                    <h3 className="text-lg font-semibold text-slate-700 mb-2">No Products Configured</h3>
+                    <p className="text-slate-500 mb-4">
+                      Products have not been added to the inventory for this location yet.
+                    </p>
+                    <a
+                      href="/dashboard/inventory"
+                      className="inline-block px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded-xl font-medium transition-colors"
+                    >
+                      Go to Inventory
+                    </a>
+                    <p className="text-xs text-slate-400 mt-4">
+                      Add products in Inventory to start selling
+                    </p>
                   </div>
                 </div>
               ) : (

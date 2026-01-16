@@ -1,7 +1,8 @@
 'use client'
 
+import { useState } from 'react'
 import { usePOS } from './POSProvider'
-import { Minus, Plus, Trash2, ShoppingCart, User } from 'lucide-react'
+import { Minus, Plus, Trash2, ShoppingCart, User, AlertTriangle, X } from 'lucide-react'
 
 export function POSCart() {
   const { 
@@ -11,6 +12,13 @@ export function POSCart() {
     clearCart,
     setCustomer 
   } = usePOS()
+  
+  const [showClearConfirm, setShowClearConfirm] = useState(false)
+  
+  const handleClearCart = () => {
+    clearCart()
+    setShowClearConfirm(false)
+  }
   
   const formatNGN = (amount: number) => {
     return `₦${amount.toLocaleString('en-NG', { minimumFractionDigits: 2 })}`
@@ -130,12 +138,47 @@ export function POSCart() {
         </div>
 
         <button
-          onClick={clearCart}
+          onClick={() => setShowClearConfirm(true)}
           className="w-full mt-2 py-3 text-sm text-slate-500 hover:text-red-500 active:text-red-600 transition-colors touch-manipulation"
         >
           Clear Cart
         </button>
       </div>
+      
+      {showClearConfirm && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl shadow-xl max-w-sm w-full p-6 animate-in zoom-in-95">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center">
+                <AlertTriangle className="w-6 h-6 text-red-600" />
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold text-slate-900">Clear Cart?</h3>
+                <p className="text-sm text-slate-500">This will remove all {cart.items.length} item{cart.items.length > 1 ? 's' : ''}</p>
+              </div>
+            </div>
+            
+            <p className="text-slate-600 mb-6">
+              You are about to clear the entire cart. This action cannot be undone.
+            </p>
+            
+            <div className="flex gap-3">
+              <button
+                onClick={() => setShowClearConfirm(false)}
+                className="flex-1 py-3 px-4 border border-slate-200 rounded-xl text-slate-700 font-medium hover:bg-slate-50 transition-colors touch-manipulation"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleClearCart}
+                className="flex-1 py-3 px-4 bg-red-600 hover:bg-red-700 text-white rounded-xl font-medium transition-colors touch-manipulation"
+              >
+                Clear Cart
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
