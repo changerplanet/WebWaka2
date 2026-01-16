@@ -1,0 +1,269 @@
+Authorization received. ✅
+Proceeding with Wave K.1 — Multi-Vendor Customer Cart (MVM).
+
+Below is the official Replit execution prompt, written to your governance standard and aligned with everything learned from Waves I & J.
+
+⸻
+
+🧩 WAVE K.1 — MULTI-VENDOR CUSTOMER CART (MVM)
+
+Replit Execution Prompt (Authoritative)
+
+⸻
+
+CONTEXT
+
+WebWaka currently supports:
+	•	✅ Vendor onboarding (MVM)
+	•	✅ Public marketplace exposure (Wave I.2)
+	•	✅ Order splitting after order creation
+	•	❌ No customer-facing multi-vendor cart
+
+This is the single most critical missing piece preventing MVM from being commercially complete.
+
+Wave K.1 introduces a true multi-vendor customer cart, enabling customers to add products from multiple vendors into one cart, review vendor-separated items, and proceed to a unified checkout (actual checkout will be completed in Wave K.2).
+
+⸻
+
+WAVE OBJECTIVE
+
+Implement a first-class, production-grade Multi-Vendor Cart system that:
+	•	Allows customers to add products from multiple vendors
+	•	Preserves vendor attribution per cart line
+	•	Prepares clean input for the existing OrderSplitService
+	•	Works across public MVM storefronts
+	•	Is tenant-safe, demo-safe, and offline-aware
+
+This wave ENDS at cart + pre-checkout.
+No payment execution happens here.
+
+⸻
+
+STRICT CONSTRAINTS (NON-NEGOTIABLE)
+
+🚫 NOT ALLOWED
+	•	❌ No automation
+	•	❌ No background jobs
+	•	❌ No payouts
+	•	❌ No commission calculation changes
+	•	❌ No order splitting execution (Wave K.2)
+	•	❌ No pricing overrides outside existing logic
+	•	❌ No bypassing TenantContextResolver
+
+✅ ALLOWED
+	•	✅ New schema (explicitly listed below)
+	•	✅ New services
+	•	✅ New APIs
+	•	✅ New UI components
+	•	✅ IndexedDB (client-side only)
+	•	✅ Session-aware + demo-safe behavior
+
+⸻
+
+FUNCTIONAL REQUIREMENTS
+
+1️⃣ Multi-Vendor Cart Core Behavior
+
+The cart MUST:
+	•	Support multiple vendors simultaneously
+	•	Group items by vendorId
+	•	Track per-line:
+	•	productId
+	•	variantId (if applicable)
+	•	vendorId
+	•	quantity
+	•	priceAtAddTime
+	•	isDemo
+
+Cart must support:
+	•	Add item
+	•	Update quantity
+	•	Remove item
+	•	Clear cart (entire or per vendor)
+
+⸻
+
+2️⃣ Vendor Isolation Inside Cart
+
+Each cart item MUST:
+	•	Belong to exactly one vendor
+	•	Never merge across vendors
+	•	Display vendor name and trust badge in UI
+
+The cart UI MUST show:
+
+Vendor A
+  - Product 1
+  - Product 2
+
+Vendor B
+  - Product 3
+
+
+⸻
+
+3️⃣ Inventory & Pricing Rules
+	•	Inventory is checked at checkout time, not on add
+	•	Cart does not reserve stock
+	•	Server price is authoritative:
+	•	On checkout prep, price mismatches must be flagged
+	•	Offline cart behavior:
+	•	Cart persists
+	•	Sync conflicts clearly surfaced (reuse Offline UX components)
+
+⸻
+
+4️⃣ Tenant & Security Rules
+	•	ALL cart operations must:
+	•	Resolve tenant via TenantContextResolver.resolveForMVM()
+	•	Enforce tenant isolation
+	•	Demo tenants:
+	•	No authentication required
+	•	isDemo = true
+	•	Live tenants:
+	•	Session-aware
+	•	Cart tied to session or browser storage (not user accounts)
+
+⸻
+
+REQUIRED SCHEMA (EXPLICIT)
+
+New Prisma Models (Wave K.1 ONLY)
+
+model mvm_cart {
+  id            String   @id @default(cuid())
+  tenantId      String
+  cartKey       String   // sessionId or anonymous key
+  isDemo        Boolean  @default(false)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  items         mvm_cart_item[]
+
+  @@unique([tenantId, cartKey])
+}
+
+model mvm_cart_item {
+  id            String   @id @default(cuid())
+  cartId        String
+  vendorId      String
+  productId     String
+  variantId     String?
+  quantity      Int
+  priceSnapshot Decimal
+  currency      String   @default("NGN")
+  createdAt     DateTime @default(now())
+
+  cart          mvm_cart @relation(fields: [cartId], references: [id])
+
+  @@index([vendorId])
+  @@index([productId])
+}
+
+⚠️ No other schema changes are allowed in this wave.
+
+⸻
+
+SERVICE LAYER REQUIREMENTS
+
+Create:
+
+MultiVendorCartService
+
+Location:
+
+frontend/src/lib/mvm/cart/multi-vendor-cart-service.ts
+
+Required methods:
+	•	getCart(tenantContext, cartKey)
+	•	addItem(...)
+	•	updateQuantity(...)
+	•	removeItem(...)
+	•	clearCart(...)
+	•	prepareForCheckout(...) (NO payments)
+
+This service MUST:
+	•	Validate vendor ownership
+	•	Validate product-channel visibility
+	•	Respect ProductChannelConfig rules
+	•	Be read/write ONLY for cart data
+
+⸻
+
+API ENDPOINTS (REQUIRED)
+
+GET    /api/mvm/cart
+POST   /api/mvm/cart/add
+POST   /api/mvm/cart/update
+POST   /api/mvm/cart/remove
+POST   /api/mvm/cart/clear
+POST   /api/mvm/cart/prepare-checkout
+
+All endpoints must:
+	•	Use TenantContextResolver
+	•	Enforce tenant isolation
+	•	Be demo-safe
+	•	Return clear error states
+
+⸻
+
+UI REQUIREMENTS
+
+Public Marketplace Cart UI
+	•	Reuse existing design language (Radix / existing cart patterns)
+	•	Vendor-grouped sections
+	•	Trust badges per vendor
+	•	Clear “Items from multiple vendors will be checked out together” messaging
+
+Create:
+	•	MultiVendorCartDrawer
+	•	VendorGroupedCartSection
+
+Mobile-first, thumb-friendly.
+
+⸻
+
+OFFLINE SUPPORT
+	•	Persist cart in IndexedDB (reuse Offline Cart patterns)
+	•	Explicit sync button
+	•	Conflict states:
+	•	Price changed
+	•	Product unavailable
+	•	Vendor disabled
+
+No background sync.
+
+⸻
+
+GAP HANDLING (MANDATORY)
+
+If ANY gap is discovered:
+	•	🚫 DO NOT invent a workaround
+	•	✅ Document it in WAVE_K1_GAPS.md
+	•	Include:
+	•	What is missing
+	•	Why it cannot be solved in Wave K.1
+	•	Which wave should address it
+
+⸻
+
+SUCCESS CRITERIA
+
+Wave K.1 is complete ONLY if:
+	•	✅ Customer can add products from multiple vendors
+	•	✅ Cart groups items per vendor
+	•	✅ Cart persists (online + offline)
+	•	✅ Tenant isolation enforced everywhere
+	•	✅ No payment or order creation occurs
+	•	✅ All gaps are explicitly documented
+
+⸻
+
+STOP CONDITION
+
+🛑 STOP immediately after Wave K.1
+Do NOT proceed to checkout, order creation, or payments.
+
+Await explicit approval for Wave K.2 — Multi-Vendor Checkout & Order Creation.
+
+⸻

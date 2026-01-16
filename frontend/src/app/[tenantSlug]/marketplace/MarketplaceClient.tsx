@@ -2,8 +2,9 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { Store, Search, Menu, Star, Award, Shield, Package, MapPin } from 'lucide-react'
+import { Store, Search, Menu, Star, Award, Shield, Package, MapPin, ShoppingCart } from 'lucide-react'
 import type { MarketplaceVendor } from '@/lib/marketplace/marketplace-resolver'
+import { MultiVendorCartDrawer } from '@/components/mvm/cart'
 
 interface MarketplaceClientProps {
   tenantId: string
@@ -138,13 +139,17 @@ function MarketplaceHeader({
   tenantName, 
   appName, 
   logoUrl,
-  primaryColor
+  primaryColor,
+  onCartClick,
+  cartItemCount = 0
 }: { 
   tenantSlug: string
   tenantName: string
   appName: string
   logoUrl: string | null
   primaryColor: string
+  onCartClick: () => void
+  cartItemCount?: number
 }) {
   return (
     <header className="sticky top-0 z-30 bg-white border-b border-slate-200">
@@ -184,9 +189,22 @@ function MarketplaceHeader({
             </div>
           </div>
 
-          <button className="md:hidden p-2 hover:bg-slate-100 rounded-lg transition-colors">
-            <Menu className="w-6 h-6 text-slate-700" />
-          </button>
+          <div className="flex items-center gap-2">
+            <button 
+              onClick={onCartClick}
+              className="relative p-2 hover:bg-slate-100 rounded-lg transition-colors"
+            >
+              <ShoppingCart className="w-6 h-6 text-slate-700" />
+              {cartItemCount > 0 && (
+                <span className="absolute -top-1 -right-1 bg-emerald-500 text-white text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center">
+                  {cartItemCount > 9 ? '9+' : cartItemCount}
+                </span>
+              )}
+            </button>
+            <button className="md:hidden p-2 hover:bg-slate-100 rounded-lg transition-colors">
+              <Menu className="w-6 h-6 text-slate-700" />
+            </button>
+          </div>
         </div>
       </div>
     </header>
@@ -216,6 +234,8 @@ export default function MarketplaceClient({
   totalVendors
 }: MarketplaceClientProps) {
   const [vendors] = useState(initialVendors)
+  const [isCartOpen, setIsCartOpen] = useState(false)
+  const [cartItemCount, setCartItemCount] = useState(0)
 
   return (
     <div className="min-h-screen flex flex-col bg-slate-50">
@@ -225,6 +245,14 @@ export default function MarketplaceClient({
         appName={appName}
         logoUrl={logoUrl}
         primaryColor={primaryColor}
+        onCartClick={() => setIsCartOpen(true)}
+        cartItemCount={cartItemCount}
+      />
+      
+      <MultiVendorCartDrawer
+        isOpen={isCartOpen}
+        onClose={() => setIsCartOpen(false)}
+        tenantSlug={tenantSlug}
       />
       
       <main className="flex-1 py-8 px-4 sm:px-6 lg:px-8">
