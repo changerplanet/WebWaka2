@@ -1,0 +1,202 @@
+
+POS-P4 — Reporting, Shifts & Reconciliation
+
+Mode: IMPLEMENTATION
+Discipline: STRICT STEP-BY-STEP
+Stop Condition: HARD STOP AFTER P4.4 FOR HUMAN VERIFICATION
+Context: Nigeria-first · Mobile-first · Offline-first · PWA-first
+Prerequisites: POS-P1, POS-P2, POS-P3 completed and verified
+
+⸻
+
+🚨 GLOBAL CONSTRAINTS (NON-NEGOTIABLE)
+	1.	Do NOT break offline-first behavior
+	2.	Do NOT introduce accounting ledgers
+	3.	Do NOT introduce background jobs
+	4.	Do NOT remove demo mode
+	5.	Do NOT assume constant internet
+	6.	Do NOT merge waves or skip steps
+	7.	Do NOT invent new roles beyond Cashier / Supervisor / Manager
+	8.	Every feature must be location-aware
+	9.	Every step must be testable before moving on
+
+⸻
+
+🎯 POS-P4 OBJECTIVE
+
+Make the POS operationally usable for:
+	•	Multi-location businesses
+	•	Cash supervision
+	•	Shift-based operations
+	•	Daily reconciliation
+	•	Nigeria-standard X/Z reporting
+
+This wave completes operational truth, not analytics or accounting.
+
+⸻
+
+📦 POS-P4 EXECUTION PHASES
+
+⸻
+
+🔹 P4.1 — Shift Management (FOUNDATIONAL)
+
+Backend
+	•	Implement shift lifecycle:
+	•	OPEN
+	•	CLOSED
+	•	Required fields:
+	•	tenantId
+	•	locationId
+	•	openedByUserId
+	•	openedAt
+	•	openingCashAmount
+	•	closedAt
+	•	declaredClosingCash
+	•	systemCalculatedCash
+	•	varianceAmount
+	•	closedByUserId
+	•	Offline behavior:
+	•	Shift open allowed offline
+	•	Shift close queued if offline
+	•	Variance computed on sync
+
+Frontend
+	•	Open Shift Screen
+	•	Location selector (mandatory)
+	•	Opening cash input (numeric keypad)
+	•	Close Shift Screen
+	•	Declared cash input
+	•	Auto-calculated system cash
+	•	Variance display
+	•	Supervisor PIN required if variance ≠ 0
+
+Permissions
+	•	Cashier: open shift
+	•	Supervisor/Manager: close shift
+
+🛑 Checkpoint:
+Shift can be opened/closed per location, works offline, variance recorded.
+
+⸻
+
+🔹 P4.2 — Register & Cash Drawer Context
+
+Backend
+	•	Introduce logical registerId:
+	•	Derived from device + session
+	•	Linked to shift + location
+	•	Attach registerId to:
+	•	POS sales
+	•	Receipts
+	•	Reconciliation summaries
+
+Frontend
+	•	Display active register badge in POS UI
+	•	Register auto-created on shift open (no hardware assumptions)
+
+🛑 Checkpoint:
+Sales and receipts are clearly tied to a register + location + shift.
+
+⸻
+
+🔹 P4.3 — X & Z Reports (Nigeria Standard)
+
+X Report (Mid-Shift)
+	•	Totals by payment method:
+	•	Cash
+	•	Transfer
+	•	Card
+	•	Mobile Money
+	•	VAT collected (7.5%)
+	•	Discounts total
+	•	Transaction count
+	•	Filter: current shift + location
+
+Z Report (End-Shift)
+	•	Final immutable totals
+	•	Locks shift permanently
+	•	Required for reconciliation
+	•	Manager-only
+
+Frontend
+	•	Reports screen (mobile-friendly)
+	•	Export: on-screen only (no PDF yet)
+
+🛑 Checkpoint:
+X and Z reports render correctly per location and role.
+
+⸻
+
+🔹 P4.4 — Cash Reconciliation & Variance Workflow
+
+Backend
+	•	Reconciliation summary per shift:
+	•	System cash
+	•	Declared cash
+	•	Variance
+	•	Variance reasons enum:
+	•	Short cash
+	•	Excess cash
+	•	Transfer mismatch
+	•	Error correction
+	•	Audit entry created on variance approval
+
+Frontend
+	•	Reconciliation screen:
+	•	Variance explanation dropdown
+	•	Notes field
+	•	Supervisor PIN approval
+	•	Read-only after approval
+
+🛑 HARD STOP — VERIFICATION REQUIRED
+	•	No further work beyond this point
+	•	Prepare POS-P4 COMPLETION REPORT
+
+⸻
+
+📄 REQUIRED FINAL DELIVERABLES
+
+Replit must produce:
+	1.	POS-P4 Completion Report
+	•	Routes added
+	•	Components added
+	•	APIs added
+	•	Offline behavior confirmed
+	2.	Role Matrix Validation
+	3.	Multi-Location Confirmation
+	4.	Known Gaps (Deferred to POS-P5)
+	•	Payroll
+	•	Accounting ledger
+	•	Bank reconciliation
+	•	Advanced analytics
+
+⸻
+
+❌ EXPLICITLY OUT OF SCOPE (DO NOT IMPLEMENT)
+	•	Accounting journal entries
+	•	Payroll
+	•	Tax filing
+	•	Background sync workers
+	•	Cloud-only assumptions
+	•	AI forecasting
+	•	External integrations beyond existing payment stack
+
+⸻
+
+✅ SUCCESS CRITERIA
+
+POS-P4 is complete only if:
+	•	Shifts exist and are enforced
+	•	Cash can be reconciled per location
+	•	X/Z reports are accurate
+	•	Supervisor workflows are enforced
+	•	Offline sales reconcile safely
+	•	Multi-location businesses can operate daily without spreadsheets
+
+⸻
+
+END OF PROMPT
+
+Awaiting Replit execution.
+No further waves should begin until POS-P4 is explicitly verified and approved.

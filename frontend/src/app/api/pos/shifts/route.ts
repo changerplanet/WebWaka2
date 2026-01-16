@@ -119,10 +119,13 @@ export async function POST(request: NextRequest) {
       })
       const shiftNumber = `SHIFT-${dateStr}-${String(count + 1).padStart(3, '0')}`
 
+      const registerId = `REG-${locationId.slice(-4)}-${Date.now().toString(36).toUpperCase()}`
+
       const newShift = await prisma.pos_shift.create({
         data: {
           tenantId,
           locationId,
+          registerId,
           shiftNumber,
           openedById: userId,
           openedByName: userName,
@@ -130,6 +133,28 @@ export async function POST(request: NextRequest) {
           status: 'OPEN',
           currency: 'NGN'
         }
+      })
+
+      await prisma.pos_cash_movement.create({
+        data: {
+          id: crypto.randomUUID(),
+          tenantId,
+          shiftId: newShift.id,
+          movementType: 'OPEN_FLOAT',
+          amount: openingFloat || 0,
+          currency: 'NGN',
+          performedById: userId,
+          performedByName: userName,
+          notes: 'Opening float',
+        }
+      })
+
+      console.log('[POS Audit] Shift opened:', {
+        shiftNumber,
+        registerId,
+        locationId,
+        openingFloat: openingFloat || 0,
+        userId,
       })
 
       return NextResponse.json({
@@ -165,6 +190,48 @@ export async function POST(request: NextRequest) {
         )
       }
 
+      const salesSummary = await prisma.pos_sale.aggregate({
+        where: {
+          shiftId: shift.id,
+          status: 'COMPLETED',
+        },
+        _sum: {
+          grandTotal: true,
+          taxTotal: true,
+          discountTotal: true,
+        },
+        _count: true,
+      })
+
+      const salesByPayment = await prisma.pos_sale.groupBy({
+        by: ['paymentMethod'],
+        where: {
+          shiftId: shift.id,
+          status: 'COMPLETED',
+        },
+        _sum: {
+          grandTotal: true,
+        },
+      })
+
+      const paymentTotals: Record<string, number> = {}
+      for (const row of salesByPayment) {
+        paymentTotals[row.paymentMethod] = Number(row._sum.grandTotal || 0)
+      }
+
+      const refundSummary = await prisma.pos_sale.aggregate({
+        where: {
+          shiftId: shift.id,
+          status: { in: ['REFUNDED', 'PARTIALLY_REFUNDED'] },
+        },
+        _sum: { grandTotal: true },
+        _count: true,
+      })
+
+      const systemCash = Number(shift.openingFloat) + (paymentTotals['CASH'] || 0)
+      const declaredCash = closingData?.actualCash || 0
+      const variance = declaredCash - systemCash
+
       const updatedShift = await prisma.pos_shift.update({
         where: { id: shiftId },
         data: {
@@ -172,17 +239,49 @@ export async function POST(request: NextRequest) {
           closedAt: new Date(),
           closedById: closingData?.userId || userId,
           closedByName: closingData?.userName || userName,
-          actualCash: closingData?.actualCash,
-          expectedCash: closingData?.expectedCash,
-          cashVariance: closingData?.actualCash && closingData?.expectedCash 
-            ? closingData.actualCash - closingData.expectedCash 
-            : null
+          totalSales: salesSummary._sum.grandTotal || 0,
+          totalRefunds: refundSummary._sum.grandTotal || 0,
+          netSales: Number(salesSummary._sum.grandTotal || 0) - Number(refundSummary._sum.grandTotal || 0),
+          transactionCount: salesSummary._count,
+          refundCount: refundSummary._count,
+          cashTotal: paymentTotals['CASH'] || 0,
+          cardTotal: paymentTotals['CARD'] || 0,
+          transferTotal: (paymentTotals['TRANSFER'] || 0) + (paymentTotals['BANK_TRANSFER'] || 0),
+          mobileMoneyTotal: paymentTotals['MOBILE_MONEY'] || 0,
+          walletTotal: paymentTotals['WALLET'] || 0,
+          expectedCash: systemCash,
+          actualCash: declaredCash,
+          cashVariance: variance,
+          varianceReason: closingData?.varianceReason || null,
+          notes: closingData?.notes || null,
         }
+      })
+
+      console.log('[POS Audit] Shift closed:', {
+        shiftNumber: shift.shiftNumber,
+        systemCash,
+        declaredCash,
+        variance,
+        totalSales: salesSummary._sum.grandTotal,
+        userId: closingData?.userId || userId,
       })
 
       return NextResponse.json({
         success: true,
-        shift: updatedShift,
+        shift: {
+          ...updatedShift,
+          openingFloat: Number(updatedShift.openingFloat),
+          totalSales: Number(updatedShift.totalSales),
+          totalRefunds: Number(updatedShift.totalRefunds),
+          netSales: Number(updatedShift.netSales),
+          cashTotal: Number(updatedShift.cashTotal),
+          cardTotal: Number(updatedShift.cardTotal),
+          transferTotal: Number(updatedShift.transferTotal),
+          mobileMoneyTotal: Number(updatedShift.mobileMoneyTotal),
+          expectedCash: Number(updatedShift.expectedCash),
+          actualCash: Number(updatedShift.actualCash),
+          cashVariance: Number(updatedShift.cashVariance),
+        },
         message: 'Shift closed successfully'
       })
     }
