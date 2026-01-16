@@ -1,0 +1,157 @@
+
+POS-INT-1 — Full POS Component Integration & Reachability Audit
+
+Mode: INTEGRATION & WIRING ONLY
+Scope: POS pages, layouts, routes, menus, action triggers
+Prohibitions:
+	•	❌ No new features
+	•	❌ No schema changes
+	•	❌ No business logic changes
+	•	❌ No UI redesign
+	•	❌ No background jobs
+
+⸻
+
+🎯 OBJECTIVE
+
+Ensure that ALL POS components built across POS-P1 → POS-P5 are:
+	1.	Mounted into actual POS pages
+	2.	Reachable via UI navigation or action triggers
+	3.	Correctly permission-gated
+	4.	Integrated into the correct lifecycle state (shift open/closed, role level, online/offline)
+	5.	Not orphaned, dead, or export-only
+
+⸻
+
+🧭 STEP 1 — POS PAGE MAP (DO NOT CODE)
+
+Enumerate every POS page and layout:
+	•	/pos
+	•	/pos/layout.tsx
+	•	/pos/page.tsx
+	•	/pos-demo
+	•	/parkhub/*/pos (if shared components reused)
+
+Produce a POS PAGE MATRIX showing:
+	•	Page
+	•	Layout
+	•	Who can access
+	•	What components are mounted directly
+	•	What components are reachable indirectly (modals, drawers, menus)
+
+🛑 STOP CONDITION 1
+Do NOT proceed until a table exists listing every POS page and its mounted components.
+
+⸻
+
+🧩 STEP 2 — COMPONENT INTEGRATION MATRIX (READ FIRST)
+
+From frontend/src/components/pos/index.ts, enumerate ALL exported POS components, including but not limited to:
+	•	POSProvider
+	•	POSCart
+	•	PaymentScreen
+	•	ReceiptView
+	•	TransactionHistory
+	•	ShiftManagement
+	•	XZReport
+	•	Reconciliation
+	•	InventoryAdjustment
+	•	CashTransfer
+	•	SupervisorDashboard
+	•	DailyReconciliation
+	•	VoidSaleModal
+	•	Any POS-P1 → P5 components
+
+For each component, record:
+
+Component	Integrated?	Where Mounted	Trigger Path	Permission Gate	State Gate
+
+
+🛑 STOP CONDITION 2
+If any component is:
+	•	Exported but not mounted
+	•	Mounted but unreachable
+	•	Reachable without permission checks
+
+👉 HALT and report before fixing
+
+⸻
+
+🔗 STEP 3 — INTEGRATE MISSING COMPONENTS (CONTROLLED)
+
+For each verified missing or orphaned component:
+
+Allowed Integration Methods ONLY:
+	•	Add to existing POS page sections
+	•	Add to existing POS menus (Manager Menu / Shift Menu)
+	•	Add modal triggers (buttons, menu items)
+	•	Add route-level mounting only under /pos
+
+REQUIRED RULES:
+	•	Respect existing POSProvider state
+	•	Enforce role checks via usePOSRole()
+	•	Enforce shift-state checks (open/closed)
+	•	Enforce online/offline constraints
+	•	NO direct access URLs unless justified
+
+Examples:
+	•	InventoryAdjustment → Manager Menu → Requires open or closed shift
+	•	CashTransfer → Manager Menu → Requires supervisor+
+	•	SupervisorDashboard → Manager Menu → Read-only
+	•	DailyReconciliation → Post–Z-report only
+
+🛑 STOP CONDITION 3
+After each integration:
+	•	Confirm how the user reaches it
+	•	Confirm who can reach it
+	•	Confirm when it is allowed
+
+⸻
+
+🔐 STEP 4 — PERMISSION & STATE VERIFICATION
+
+For every POS action surface:
+	•	Validate role enforcement
+	•	Validate shift enforcement
+	•	Validate offline behavior
+	•	Validate tenant & location isolation
+
+Explicitly verify:
+	•	No Cashier sees Supervisor tools
+	•	No actions bypass shift lifecycle
+	•	No reconciliation before Z-report
+	•	No Advanced Ops visible without approval role
+
+🛑 STOP CONDITION 4
+If any privilege leak or state bypass is found, STOP and report before proceeding.
+
+⸻
+
+🧪 STEP 5 — NAVIGATION & DISCOVERABILITY CHECK
+
+Verify that:
+	•	All POS features are discoverable without documentation
+	•	No critical feature is hidden behind non-obvious clicks
+	•	Labels match Nigerian retail language (Shift, Z Report, Cash Count)
+
+Document:
+	•	Where users might get lost
+	•	Where affordances are unclear (but DO NOT redesign)
+
+⸻
+
+📄 FINAL DELIVERABLE (MANDATORY)
+
+Produce POS_INTEGRATION_COMPLETION_REPORT.md containing:
+	1.	POS Page → Component Matrix
+	2.	Component → Integration Matrix
+	3.	List of newly wired components (if any)
+	4.	Confirmation that zero POS components remain orphaned
+	5.	Explicit confirmation:
+“All POS-P1 → POS-P5 components are integrated, reachable, permission-gated, and state-safe.”
+
+🛑 FINAL HARD STOP
+Do NOT proceed to any new wave, feature, or enhancement.
+Wait for human verification and sign-off.
+
+⸻
