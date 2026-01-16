@@ -1,0 +1,309 @@
+Below are two exact, production-grade Replit execution prompts, issued back-to-back, each with hard scope boundaries, non-negotiable stop conditions, and verification gates.
+
+These are written so Replit cannot drift, cannot invent, and cannot silently continue.
+
+⸻
+
+🔒 WAVE A2 — SECURITY & EXPOSURE AUDIT
+
+Replit Execution Prompt (STRICT)
+
+⸻
+
+CONTEXT
+
+You are operating on the WebWaka codebase.
+
+A V2 Ground Truth Audit has already been completed and approved.
+Your task is NOT to re-audit features or build anything.
+
+Your task is to perform a SECURITY & EXPOSURE AUDIT ONLY, focused on risk, leakage, and incorrect exposure.
+
+This is a READ-ONLY ANALYSIS WAVE.
+
+⸻
+
+🎯 WAVE A2 OBJECTIVE
+
+Produce a complete, verifiable Security & Exposure Risk Report that answers:
+
+“Which parts of WebWaka are exposed in ways that are unsafe, unintended, undocumented, or inconsistent with tenant / role boundaries?”
+
+⸻
+
+🔍 SCOPE (MANDATORY)
+
+You MUST inspect all of the following — no exceptions:
+
+1. Public Routes & Pages
+	•	All /[tenantSlug]/* routes
+	•	All /verify/* routes
+	•	All /parkhub/* public routes
+	•	All /store, /marketplace, /site, /funnel, /form routes
+	•	All demo pages (*-demo)
+	•	All /test-* routes
+
+2. Public API Endpoints
+	•	Any API callable without authentication
+	•	Any API gated only by query params (email, phone, tenantSlug)
+	•	Canonical APIs (/api/orders/*, /api/customers/*, /api/proofs/*)
+	•	Payment-adjacent APIs (even if read-only)
+
+3. Tenant Isolation
+	•	Confirm tenantSlug → tenantId resolution correctness
+	•	Identify any place tenantId is trusted from client input
+	•	Identify cross-tenant query risks
+
+4. Role Boundary Enforcement
+	•	SUPER_ADMIN vs PARTNER vs TENANT_ADMIN vs PUBLIC
+	•	Implicit roles (CUSTOMER, DRIVER, VENDOR)
+	•	Any UI/API callable outside its intended role
+
+5. Demo vs Live Leakage
+	•	Demo tenants accessing live data
+	•	Demo bypass logic inconsistencies
+	•	Demo routes reachable in production context
+
+⸻
+
+❌ HARD CONSTRAINTS
+
+You are NOT ALLOWED to:
+	•	Fix code
+	•	Add guards
+	•	Refactor logic
+	•	Change schemas
+	•	Introduce middleware
+	•	Add authentication
+	•	Remove routes
+
+This wave is DOCUMENTATION ONLY.
+
+⸻
+
+📦 REQUIRED DELIVERABLE
+
+Produce ONE SINGLE REPORT named:
+
+WAVE_A2_SECURITY_EXPOSURE_REPORT.md
+
+The report MUST contain the following sections:
+
+1. Exposure Risk Matrix
+
+A table with:
+	•	Route / API
+	•	Exposure Type (Public, Semi-Public, Authenticated)
+	•	Intended Audience
+	•	Actual Audience
+	•	Risk Level (LOW / MEDIUM / HIGH / CRITICAL)
+
+2. Tenant Isolation Findings
+	•	Confirmed safe patterns
+	•	Confirmed violations
+	•	Ambiguous / fragile patterns
+
+3. Demo Leakage Findings
+	•	Where demo logic is too permissive
+	•	Where demo detection is inconsistent
+
+4. Test & Dev Artifacts in Production
+	•	/test-*
+	•	/phase*
+	•	Demo pages
+	•	Severity classification
+
+5. Canonical API Risk Review
+	•	Orders
+	•	Customers
+	•	Proofs
+	•	What data is inferable
+	•	What identity assumptions are unsafe
+
+6. Explicit Gap List
+
+Each gap must include:
+	•	What is wrong
+	•	Why it is risky
+	•	Why it is NOT fixed in Wave A2
+	•	Which future wave should own it
+
+⸻
+
+🛑 ABSOLUTE STOP CONDITION
+
+After generating WAVE_A2_SECURITY_EXPOSURE_REPORT.md:
+	1.	STOP IMMEDIATELY
+	2.	Do NOT fix anything
+	3.	Do NOT continue to any other wave
+	4.	Respond ONLY with:
+
+“Wave A2 complete. Awaiting explicit approval before any remediation or further analysis.”
+
+⸻
+
+⸻
+
+🧠 WAVE B1 — COMMERCE INTEGRITY VALIDATION
+
+Replit Execution Prompt (STRICT)
+
+⚠️ This wave may ONLY begin after Wave A2 has been explicitly approved.
+
+⸻
+
+CONTEXT
+
+WebWaka contains multiple commerce systems:
+	•	SVM
+	•	MVM
+	•	ParkHub
+	•	POS
+	•	Inventory
+	•	Payments
+	•	Accounting links
+
+Money movement either exists or is imminent.
+
+This wave validates CORRECTNESS, CONSISTENCY, and FAILURE SAFETY.
+
+⸻
+
+🎯 WAVE B1 OBJECTIVE
+
+Produce a Commerce Integrity Validation Report that answers:
+
+“If real customers transact money today, where can the system break, miscount, double-charge, lose inventory, or enter an unrecoverable state?”
+
+⸻
+
+🔍 SCOPE (MANDATORY)
+
+You must validate end-to-end flows, not isolated functions.
+
+1. Order Lifecycles
+
+For each system:
+	•	SVM
+	•	MVM (parent + sub-orders)
+	•	ParkHub (tickets)
+
+Validate:
+	•	Status transitions
+	•	Failure paths
+	•	Cancellation paths
+	•	Partial fulfillment paths
+
+2. Inventory Integrity
+	•	When inventory is deducted
+	•	When it is restored
+	•	What happens on:
+	•	Payment failure
+	•	Webhook duplication
+	•	Partial vendor failure
+	•	Offline replay
+
+3. Payment Integrity
+	•	Payment initiation vs confirmation
+	•	Webhook idempotency
+	•	Retry behavior
+	•	Double-execution risk
+
+4. Cross-System Consistency
+	•	Order ↔ inventory ↔ payment ↔ accounting
+	•	POS vs online sales collision
+	•	Offline vs online reconciliation
+
+5. Customer-Visible Outcomes
+	•	What the customer sees on:
+	•	Failure
+	•	Partial success
+	•	Retry
+	•	Where confusion or disputes can arise
+
+⸻
+
+❌ HARD CONSTRAINTS
+
+You are NOT ALLOWED to:
+	•	Add new logic
+	•	Modify payment flows
+	•	Fix edge cases
+	•	Add retries
+	•	Introduce automation
+	•	Change schemas
+	•	Touch payouts
+
+This is ANALYSIS ONLY.
+
+⸻
+
+📦 REQUIRED DELIVERABLE
+
+Produce ONE SINGLE REPORT named:
+
+WAVE_B1_COMMERCE_INTEGRITY_REPORT.md
+
+The report MUST include:
+
+1. Commerce Flow Maps
+
+Textual (step-by-step) flows for:
+	•	SVM checkout
+	•	MVM checkout
+	•	ParkHub booking
+	•	POS sales
+	•	Offline sales replay
+
+2. Integrity Risk Table
+
+For each risk:
+	•	System
+	•	Scenario
+	•	Failure mode
+	•	Impact (Customer / Vendor / Platform)
+	•	Severity
+
+3. Idempotency & Duplication Review
+	•	Where duplicates are safely handled
+	•	Where they are not
+	•	Why it matters
+
+4. Partial Fulfillment Review
+	•	What is supported
+	•	What is undefined
+	•	What is dangerous
+
+5. Explicit Gap Inventory
+
+Each gap must include:
+	•	Why it exists
+	•	Why it is dangerous
+	•	Why it is NOT fixed in Wave B1
+	•	Which future wave should own it
+
+⸻
+
+🛑 ABSOLUTE STOP CONDITION
+
+After generating WAVE_B1_COMMERCE_INTEGRITY_REPORT.md:
+	1.	STOP IMMEDIATELY
+	2.	Do NOT apply fixes
+	3.	Do NOT proceed to payouts
+	4.	Respond ONLY with:
+
+“Wave B1 complete. Awaiting explicit approval before any commerce remediation.”
+
+⸻
+
+✅ FINAL NOTE (IMPORTANT)
+
+These two waves are foundational safety gates.
+
+🚫 No payouts (Wave L)
+🚫 No branding
+🚫 No white-label domains
+
+…should proceed until A2 + B1 are reviewed and accepted.
+
+⸻
