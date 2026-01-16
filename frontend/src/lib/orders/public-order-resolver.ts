@@ -164,6 +164,51 @@ function hasOrdersCapability(modules: string[]): boolean {
   return modules.some(m => orderModules.includes(m.toLowerCase()))
 }
 
+/**
+ * Wave B2-Fix (B2-F1): Phone Normalization
+ * 
+ * Normalizes phone numbers for comparison with tolerance for:
+ * - Formatting characters (spaces, dashes, dots, parens)
+ * - Nigerian country code variations (+234, 234, 0)
+ */
+function normalizePhoneForVerification(phone: string | null | undefined): string | undefined {
+  if (!phone) return undefined
+  let normalized = phone.replace(/[\s\-\(\)\.]/g, '')
+  if (normalized.startsWith('+234')) {
+    normalized = '0' + normalized.slice(4)
+  } else if (normalized.startsWith('234') && normalized.length > 10) {
+    normalized = '0' + normalized.slice(3)
+  }
+  return normalized.toLowerCase()
+}
+
+function normalizeEmailForVerification(email: string | null | undefined): string | undefined {
+  if (!email) return undefined
+  return email.toLowerCase().trim()
+}
+
+/**
+ * Wave B2-Fix (B2-F1): Verify customer identity against a specific order
+ * 
+ * Called AFTER order is located to verify customer owns that specific order.
+ * This prevents cross-system ref collision verification issues.
+ */
+function verifyCustomerAgainstOrder(
+  verification: { email?: string; phone?: string },
+  order: { customerEmail?: string | null; customerPhone?: string | null; passengerPhone?: string | null }
+): boolean {
+  const normalizedInputEmail = normalizeEmailForVerification(verification.email)
+  const normalizedInputPhone = normalizePhoneForVerification(verification.phone)
+  
+  const orderEmail = normalizeEmailForVerification(order.customerEmail)
+  const orderPhone = normalizePhoneForVerification(order.customerPhone || order.passengerPhone)
+  
+  const emailMatch = !!(normalizedInputEmail && orderEmail && normalizedInputEmail === orderEmail)
+  const phoneMatch = !!(normalizedInputPhone && orderPhone && normalizedInputPhone === orderPhone)
+  
+  return emailMatch || phoneMatch
+}
+
 export async function resolveOrderPortalTenant(tenantSlug: string): Promise<TenantResolutionResult> {
   const tenant = await prisma.tenant.findUnique({
     where: { slug: tenantSlug },
@@ -364,17 +409,41 @@ export async function resolveCustomerOrders(
   return { success: true, orders, tenant }
 }
 
+/**
+ * Wave B2-Fix (B2-F1): Order Access Hardening
+ * 
+ * SECURITY MODEL:
+ * - For DEMO tenants: Order reference alone grants access (preserved behavior)
+ * - For LIVE tenants: Order reference alone is INSUFFICIENT
+ *   - Requires customer verification via email or phone
+ *   - Order is located FIRST, then verified against that specific record
+ *   - This prevents cross-system ref collision verification attacks
+ * 
+ * This function returns a verification-required flag for live tenants without credentials.
+ * UI layer MUST redirect to verification page if verification is required.
+ * 
+ * GAP-5 CLOSURE: Order number is no longer a bearer token for live tenants.
+ */
 export async function resolveOrderByRef(
   tenantSlug: string,
-  orderRef: string
-): Promise<OrderDetailResult> {
+  orderRef: string,
+  verification?: { email?: string; phone?: string }
+): Promise<OrderDetailResult | { success: false; reason: 'verification_required'; tenant: OrderPortalTenant }> {
   const tenantResult = await resolveOrderPortalTenant(tenantSlug)
   if (!tenantResult.success) {
     return { success: false, reason: tenantResult.reason === 'not_found' ? 'tenant_not_found' : 'suspended' }
   }
 
   const tenant = tenantResult.tenant
+  const requiresVerification = !tenant.isDemo
+  const hasVerification = verification?.email || verification?.phone
 
+  // B2-F1: For live tenants without credentials, prompt for verification
+  if (requiresVerification && !hasVerification) {
+    return { success: false, reason: 'verification_required', tenant }
+  }
+
+  // STEP 1: Locate the order FIRST across all systems
   const svmOrder = await prisma.svm_orders.findFirst({
     where: {
       tenantId: tenant.id,
@@ -386,6 +455,18 @@ export async function resolveOrderByRef(
   })
 
   if (svmOrder) {
+    // B2-F1: Verify against THIS specific order
+    if (requiresVerification && verification) {
+      const verified = verifyCustomerAgainstOrder(verification, {
+        customerEmail: svmOrder.customerEmail,
+        customerPhone: svmOrder.customerPhone,
+      })
+      if (!verified) {
+        // Generic error - do NOT reveal order exists
+        return { success: false, reason: 'order_not_found' }
+      }
+    }
+    
     return {
       success: true,
       order: {
@@ -433,6 +514,17 @@ export async function resolveOrderByRef(
   })
 
   if (mvmOrder) {
+    // B2-F1: Verify against THIS specific order
+    if (requiresVerification && verification) {
+      const verified = verifyCustomerAgainstOrder(verification, {
+        customerEmail: mvmOrder.customerEmail,
+        customerPhone: mvmOrder.customerPhone,
+      })
+      if (!verified) {
+        return { success: false, reason: 'order_not_found' }
+      }
+    }
+    
     return {
       success: true,
       order: {
@@ -477,6 +569,16 @@ export async function resolveOrderByRef(
   })
 
   if (ticket) {
+    // B2-F1: Verify against THIS specific ticket (phone only for ParkHub)
+    if (requiresVerification && verification) {
+      const verified = verifyCustomerAgainstOrder(verification, {
+        passengerPhone: ticket.passengerPhone,
+      })
+      if (!verified) {
+        return { success: false, reason: 'order_not_found' }
+      }
+    }
+    
     return {
       success: true,
       order: {

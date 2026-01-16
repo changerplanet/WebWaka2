@@ -177,7 +177,8 @@ export function aggregateToCanonical(
     const existing = customerMap.get(canonicalId)
     
     if (existing) {
-      if (!existing.sourceSystems.includes(data.sourceSystem)) {
+      const systemAdded = !existing.sourceSystems.includes(data.sourceSystem)
+      if (systemAdded) {
         existing.sourceSystems.push(data.sourceSystem)
       }
       
@@ -207,7 +208,40 @@ export function aggregateToCanonical(
       if (!existing.name && data.name) {
         existing.name = data.name
       }
+      
+      // B2-F2: Recompute fragmentation when source systems change
+      if (systemAdded) {
+        const hasEmail = !!existing.email
+        const hasPhone = !!existing.phone
+        existing.fragmentation.linkedSystems = [...existing.sourceSystems]
+        existing.fragmentation.canMerge = hasEmail && hasPhone
+        
+        // Recompute unlinkable systems based on identity coverage
+        if (hasEmail && hasPhone) {
+          existing.fragmentation.unlinkableSystems = []
+          existing.fragmentation.isFragmented = false
+          existing.fragmentation.fragmentationLevel = 'NONE'
+          existing.fragmentation.fragmentationReasons = []
+          existing.fragmentation.mergeBlockers = undefined
+        } else if (hasPhone && !hasEmail) {
+          existing.fragmentation.unlinkableSystems = ['SVM', 'MVM'].filter(
+            s => !existing.sourceSystems.includes(s as SourceSystem)
+          ) as SourceSystem[]
+        } else if (hasEmail && !hasPhone) {
+          existing.fragmentation.unlinkableSystems = existing.sourceSystems.includes('PARKHUB') 
+            ? [] 
+            : ['PARKHUB']
+        }
+        
+        // Update privacy limitations for cross-system linkability
+        existing.privacyLimitations.crossSystemLinkable = hasEmail && hasPhone
+      }
     } else {
+      const hasEmail = !!normalizedEmail
+      const hasPhone = !!normalizedPhone
+      const isPhoneOnly = hasPhone && !hasEmail
+      const isEmailOnly = hasEmail && !hasPhone
+      
       const customer: CanonicalCustomer = {
         canonicalId,
         email: normalizedEmail,
@@ -216,6 +250,34 @@ export function aggregateToCanonical(
         sourceSystems: [data.sourceSystem],
         originalReferences: {},
         metadata: {},
+        fragmentation: {
+          isFragmented: data.sourceSystem === 'PARKHUB' && isPhoneOnly,
+          fragmentationLevel: data.sourceSystem === 'PARKHUB' && isPhoneOnly ? 'MEDIUM' : 'NONE',
+          fragmentationReasons: isPhoneOnly 
+            ? ['Phone-only identity cannot link with email-based systems']
+            : isEmailOnly 
+              ? ['Email-only identity cannot link with ParkHub (phone required)']
+              : [],
+          linkedSystems: [data.sourceSystem],
+          unlinkableSystems: isPhoneOnly ? ['SVM', 'MVM'] : isEmailOnly ? ['PARKHUB'] : [],
+          canMerge: hasEmail && hasPhone,
+          mergeBlockers: (!hasEmail || !hasPhone) 
+            ? ['Missing ' + (!hasEmail ? 'email' : 'phone') + ' for full cross-system linking']
+            : undefined,
+        },
+        privacyLimitations: {
+          canFullyErase: false,
+          erasureBlockers: [
+            'No GDPR erasure workflow implemented',
+            'Order history retained for tax compliance',
+            data.sourceSystem === 'PARKHUB' ? 'ParkHub tickets require manifest retention' : 'Financial records retention required',
+          ],
+          dataRetentionDays: null,
+          crossSystemLinkable: hasEmail && hasPhone,
+          consentStatus: 'IMPLICIT',
+          rightToPortability: false,
+          portabilityFormat: 'NONE',
+        },
       }
       
       if (data.sourceSystem === 'SVM') {

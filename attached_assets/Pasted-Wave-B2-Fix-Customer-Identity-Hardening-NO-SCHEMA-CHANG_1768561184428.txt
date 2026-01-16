@@ -1,0 +1,193 @@
+Wave B2-Fix — Customer & Identity Hardening (NO SCHEMA CHANGES)
+
+⚠️ ABSOLUTE CONSTRAINTS (NON-NEGOTIABLE)
+
+You are executing Wave B2-Fix.
+
+This wave is HARDENING ONLY.
+
+❌ DO NOT:
+	•	Create or modify Prisma models
+	•	Add new database tables
+	•	Add migrations
+	•	Introduce customer accounts
+	•	Add consent storage
+	•	Add anonymization or deletion logic
+	•	Merge identities
+	•	Change canonical ID generation rules
+	•	Introduce authentication systems
+	•	Touch payment, receipts, or proofs logic
+
+✅ YOU MAY:
+	•	Tighten access control
+	•	Add identity verification requirements
+	•	Add runtime guards and warnings
+	•	Add flags, metadata, and explicit disclosures
+	•	Modify API behavior without changing schemas
+	•	Improve failure modes and error responses
+	•	Add comments and internal documentation
+
+Any violation of these constraints = FAILURE.
+
+⸻
+
+🎯 WAVE OBJECTIVE
+
+Reduce identity misuse, access leakage, and false assumptions in customer/order access
+WITHOUT introducing new data models or persistence.
+
+⸻
+
+🧩 EXECUTION TASKS (DO IN THIS EXACT ORDER)
+
+⸻
+
+🔒 TASK B2-F1 — Order Access Hardening (CRITICAL)
+
+Objective:
+Ensure order references are NOT bearer tokens for live tenants.
+
+Actions:
+	1.	Update public order detail surfaces:
+	•	/[tenantSlug]/orders/[orderRef]
+	•	/api/orders/canonical/[reference]
+	2.	Enforce:
+	•	For LIVE tenants:
+	•	Require email or phone verification
+	•	Verification must match the order’s customer data
+	•	For DEMO tenants:
+	•	Preserve existing open access behavior
+	3.	If verification fails:
+	•	Return a generic response
+	•	Do NOT reveal whether the order exists
+	4.	Ensure:
+	•	No order details are returned without verification (live tenants)
+	•	Order reference alone is insufficient
+
+Explicitly document this change in code comments.
+
+✅ Closes B2 GAP-5 (Order reference as bearer token)
+
+⸻
+
+🧩 TASK B2-F2 — Identity Fragmentation Signaling
+
+Objective:
+Prevent silent cross-system identity confusion.
+
+Actions:
+	1.	Detect when:
+	•	Email-based canonical identity ≠ phone-based canonical identity
+	•	Common scenario: SVM/MVM (email) vs ParkHub (phone-only)
+	2.	In canonical customer responses:
+	•	Add explicit metadata flag:
+
+identityFragmented: true
+fragmentationReason: 'EMAIL_PHONE_MISMATCH' | 'PHONE_ONLY_SOURCE'
+affectedSystems: ['SVM', 'MVM', 'PARKHUB']
+
+
+	3.	Behavior rules:
+	•	Queries by email MUST NOT silently include ParkHub tickets
+	•	Queries by phone MAY aggregate across systems
+	•	Ambiguity must be surfaced, never hidden
+
+❌ Do NOT merge identities
+❌ Do NOT change canonical ID generation
+
+⸻
+
+🛡️ TASK B2-F3 — Canonical Identity Guardrails
+
+Objective:
+Prevent future misuse of CanonicalCustomer as a persistent entity.
+
+Actions:
+	1.	Add explicit runtime assertions:
+	•	CanonicalCustomer is read-only
+	•	CanonicalCustomer MUST NOT be persisted
+	•	CanonicalCustomer MUST NOT be used as foreign keys
+	2.	Add developer warnings (runtime or logs) if:
+	•	Any code attempts to store canonicalId
+	•	Any code treats canonical identity as authoritative storage
+	3.	Add top-level documentation comment in:
+	•	canonical-customer-service.ts
+	•	identity-resolution.ts
+
+Example:
+
+/**
+ * IMPORTANT:
+ * CanonicalCustomer is a READ-ONLY, DERIVED identity.
+ * It MUST NOT be persisted or treated as a primary customer record.
+ */
+
+
+⸻
+
+📜 TASK B2-F4 — Privacy & Compliance Disclosure (INTERNAL)
+
+Objective:
+Make privacy limitations explicit and auditable.
+
+Actions:
+	1.	Add a privacyLimitations block to canonical responses (internal APIs only):
+
+privacyLimitations: {
+  consentTracking: false,
+  rightToErasure: false,
+  retentionPolicyDefined: false,
+  dataDerivedFromOrders: true
+}
+
+
+	2.	Ensure:
+	•	This is informational only
+	•	No behavior changes
+	•	No data storage
+	3.	Add inline documentation referencing:
+	•	NDPR / GDPR gaps
+	•	Why they are deferred
+	•	Which future wave should handle them
+
+⸻
+
+🛑 MANDATORY STOP CONDITIONS (DO NOT PROCEED PAST THIS)
+
+You MUST STOP when ALL of the following are true:
+	•	✅ Live tenant order pages require email/phone verification
+	•	✅ Order reference alone no longer grants access (live tenants)
+	•	✅ Identity fragmentation is explicitly surfaced in APIs
+	•	✅ No schema changes were made
+	•	✅ No migrations were created
+	•	✅ No customer table exists
+	•	✅ All original Wave B2 gaps remain documented
+	•	✅ No proof/receipt logic was modified
+
+At this point:
+
+👉 STOP. DO NOT CONTINUE TO WAVE B3.
+👉 Prepare a Wave B2-Fix Completion Report summarizing:
+	•	What was hardened
+	•	What remains intentionally unfixed
+	•	Confirmation of constraint compliance
+
+⸻
+
+❌ FAILURE CONDITIONS
+
+This wave FAILS if:
+	•	Any database schema is touched
+	•	Any customer persistence is introduced
+	•	Any identity is merged
+	•	Any B3-related logic is implemented
+	•	Any access is loosened instead of tightened
+
+⸻
+
+📌 FINAL REMINDER TO REPLIT
+
+This is identity hardening, not identity completion.
+Your job is to reduce risk and ambiguity, not to “finish” customer identity.
+
+STOP EXACTLY AT THE END OF TASK B2-F4.

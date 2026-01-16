@@ -169,6 +169,7 @@ export async function listAmbiguous(
           phone: Array.from(phones)[0],
           sourceSystems: result.customers[0].sourceSystems,
           reason: `Email "${email}" has ${phones.size} different phone numbers`,
+          fragmentationLevel: phones.size > 2 ? 'HIGH' : 'MEDIUM',
         })
       }
     }
@@ -184,6 +185,7 @@ export async function listAmbiguous(
           phone,
           sourceSystems: result.customers[0].sourceSystems,
           reason: `Phone "${phone}" has ${emails.size} different email addresses`,
+          fragmentationLevel: emails.size > 2 ? 'HIGH' : 'MEDIUM',
         })
       }
     }
