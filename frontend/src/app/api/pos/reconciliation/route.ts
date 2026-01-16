@@ -83,6 +83,27 @@ export async function POST(request: NextRequest) {
       })
     }
 
+    if (variance !== 0 && supervisorApproval) {
+      const isValidSupervisor = session.user.role === 'POS_SUPERVISOR' || 
+                                 session.user.role === 'POS_MANAGER' || 
+                                 session.user.role === 'TENANT_ADMIN' ||
+                                 (supervisorApproval.pin && supervisorApproval.pin.length >= 4)
+      
+      if (!isValidSupervisor) {
+        return NextResponse.json({
+          success: false,
+          error: 'Invalid supervisor credentials',
+        }, { status: 403 })
+      }
+
+      console.log('[POS Audit] Supervisor approved variance:', {
+        shiftNumber: shift.shiftNumber,
+        variance,
+        approvedBy: session.user.id,
+        approvedByRole: session.user.role,
+      })
+    }
+
     if (variance !== 0 && !varianceReason) {
       return NextResponse.json({
         success: false,

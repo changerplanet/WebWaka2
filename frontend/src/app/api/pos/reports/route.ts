@@ -136,8 +136,8 @@ export async function GET(request: NextRequest) {
         openingFloat: Number(shift.openingFloat),
         cashSales: paymentBreakdown.find(p => p.method === 'CASH')?.total || 0,
         systemTotal: systemCashTotal,
-        declaredTotal: shift.actualCash ? Number(shift.actualCash) : null,
-        variance: shift.cashVariance ? Number(shift.cashVariance) : null,
+        declaredTotal: shift.actualCash !== null ? Number(shift.actualCash) : null,
+        variance: shift.cashVariance !== null ? Number(shift.cashVariance) : null,
       },
       refunds: {
         total: Number(refundSummary._sum.grandTotal || 0),

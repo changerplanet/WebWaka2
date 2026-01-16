@@ -9,6 +9,7 @@ export const dynamic = 'force-dynamic'
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { checkCapabilityGuard } from '@/lib/capabilities'
+import { getCurrentSession } from '@/lib/auth'
 
 /**
  * GET /api/pos/shifts
@@ -19,19 +20,20 @@ export async function GET(request: NextRequest) {
   if (guardResult) return guardResult
 
   try {
+    const session = await getCurrentSession()
+    if (!session || !session.activeTenantId) {
+      return NextResponse.json(
+        { success: false, error: 'Unauthorized' },
+        { status: 401 }
+      )
+    }
+    const tenantId = session.activeTenantId
+
     const { searchParams } = new URL(request.url)
-    const tenantId = searchParams.get('tenantId')
     const locationId = searchParams.get('locationId')
     const status = searchParams.get('status')
     const limit = parseInt(searchParams.get('limit') || '20', 10)
     const page = parseInt(searchParams.get('page') || '1', 10)
-    
-    if (!tenantId) {
-      return NextResponse.json(
-        { success: false, error: 'tenantId is required', hint: 'Pass tenantId as a query parameter: ?tenantId=your-tenant-id' },
-        { status: 400 }
-      )
-    }
     
     const where: any = { tenantId }
     if (locationId) where.locationId = locationId
@@ -76,20 +78,24 @@ export async function POST(request: NextRequest) {
   if (guardResult) return guardResult
 
   try {
-    const body = await request.json()
-    const { action, tenantId, locationId, userId, userName, shiftId, openingFloat, closingData } = body
-    
-    if (!tenantId) {
+    const session = await getCurrentSession()
+    if (!session || !session.activeTenantId) {
       return NextResponse.json(
-        { success: false, error: 'tenantId is required', hint: 'Pass tenantId in the request body: { "tenantId": "your-tenant-id", ... }' },
-        { status: 400 }
+        { success: false, error: 'Unauthorized' },
+        { status: 401 }
       )
     }
+    const tenantId = session.activeTenantId
+    const userId = session.user.id
+    const userName = session.user.name || session.user.email || 'Unknown'
+
+    const body = await request.json()
+    const { action, locationId, shiftId, openingFloat, closingData } = body
 
     if (action === 'open') {
-      if (!locationId || !userId || !userName) {
+      if (!locationId) {
         return NextResponse.json(
-          { success: false, error: 'locationId, userId, and userName are required to open a shift' },
+          { success: false, error: 'locationId is required to open a shift' },
           { status: 400 }
         )
       }
@@ -172,8 +178,11 @@ export async function POST(request: NextRequest) {
         )
       }
 
-      const shift = await prisma.pos_shift.findUnique({
-        where: { id: shiftId }
+      const shift = await prisma.pos_shift.findFirst({
+        where: { 
+          id: shiftId,
+          tenantId 
+        }
       })
 
       if (!shift) {

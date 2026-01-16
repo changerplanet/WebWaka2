@@ -70,10 +70,7 @@ export function ShiftManagement({
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           action: 'open',
-          tenantId,
           locationId: selectedLocationId,
-          userId: 'current-user',
-          userName: 'Current User',
           openingFloat: parseFloat(openingCash) || 0,
         }),
       })
@@ -104,7 +101,6 @@ export function ShiftManagement({
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           action: 'close',
-          tenantId,
           shiftId: currentShift.id,
           closingData: {
             actualCash: parseFloat(declaredCash) || 0,
