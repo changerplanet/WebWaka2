@@ -1,0 +1,273 @@
+WebWaka POS — Full Real-World Validation Review
+
+Access
+
+You have full GitHub access to the WebWaka repository and can run the application locally.
+You are expected to run, test, break, and stress the POS like a real Nigerian merchant would.
+
+⸻
+
+🎯 OBJECTIVE (NON-NEGOTIABLE)
+
+Conduct a deep, end-to-end, real-world POS validation audit of WebWaka’s POS system to determine:
+	1.	What actually works
+	2.	What breaks under real usage
+	3.	What feels confusing, slow, unsafe, or unrealistic
+	4.	What is missing compared to real Nigerian retail behavior
+	5.	What is implemented but unusable or incomplete
+	6.	What should be fixed, enhanced, or added next
+
+This is NOT a code-only review.
+This is a product, UX, operations, and behavior audit.
+
+⸻
+
+🧠 REQUIRED DISCIPLINE (VERY IMPORTANT)
+
+You MUST follow these rules:
+	1.	No assumptions
+	•	If you cannot find it in code or in the running app, it does not exist.
+	2.	Run the POS
+	•	Desktop browser
+	•	Mobile browser
+	•	Tablet size (landscape)
+	3.	Simulate real Nigerian usage
+	•	Poor internet
+	•	Offline → online transitions
+	•	Shared devices
+	•	Cash + transfer heavy usage
+	4.	Document before fixing
+	•	First report everything
+	•	Only then recommend fixes/enhancements
+	5.	Be brutally honest
+	•	If something is confusing, say it
+	•	If something feels unrealistic, say it
+	•	If something will cause merchant mistakes, flag it
+
+⸻
+
+🔍 SCOPE OF REVIEW
+
+1️⃣ POS FUNCTIONAL TESTING (HANDS-ON)
+
+You must execute and validate:
+	•	Start-of-day flow
+	•	Open shift
+	•	Location selection
+	•	Register assignment
+	•	Cash float entry
+	•	Sales (cash, transfer, offline)
+	•	Discounts
+	•	Voids
+	•	Refunds (if any)
+	•	End-of-day flow
+	•	Z-Report
+	•	Cash reconciliation
+	•	Supervisor approvals
+	•	Daily reconciliation
+	•	Inventory adjustments
+	•	Cash drawer transfers
+	•	Offline sales → sync
+	•	Duplicate prevention
+	•	Error handling
+
+For each flow, document:
+	•	Works as expected
+	•	Confusing
+	•	Broken
+	•	Missing guardrails
+	•	Dangerous for real merchants
+
+⸻
+
+2️⃣ USER EXPERIENCE (REAL PEOPLE)
+
+Evaluate the POS as if used by:
+	•	A cashier with little tech knowledge
+	•	A busy shop owner
+	•	A supervisor overseeing staff
+	•	A merchant during peak hours
+
+Specifically assess:
+	•	Number of taps/clicks
+	•	Error clarity
+	•	Feedback timing
+	•	Mobile usability
+	•	Touch target sizes
+	•	Fat-finger risks
+	•	Accidental destructive actions
+	•	Supervisor override clarity
+
+Flag anything that would:
+	•	Cause wrong sales
+	•	Cause cash loss
+	•	Cause staff confusion
+	•	Slow down checkout
+
+⸻
+
+3️⃣ OFFLINE-FIRST & NETWORK REALITY
+
+Test and document:
+	•	Full offline sale flow
+	•	App reload while offline
+	•	Browser refresh mid-sale
+	•	Power loss simulation (close tab)
+	•	Offline → online sync
+	•	Partial sync failures
+	•	Duplicate sale risks
+	•	Conflict resolution UX (or lack of it)
+
+Explicitly state:
+	•	What the cashier sees
+	•	What data is at risk
+	•	Whether recovery is obvious or hidden
+
+⸻
+
+4️⃣ NIGERIA-FIRST REALITY CHECK
+
+Compare the POS against actual Nigerian retail behavior:
+	•	Bank transfers with screenshots
+	•	Verbal confirmations
+	•	Trusted customer credit
+	•	Partial payments
+	•	Change shortages
+	•	Rounding realities
+	•	WhatsApp reliance
+	•	Shared devices & logins
+	•	End-of-day cash balancing stress
+
+Document:
+	•	What WebWaka models correctly
+	•	What it partially models
+	•	What it completely ignores
+
+⸻
+
+5️⃣ SECURITY & ABUSE SCENARIOS
+
+Test for:
+	•	Privilege abuse
+	•	Supervisor bypass
+	•	Cashier doing manager actions
+	•	Self-approval attempts
+	•	Race conditions
+	•	Re-submission of sales
+	•	URL-based access to restricted views
+
+Flag any scenario where:
+	•	Money can be misrepresented
+	•	Staff can cheat
+	•	Audits can be disputed
+
+⸻
+
+6️⃣ PERFORMANCE & STABILITY
+
+Observe and document:
+	•	Slow screens
+	•	Laggy modals
+	•	Re-renders
+	•	UI freezes
+	•	Memory growth during long sessions
+	•	localStorage / IndexedDB behavior
+
+⸻
+
+📊 REQUIRED OUTPUT FORMAT
+
+Your final delivery MUST include:
+
+⸻
+
+📘 SECTION A — EXECUTIVE SUMMARY
+	•	Overall POS readiness score (0–100%)
+	•	Can this run in real Nigerian shops today?
+	•	Biggest risks if deployed now
+
+⸻
+
+🧪 SECTION B — TEST MATRIX
+
+A table covering:
+	•	Feature
+	•	Tested? (Yes/No)
+	•	Result (Pass / Partial / Fail)
+	•	Notes
+
+⸻
+
+🐞 SECTION C — BUG & ISSUE LIST
+
+For each issue:
+	•	Severity (Critical / High / Medium / Low)
+	•	Steps to reproduce
+	•	Expected behavior
+	•	Actual behavior
+	•	Risk if left unfixed
+
+⸻
+
+🧩 SECTION D — MISSING OR INCOMPLETE FEATURES
+
+Clearly distinguish:
+	•	Missing entirely
+	•	Partially implemented
+	•	Implemented but unusable
+
+⸻
+
+🧠 SECTION E — UX & HUMAN ERROR RISKS
+
+Focus on:
+	•	Cash loss
+	•	Wrong totals
+	•	Staff mistakes
+	•	Confusing flows
+	•	Stress situations
+
+⸻
+
+🇳🇬 SECTION F — LOCAL MARKET GAPS
+
+What Nigerian merchants expect but won’t find.
+
+⸻
+
+🛠 SECTION G — RECOMMENDED FIXES & ENHANCEMENTS
+
+For each recommendation:
+	•	Priority (P0 / P1 / P2)
+	•	Type (Bug fix / UX improvement / Feature)
+	•	Why it matters
+	•	Suggested approach (high level, not code)
+
+⸻
+
+🚦 SECTION H — GO / NO-GO ASSESSMENT
+
+Would you personally recommend:
+	•	Pilot rollout
+	•	Limited rollout
+	•	Do not deploy yet
+
+Explain why.
+
+⸻
+
+⛔ IMPORTANT CONSTRAINTS
+	•	Do NOT implement fixes yet
+	•	Do NOT refactor code
+	•	Do NOT skip UX issues because “it works technically”
+	•	This is truth discovery, not defense
+
+⸻
+
+🧱 SUCCESS CRITERIA
+
+This review should make it impossible for leadership to say:
+
+“We didn’t know this would happen in real usage.”
+
+⸻
