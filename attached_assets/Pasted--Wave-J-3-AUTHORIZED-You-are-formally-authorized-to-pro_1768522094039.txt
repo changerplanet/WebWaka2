@@ -1,0 +1,151 @@
+✅ Wave J.3 — AUTHORIZED
+
+You are formally authorized to proceed with Wave J.3: Receipt & Proof Linking.
+
+This authorization is granted with full awareness of prior constraints, gaps, and architectural direction established in Waves J.1 and J.2.
+
+⸻
+
+🎯 WAVE J.3 — OFFICIAL SCOPE
+
+Objective
+
+Create a canonical, read-only linkage layer that connects:
+	•	Orders (SVM, MVM, ParkHub)
+	•	Receipts
+	•	Tickets
+	•	Manifests
+
+…into a single coherent proof chain, without altering any existing data models or flows.
+
+This wave is about visibility and traceability, not enforcement.
+
+⸻
+
+✅ ALLOWED IN WAVE J.3
+
+You MAY:
+	•	Introduce canonical TypeScript types (e.g. CanonicalReceipt, CanonicalProof)
+	•	Create read-only resolvers/adapters
+	•	Traverse existing relations across:
+	•	receipt
+	•	receipt_item
+	•	park_ticket
+	•	park_manifest
+	•	svm_orders
+	•	mvm_parent_order
+	•	Add read-only public or internal APIs
+	•	Normalize references (orderRef, ticketRef, receiptNumber, manifestNumber)
+	•	Return linked structures (e.g. order → receipts → manifests)
+	•	Document all limitations and inconsistencies
+
+⸻
+
+❌ STRICTLY FORBIDDEN (NON-NEGOTIABLE)
+
+You MUST NOT:
+	•	❌ Change or add database schemas
+	•	❌ Introduce foreign keys or migrations
+	•	❌ Mutate existing records
+	•	❌ Create background jobs or automation
+	•	❌ Invent missing links or infer data
+	•	❌ Add authentication systems
+	•	❌ Add business rules (e.g. “receipt required for payout”)
+	•	❌ Fix gaps discovered — only document them
+
+Wave J is diagnostic and unifying, not corrective.
+
+⸻
+
+🧩 EXPECTED DELIVERABLES
+
+At completion, Wave J.3 MUST include:
+
+1. Canonical Proof Model(s)
+
+Example (illustrative only):
+
+CanonicalProof {
+  orderReference?: string
+  receiptNumbers?: string[]
+  ticketReferences?: string[]
+  manifestNumbers?: string[]
+  verificationUrls?: string[]
+  sourceSystems: ("SVM" | "MVM" | "PARKHUB")[]
+  metadata: Record<string, unknown>
+}
+
+
+⸻
+
+2. Resolver Coverage Matrix
+
+System	Can Resolve Receipt	Can Resolve Ticket	Can Resolve Manifest
+SVM	✅	❌	❌
+MVM	🟡 (via parent)	❌	❌
+ParkHub	✅	✅	✅
+
+(Actual results may vary — document truthfully)
+
+⸻
+
+3. APIs (Read-Only)
+
+At least one of:
+	•	GET /api/proofs/by-order
+	•	GET /api/proofs/by-receipt
+	•	GET /api/proofs/by-ticket
+	•	GET /api/proofs/by-manifest
+
+All must be tenant-isolated and read-only.
+
+⸻
+
+4. Mandatory GAP LIST (NON-OPTIONAL)
+
+You must explicitly document, at minimum:
+	•	Missing foreign key relationships
+	•	Receipt ↔ order mismatches
+	•	ParkHub vs commerce receipt differences
+	•	Manifest → receipt ambiguity
+	•	Multi-receipt per order inconsistencies
+	•	Legacy data edge cases
+	•	Verification URL inconsistencies
+
+No gap is too small. Over-document rather than under-document.
+
+⸻
+
+🛑 REQUIRED STOP CONDITION
+
+At the end of Wave J.3, you must:
+	1.	Produce a Wave J.3 Completion Report
+	2.	Include:
+	•	Canonical models
+	•	APIs created
+	•	Resolver logic
+	•	Coverage matrix
+	•	Full gap inventory
+	3.	Explicitly confirm:
+	•	❌ No schema changes
+	•	❌ No mutations
+	•	❌ No automation
+	4.	STOP and await approval
+
+⸻
+
+🔓 STATUS UPDATE
+
+Wave	Status
+Wave J.1 — Unified Orders	✅ Approved
+Wave J.2 — Unified Customer Identity	✅ Approved
+Wave J.3 — Receipt & Proof Linking	🟢 AUTHORIZED TO START
+Wave J.4 — Tenant Context Hardening	🔒 Locked
+
+
+⸻
+
+Proceed carefully and methodically.
+Wave J.3 is the final structural glue before the platform can truthfully claim end-to-end commercial traceability.
+
+When complete, paste the Wave J.3 Completion Report here for review.
