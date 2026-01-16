@@ -10,7 +10,11 @@ import {
   POSCart, 
   PaymentScreen,
   LocationSelect,
-  POSProduct
+  POSProduct,
+  ShiftManagement,
+  XZReport,
+  Reconciliation,
+  TransactionHistory
 } from '@/components/pos'
 import { 
   ShoppingBag, 
@@ -19,14 +23,37 @@ import {
   RefreshCw,
   Package,
   Grid3X3,
-  X
+  X,
+  Clock,
+  FileText,
+  Calculator,
+  History,
+  Menu
 } from 'lucide-react'
 
 // ============================================================================
 // MAIN POS SCREEN
 // ============================================================================
 
+interface Shift {
+  id: string
+  shiftNumber: string
+  registerId: string
+  locationId: string
+  status: string
+  openedAt: string
+  closedAt?: string
+  openingFloat: number
+  openedByName: string
+}
+
+interface Location {
+  id: string
+  name: string
+}
+
 function POSMainScreen() {
+  const { activeTenantId } = useAuth()
   const { 
     cart, 
     locationId, 
@@ -41,6 +68,46 @@ function POSMainScreen() {
   const [view, setView] = useState<'sale' | 'payment'>('sale')
   const [showQuickGrid, setShowQuickGrid] = useState(true)
   const [showMobileCart, setShowMobileCart] = useState(false)
+  
+  const [currentShift, setCurrentShift] = useState<Shift | null>(null)
+  const [showShiftModal, setShowShiftModal] = useState(false)
+  const [showXReport, setShowXReport] = useState(false)
+  const [showZReport, setShowZReport] = useState(false)
+  const [showReconciliation, setShowReconciliation] = useState(false)
+  const [showTransactionHistory, setShowTransactionHistory] = useState(false)
+  const [showManagerMenu, setShowManagerMenu] = useState(false)
+  const [locations, setLocations] = useState<Location[]>([])
+
+  useEffect(() => {
+    if (activeTenantId && locationId) {
+      fetchCurrentShift()
+      fetchLocations()
+    }
+  }, [activeTenantId, locationId])
+
+  const fetchCurrentShift = async () => {
+    try {
+      const res = await fetch(`/api/pos/shifts?locationId=${locationId}&status=OPEN`)
+      const data = await res.json()
+      if (data.success && data.shifts.length > 0) {
+        setCurrentShift(data.shifts[0])
+      }
+    } catch (err) {
+      console.error('Failed to fetch shift:', err)
+    }
+  }
+
+  const fetchLocations = async () => {
+    try {
+      const res = await fetch(`/api/commerce/pos/locations`)
+      const data = await res.json()
+      if (data.success) {
+        setLocations(data.locations || [])
+      }
+    } catch (err) {
+      setLocations([{ id: locationId!, name: 'Current Location' }])
+    }
+  }
 
   // Load products on mount
   useEffect(() => {
@@ -108,6 +175,76 @@ function POSMainScreen() {
               <Users className="w-4 h-4" />
               Customer
             </button>
+
+            <div className="flex-1" />
+
+            <button
+              onClick={() => setShowShiftModal(true)}
+              className={`px-4 py-2 rounded-lg flex items-center gap-2 transition-colors ${
+                currentShift 
+                  ? 'bg-emerald-100 text-emerald-700' 
+                  : 'bg-amber-100 text-amber-700'
+              }`}
+              data-testid="shift-btn"
+            >
+              <Clock className="w-4 h-4" />
+              {currentShift ? currentShift.shiftNumber : 'Open Shift'}
+            </button>
+
+            <div className="relative">
+              <button
+                onClick={() => setShowManagerMenu(!showManagerMenu)}
+                className="px-4 py-2 bg-white text-slate-600 hover:bg-slate-50 rounded-lg flex items-center gap-2 transition-colors"
+                data-testid="manager-menu-btn"
+              >
+                <Menu className="w-4 h-4" />
+              </button>
+              
+              {showManagerMenu && (
+                <>
+                  <div 
+                    className="fixed inset-0 z-40"
+                    onClick={() => setShowManagerMenu(false)}
+                  />
+                  <div className="absolute right-0 top-full mt-1 w-48 bg-white rounded-xl shadow-lg border border-slate-200 z-50 py-1">
+                    <button
+                      onClick={() => { setShowTransactionHistory(true); setShowManagerMenu(false) }}
+                      className="w-full px-4 py-3 text-left hover:bg-slate-50 flex items-center gap-3 text-sm"
+                    >
+                      <History className="w-4 h-4 text-slate-500" />
+                      Transaction History
+                    </button>
+                    {currentShift && (
+                      <button
+                        onClick={() => { setShowXReport(true); setShowManagerMenu(false) }}
+                        className="w-full px-4 py-3 text-left hover:bg-slate-50 flex items-center gap-3 text-sm"
+                      >
+                        <FileText className="w-4 h-4 text-blue-500" />
+                        X Report (Mid-Shift)
+                      </button>
+                    )}
+                    {currentShift?.status === 'CLOSED' && (
+                      <>
+                        <button
+                          onClick={() => { setShowZReport(true); setShowManagerMenu(false) }}
+                          className="w-full px-4 py-3 text-left hover:bg-slate-50 flex items-center gap-3 text-sm"
+                        >
+                          <FileText className="w-4 h-4 text-amber-500" />
+                          Z Report (Final)
+                        </button>
+                        <button
+                          onClick={() => { setShowReconciliation(true); setShowManagerMenu(false) }}
+                          className="w-full px-4 py-3 text-left hover:bg-slate-50 flex items-center gap-3 text-sm"
+                        >
+                          <Calculator className="w-4 h-4 text-emerald-500" />
+                          Cash Reconciliation
+                        </button>
+                      </>
+                    )}
+                  </div>
+                </>
+              )}
+            </div>
           </div>
 
           {/* Quick product grid */}
@@ -202,6 +339,56 @@ function POSMainScreen() {
           )}
         </button>
       </div>
+
+      {showShiftModal && activeTenantId && (
+        <ShiftManagement
+          tenantId={activeTenantId}
+          locations={locations.length > 0 ? locations : [{ id: locationId!, name: 'Current Location' }]}
+          currentShift={currentShift}
+          onShiftChange={(shift) => {
+            setCurrentShift(shift)
+            if (!shift) {
+              fetchCurrentShift()
+            }
+          }}
+          onClose={() => setShowShiftModal(false)}
+        />
+      )}
+
+      {showXReport && currentShift && (
+        <XZReport
+          shiftId={currentShift.id}
+          reportType="X"
+          onClose={() => setShowXReport(false)}
+        />
+      )}
+
+      {showZReport && currentShift && (
+        <XZReport
+          shiftId={currentShift.id}
+          reportType="Z"
+          onClose={() => setShowZReport(false)}
+        />
+      )}
+
+      {showReconciliation && currentShift && (
+        <Reconciliation
+          shiftId={currentShift.id}
+          onComplete={() => {
+            setShowReconciliation(false)
+            fetchCurrentShift()
+          }}
+          onClose={() => setShowReconciliation(false)}
+        />
+      )}
+
+      {showTransactionHistory && activeTenantId && (
+        <TransactionHistory
+          tenantId={activeTenantId}
+          locationId={locationId || undefined}
+          onClose={() => setShowTransactionHistory(false)}
+        />
+      )}
     </div>
   )
 }
