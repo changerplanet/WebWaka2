@@ -29,7 +29,7 @@ import {
   MapPin
 } from 'lucide-react'
 import { DemoModeProvider } from '@/lib/demo'
-import { DemoOverlay, DemoIndicator } from '@/components/demo'
+import { DemoOverlay, DemoIndicator, DemoGate } from '@/components/demo'
 
 // ============================================================================
 // MOCK DATA
@@ -432,10 +432,12 @@ function SVMDemoContent() {
 
 export default function SVMDemoPage() {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-gray-50 flex items-center justify-center">Loading...</div>}>
-      <DemoModeProvider>
-        <SVMDemoContent />
-      </DemoModeProvider>
-    </Suspense>
+    <DemoGate>
+      <Suspense fallback={<div className="min-h-screen bg-gray-50 flex items-center justify-center">Loading...</div>}>
+        <DemoModeProvider>
+          <SVMDemoContent />
+        </DemoModeProvider>
+      </Suspense>
+    </DemoGate>
   )
 }

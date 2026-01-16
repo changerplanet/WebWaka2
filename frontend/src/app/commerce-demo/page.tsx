@@ -36,7 +36,7 @@ import {
   Play
 } from 'lucide-react'
 import { DemoModeProvider, useDemoMode, getStorylineList, resolveQuickStart, QuickStartConfig } from '@/lib/demo'
-import { DemoModeToggle, StorylineSelector, DemoOverlay, QuickStartBanner } from '@/components/demo'
+import { DemoModeToggle, StorylineSelector, DemoOverlay, QuickStartBanner, DemoGate } from '@/components/demo'
 
 // ============================================================================
 // TYPES
@@ -604,10 +604,12 @@ function CommerceDemoContent() {
 
 export default function CommerceDemoPortal() {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-gray-50 flex items-center justify-center">Loading...</div>}>
-      <DemoModeProvider>
-        <CommerceDemoContent />
-      </DemoModeProvider>
-    </Suspense>
+    <DemoGate>
+      <Suspense fallback={<div className="min-h-screen bg-gray-50 flex items-center justify-center">Loading...</div>}>
+        <DemoModeProvider>
+          <CommerceDemoContent />
+        </DemoModeProvider>
+      </Suspense>
+    </DemoGate>
   )
 }

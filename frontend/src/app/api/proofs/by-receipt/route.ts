@@ -84,7 +84,7 @@ export async function GET(request: NextRequest) {
       
       if (!emailMatch && !phoneMatch) {
         return NextResponse.json(
-          { error: 'Access denied - identifier does not match receipt' },
+          { error: 'Unable to process request' },
           { status: 403 }
         )
       }

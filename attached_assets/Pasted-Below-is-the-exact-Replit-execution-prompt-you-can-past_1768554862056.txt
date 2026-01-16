@@ -1,0 +1,204 @@
+Below is the exact Replit execution prompt you can paste and run.
+It is written to force disciplined, step-by-step execution of Wave C (C1 → C4) with no branching, no skipping, and a hard stop only at the very end of C4 for verification.
+
+This prompt is intentionally strict, explicit, and non-negotiable.
+
+⸻
+
+🔐 REPLIT EXECUTION PROMPT
+
+WAVE C — SECURITY & EXPOSURE REMEDIATION (FULL RUN)
+
+⚠️ ABSOLUTE INSTRUCTIONS (READ FIRST)
+
+You are executing Wave C, which consists of four sub-waves (C1–C4).
+You MUST execute them in order, non-stop, without pausing, and without introducing any new features.
+
+🚫 DO NOT
+	•	Invent new functionality
+	•	Add new business logic
+	•	Add new user flows
+	•	Add new authentication systems
+	•	Skip any step
+	•	Reinterpret requirements
+
+✅ YOU MUST
+	•	Only harden, restrict, remove, or gate existing surfaces
+	•	Follow the gap list from WAVE A2 (XPOSURE_REPORT.md) exactly
+	•	Produce documentation artifacts where required
+	•	Stop ONLY at the end of Wave C4
+
+⸻
+
+📘 AUTHORITATIVE INPUT DOCUMENTS
+
+You MUST treat the following as canonical truth:
+	1.	XPOSURE_REPORT.md (Wave A2 — Security & Exposure Audit)
+	2.	WEBWAKA GROUND TRUTH AUDIT (V2)
+	3.	Existing codebase (no assumptions beyond code)
+
+All GAP IDs referenced below come directly from Wave A2.
+
+⸻
+
+🟥 WAVE C1 — DEBUG & TEST SURFACE LOCKDOWN
+
+Objective
+
+Eliminate or fully secure all debug, test, and development-only surfaces that must never be reachable in production.
+
+GAPs Covered
+	•	GAP-001 — /api/debug/otp-logs
+	•	GAP-002 — /api/debug/activate-all-capabilities
+	•	GAP-003 — /test-* routes
+	•	Debug/Test APIs and pages in production codebase
+
+REQUIRED ACTIONS
+	1.	Debug APIs
+	•	/api/debug/otp-logs
+	•	/api/debug/activate-all-capabilities
+Apply ONE of the following (choose the safest):
+	•	Remove route entirely
+OR
+	•	Hard-gate with BOTH:
+	•	requireSuperAdmin()
+	•	NODE_ENV === 'development'
+	2.	Test Pages
+	•	/test-errors
+	•	/test-layout
+	•	/test-permissions
+	•	/test-role
+Action:
+	•	Remove from routing OR
+	•	Make them unreachable in production builds
+	3.	Phase / Staging Routes
+	•	/phase6 (if present)
+Action:
+	•	Remove or hard-disable in production
+
+FORBIDDEN
+
+❌ Leaving debug endpoints protected only by NODE_ENV
+❌ Adding replacement debug tools
+❌ Leaving test pages accessible to any authenticated user
+
+⸻
+
+🟧 WAVE C2 — TENANT CONTEXT & CANONICAL API HARDENING
+
+Objective
+
+Close trust-boundary violations where client-supplied identifiers can be abused.
+
+GAPs Covered
+	•	GAP-004 — Canonical APIs trust tenantSlug from query params
+	•	GAP-006 — Guessable order references (enumeration risk)
+
+TARGETED ENDPOINTS
+	•	/api/orders/canonical/*
+	•	/api/customers/canonical
+	•	/api/proofs/by-*
+
+REQUIRED ACTIONS
+	1.	Tenant Context Enforcement
+	•	Eliminate direct trust in client-supplied tenantSlug
+	•	All tenant context must be resolved server-side using:
+	•	TenantContextResolver
+	•	Verified tenant existence + module entitlement
+	2.	Cross-Tenant Protection
+	•	Ensure probing another tenant’s orders/customers is impossible
+	•	Invalid or mismatched tenant context MUST return 403
+	3.	Order Enumeration Mitigation
+	•	Harden reference lookup logic (NO schema changes unless unavoidable)
+	•	Reduce inferability where possible without breaking public flows
+
+FORBIDDEN
+
+❌ Adding customer login/accounts
+❌ Introducing new auth providers
+❌ Breaking existing public order/ticket verification flows
+
+⸻
+
+🟨 WAVE C3 — DEMO MODE CONTAINMENT & WEBHOOK SAFETY
+
+Objective
+
+Ensure demo shortcuts cannot leak into live behavior.
+
+GAPs Covered
+	•	GAP-005 — String-based demo detection
+	•	GAP-007 — Webhook signature skipped in demo
+	•	GAP-008 — Demo pages accessible to all authenticated users
+
+REQUIRED ACTIONS
+	1.	Demo Detection Hardening
+	•	Replace string-based demo detection (slug.includes("demo"))
+	•	Use a single authoritative flag (e.g. tenant.isDemo)
+	2.	Webhook Security
+	•	Enforce signature verification always
+	•	Demo mode must use a dummy secret, not skip verification
+	3.	Demo Page Containment
+	•	Restrict all *-demo pages to:
+	•	Demo tenants ONLY
+OR
+	•	Explicit demo role
+
+FORBIDDEN
+
+❌ Removing demo functionality
+❌ Weakening demo UX
+❌ Allowing demo bypass in live tenants
+
+⸻
+
+🟦 WAVE C4 — FINAL EXPOSURE VERIFICATION (STOP HERE)
+
+Objective
+
+Prove that all Wave C gaps are fully closed.
+
+REQUIRED ACTIONS
+	1.	Re-run an exposure audit equivalent to Wave A2
+	2.	Produce a Wave C4 Closure Report containing:
+	•	GAP-ID → Status (CLOSED)
+	•	Before vs After exposure comparison
+	•	Updated risk matrix (should be LOW / ACCEPTABLE only)
+	3.	Confirm explicitly:
+	•	No debug endpoints exposed
+	•	No test pages reachable
+	•	No demo leakage into live tenants
+	•	No canonical API tenant spoofing possible
+
+⸻
+
+🛑 FINAL STOP CONDITION (MANDATORY)
+
+After completing Wave C4:
+
+🛑 STOP ALL WORK IMMEDIATELY
+
+DO NOT:
+	•	Proceed to Wave D
+	•	Proceed to payouts
+	•	Proceed to branding
+	•	Proceed to templates
+	•	Proceed to integrations
+
+WAIT for explicit human approval after presenting:
+	•	Wave C4 Closure Report
+	•	Confirmation that ALL GAP-IDs from Wave A2 are addressed
+
+⸻
+
+✅ SUCCESS CRITERIA (NON-NEGOTIABLE)
+
+Wave C is considered successful ONLY IF:
+	•	Every GAP in Wave A2 is either closed or explicitly justified
+	•	No new public surface is introduced
+	•	No business logic is added
+	•	No assumptions are made
+
+⸻
+
+BEGIN WAVE C EXECUTION NOW.

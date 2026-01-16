@@ -32,10 +32,28 @@ import type {
 } from './types'
 import { MODULE_ALIASES } from './types'
 
-function isDemo(slug: string, name: string): boolean {
-  return slug.toLowerCase().startsWith('demo') || 
-         name.toLowerCase().includes('demo')
+/**
+ * AUTHORITATIVE DEMO TENANT DETECTION
+ * Wave C3: Hardened demo detection to prevent spoofing
+ * 
+ * A tenant is considered a demo tenant if:
+ * 1. Slug matches exact pattern: demo-* (with hyphen) or demo_* (with underscore)
+ * 2. Slug is exactly "demo"
+ * 
+ * This prevents attackers from creating tenants like "demostore" to get demo privileges.
+ * The hyphen/underscore requirement makes it clear this is a system-designated demo tenant.
+ */
+const DEMO_SLUG_PATTERNS = [
+  /^demo$/i,           // Exactly "demo"
+  /^demo[-_]/i,        // Starts with "demo-" or "demo_"
+]
+
+function isDemo(slug: string, _name: string): boolean {
+  const normalizedSlug = slug.toLowerCase().trim()
+  return DEMO_SLUG_PATTERNS.some(pattern => pattern.test(normalizedSlug))
 }
+
+export { isDemo }
 
 function hasRequiredModules(
   enabledModules: string[], 
@@ -276,4 +294,4 @@ export class TenantContextResolver {
   }
 }
 
-export { isDemo, hasRequiredModules }
+export { hasRequiredModules }

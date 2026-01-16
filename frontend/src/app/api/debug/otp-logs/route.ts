@@ -3,18 +3,16 @@ export const dynamic = 'force-dynamic'
 /**
  * DEBUG ENDPOINT - OTP TEST LOGS
  * 
- * ⚠️ WARNING: This is for DEVELOPMENT/TESTING ONLY
- * MUST be disabled in production
+ * ⚠️ SECURED: Requires BOTH Super Admin authentication AND development environment
  * 
- * This endpoint exposes recently generated OTP codes so external reviewers
- * can complete authentication flows in the preview environment.
+ * Wave C1: Security hardened - dual gate protection
  */
 
 import { NextRequest, NextResponse } from 'next/server'
-import { getDebugOtpLogs, getDebugOtpLogsForIdentifier } from '@/lib/debug/otp-logger'
+import { requireSuperAdmin } from '@/lib/authorization'
 
 export async function GET(request: NextRequest) {
-  // Only allow in development/preview
+  // GATE 1: Environment check - MUST be development
   if (process.env.NODE_ENV === 'production') {
     return NextResponse.json(
       { error: 'Debug endpoint disabled in production' },
@@ -22,12 +20,24 @@ export async function GET(request: NextRequest) {
     )
   }
 
+  // GATE 2: Require Super Admin authentication
+  const authResult = await requireSuperAdmin()
+  
+  if (!authResult.authorized) {
+    return NextResponse.json(
+      { error: authResult.error },
+      { status: authResult.status }
+    )
+  }
+
+  // Only reach here if BOTH gates pass
+  const { getDebugOtpLogs, getDebugOtpLogsForIdentifier } = await import('@/lib/debug/otp-logger')
+  
   const searchParams = request.nextUrl.searchParams
   const identifier = searchParams.get('identifier')
 
   const now = new Date()
 
-  // Get in-memory logs
   const logs = identifier 
     ? getDebugOtpLogsForIdentifier(identifier)
     : getDebugOtpLogs()
@@ -37,7 +47,8 @@ export async function GET(request: NextRequest) {
     .slice(0, 20)
 
   return NextResponse.json({
-    warning: '⚠️ DEBUG ENDPOINT - For testing only. Disabled in production.',
+    warning: '⚠️ DEBUG ENDPOINT - Super Admin only, development environment only.',
+    authenticatedAs: authResult.user.email,
     environment: process.env.NODE_ENV,
     otps: sortedLogs.map(entry => ({
       identifier: entry.identifier,

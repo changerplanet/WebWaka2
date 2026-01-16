@@ -35,7 +35,7 @@ import {
   FileText
 } from 'lucide-react'
 import { DemoModeProvider } from '@/lib/demo'
-import { DemoOverlay, DemoIndicator } from '@/components/demo'
+import { DemoOverlay, DemoIndicator, DemoGate } from '@/components/demo'
 
 // ============================================================================
 // MOCK DATA
@@ -429,10 +429,12 @@ function POSDemoContent() {
 
 export default function POSDemoPage() {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-gray-50 flex items-center justify-center">Loading...</div>}>
-      <DemoModeProvider>
-        <POSDemoContent />
-      </DemoModeProvider>
-    </Suspense>
+    <DemoGate>
+      <Suspense fallback={<div className="min-h-screen bg-gray-50 flex items-center justify-center">Loading...</div>}>
+        <DemoModeProvider>
+          <POSDemoContent />
+        </DemoModeProvider>
+      </Suspense>
+    </DemoGate>
   )
 }

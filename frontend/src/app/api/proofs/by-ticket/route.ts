@@ -76,7 +76,7 @@ export async function GET(request: NextRequest) {
       
       if (!phoneMatch) {
         return NextResponse.json(
-          { error: 'Access denied - phone does not match ticket' },
+          { error: 'Unable to process request' },
           { status: 403 }
         )
       }

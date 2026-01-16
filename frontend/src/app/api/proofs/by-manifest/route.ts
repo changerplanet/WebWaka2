@@ -86,7 +86,7 @@ export async function GET(request: NextRequest) {
       
       if (!matchingTicket) {
         return NextResponse.json(
-          { error: 'Access denied - phone does not match any passenger on manifest' },
+          { error: 'Unable to process request' },
           { status: 403 }
         )
       }

@@ -28,7 +28,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Progress } from '@/components/ui/progress'
-import { QuickStartBanner } from '@/components/demo/QuickStartBanner'
+import { QuickStartBanner, DemoGate } from '@/components/demo'
 import { resolveQuickStart } from '@/lib/demo/quickstart'
 import { PARKHUB_LABELS, TRIP_STATUS_LABELS, type TripStatus } from '@/lib/parkhub/config'
 
@@ -201,6 +201,7 @@ export default function ParkHubDemoPage() {
   }
 
   return (
+    <DemoGate>
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50">
       {/* Quick Start Banner */}
       {quickStartConfig && (
@@ -707,5 +708,6 @@ export default function ParkHubDemoPage() {
         </Card>
       </div>
     </div>
+    </DemoGate>
   )
 }
