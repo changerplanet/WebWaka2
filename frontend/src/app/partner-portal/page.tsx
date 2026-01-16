@@ -26,6 +26,9 @@ import {
   UserPlus,
   ShoppingCart,
   Calendar,
+  LayoutTemplate,
+  Layers,
+  ChevronRight,
 } from 'lucide-react'
 
 interface PartnerProfile {
@@ -442,6 +445,49 @@ export default function PartnerPortal() {
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Quick Links */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8" data-testid="quick-links">
+          <a
+            href="/partner-portal/templates"
+            className="bg-white rounded-xl shadow-sm p-6 hover:shadow-md transition-shadow flex items-center gap-4 group"
+          >
+            <div className="p-3 bg-purple-100 rounded-lg group-hover:bg-purple-200 transition-colors">
+              <LayoutTemplate className="w-6 h-6 text-purple-600" />
+            </div>
+            <div>
+              <h3 className="font-semibold text-gray-900 group-hover:text-purple-600 transition-colors">Template Gallery</h3>
+              <p className="text-sm text-gray-500">Browse and clone templates</p>
+            </div>
+            <ChevronRight className="w-5 h-5 text-gray-400 ml-auto group-hover:text-purple-600 transition-colors" />
+          </a>
+          <a
+            href="/partner-portal/sites"
+            className="bg-white rounded-xl shadow-sm p-6 hover:shadow-md transition-shadow flex items-center gap-4 group"
+          >
+            <div className="p-3 bg-blue-100 rounded-lg group-hover:bg-blue-200 transition-colors">
+              <Layers className="w-6 h-6 text-blue-600" />
+            </div>
+            <div>
+              <h3 className="font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">My Sites</h3>
+              <p className="text-sm text-gray-500">Manage your site pages</p>
+            </div>
+            <ChevronRight className="w-5 h-5 text-gray-400 ml-auto group-hover:text-blue-600 transition-colors" />
+          </a>
+          <a
+            href="/partner-portal/funnels"
+            className="bg-white rounded-xl shadow-sm p-6 hover:shadow-md transition-shadow flex items-center gap-4 group"
+          >
+            <div className="p-3 bg-green-100 rounded-lg group-hover:bg-green-200 transition-colors">
+              <Target className="w-6 h-6 text-green-600" />
+            </div>
+            <div>
+              <h3 className="font-semibold text-gray-900 group-hover:text-green-600 transition-colors">My Funnels</h3>
+              <p className="text-sm text-gray-500">Manage your sales funnels</p>
+            </div>
+            <ChevronRight className="w-5 h-5 text-gray-400 ml-auto group-hover:text-green-600 transition-colors" />
+          </a>
+        </div>
+
         {/* Earnings Overview */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8" data-testid="earnings-overview">
           <div className="bg-white rounded-xl shadow-sm p-6">

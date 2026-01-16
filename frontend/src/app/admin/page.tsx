@@ -6,7 +6,7 @@ import {
   Building2, Users, Globe, Shield, Settings, LogOut, Plus, Search, 
   MoreVertical, ChevronRight, Check, X, Loader2, AlertTriangle,
   Activity, RefreshCw, Eye, Trash2, UserPlus, Clock, Package,
-  UserCog, DollarSign, Server
+  UserCog, DollarSign, Server, LayoutTemplate
 } from 'lucide-react'
 
 interface Tenant {
@@ -180,6 +180,7 @@ export default function SuperAdminDashboard() {
                 { icon: Users, label: 'All Users', href: '/admin/users' },
                 { icon: Building2, label: 'Partners', href: '/admin/partners' },
                 { icon: Package, label: 'Capabilities', href: '/admin/capabilities' },
+                { icon: LayoutTemplate, label: 'Templates', href: '/admin/templates' },
               ].map((item, i) => (
                 <li key={i}>
                   <button

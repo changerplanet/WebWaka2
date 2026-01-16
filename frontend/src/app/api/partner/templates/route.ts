@@ -11,6 +11,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getSessionFromRequest } from '@/lib/auth'
 import { createPartnerTemplateService } from '@/lib/sites-funnels/partner-template-service'
+import { prisma } from '@/lib/prisma'
 
 function getPartnerUser(session: unknown): { 
   id: string
@@ -29,6 +30,19 @@ function getPartnerUser(session: unknown): {
   }
 }
 
+async function getTenantDemoStatus(tenantId: string | undefined): Promise<boolean> {
+  if (!tenantId) return false
+  try {
+    const tenant = await prisma.tenant.findUnique({
+      where: { id: tenantId },
+      select: { isDemo: true }
+    })
+    return tenant?.isDemo ?? false
+  } catch {
+    return false
+  }
+}
+
 export async function GET(request: NextRequest) {
   try {
     const session = await getSessionFromRequest(request)
@@ -41,9 +55,11 @@ export async function GET(request: NextRequest) {
     const industry = searchParams.get('industry')
     const useCase = searchParams.get('useCase')
     const search = searchParams.get('search')
-    const includeDemo = searchParams.get('includeDemo') !== 'false'
     const page = parseInt(searchParams.get('page') || '1', 10)
     const limit = parseInt(searchParams.get('limit') || '20', 10)
+
+    const isTenantDemo = await getTenantDemoStatus(partnerUser?.tenantId)
+    const includeDemo = isTenantDemo
 
     const service = createPartnerTemplateService()
     const result = await service.browseTemplates({

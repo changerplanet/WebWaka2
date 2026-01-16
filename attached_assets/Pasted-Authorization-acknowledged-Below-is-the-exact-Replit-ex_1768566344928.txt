@@ -1,0 +1,179 @@
+Authorization acknowledged ✅
+Below is the exact Replit execution prompt for Wave E1 — Template UI Exposure, written to enforce discipline, scope control, and hard stop conditions.
+
+This prompt is intentionally strict. It exposes existing capability only and prevents accidental marketplace, ingestion, or logic expansion.
+
+⸻
+
+🔒 WAVE E1 — TEMPLATE UI EXPOSURE (PHASE H2)
+
+Replit Execution Prompt (Authoritative)
+
+CONTEXT
+
+WebWaka already has a fully implemented backend template system for Sites & Funnels:
+	•	Prisma models exist (sf_template, sf_template_pages, categories)
+	•	APIs exist (/api/admin/templates, /api/partner/templates)
+	•	Cloning logic exists
+	•	Capability gating exists
+
+What is missing is UI exposure only.
+
+This wave is UI + wiring only.
+
+⸻
+
+🎯 WAVE E1 OBJECTIVE
+
+Expose the existing template system via:
+	1.	Super Admin UI (create/manage templates)
+	2.	Partner UI (browse + clone templates)
+
+⚠️ No new business logic
+⚠️ No new schemas
+⚠️ No external ingestion
+⚠️ No marketplace behavior
+
+⸻
+
+🚫 ABSOLUTE CONSTRAINTS (NON-NEGOTIABLE)
+
+Replit MUST NOT:
+	•	❌ Create new Prisma models or modify schema
+	•	❌ Add any new API endpoints
+	•	❌ Change template cloning logic
+	•	❌ Add partner uploads
+	•	❌ Add ratings, pricing, reviews, or marketplace logic
+	•	❌ Add payments or monetization
+	•	❌ Add automation, background jobs, or ingestion pipelines
+	•	❌ Assume templates come from anywhere except Super Admin
+
+If any of the above is required → STOP and REPORT
+
+⸻
+
+🧩 SCOPE OF WORK
+
+1️⃣ SUPER ADMIN — TEMPLATE MANAGEMENT UI
+
+Create UI at:
+
+/admin/templates
+
+Capabilities (UI ONLY):
+	•	List all templates (existing API)
+	•	Create template (form → existing API)
+	•	Edit template metadata:
+	•	name
+	•	description
+	•	category
+	•	status (DRAFT / PUBLISHED)
+	•	demo visibility flag
+	•	Delete / archive templates (if API already supports it)
+
+Explicitly Confirm:
+	•	Super Admin is the ONLY role that can create templates
+	•	Templates are not executable — metadata only
+	•	No template content editing beyond what backend already supports
+
+⸻
+
+2️⃣ PARTNER — TEMPLATE BROWSING & CLONING
+
+Expose UI at:
+
+/partner-portal/templates
+
+Partner capabilities:
+	•	Browse templates that are:
+	•	Published
+	•	Allowed for partners
+	•	Demo-appropriate (respect demo flag)
+	•	Preview template metadata (NO live rendering)
+	•	Clone template → tenant (existing clone logic only)
+
+Explicit Restrictions:
+	•	❌ Partners cannot upload templates
+	•	❌ Partners cannot edit source templates
+	•	❌ Partners cannot publish templates
+	•	❌ Partners cannot see DRAFT templates
+
+⸻
+
+3️⃣ DEMO VS LIVE SEPARATION (MANDATORY)
+
+UI must respect:
+	•	Demo tenants see demo templates
+	•	Live tenants see live templates
+	•	No cross-leakage
+
+If demo detection is ambiguous → STOP and REPORT
+
+⸻
+
+4️⃣ NAVIGATION & DISCOVERABILITY
+
+Add menu links ONLY:
+	•	Super Admin sidebar → “Templates”
+	•	Partner Portal → “Templates”
+
+❌ No links in tenant dashboards
+❌ No public exposure
+
+⸻
+
+🔍 VERIFICATION REQUIREMENTS (MANDATORY)
+
+Before stopping, Replit MUST verify and report:
+
+✅ UI Verification
+	•	Super Admin can CRUD templates via UI
+	•	Partner can browse + clone templates
+	•	Tenant receives cloned template correctly
+
+✅ SECURITY VERIFICATION
+	•	Non-admin cannot access /admin/templates
+	•	Partners cannot access admin APIs
+	•	Tenants cannot access partner template APIs
+
+✅ NEGATIVE CONFIRMATIONS (MUST BE EXPLICIT)
+
+Replit must explicitly state:
+	•	❌ No new APIs added
+	•	❌ No schema changes
+	•	❌ No ingestion logic
+	•	❌ No marketplace logic
+	•	❌ No payments
+	•	❌ No automation
+
+⸻
+
+🛑 HARD STOP CONDITION
+
+After completion:
+	1.	STOP ALL WORK
+	2.	Produce Wave E1 Completion Report with:
+	•	Routes added
+	•	APIs consumed
+	•	Roles tested
+	•	Screenshots or UI component list
+	•	Explicit list of what was NOT done
+
+⚠️ Replit must NOT proceed to Wave E2 or any branding work.
+
+⸻
+
+✅ SUCCESS DEFINITION
+
+Wave E1 is successful ONLY if:
+	•	Templates are fully manageable by Super Admin via UI
+	•	Partners can browse and clone templates safely
+	•	Zero architectural drift occurred
+	•	All constraints are respected
+	•	Human approval is required to continue
+
+⸻
+
+After this completes, the next step will be Wave E2 — White-Label Domains & Partner Branding, but only after verification and sign-off.
+
+When Replit reports back, I’ll help you review the completion report line by line before authorizing the next wave.
