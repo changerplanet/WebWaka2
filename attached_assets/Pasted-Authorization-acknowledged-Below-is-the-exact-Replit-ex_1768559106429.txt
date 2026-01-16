@@ -1,0 +1,201 @@
+Authorization acknowledged. ✅
+Below is the exact Replit execution prompt for Wave B2 — Customer & Identity Coherence, written to enforce read-only analysis, strict stop conditions, and zero scope creep, consistent with Bands A and B discipline.
+
+⸻
+
+🔐 WAVE B2 — CUSTOMER & IDENTITY COHERENCE
+
+Replit Execution Prompt (STRICT)
+
+OBJECTIVE
+
+Conduct a read-only, system-wide coherence analysis of customer identity handling across SVM, MVM, and ParkHub, ensuring that:
+	•	Canonical customer identity is used consistently
+	•	Order → Customer → Proof traversal is logically sound
+	•	No privacy, compliance, or inference risks are overlooked
+	•	No assumptions are made beyond what the code explicitly does
+
+⚠️ This is an ANALYSIS wave only.
+NO code changes.
+NO refactors.
+NO fixes.
+
+⸻
+
+🚫 HARD CONSTRAINTS (NON-NEGOTIABLE)
+
+You MUST:
+	•	❌ NOT modify any code
+	•	❌ NOT add schemas, tables, fields, or migrations
+	•	❌ NOT introduce authentication or authorization changes
+	•	❌ NOT “fix” or “improve” anything
+	•	❌ NOT invent missing logic
+	•	❌ NOT suggest solutions inside code
+
+If something is broken or weak:
+👉 Document it. Do NOT fix it.
+
+⸻
+
+🔍 SCOPE OF ANALYSIS (MANDATORY COVERAGE)
+
+You must inspect ALL of the following, without omission:
+
+⸻
+
+1️⃣ Canonical Customer Identity Usage
+
+Analyze the CanonicalCustomer implementation and usage:
+	•	Where canonical identity is derived
+	•	What identifiers are used (email, phone, name)
+	•	Deterministic hashing logic
+	•	Collision risk
+	•	Ambiguity handling (same email/phone across systems)
+	•	Whether canonical identity is:
+	•	Used consistently
+	•	Ignored in some flows
+	•	Reconstructed redundantly
+
+📌 Explicitly list:
+	•	Every place CanonicalCustomer is used
+	•	Every place it is NOT used but should logically apply
+
+⸻
+
+2️⃣ Order → Customer Resolution Paths
+
+For each commerce channel, trace the full path:
+
+SVM
+	•	svm_orders → customerEmail / customerPhone
+	•	How identity is resolved in:
+	•	Order listing
+	•	Order detail
+	•	Proof lookup
+
+MVM
+	•	mvm_parent_order
+	•	Sub-order attribution vs customer identity
+	•	Whether vendors see customer identity consistently
+
+ParkHub
+	•	park_ticket passenger identity
+	•	Phone-only identity risks
+	•	Ticket vs order abstraction mismatch
+
+📌 Identify:
+	•	Inconsistencies
+	•	Missing links
+	•	Divergent assumptions
+
+⸻
+
+3️⃣ Customer → Proof → Order Traversal
+
+Analyze traversal correctness for:
+	•	Orders → receipts
+	•	Orders → tickets
+	•	Tickets → manifests
+	•	Receipts → orders
+
+Verify:
+	•	Traversal works across all suites
+	•	No orphaned proofs
+	•	No proof that cannot be traced back to a customer
+	•	No cross-tenant leakage possible
+
+⸻
+
+4️⃣ Public & Semi-Public Identity Exposure
+
+Inspect all public and semi-public APIs that touch customer data:
+	•	/api/orders/canonical/*
+	•	/api/customers/canonical
+	•	/api/proofs/*
+	•	Public order pages
+	•	Ticket/receipt verification pages
+
+Document:
+	•	What customer data is exposed
+	•	What is inferable (existence, frequency, behavior)
+	•	Whether identity verification assumptions are sound
+	•	Demo vs live behavior differences
+
+⸻
+
+5️⃣ Privacy, NDPR, and GDPR Risk Documentation (ANALYSIS ONLY)
+
+Without proposing solutions, document:
+	•	Where PII exists
+	•	Where consent is implied vs explicit
+	•	Where retention rules are undefined
+	•	Where “right to be forgotten” is impossible
+	•	Where customer identity is derived without user awareness
+
+⚠️ Do NOT propose compliance mechanisms.
+Only document exposure and gaps.
+
+⸻
+
+📄 REQUIRED DELIVERABLE
+
+You MUST produce one single report:
+
+📘 WAVE_B2_CUSTOMER_IDENTITY_COHERENCE_REPORT.md
+
+The report MUST contain:
+	1.	Executive Summary
+	•	Overall coherence rating (High / Medium / Low)
+	2.	Identity Flow Diagrams (Textual)
+	•	SVM
+	•	MVM
+	•	ParkHub
+	3.	Confirmed Strengths
+	4.	Confirmed Weaknesses
+	5.	Explicit GAP LIST
+	•	Each gap must include:
+	•	Description
+	•	Affected systems
+	•	Risk level (Low / Medium / High)
+	•	Why it CANNOT be fixed in Wave B2
+	6.	Invariants Confirmed
+	•	Things that are safe and should not be changed
+	7.	No-Assumption Confirmation
+	•	Explicit statement that no assumptions were made
+
+⸻
+
+🛑 STOP CONDITIONS (ABSOLUTE)
+
+You MUST STOP immediately after:
+	•	Writing the report
+	•	Saving it to the repository root
+	•	Printing a short completion message
+
+You MUST NOT:
+	•	Continue to Wave B3
+	•	Apply fixes
+	•	Suggest implementation steps
+
+⸻
+
+✅ SUCCESS CRITERIA
+
+Wave B2 is successful ONLY if:
+	•	All three commerce systems are analyzed
+	•	Canonical identity usage is exhaustively mapped
+	•	Privacy exposure is clearly documented
+	•	Gaps are listed without workaround attempts
+	•	You stop exactly at report completion
+
+⸻
+
+🧱 CONTEXT
+	•	Wave A (Truth & Security) is COMPLETE
+	•	Wave B1 (Commerce Integrity) is COMPLETE + FIXED
+	•	This wave exists to ensure identity correctness BEFORE proofs, payouts, or branding
+
+⸻
+
+Begin Wave B2 now.
+Do not exceed scope.
