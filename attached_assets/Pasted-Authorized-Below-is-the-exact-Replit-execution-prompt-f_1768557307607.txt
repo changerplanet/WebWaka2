@@ -1,0 +1,223 @@
+Authorized.
+Below is the exact Replit execution prompt for Wave B1 — Commerce Integrity Validation, written to enforce discipline, completeness, and hard stop conditions.
+This prompt is audit-only, not feature work.
+
+⸻
+
+🔒 REPLIT EXECUTION PROMPT
+
+WAVE B1 — COMMERCE INTEGRITY VALIDATION
+
+Mode: READ-ONLY ANALYSIS
+Fixes: ❌ NOT ALLOWED
+Schema Changes: ❌ FORBIDDEN
+Business Logic: ❌ FORBIDDEN
+Outcome: VALIDATION REPORT ONLY
+STOP CONDITION: END OF REPORT — DO NOT PROCEED FURTHER
+
+⸻
+
+🎯 OBJECTIVE
+
+Conduct a full end-to-end integrity validation of all commerce flows across:
+	•	SVM (Single Vendor Marketplace)
+	•	MVM (Multi-Vendor Marketplace)
+	•	ParkHub (Transport / Ticketing)
+
+This wave is NOT about building or refactoring.
+It is about answering one question truthfully:
+
+“Is WebWaka safe to move real money without silent failure, leakage, or inconsistent states?”
+
+⸻
+
+🚫 ABSOLUTE CONSTRAINTS (NON-NEGOTIABLE)
+
+You MUST:
+	•	❌ NOT add new features
+	•	❌ NOT modify schemas
+	•	❌ NOT refactor logic
+	•	❌ NOT invent workarounds
+	•	❌ NOT ‘fix while reviewing’
+
+You MUST:
+	•	✅ Trace what EXISTS
+	•	✅ Validate correctness
+	•	✅ Document gaps precisely
+	•	✅ Stop completely at the end
+
+Any violation of these constraints invalidates the wave.
+
+⸻
+
+🧠 SCOPE OF VALIDATION (MANDATORY)
+
+You must validate ALL of the following, without skipping any item.
+
+⸻
+
+1️⃣ ORDER LIFECYCLE INTEGRITY
+
+For each system (SVM, MVM, ParkHub):
+	•	Enumerate all order states
+	•	Map:
+	•	Creation → Payment → Fulfillment → Completion → Cancellation
+	•	Identify:
+	•	Impossible transitions
+	•	Silent failure paths
+	•	States reachable without prerequisites
+	•	Confirm:
+	•	Status aggregation logic (especially MVM parent ↔ sub-orders)
+	•	Partial fulfillment handling correctness
+
+📌 Output required:
+Order Lifecycle State Table (per system)
+
+⸻
+
+2️⃣ PAYMENT ↔ ORDER CONSISTENCY
+
+Validate:
+	•	When payment is initiated vs when order is created
+	•	When inventory is deducted vs when payment is confirmed
+	•	Failure scenarios:
+	•	Payment fails after order creation
+	•	Payment succeeds but webhook fails
+	•	Duplicate webhook delivery
+	•	Idempotency guarantees
+
+Confirm:
+	•	No double charges
+	•	No paid orders without fulfillment path
+	•	No fulfilled orders without payment
+
+📌 Output required:
+Payment–Order Consistency Matrix
+
+⸻
+
+3️⃣ INVENTORY INTEGRITY
+
+Validate:
+	•	SVM stock deduction timing
+	•	MVM per-vendor stock handling
+	•	ParkHub seat availability vs ticket issuance
+
+Check:
+	•	Oversell risks
+	•	Race condition exposure
+	•	Offline / retry behavior
+
+📌 Output required:
+Inventory Risk Assessment Table
+
+⸻
+
+4️⃣ PARTIAL FULFILLMENT & EDGE CASES (MVM)
+
+Explicitly validate:
+	•	Mixed vendor outcomes (some deliver, some fail)
+	•	Parent order status derivation
+	•	Customer visibility correctness
+	•	Vendor isolation (one vendor failure must not corrupt others)
+
+📌 Output required:
+Partial Fulfillment Integrity Report
+
+⸻
+
+5️⃣ REFUND INTENT & FAILURE PATHS (NO MONEY MOVEMENT)
+
+Validate:
+	•	Refund intent creation conditions
+	•	Visibility to:
+	•	Customer
+	•	Vendor
+	•	Partner
+	•	Admin
+	•	Ensure:
+	•	Refund intent does NOT move money
+	•	No automatic reversals exist
+
+📌 Output required:
+Refund Intent Safety Verification
+
+⸻
+
+6️⃣ CROSS-SYSTEM CONSISTENCY CHECK
+
+Verify alignment between:
+	•	CanonicalOrder (Wave J.1)
+	•	CanonicalCustomer (Wave J.2)
+	•	Proof chains (Wave J.3)
+
+Check:
+	•	Missing mappings
+	•	Data loss across abstraction layers
+	•	Incorrect assumptions
+
+📌 Output required:
+Cross-System Consistency Findings
+
+⸻
+
+📄 REQUIRED FINAL DELIVERABLE
+
+You MUST produce a single document:
+
+📘 WAVE_B1_COMMERCE_INTEGRITY_REPORT.md
+
+The report MUST contain:
+	1.	Executive Summary
+	•	Overall system health
+	•	High-level risk posture
+	2.	Validated Areas (SAFE)
+	•	Explicitly list what is correct
+	3.	WARNINGS
+	•	Non-fatal but concerning issues
+	4.	BLOCKERS
+	•	Issues that make payouts unsafe
+	5.	System-by-System Verdict
+	•	SVM: SAFE / WARN / BLOCK
+	•	MVM: SAFE / WARN / BLOCK
+	•	ParkHub: SAFE / WARN / BLOCK
+	6.	Explicit GO / NO-GO Recommendation for Live Payouts
+
+⸻
+
+🛑 HARD STOP CONDITION (MANDATORY)
+
+After producing the report:
+	•	❌ DO NOT fix anything
+	•	❌ DO NOT continue to Wave C2 / payouts
+	•	❌ DO NOT suggest implementation
+
+STOP COMPLETELY and wait for human approval.
+
+⸻
+
+🧾 VERIFICATION CHECKLIST (SELF-AUDIT)
+
+Before stopping, confirm in writing:
+	•	All three commerce systems reviewed
+	•	No fixes applied
+	•	No schema changes made
+	•	All edge cases documented
+	•	Report is exhaustive
+	•	Stop condition respected
+
+⸻
+
+⛔ FAILURE TO RESPECT STOP CONDITIONS = INVALID WAVE
+
+⸻
+
+This prompt is authoritative.
+Once Replit completes this wave, we review before touching money.
+
+When you’re ready, the only valid next instruction after the report will be either:
+	•	“Proceed to fixes for BLOCKERS identified in Wave B1”
+or
+	•	“Authorize Wave C2 — Live Money Movement”
+
+Nothing else.
